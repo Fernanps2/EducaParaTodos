@@ -4,9 +4,9 @@ Aplicación desarrollada por el grupo CRYPTOBROS para apoyar y ayudar al centro 
 Instalar npm install --global expo-cli
 
 
-EN UBUNTU:  Para abrir la aplicacion situarse en EducaParaTodo y ejecutar expo start.
+EN UBUNTU:  Para abrir la aplicacion situarse en EducaParaTodo y ejecutar expo start(instalar lo necesario para ejecutar dependiendo de lo que te pida).
 
-EN WINDOWS: Para abrir la aplicacion situarse en EducaParaTodo y ejecutar npx expo start
+EN WINDOWS: Para abrir la aplicacion situarse en EducaParaTodo y ejecutar npx expo start(instalar lo necesario para ejecuta dependiendo de lo que te pida).
 
 Una vez inicializado darle a la tecla 'W' para abrir una ventana tipo web de la aplicacion.
 
