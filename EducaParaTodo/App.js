@@ -1,12 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Primera prueba para la aplicacion EducaParaTodos</Text>
-      <StatusBar style="auto" />
+      <ImageBackground
+        source={require('./Imagenes/DiseñoEducaParaTodos.png')}
+        style={styles.image}>
+        <Text style={styles.text}>EducaParaTodos</Text>
+      </ImageBackground>
     </View>
   );
 }
@@ -14,8 +18,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'black',
+  },
+  text: {
+    fontSize: 50,
+    paddingTop: 30,
+    alignItems: 'center',
+    fontWeight: 'bold',
+  },
 });
+

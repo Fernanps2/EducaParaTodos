@@ -1,5 +1,12 @@
 # EducaParaTodos
 Aplicación desarrollada por el grupo CRYPTOBROS para apoyar y ayudar al centro San Rafael con su alumnado
 
-Para iniciar la aplicacion debeis de estar dentro de la carpeta EducaParaTodo y ejecutar un expo start
+Instalar npm install --global expo-cli
+
+
+EN UBUNTU:  Para abrir la aplicacion situarse en EducaParaTodo y ejecutar expo start.
+
+EN WINDOWS: Para abrir la aplicacion situarse en EducaParaTodo y ejecutar npx expo start
+
+Una vez inicializado darle a la tecla 'W' para abrir una ventana web de la aplicacion.
 
