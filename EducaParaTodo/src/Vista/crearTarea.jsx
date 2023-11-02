@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 
+// Uso base de datos
+import appFirebase from '../Modelo/firebase';
+import {getFirestore,collection,addDoc} from 'firebase/firestore'
+const db = getFirestore(appFirebase);
 
 export default function crearTarea () {
   
@@ -14,6 +18,7 @@ export default function crearTarea () {
   const [showAddStepAddPict, setShowAddStepAddPict] = useState(false); // Opcion Añadir pictograma en pasos
   const [showAddStepAddVideo, setShowAddStepAddVideo] = useState(false); // Opcion Añadir video en pasos
   const [showAddStepAddImage, setShowAddStepAddImage] = useState(false); // Opcion Añadir imagen en pasos
+  const [showAddStepAddAudio, setShowAddStepAddAudio] = useState(false); // Opcion Añadir imagen en pasos
   // Variables de campo Lugar cuando es actividad
   const [showLugar, setShowLugar] = useState(false);
   // Variables añadir Paso cuando es comanda
@@ -36,12 +41,14 @@ export default function crearTarea () {
   //Variables para logo de guardar
   const [guardando, setGuardando] = useState(false);
 
+
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
   setShowAddStepAddText(true);
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
 }
 // Pulsamos boton añadir pictograma en añadir paso
 const handleAnadirPicto = () => {
@@ -49,6 +56,7 @@ const handleAnadirPicto = () => {
   setShowAddStepAddPict(true);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
 }
 // Pulsamos boton añadir video en añadir paso
 const handleAnadirVideo = () => {
@@ -56,6 +64,7 @@ const handleAnadirVideo = () => {
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(true);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
 }
 // Pulsamos boton añadir imagen en añadir paso
 const handleAnadirImagen = () => {
@@ -63,6 +72,16 @@ const handleAnadirImagen = () => {
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(true);
+  setShowAddStepAddAudio(false);
+}
+
+// Pulsamos boton añadir audio en añadir paso
+const handleAnadirAudio = () => {
+  setShowAddStepAddText(false);
+  setShowAddStepAddPict(false);
+  setShowAddStepAddVideo(false);
+  setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(true);
 }
 
 // Pulsamos boton actividad
@@ -143,6 +162,7 @@ const handlePictoPressDrink = (image) => {
 const handlePictoPressEat = (image) => {
 
 };
+
 
 
 // Borramos toda la información cuando pulsamos borrar
@@ -399,10 +419,13 @@ const showAlertStore = () => {
         <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirImagen}>
           <Text style={styles.addButtonAñadirPasoText}>Imagen</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirAudio}>
+          <Text style={styles.addButtonAñadirPasoText}>Audio</Text>
+        </TouchableOpacity>
       </View>
       
       {
-      (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage) && (
+      (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage && !showAddStepAddAudio) && (
         <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
            <Text style={[{alignItems: 'center'}]}>Elija que item añadir </Text>
         </View>
@@ -439,15 +462,13 @@ const showAlertStore = () => {
       {(showAddStepAddPict) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
-            </TouchableOpacity>
-            <TouchableOpacity>
+          <TouchableOpacity>
               <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/eat.png')} style={styles.image}></Image>
+              <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
             </TouchableOpacity>
+            
           </View>
 
           <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
@@ -509,6 +530,28 @@ const showAlertStore = () => {
               ]}
               ]}>
               Guardar Video
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {(showAddStepAddAudio) && (
+        <View>
+          <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/Audio1.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Audio
             </Text>
           </TouchableOpacity>
         </View>
@@ -577,6 +620,23 @@ const showAlertStore = () => {
       <View style={styles.rectangleChoose}>
         <Text>Ninguno </Text>
       </View>
+
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={styles.textItemAnadido}>Audio Añadido</Text>
+        <TouchableOpacity>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.imageTrash,
+            {transform: [{ translateX:  59 }]}
+          ]}
+        ></Image>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
+      </View>
+
       </View>
       )}
     </View>
@@ -711,7 +771,7 @@ const styles = StyleSheet.create({
     borderRadius: 4, // Redondeo de las esquinas
   },
   rectangle: {
-    width: 232, // Ancho del rectángulo
+    width: 278, // Ancho del rectángulo
     height: 100, // Altura del rectángulo
     backgroundColor: 'white', // Color de fondo del rectángulo
     justifyContent: 'center', // Centra el texto verticalmente
