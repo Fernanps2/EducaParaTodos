@@ -1,7 +1,6 @@
 import React from 'react'
 import {Image, Button} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-//import cierraSesion from '../Controlador/cierraSesion';
 import useUser from '../Controlador/useUser';
 
 export function CerrarSesion () {
@@ -17,7 +16,7 @@ export function CerrarSesion () {
             title='Cerrar Sesion' 
             onPress={() => {
                 handleLogout();
-                navigation.navigate('HomeLogin');
+                navigation.navigate('pantallaPrincipal');
             }}>
                 <Image src={require('../../Imagenes/salirIcon.png')}></Image>
         </Button>

@@ -1,7 +1,20 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function AniadirProfesor ({navigate }) {
+export default function AniadirProfesor ({navigation }) {
+
+  const showAlertStore = () => {
+    Alert.alert(
+      "¿Quiere guardar?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+        { text: "Confirmar", onPress: () => navigation.navigate('HomeAdmin')}
+      ],
+      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+    );
+  };
+
     return (
       <View style={styles.container}>
       <View style={styles.header}>
@@ -10,7 +23,6 @@ export default function AniadirProfesor ({navigate }) {
 
       <TextInput style={styles.input} placeholder="Nombre" />
       <TextInput style={styles.input} placeholder="Apellidos" />
-      <TextInput style={styles.input} placeholder="Teléfono de contacto" />
       <TextInput style={styles.input} placeholder="Correo" />
       <TextInput style={styles.input} placeholder="Información Adicional" />
 
@@ -20,7 +32,7 @@ export default function AniadirProfesor ({navigate }) {
       </View>
 
       <TouchableOpacity style={styles.addButton}
-                  onPress={() => navigation.navigate('HomeAdmin')}>
+                  onPress={showAlertStore}>
         <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
 

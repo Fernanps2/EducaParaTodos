@@ -19,7 +19,7 @@ export default function PantallaPrincipal({ navigation }) {
           onPress={() => navigation.navigate('LoginEducador', {tipo: 'profesor'})} />
         <Button title="Inicio admin"
           // onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
-          onPress={() => navigation.navigate('LoginEducador', {tipo: 'admin'})} />
+          onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
 
       </View>
 

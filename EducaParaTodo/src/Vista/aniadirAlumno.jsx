@@ -1,12 +1,26 @@
-
-
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 
-export default function AniadirAlumno () {
+
+
+// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
+
+import appFirebase from '../Modelo/firebase';
+import {getFirestore,collection,addDoc} from 'firebase/firestore'
+const db = getFirestore(appFirebase);
+
+export default function AniadirAlumno ({ navigation }) {
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const initialState = {
+    nombre:'',
+    apellidos:''
+  }
+  const [nombre, setNombre] = useState("empty");
+  const [apellidos,setApellidos] = useState("empty");
+  const[estado,setEstado] = useState(initialState);
+
   const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
 
   const handleOptionPress = (option) => {
@@ -16,36 +30,69 @@ export default function AniadirAlumno () {
       setSelectedOptions(selectedOptions.filter(item => item !== option));
     }
   };
-  /*
-  const handleStoreNotification = () =>{
-    Swal.fire({
-      title: '¿Quieres añadir al alumno?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: 'Añadir',
-      denyButtonText: `Cancelar`,
-    }).then((result) => {
-          if (result.isConfirmed) {
-        Swal.fire('¡Alumno añadido!', '', 'success')
-      } else if (result.isDenied) {
-        Swal.fire('Cancelado', '', 'info')
+  
+  const showAlertStore = () => {
+    Alert.alert(
+      "¿Quiere guardar?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+        { text: "Confirmar", onPress: () =>{ 
+            navigation.navigate('HomeAdmin');
+          }
+        }
+      ],
+      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+    );
+  };
+
+  const handeChangeText = (value, name) =>{
+    setEstado({...estado, [name]:value})
+  }
+
+
+  const almacenarAlumnoBD = async()=>{
+
+    try{
+      if(estado.nombre === '' || estado.apellidos === '')
+        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido')
+      else{
+        const alumno = {
+          nombre: estado.nombre,
+          apellidos: estado.apellidos,
+          visualizacion: selectedOptions
+        }
+        console.log(alumno);
+        
+        await addDoc(collection(db,'alumnos'),{
+          ...alumno
+        })
+        Alert.alert('Alumno guardado con éxito')
       }
-     }).finally(() => {
-      // Restablecer desplazamiento en todo el documento
-      document.documentElement.style.overflow = 'auto';
-      document.body.style.overflow = 'auto';
-    })
-    };
-    */
+    }catch(error){
+
+    }
+  }
+
     return (
       <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>EducaParaTodos</Text>
       </View>
 
-      <TextInput style={styles.input} placeholder="Nombre" />
-      <TextInput style={styles.input} placeholder="Apellidos" />
-      <TextInput style={styles.input} placeholder="Teléfono de contacto" />
+      <TextInput 
+        style={styles.input} 
+        placeholder="Nombre" 
+        value={estado.nombre}
+        onChangeText={(value)=>handeChangeText(value,'nombre')}
+        />
+      <TextInput 
+        style={styles.input} 
+        placeholder="Apellidos" 
+        value={estado.apellidos}
+        onChangeText={(value)=>handeChangeText(value,'apellidos')}
+        />
+
       <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)} style={styles.input}>
         <Text>{selectedOptions.join(', ') || 'Visualización preferente'}</Text>
       </TouchableOpacity>
@@ -75,7 +122,10 @@ export default function AniadirAlumno () {
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
-                  onPress={() => navigation.navigate('HomeAdmin')}>
+                  onPress={()=>{
+                    // showAlertStore
+                    almacenarAlumnoBD()
+                  }}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
       </View>

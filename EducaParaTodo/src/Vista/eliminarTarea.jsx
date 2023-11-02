@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import {Alert, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+
 
 // Simulación de datos de tareas
 const mockTasks = [
@@ -21,7 +22,7 @@ export default function EliminarTarea() {
         <Text>{item.title}</Text>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => handleDeleteNotification(item.id)}
+          onPress={() => showAlertStore(item.id)}
         >
           <Text style={styles.deleteButtonText}>Eliminar</Text>
         </TouchableOpacity>
@@ -29,23 +30,17 @@ export default function EliminarTarea() {
     );
   
 
-    const handleDeleteNotification = (id) =>{
-        Swal.fire({
-          title: '¿Seguro que quieres eliminar la tarea de TODOS los alumnos?',
-          showDenyButton: true,
-          showCancelButton: false,
-          confirmButtonText: 'Eliminar',
-          denyButtonText: `Cancelar`,
-        }).then((result) => {
-      
-          if (result.isConfirmed) {
-            Swal.fire('¡Tarea eliminada!', '', 'success');
-            eliminarTarea(id);
-          } else if (result.isDenied) {
-            Swal.fire('Tarea no eliminada', '', 'info')
-          }
-        })
-      };
+    const showAlertStore = (id) =>{
+      Alert.alert(
+        "¿Estas seguro de eliminar la tarea?",
+        "Pulsa una opcion",
+        [
+          {text: "Cancelar"},
+          {text: "Confirmar", onPress: () =>  eliminarTarea(id)}
+        ],
+        { cancelable: true}
+      );
+    };
 
   
     return (
