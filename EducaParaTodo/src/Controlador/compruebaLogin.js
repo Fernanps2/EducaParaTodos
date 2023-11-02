@@ -1,37 +1,99 @@
+
+
 import React from 'react'
-import alumno from '../Modelo/alumno'
-import profesor from '../Modelo/profesor'
+import alumnos from '../Modelo/alumno'
+import profesores from '../Modelo/profesor'
+import administradores from '../Modelo/administrador'
 
 export default function compruebaLogin ({username, password, tipo}) {
-    const arrayAlumnos = alumno;
-    const arrayProfes = profesor;
+    const {alumno} = alumnos();
+    const {profesor} = profesores();
+    const {administrador} = administradores()
 
-    function esLogin() {
+    //function esLogin() {
         let encontrado = false;
         let token = null;
-
         if (tipo == 'alumno') {
-            /*for (let i in alumno && !encontrado) {
-                if (username == i.username && password == i.password) {
+            for (let i = 0; i < alumno.length && !encontrado; i++) {
+                if (username == alumno[i].username && password == alumno[i].password) {
                     encontrado = true;
-                    token = i.jwt;
-                }
-            }*/
-            if (username == alumno.username && password == alumno.password) {
-                encontrado = true;
-                token = alumno.jwt;
-            }
-        } /*else if (tipo == 'profesor') {
-            for (let i in arrayProfes && !encontrado) {
-                if (username == i.username && password == i.password) {
-                    encontrado = true;
-                    token = i.jwt;
+                    
+                    token = alumno[i].jwt;
                 }
             }
-        }*/
+        } else if (tipo == 'profesor') {
+            for (let i = 0; i < profesor.length && !encontrado; i++) {
+                if (username == profesor[i].username && password == profesor[i].password) {
+                    encontrado = true;
+                    
+                    token = profesor[i].jwt;
+                }
+            }
+        } else if (tipo == 'administrador') {
+            for (let i = 0; i < administrador.length && !encontrado; i++) {
+                if (username == administrador[i].username && password == administrador[i].password) {
+                    encontrado = true;
+                    
+                    token = profesor[i].jwt;
+                }
+            }
+        }
 
         return token;
-    }
+    //}
 
-    return (esLogin());
+    //return (esLogin());
 }
+
+
+
+
+
+
+
+
+// import React from 'react';
+// import alumnos from '../Modelo/alumno';
+// import profesores from '../Modelo/profesor';
+// import administradores from '../Modelo/administrador';
+
+// export default function compruebaLogin ({username, password, tipo}) {
+//     const {alumno} = alumnos();
+//     // const alumnosArray = Object.values(datos);   // Convertimos los datos un array
+//     const {profesor} = profesores();
+//     const {administrador} = administradores()
+
+//     //function esLogin() {
+//         let encontrado = false;
+//         let token = null;
+//         if (tipo == 'alumno') {
+//             for (let i = 0; i <alumno.length && !encontrado; i++) {
+//                 if (username ==alumno[i].username && password == alumno[i].password) {
+//                     encontrado = true;
+                    
+//                     token = alumno[i].jwt;
+//                 }
+//             }
+//         } else if (tipo == 'profesor') {
+//             for (let i = 0; i < profesor.length && !encontrado; i++) {
+//                 if (username == profesor[i].username && password == profesor[i].password) {
+//                     encontrado = true;
+                    
+//                     token = profesor[i].jwt;
+//                 }
+//             }
+//         } else if (tipo == 'administrador') {
+//             for (let i = 0; i < administrador.length && !encontrado; i++) {
+//                 if (username == administrador[i].username && password == administrador[i].password) {
+//                     encontrado = true;
+                    
+//                     token = profesor[i].jwt;
+//                 }
+//             }
+//         }
+
+//         return token;
+//     //}
+
+//     //return (esLogin());
+// }

@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import datosAlumnos from '../datosPruebas/datosAlumnos';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import DatosList from './DatosAlumnos';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el icono FontAwesome
 
-const Tareas = ({ route }) => {
+const Tareas = ({ route, navigation}) => {
     
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
     return (
@@ -20,7 +19,9 @@ const Tareas = ({ route }) => {
                         <Text style={styles.texto} key={index}>{tarea}</Text>
                     </View>
                     <Text> Ver subtareas: </Text>
-                    <Icon name="question-circle" size={70} color="blue" />
+                    <TouchableOpacity onPress={() => navigation.navigate('verTareaPictogramas')} >
+                        <Icon name="question-circle" size={70} color="blue" />
+                    </TouchableOpacity>
                 </View>
             ))}
 

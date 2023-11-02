@@ -16,6 +16,18 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
+        onPress={() => navigation.navigate('aniadirAlumno')}>
+        <Text style={styles.buttonText}>Añadir alumno</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('aniadirProfesor')}>
+        <Text style={styles.buttonText}>Añadir Profesor</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
         onPress={() => navigation.navigate('crearTarea')}>
         <Text style={styles.buttonText}>Crear Tarea</Text>
       </TouchableOpacity>
@@ -25,6 +37,14 @@ export default function HomeAdmin ({ navigation }) {
         onPress={() => navigation.navigate('pantallaAlumnos')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('gestionarEstadoTareas')}>
+        <Text style={styles.buttonText}>Gestionar tareas</Text>
+      </TouchableOpacity>
+
+
 
       </View>
 

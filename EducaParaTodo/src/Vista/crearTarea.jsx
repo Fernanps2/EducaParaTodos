@@ -25,10 +25,12 @@ export default function crearTarea () {
   const [selectedValue, setSelectedValue] = useState('none'); // item seleccionable formulario
   // Variables para guardar input
   const [nombreTarea, setNombreTarea] = useState ('');
+
   const [inicioFecha, setInicioFecha] = useState ('');
   const [inicioHora, setInicioHora] = useState ('');
   const [finFecha, setFinFecha] = useState ('');
   const [finHora, setFinHora] = useState ('');
+
   // Variables para fechay hora
   const [date, setDate] = useState(new Date());
   //Variables para logo de guardar
