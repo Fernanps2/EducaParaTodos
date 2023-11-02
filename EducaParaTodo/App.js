@@ -9,7 +9,7 @@ export default function App() {
       <ImageBackground
         source={require('./Imagenes/DiseñoEducaParaTodos.png')}
         style={styles.image}>
-        <Text style={styles.text}>EducaParaTodosHola</Text>
+        <Text style={styles.text}>EducaParaTodos</Text>
       </ImageBackground>
     </View>
   );
