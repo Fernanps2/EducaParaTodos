@@ -1,40 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import Main from "./src/Vista/main.jsx"
+import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// Creamos una instancia del stack
+const Stack = createStackNavigator();
 
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('./Imagenes/DiseñoEducaParaTodos.png')}
-        style={styles.image}>
-        <Text style={styles.text}>EducaParaTodos</Text>
-      </ImageBackground>
-    </View>
+  <NavigationContainer>
+    <Stack.Navigator initialRouteName="Inicio">
+      <Stack.Screen name="Inicio" component={Main} />
+      <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
+    </Stack.Navigator>
+  </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'black',
-  },
-  text: {
-    fontSize: 50,
-    paddingTop: 30,
-    alignItems: 'center',
-    fontWeight: 'bold',
-  },
-});
 
