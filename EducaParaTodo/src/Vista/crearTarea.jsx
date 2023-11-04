@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 
 export default function crearTarea () {
 
@@ -9,7 +9,41 @@ export default function crearTarea () {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showHideForm, setHideAddForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [showAllStep, setShowAllStep] = useState(false);
+  const [showAddStepAddText, setShowAddStepAddText] = useState(false); // Opcion Añadir texto en pasos
+  const [showAddStepAddPict, setShowAddStepAddPict] = useState(false); // Opcion Añadir pictograma en pasos
+  const [showAddStepAddVideo, setShowAddStepAddVideo] = useState(false); // Opcion Añadir video en pasos
+  const [showAddStepAddImage, setShowAddStepAddImage] = useState(false); // Opcion Añadir imagen en pasos
   const [selectedValue, setSelectedValue] = useState('none'); // item seleccionable formulario
+
+// Pulsamos boton añadir texto en añadir paso
+const handleAnadirTexto = () => {
+  setShowAddStepAddText(true);
+  setShowAddStepAddPict(false);
+  setShowAddStepAddVideo(false);
+  setShowAddStepAddImage(false);
+}
+// Pulsamos boton añadir pictograma en añadir paso
+const handleAnadirPicto = () => {
+  setShowAddStepAddText(false);
+  setShowAddStepAddPict(true);
+  setShowAddStepAddVideo(false);
+  setShowAddStepAddImage(false);
+}
+// Pulsamos boton añadir video en añadir paso
+const handleAnadirVideo = () => {
+  setShowAddStepAddText(false);
+  setShowAddStepAddPict(false);
+  setShowAddStepAddVideo(true);
+  setShowAddStepAddImage(false);
+}
+// Pulsamos boton añadir imagen en añadir paso
+const handleAnadirImagen = () => {
+  setShowAddStepAddText(false);
+  setShowAddStepAddPict(false);
+  setShowAddStepAddVideo(false);
+  setShowAddStepAddImage(true);
+}
 
 // Pulsamos boton actividad o materiales
   const handleActividad_MatearialesClick = () => {
@@ -40,6 +74,27 @@ const handleHideFormClick = () => {
   setShowForm(false); // Oculta elección formulario
   setShowAddForm(true); // Oculta boton esconder formulario
 };
+
+// Pulsamos Añadir Paso
+const handleAddStepClick = () => {
+  setShowAllStep(true);
+};
+
+// Que pasa si clica en Picto Speak
+const handlePictoPressSpeak = (image) => {
+
+};
+
+// Que pasa si clica en Picto Drink
+const handlePictoPressDrink = (image) => {
+  
+};
+
+// Que pasa si clica en Picto Eat
+const handlePictoPressEat = (image) => {
+
+};
+
 
     return (
       <View style={styles.container}>
@@ -138,11 +193,154 @@ const handleHideFormClick = () => {
       )}
 
       {(showAddStep || !showForm ) && (
-          <TouchableOpacity style={styles.addButtonEmergentes}>
+          <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleAddStepClick}>
               <Text style={styles.addButtonEmergenteText}>+ Añadir paso</Text>
           </TouchableOpacity>
       )}
 
+      {
+        (showAllStep) } // BAMOSS POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIII
+      
+      <View style={styles.row}>
+        <Text style={{fontSize: 15,  translateX: -20 }}>Nombre Paso</Text>
+        <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
+      </View>
+
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirTexto}>
+          <Text style={styles.addButtonAñadirPasoText}>Texto</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirPicto}>
+          <Text style={styles.addButtonAñadirPasoText}>Pictograma</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirVideo}>
+          <Text style={styles.addButtonAñadirPasoText}>Video</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirImagen}>
+          <Text style={styles.addButtonAñadirPasoText}>Imagen</Text>
+        </TouchableOpacity>
+      </View>
+      
+
+      {
+      (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage) && (
+        <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}></View>
+      )
+      }
+
+      {(showAddStepAddText) && (
+        <View>
+          <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
+          <TextInput 
+            multiline 
+            textAlignVertical='top'
+            style={[styles.input, {fontSize: 10},{transform: [{ translateX: 0 }]},{width: 190}, {height: 60}, {maxHeight: 200}]} 
+            placeholder="Escribe aquí..." 
+          />
+          </View>
+
+          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 100}, {transform: [{ translateY: 73}]}]}>
+            <Text style={[styles.addButtonEmergenteText, {color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Texto</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {(showAddStepAddPict) && (
+        <View>
+          <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+            <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
+            <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
+            <Image source={require('../../Imagenes/CrearTarea/eat.png')} style={styles.image}></Image>
+          </View>
+
+          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
+            <Text style={[styles.addButtonEmergenteText, {fontSize: 8,},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Pictograma</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {(showAddStepAddVideo) && (
+        <View>
+          <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+            <Image source={require('../../Imagenes/CrearTarea/videoMicroondas.png')} style={styles.image}></Image>
+            <Image source={require('../../Imagenes/CrearTarea/videoOrdenarHabitacion.png')} style={styles.image}></Image>
+          </View>
+
+          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
+            <Text style={[styles.addButtonEmergenteText, {fontSize: 10},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Video</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {(showAddStepAddImage) && (
+        <View>
+          <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+            <Image source={require('../../Imagenes/CrearTarea/fregarSuelo.png')} style={styles.image}></Image>
+            <Image source={require('../../Imagenes/CrearTarea/habitacionOrdenada.png')} style={styles.image}></Image>
+          </View>
+
+          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
+            <Text style={[styles.addButtonEmergenteText, {fontSize: 10},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Imagen</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={styles.text}>Texto Añadido</Text>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.image, 
+            {height: 15}, 
+            {width: 15},
+            {transform: [{ translateX: 50 }]}
+          ]}
+        ></Image>
+      </View>
+
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+   
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={[styles.text,{transform: [{ translateX: -40 }]}]}>Pictograma Añadido</Text>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.image, 
+            {height: 15}, 
+            {width: 15},
+            {transform: [{ translateX: 30 }]}
+          ]}
+        ></Image>
+      </View>
+
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+   
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={styles.text}>Video Añadido</Text>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.image, 
+            {height: 15}, 
+            {width: 15},
+            {transform: [{ translateX: 50 }]}
+          ]}
+        ></Image>
+      </View>
+
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+   
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={[styles.text,{transform: [{ translateX: -55 }]}]}>Imagen Añadido</Text>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.image, 
+            {height: 15}, 
+            {width: 15},
+            {transform: [{ translateX:  45 }]}
+          ]}
+        ></Image>
+      </View>
+
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+ 
     </View>
   );
 }
@@ -250,6 +448,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     transform: [{ translateX: -130 }],
   },
+  addButtonAñadirPaso: {
+    backgroundColor: '#808080',
+    padding: 5,
+    alignItems: 'center',
+    borderRadius: 5,  
+    borderWidth: 1, // Grosor del borde
+  },
+  addButtonAñadirPasoText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
@@ -264,4 +474,17 @@ const styles = StyleSheet.create({
     borderColor: 'gray', // Color del borde
     borderRadius: 4, // Redondeo de las esquinas
   },
+  rectangle: {
+    width: 219, // Ancho del rectángulo
+    height: 100, // Altura del rectángulo
+    backgroundColor: 'white', // Color de fondo del rectángulo
+    justifyContent: 'center', // Centra el texto verticalmente
+    alignItems: 'center', // Centra el texto horizontalmente
+    borderWidth: 1, // Grosor del borde
+  },
+  image: {
+    width: 50, // Ancho de la imagen
+    height: 50, // Altura de la imagen
+    resizeMode: 'contain', // Asegura que escale
+  }
 });

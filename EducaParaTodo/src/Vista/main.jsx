@@ -9,7 +9,7 @@ import { StyleSheet, Text, View, ImageBackground, Button } from 'react-native';
       <ImageBackground
         source={require('../../Imagenes/DiseñoEducaParaTodos.png')}
         style={styles.image}>
-        <Text style={styles.text}>EducaParaTodoss</Text>
+        <Text style={styles.text}>EducaParaTodos</Text>
       </ImageBackground>
       <View style={styles.buttonContainer}>
         <Button title="Añadir alumno" 
