@@ -9,11 +9,14 @@ import { StyleSheet, Text, View, ImageBackground, Button } from 'react-native';
       <ImageBackground
         source={require('../../Imagenes/DiseñoEducaParaTodos.png')}
         style={styles.image}>
-        <Text style={styles.text}>EducaParaTodos</Text>
+        <Text style={styles.text}>EducaParaTodoss</Text>
       </ImageBackground>
-
-      <Button title="Añadir alumno" 
-        onPress={() => navigation.navigate('aniadirAlumno')} />
+      <View style={styles.buttonContainer}>
+        <Button title="Añadir alumno" 
+          onPress={() => navigation.navigate('aniadirAlumno')} />
+        <Button title="Crear Tarea" 
+          onPress={() => navigation.navigate('crearTarea')} />
+      </View>
     </View>
   );
 }
@@ -26,6 +29,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonContainer:{
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '40%',
   },
   image: {
     width: '100%',
