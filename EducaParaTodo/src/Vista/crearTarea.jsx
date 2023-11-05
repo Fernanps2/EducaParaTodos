@@ -4,16 +4,21 @@ import { Picker } from '@react-native-picker/picker';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 
 export default function crearTarea () {
-
+  
+  // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showHideForm, setHideAddForm] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showHideStep, setShowHideStep] = useState(false);
   const [showAllStep, setShowAllStep] = useState(false);
   const [showAddStepAddText, setShowAddStepAddText] = useState(false); // Opcion Añadir texto en pasos
   const [showAddStepAddPict, setShowAddStepAddPict] = useState(false); // Opcion Añadir pictograma en pasos
   const [showAddStepAddVideo, setShowAddStepAddVideo] = useState(false); // Opcion Añadir video en pasos
   const [showAddStepAddImage, setShowAddStepAddImage] = useState(false); // Opcion Añadir imagen en pasos
+  // Variables añadir Paso cuando es comanda
+  const [showMoreFieldsAddStep, setShowMoreFieldsAddStep] = useState(false);
+  // Variables para añadir formulario
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showHideForm, setHideAddForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [selectedValue, setSelectedValue] = useState('none'); // item seleccionable formulario
 
 // Pulsamos boton añadir texto en añadir paso
@@ -45,9 +50,23 @@ const handleAnadirImagen = () => {
   setShowAddStepAddImage(true);
 }
 
-// Pulsamos boton actividad o materiales
-  const handleActividad_MatearialesClick = () => {
+// Pulsamos boton actividad
+  const handleActividadClick = () => {
   setShowAddStep(true); // This will toggle the visibility
+  setShowHideStep(false);
+  setShowAllStep(false);
+  setShowMoreFieldsAddStep(false);
+  setShowAddForm(false); // This will toggle the visibility
+  setShowForm(false);
+  setHideAddForm(false);
+};
+
+// Pulsamos boton materiales
+const handleMatearialesClick = () => {
+  setShowAddStep(true); // This will toggle the visibility
+  setShowHideStep(false);
+  setShowAllStep(false);
+  setShowMoreFieldsAddStep(true);
   setShowAddForm(false); // This will toggle the visibility
   setShowForm(false);
   setHideAddForm(false);
@@ -56,6 +75,9 @@ const handleAnadirImagen = () => {
 // Pulsamos boton comanda
 const handleComandaClick = () => {
   setShowAddStep(true); // This will toggle the visibility
+  setShowHideStep(false);
+  setShowAllStep(false);
+  setShowMoreFieldsAddStep(false);
   setShowAddForm(true); // This will toggle the visibility
   setShowForm(false);
   setHideAddForm(false);
@@ -78,6 +100,15 @@ const handleHideFormClick = () => {
 // Pulsamos Añadir Paso
 const handleAddStepClick = () => {
   setShowAllStep(true);
+  setShowHideStep(true);
+  setShowAddStep(false);
+};
+
+// Pulsamos Esconder Paso
+const handleHideStepClick = () => {
+  setShowAllStep(false);
+  setShowHideStep(false);
+  setShowAddStep(true);
 };
 
 // Que pasa si clica en Picto Speak
@@ -95,12 +126,30 @@ const handlePictoPressEat = (image) => {
 
 };
 
+// Alerta para eliminar
+const handleAlertDelete = () => {
+  Alert.alert(
+    "Título de la Alerta", // Título
+    "Este es el mensaje de la alerta", // Mensaje
+    [
+      // Array de botones
+      {
+        text: "Cancelar",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      { text: "OK", onPress: () => console.log("OK Pressed") }
+    ],
+    { cancelable: false } // No se cierra al tocar fuera del alert
+  );
+}
+
 
     return (
       <View style={styles.container}>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addButtonDelete}>
+          <TouchableOpacity style={styles.addButtonDelete} onPress={() => Alert.alert("Titulo", "Mensaje")}>
             <Text style={styles.addButtonText}>Eliminar</Text>
           </TouchableOpacity>
 
@@ -143,7 +192,7 @@ const handlePictoPressEat = (image) => {
       <View style={styles.row}>
         <Text style={styles.textTipoTarea}>Tipo Tarea</Text>
         <TouchableOpacity style={styles.addButton}>
-          <TouchableOpacity onPress={handleActividad_MatearialesClick}>
+          <TouchableOpacity onPress={handleActividadClick}>
             <Text style={styles.addButtonText}>Actividad</Text>
           </TouchableOpacity>
       </TouchableOpacity>
@@ -153,7 +202,7 @@ const handlePictoPressEat = (image) => {
         </TouchableOpacity>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton}>
-        <TouchableOpacity onPress={handleActividad_MatearialesClick}>
+        <TouchableOpacity onPress={handleMatearialesClick}>
           <Text style={styles.addButtonText}>Materiales</Text>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -192,19 +241,74 @@ const handlePictoPressEat = (image) => {
         </View>
       )}
 
-      {(showAddStep || !showForm ) && (
+      {(showAddStep && !showHideStep) && (
+        <View style={[styles.row ,{alignItems: 'center'}]}>
           <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleAddStepClick}>
               <Text style={styles.addButtonEmergenteText}>+ Añadir paso</Text>
           </TouchableOpacity>
+          <TouchableOpacity>
+             <Image source={require('../../Imagenes/CrearTarea/eliminarPaso.png')} 
+             style={[{},{height: 15}, {width: 15}]}></Image>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {(!showAddStep && showHideStep) && (
+        <View style={[styles.row, {alignItems: 'center'}]}>
+          <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleHideStepClick}>
+              <Text style={styles.addButtonEmergenteText}>+ Ocultar paso</Text>
+          </TouchableOpacity>
+          <Image source={require('../../Imagenes/CrearTarea/eliminarPaso.png')} style={[{height: 15}, {width: 15}]}></Image>
+        </View>
       )}
 
       {
-        (showAllStep) } // BAMOSS POR AQUIIIIIIIIIIIIIIIIIIIIIIIIIII
-      
+        (showAllStep) && (
+
+      <View>
       <View style={styles.row}>
         <Text style={{fontSize: 15,  translateX: -20 }}>Nombre Paso</Text>
         <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
       </View>
+
+      {
+        (showMoreFieldsAddStep) && (
+          <View>
+            <View style={styles.row}>
+              <Text style={{fontSize: 15,  translateX: -20 }}>Recoger en:</Text>
+              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Lugar origen" />
+            </View>
+
+            <View style={styles.row}>
+              <Text style={{fontSize: 15,  translateX: -20 }}>Llevar a:</Text>
+              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Lugar destino" />
+            </View>
+
+            <View style={[styles.row,  {justifyContent: 'center'},{margin: 10}]}>
+              <TouchableOpacity style={styles.addButton}>
+                  <Text style={styles.addButtonText}>Folios</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.addButton}>
+                  <Text style={styles.addButtonText}>Lapices</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonText}>Gomas</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={[styles.row, {alignItems: 'center'}, {margin: 5}]}>
+              <Text style={{fontSize: 12}}>Cantidad total: </Text>
+              <View style={[styles.rectangle, {width: 25}, {height: 18}]}>
+                <Text>X</Text>
+              </View>
+              <Text style={{fontSize: 12}}>  </Text>
+              <Text style={{fontSize: 12}}>Cantidad: </Text>
+              <TextInput style={[styles.rectangle, {height: 18},{width: 25}]} />
+            </View>
+
+          </View>
+        )
+      }
 
       <View style={styles.row}>
         <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirTexto}>
@@ -221,10 +325,11 @@ const handlePictoPressEat = (image) => {
         </TouchableOpacity>
       </View>
       
-
       {
       (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage) && (
-        <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}></View>
+        <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
+           <Text>Elija que item añadir</Text>
+        </View>
       )
       }
 
@@ -297,7 +402,9 @@ const handlePictoPressEat = (image) => {
         ></Image>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+        <Text>Ninguno</Text>
+      </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={[styles.text,{transform: [{ translateX: -40 }]}]}>Pictograma Añadido</Text>
@@ -311,7 +418,9 @@ const handlePictoPressEat = (image) => {
         ></Image>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+        <Text>Ninguno</Text>
+      </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.text}>Video Añadido</Text>
@@ -325,7 +434,9 @@ const handlePictoPressEat = (image) => {
         ></Image>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+        <Text>Ninguno</Text>
+      </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={[styles.text,{transform: [{ translateX: -55 }]}]}>Imagen Añadido</Text>
@@ -339,8 +450,11 @@ const handlePictoPressEat = (image) => {
         ></Image>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}></View>
- 
+      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+        <Text>Ninguno</Text>
+      </View>
+      </View>
+      )}
     </View>
   );
 }
@@ -379,7 +493,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   text:{
     transform: [{ translateX: -60 }],
