@@ -176,11 +176,11 @@ const handleStoreNotification = () =>{
 
       <Text style={styles.title}>Crear Tarea</Text>
 
-      <Text style={styles.text}>Nombre Tarea</Text>
-      <TextInput style={styles.input} placeholder="Elija Nombre" />
+      <Text style={[styles.text, {position: 'relative', left: 0}]}>Nombre Tarea</Text>
+      <TextInput style={[styles.input, {position: 'relative', left: -5}]} placeholder="Elija Nombre" />
     
-      <Text style={styles.text}>Inicio Tarea</Text>
-      <View style={styles.row}>
+      <Text style={[styles.text, {position: 'relative', left: -10}]}>Inicio Tarea</Text>
+      <View style={[styles.row, {position: 'relative', left: 15}]}>
         <TextInput
           style={styles.inputFecha}
           placeholder="(dd/mm/aaaa)"
@@ -192,8 +192,8 @@ const handleStoreNotification = () =>{
         />
       </View>
 
-      <Text style={styles.text}>Fin Tarea</Text>
-      <View style={styles.row}>
+      <Text style={[styles.text, {position: 'relative', left: -15}]}>Fin Tarea</Text>
+      <View style={[styles.row, {position: 'relative', left: 15}]}>
         <TextInput
           style={styles.inputFecha}
           placeholder="(dd/mm/aaaa)"
@@ -205,7 +205,7 @@ const handleStoreNotification = () =>{
         />
       </View>
 
-      <View style={styles.row}>
+      <View style={[styles.row, {marginBottom: 5}]}>
         <Text style={styles.textTipoTarea}>Tipo Tarea</Text>
         <TouchableOpacity style={styles.addButton}>
           <TouchableOpacity onPress={handleActividadClick}>
@@ -225,7 +225,7 @@ const handleStoreNotification = () =>{
       </View>
       
       {showAddForm && (
-          <TouchableOpacity style={styles.addButtonEmergentes}>
+          <TouchableOpacity style={[styles.addButtonEmergentes, {position: 'relative', left: 10}]}>
             <TouchableOpacity onPress={handleAddFormClick}>
               <Text style={styles.addButtonEmergenteText}>+ Añadir Formulario</Text>
             </TouchableOpacity>
@@ -234,7 +234,7 @@ const handleStoreNotification = () =>{
 
       {showForm && (
         <View>
-          <TouchableOpacity style={styles.addButtonEmergentes}>
+          <TouchableOpacity style={[styles.addButtonEmergentes,  {position: 'relative', left: 10}]}>
             <TouchableOpacity onPress={handleHideFormClick}>
               <Text style={styles.addButtonEmergenteText}>+ Ocultar Formulario</Text>
             </TouchableOpacity>
@@ -264,7 +264,7 @@ const handleStoreNotification = () =>{
           </TouchableOpacity>
           <TouchableOpacity>
              <Image source={require('../../Imagenes/CrearTarea/eliminarPaso.png')} 
-             style={[{},{height: 15}, {width: 15}]}></Image>
+             style={[{marginTop: 5},{height: 15}, {width: 15}]}></Image>
           </TouchableOpacity>
         </View>
       )}
@@ -274,7 +274,8 @@ const handleStoreNotification = () =>{
           <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleHideStepClick}>
               <Text style={styles.addButtonEmergenteText}>+ Ocultar paso</Text>
           </TouchableOpacity>
-          <Image source={require('../../Imagenes/CrearTarea/eliminarPaso.png')} style={[{height: 15}, {width: 15}]}></Image>
+          <Image source={require('../../Imagenes/CrearTarea/eliminarPaso.png')} 
+          style={[{marginTop: 5}, {height: 15}, {width: 15}]}></Image>
         </View>
       )}
 
@@ -283,8 +284,8 @@ const handleStoreNotification = () =>{
 
       <View>
       <View style={styles.row}>
-        <Text style={{fontSize: 15,  translateX: -20 }}>Nombre Paso</Text>
-        <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
+        <Text style={styles.textItemAnadido}>Nombre Paso</Text>
+        <TextInput style={[styles.input,{fontSize: 10}, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
       </View>
 
       {
@@ -407,7 +408,7 @@ const handleStoreNotification = () =>{
       )}
 
       <View style={[styles.row, { marginBottom: 12 }]}>
-        <Text style={styles.text}>Texto Añadido</Text>
+        <Text style={styles.textItemAnadido}>Texto Añadido</Text>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
             styles.image, 
@@ -423,7 +424,7 @@ const handleStoreNotification = () =>{
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
-        <Text style={[styles.text,{transform: [{ translateX: -40 }]}]}>Pictograma Añadido</Text>
+        <Text style={styles.textItemAnadido}>Pictograma Añadido</Text>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
             styles.image, 
@@ -439,7 +440,7 @@ const handleStoreNotification = () =>{
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
-        <Text style={styles.text}>Video Añadido</Text>
+        <Text style={styles.textItemAnadido}>Video Añadido</Text>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
             styles.image, 
@@ -455,7 +456,7 @@ const handleStoreNotification = () =>{
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
-        <Text style={[styles.text,{transform: [{ translateX: -55 }]}]}>Imagen Añadido</Text>
+        <Text style={styles.textItemAnadido}>Imagen Añadido</Text>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
             styles.image, 
@@ -522,6 +523,11 @@ const styles = StyleSheet.create({
   textFormulario:{
     transform: [{ translateX: -20 }],
     fontSize: 15,
+  },
+  textItemAnadido:{
+    position: 'relative', 
+    left: 0,
+    fontSize: 15
   },
   photoSection: {
     alignItems: 'center',
