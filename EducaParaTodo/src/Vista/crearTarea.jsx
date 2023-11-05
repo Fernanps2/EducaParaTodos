@@ -152,12 +152,15 @@ const handleStoreNotification = () =>{
     confirmButtonText: 'Guardar',
     denyButtonText: `Cancelar`,
   }).then((result) => {
-    /* Read more about isConfirmed, isDenied below */
-    if (result.isConfirmed) {
+        if (result.isConfirmed) {
       Swal.fire('¡Tarea guardada!', '', 'success')
     } else if (result.isDenied) {
       Swal.fire('Tarea no guardada', '', 'info')
     }
+   }).finally(() => {
+    // Restablecer desplazamiento en todo el documento
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
   })
 };
 
@@ -176,18 +179,18 @@ const handleStoreNotification = () =>{
 
       <Text style={styles.title}>Crear Tarea</Text>
 
-      <Text style={[styles.text, {position: 'relative', left: 0}]}>Nombre Tarea</Text>
-      <TextInput style={[styles.input, {position: 'relative', left: -5}]} placeholder="Elija Nombre" />
+      <Text style={[styles.text,{position: 'relative', left: 0}]}>Nombre Tarea</Text>
+      <TextInput style={[styles.input, {position: 'relative', left: -35}]} placeholder="Elija Nombre" />
     
       <Text style={[styles.text, {position: 'relative', left: -10}]}>Inicio Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15}]}>
         <TextInput
-          style={styles.inputFecha}
+          style={styles.input}
           placeholder="(dd/mm/aaaa)"
         />
 
         <TextInput
-          style={styles.inputFecha}
+          style={styles.input}
           placeholder="(HH:MM)"
         />
       </View>
@@ -195,29 +198,29 @@ const handleStoreNotification = () =>{
       <Text style={[styles.text, {position: 'relative', left: -15}]}>Fin Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15}]}>
         <TextInput
-          style={styles.inputFecha}
+          style={styles.input}
           placeholder="(dd/mm/aaaa)"
         />
 
         <TextInput
-          style={styles.inputFecha}
+          style={styles.input}
           placeholder="(HH:MM)"
         />
       </View>
 
       <View style={[styles.row, {marginBottom: 5}]}>
         <Text style={styles.textTipoTarea}>Tipo Tarea</Text>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={[styles.addTypeTask]}>
           <TouchableOpacity onPress={handleActividadClick}>
             <Text style={styles.addButtonText}>Actividad</Text>
           </TouchableOpacity>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity style={[styles.addTypeTask]}>
         <TouchableOpacity onPress={handleComandaClick}>
           <Text style={styles.addButtonText}>Comandas</Text>
         </TouchableOpacity>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity style={[styles.addTypeTask]}>
         <TouchableOpacity onPress={handleMatearialesClick}>
           <Text style={styles.addButtonText}>Materiales</Text>
         </TouchableOpacity>
@@ -258,7 +261,7 @@ const handleStoreNotification = () =>{
       )}
 
       {(showAddStep && !showHideStep) && (
-        <View style={[styles.row ,{alignItems: 'center'}]}>
+        <View style={[styles.row ,{marginBottom: 15},{alignItems: 'center'}]}>
           <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleAddStepClick}>
               <Text style={styles.addButtonEmergenteText}>+ Añadir paso</Text>
           </TouchableOpacity>
@@ -270,7 +273,7 @@ const handleStoreNotification = () =>{
       )}
 
       {(!showAddStep && showHideStep) && (
-        <View style={[styles.row, {alignItems: 'center'}]}>
+        <View style={[styles.row, {marginBottom: 15},{alignItems: 'center'}]}>
           <TouchableOpacity style={styles.addButtonEmergentes} onPress={handleHideStepClick}>
               <Text style={styles.addButtonEmergenteText}>+ Ocultar paso</Text>
           </TouchableOpacity>
@@ -283,43 +286,43 @@ const handleStoreNotification = () =>{
         (showAllStep) && (
 
       <View>
-      <View style={styles.row}>
-        <Text style={styles.textItemAnadido}>Nombre Paso</Text>
-        <TextInput style={[styles.input,{fontSize: 10}, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
+      <View style={[styles.row, {marginBottom: 15}]}>
+        <Text style={[styles.textItemAnadido]}>Nombre Paso:</Text>
+        <TextInput style={[styles.input,{fontSize: 12}, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
       </View>
 
       {
         (showMoreFieldsAddStep) && (
           <View>
-            <View style={styles.row}>
+            <View style={[styles.row,{marginBottom: 15}]}>
               <Text style={{fontSize: 15,  translateX: -20 }}>Recoger en:</Text>
-              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Lugar origen" />
+              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 33 }]}]} placeholder="Lugar origen" />
             </View>
 
             <View style={styles.row}>
               <Text style={{fontSize: 15,  translateX: -20 }}>Llevar a:</Text>
-              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Lugar destino" />
+              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 58 }]}]} placeholder="Lugar destino" />
             </View>
 
-            <View style={[styles.row,  {justifyContent: 'center'},{margin: 10}]}>
-              <TouchableOpacity style={styles.addButton}>
+            <View style={[styles.row, {justifyContent: 'center'},{margin: 10}]}>
+              <TouchableOpacity style={[styles.addButton, {marginHorizontal: 10}]}>
                   <Text style={styles.addButtonText}>Folios</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.addButton}>
+              <TouchableOpacity style={[styles.addButton, {marginHorizontal: 10}]}>
                   <Text style={styles.addButtonText}>Lapices</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.addButton}>
+              <TouchableOpacity style={[styles.addButton, {marginHorizontal: 10}]}>
                 <Text style={styles.addButtonText}>Gomas</Text>
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.row, {alignItems: 'center'}, {margin: 5}]}>
-              <Text style={{fontSize: 12}}>Cantidad total: </Text>
-              <View style={[styles.rectangle, {width: 25}, {height: 18}]}>
+            <View style={[styles.row, {alignItems: 'center'}, {marginTop: 10}, {marginBottom:10}]}>
+                <Text style={[{height: 28},{fontSize: 12}]}>Cantidad total: </Text>
+                <View style={[styles.rectangle, {width: 25}, {height: 18}]}>
                 <Text>X</Text>
               </View>
               <Text style={{fontSize: 12}}>  </Text>
-              <Text style={{fontSize: 12}}>Cantidad: </Text>
+              <Text style={[{height: 28},{fontSize: 12}]}>Cantidad a recoger: </Text>
               <TextInput style={[styles.rectangle, {height: 18},{width: 25}]} />
             </View>
 
@@ -409,14 +412,14 @@ const handleStoreNotification = () =>{
 
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Texto Añadido</Text>
-        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
-          style={[
-            styles.image, 
-            {height: 15}, 
-            {width: 15},
-            {transform: [{ translateX: 50 }]}
-          ]}
-        ></Image>
+        <TouchableOpacity>
+          <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+            style={[
+              styles.imageTrash,
+              {transform: [{ translateX: 70 }]}
+            ]}
+          ></Image>
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
@@ -425,14 +428,14 @@ const handleStoreNotification = () =>{
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Pictograma Añadido</Text>
-        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
-          style={[
-            styles.image, 
-            {height: 15}, 
-            {width: 15},
-            {transform: [{ translateX: 30 }]}
-          ]}
-        ></Image>
+        <TouchableOpacity>
+          <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+            style={[
+              styles.imageTrash,
+              {transform: [{ translateX: 32 }]}
+            ]}
+          ></Image>
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
@@ -441,14 +444,14 @@ const handleStoreNotification = () =>{
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Video Añadido</Text>
+        <TouchableOpacity>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
-            styles.image, 
-            {height: 15}, 
-            {width: 15},
-            {transform: [{ translateX: 50 }]}
+            styles.imageTrash,
+            {transform: [{ translateX: 70 }]}
           ]}
         ></Image>
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
@@ -457,14 +460,14 @@ const handleStoreNotification = () =>{
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Imagen Añadido</Text>
+        <TouchableOpacity>
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
-            styles.image, 
-            {height: 15}, 
-            {width: 15},
-            {transform: [{ translateX:  45 }]}
+            styles.imageTrash,
+            {transform: [{ translateX:  59 }]}
           ]}
         ></Image>
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
@@ -490,6 +493,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 10,
   },
   input: {
     borderWidth: 1,
@@ -498,15 +502,8 @@ const styles = StyleSheet.create({
     padding: 2,
     marginBottom: 10,
     transform: [{ translateX: -20 }],
-  },
-  inputFecha: {
-    borderWidth: 1,
-    borderColor: 'grey',
-    borderRadius: 5,
-    padding: 2,
-    marginBottom: 10,
-    transform: [{ translateX: -20 }],
     width: 100,
+    height: 30,
   },
   row: {
     flexDirection: 'row',
@@ -551,6 +548,12 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: 'center',
     borderRadius: 5,
+  },
+  addTypeTask:{
+    borderWidth: 1,
+    backgroundColor: '#808080',
+    padding: 5,
+    alignItems: 'center',
   },
   addButtonDelete: {
     backgroundColor: '#FF0000',
@@ -617,10 +620,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centra el texto verticalmente
     alignItems: 'center', // Centra el texto horizontalmente
     borderWidth: 1, // Grosor del borde
+    marginBottom: 10
   },
   image: {
     width: 50, // Ancho de la imagen
     height: 50, // Altura de la imagen
     resizeMode: 'contain', // Asegura que escale
+  },
+  imageTrash: {
+    width: 15, // Ancho de la imagen
+    height: 15, // Altura de la imagen
   }
 });
