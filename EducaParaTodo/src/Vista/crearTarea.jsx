@@ -1,7 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import Swal from 'sweetalert2';
 
 export default function crearTarea () {
   
@@ -126,34 +127,49 @@ const handlePictoPressEat = (image) => {
 
 };
 
-// Alerta para eliminar
-const handleAlertDelete = () => {
-  Alert.alert(
-    "Título de la Alerta", // Título
-    "Este es el mensaje de la alerta", // Mensaje
-    [
-      // Array de botones
-      {
-        text: "Cancelar",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      { text: "OK", onPress: () => console.log("OK Pressed") }
-    ],
-    { cancelable: false } // No se cierra al tocar fuera del alert
-  );
-}
+const handleDeleteNotification = () =>{
+  Swal.fire({
+    title: '¿Quieres eliminar la tarea?',
+    showDenyButton: true,
+    showCancelButton: false,
+    confirmButtonText: 'Eliminar',
+    denyButtonText: `Cancelar`,
+  }).then((result) => {
 
+    if (result.isConfirmed) {
+      Swal.fire('¡Tarea eliminada!', '', 'success')
+    } else if (result.isDenied) {
+      Swal.fire('Tarea no eliminada', '', 'info')
+    }
+  })
+};
+
+const handleStoreNotification = () =>{
+  Swal.fire({
+    title: '¿Quieres guardar la tarea?',
+    showDenyButton: true,
+    showCancelButton: false,
+    confirmButtonText: 'Guardar',
+    denyButtonText: `Cancelar`,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      Swal.fire('¡Tarea guardada!', '', 'success')
+    } else if (result.isDenied) {
+      Swal.fire('Tarea no guardada', '', 'info')
+    }
+  })
+};
 
     return (
       <View style={styles.container}>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addButtonDelete} onPress={() => Alert.alert("Titulo", "Mensaje")}>
+          <TouchableOpacity style={styles.addButtonDelete} onPress={handleDeleteNotification}>
             <Text style={styles.addButtonText}>Eliminar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.addButtonGuardar}>
+          <TouchableOpacity style={styles.addButtonGuardar} onPress={handleStoreNotification}>
             <Text style={styles.addButtonText}>Guardar</Text>
           </TouchableOpacity>
         </View>
