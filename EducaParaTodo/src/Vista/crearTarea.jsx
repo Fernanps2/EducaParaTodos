@@ -1,8 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button } from 'react-native';
 import Swal from 'sweetalert2';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function crearTarea () {
   
@@ -14,6 +15,8 @@ export default function crearTarea () {
   const [showAddStepAddPict, setShowAddStepAddPict] = useState(false); // Opcion Añadir pictograma en pasos
   const [showAddStepAddVideo, setShowAddStepAddVideo] = useState(false); // Opcion Añadir video en pasos
   const [showAddStepAddImage, setShowAddStepAddImage] = useState(false); // Opcion Añadir imagen en pasos
+  // Variables de campo Lugar cuando es actividad
+  const [showLugar, setShowLugar] = useState(false);
   // Variables añadir Paso cuando es comanda
   const [showMoreFieldsAddStep, setShowMoreFieldsAddStep] = useState(false);
   // Variables para añadir formulario
@@ -21,6 +24,16 @@ export default function crearTarea () {
   const [showHideForm, setHideAddForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [selectedValue, setSelectedValue] = useState('none'); // item seleccionable formulario
+  // Variables para guardar input
+  const [nombreTarea, setNombreTarea] = useState ('');
+  const [inicioTareaFecha, setInicioTareaFecha] = useState ('');
+  const [inicioTareaHora, setInicioTareaHora] = useState ('');
+  const [finTareaFecha, setFinTareaFecha] = useState ('');
+  const [finTareaHora, setFinTareaHora] = useState ('');
+  // añadir hora y fecha a la tarea
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
 
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
@@ -55,6 +68,7 @@ const handleAnadirImagen = () => {
   const handleActividadClick = () => {
   setShowAddStep(true); // This will toggle the visibility
   setShowHideStep(false);
+  setShowLugar(true);
   setShowAllStep(false);
   setShowMoreFieldsAddStep(false);
   setShowAddForm(false); // This will toggle the visibility
@@ -66,6 +80,7 @@ const handleAnadirImagen = () => {
 const handleMatearialesClick = () => {
   setShowAddStep(true); // This will toggle the visibility
   setShowHideStep(false);
+  setShowLugar(false);
   setShowAllStep(false);
   setShowMoreFieldsAddStep(true);
   setShowAddForm(false); // This will toggle the visibility
@@ -77,6 +92,7 @@ const handleMatearialesClick = () => {
 const handleComandaClick = () => {
   setShowAddStep(true); // This will toggle the visibility
   setShowHideStep(false);
+  setShowLugar(false);
   setShowAllStep(false);
   setShowMoreFieldsAddStep(false);
   setShowAddForm(true); // This will toggle the visibility
@@ -129,20 +145,29 @@ const handlePictoPressEat = (image) => {
 
 const handleDeleteNotification = () =>{
   Swal.fire({
-    title: '¿Quieres eliminar la tarea?',
+    title: '¿Quieres borrar la tarea?',
     showDenyButton: true,
     showCancelButton: false,
-    confirmButtonText: 'Eliminar',
+    confirmButtonText: 'Borrar',
     denyButtonText: `Cancelar`,
   }).then((result) => {
 
     if (result.isConfirmed) {
-      Swal.fire('¡Tarea eliminada!', '', 'success')
+      Swal.fire('¡Tarea borrarda!', '', 'success')
     } else if (result.isDenied) {
-      Swal.fire('Tarea no eliminada', '', 'info')
+      Swal.fire('Tarea no borrada', '', 'info')
     }
   })
 };
+
+// Borramos toda la información cuando pulsamos borrar
+const handleDeleteInformation = () => {
+  setNombreTarea('');
+  setInicioTareaFecha('');
+  setInicioTareaHora('');
+  setFinTareaFecha('');
+  setFinTareaHora('');
+}
 
 const handleStoreNotification = () =>{
   Swal.fire({
@@ -164,12 +189,32 @@ const handleStoreNotification = () =>{
   })
 };
 
+// Funciones para fecha y horalkasjdlkjsañfjdsaklñfjdslakfjñdlsakjfñdslkafjsdñalkfjdñ
+const onChange = (event, selectedDate) => {
+  const currentDate = selectedDate || date;
+  //setShow(false);
+  setDate(currentDate);
+};
+
+const showMode = (currentMode) => {
+  setShow(true);
+  setMode(currentMode);
+};
+
+const showDatepicker = () => {
+  showMode('date');
+};
+
+const showTimepicker = () => {
+  showMode('time');
+};
+
     return (
       <View style={styles.container}>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addButtonDelete} onPress={handleDeleteNotification}>
-            <Text style={styles.addButtonText}>Eliminar</Text>
+          <TouchableOpacity style={styles.addButtonDelete} onPress={[handleDeleteNotification, handleDeleteInformation]}>
+            <Text style={styles.addButtonText}>Borrar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.addButtonGuardar} onPress={handleStoreNotification}>
@@ -180,31 +225,37 @@ const handleStoreNotification = () =>{
       <Text style={styles.title}>Crear Tarea</Text>
 
       <Text style={[styles.text,{position: 'relative', left: 0}]}>Nombre Tarea</Text>
-      <TextInput style={[styles.input, {position: 'relative', left: -35}]} placeholder="Elija Nombre" />
-    
+      <TextInput style={[styles.input, {width: 200}, {position: 'relative', left: 12}]} 
+        placeholder="Elija Nombre" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
+      />
+
       <Text style={[styles.text, {position: 'relative', left: -10}]}>Inicio Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15}]}>
-        <TextInput
-          style={styles.input}
-          placeholder="(dd/mm/aaaa)"
-        />
+        <Button 
+          onPress={showDatepicker}
+          title='Fecha' 
 
-        <TextInput
-          style={styles.input}
-          placeholder="(HH:MM)"
-        />
+          //value={inicioTareaFecha}
+       />
+
+      <Button title='Hora' onPress={showTimepicker}
+          
+          //value={inicioTareaHora}
+       />
       </View>
 
       <Text style={[styles.text, {position: 'relative', left: -15}]}>Fin Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15}]}>
-        <TextInput
-          style={styles.input}
-          placeholder="(dd/mm/aaaa)"
+        <Button title='Fecha' onPress={() => showMode=('date')}
+          onChangeText={setFinTareaFecha}
+          value={finTareaFecha}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="(HH:MM)"
+        <Button title='Hora' onPress={() => showMode=('time')}
+          onChangeText={setFinTareaHora}
+          value={finTareaHora}
         />
       </View>
 
@@ -259,6 +310,15 @@ const handleStoreNotification = () =>{
           </View>
         </View>
       )}
+
+      {
+        (showLugar) && (
+          <View style={[styles.row,{marginTop: 15}]}>
+              <Text style={{fontSize: 15}}>Lugar:</Text>
+              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 47 }]}]} placeholder="Elige Lugar" />
+          </View>
+        )
+      }
 
       {(showAddStep && !showHideStep) && (
         <View style={[styles.row ,{marginBottom: 15},{alignItems: 'center'}]}>
@@ -373,9 +433,15 @@ const handleStoreNotification = () =>{
       {(showAddStepAddPict) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
-            <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
-            <Image source={require('../../Imagenes/CrearTarea/eat.png')} style={styles.image}></Image>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/eat.png')} style={styles.image}></Image>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
@@ -387,8 +453,12 @@ const handleStoreNotification = () =>{
       {(showAddStepAddVideo) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <Image source={require('../../Imagenes/CrearTarea/videoMicroondas.png')} style={styles.image}></Image>
-            <Image source={require('../../Imagenes/CrearTarea/videoOrdenarHabitacion.png')} style={styles.image}></Image>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/videoMicroondas.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/videoOrdenarHabitacion.png')} style={styles.image}></Image>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
@@ -400,8 +470,12 @@ const handleStoreNotification = () =>{
       {(showAddStepAddImage) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <Image source={require('../../Imagenes/CrearTarea/fregarSuelo.png')} style={styles.image}></Image>
-            <Image source={require('../../Imagenes/CrearTarea/habitacionOrdenada.png')} style={styles.image}></Image>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/fregarSuelo.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/habitacionOrdenada.png')} style={styles.image}></Image>
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
