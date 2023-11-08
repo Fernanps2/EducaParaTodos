@@ -388,7 +388,11 @@ const handleStoreNotification = () =>{
       }
 
       {(showAddStepAddText) && (
-        <View>
+        <View>Date:   Fri Oct 27 13:05:14 2023 +0200
+
+        Update README.md
+        
+        Finalizacion del README
           <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
           <TextInput 
             multiline 

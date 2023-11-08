@@ -1,10 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, ImageBackground, Button } from 'react-native';
-import PantallaPrincipal from './pantallaPrincipal';
 
 
- const Main = ({ navigation }) => {
+ const HomeEducador = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -12,19 +11,17 @@ import PantallaPrincipal from './pantallaPrincipal';
         style={styles.image}>
         <Text style={styles.text}>EducaParaTodos</Text>
       </ImageBackground>
-      <Button title="inicio"
-        onPress={() => navigation.navigate('pantallaPrincipal')} />
-      {/* <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <Button title="Añadir alumno" 
           onPress={() => navigation.navigate('aniadirAlumno')} />
         <Button title="Crear Tarea" 
           onPress={() => navigation.navigate('crearTarea')} />
-      </View> */}
+      </View>
     </View>
   );
 }
 
-export default Main;
+export default HomeEducador;
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonContainer: {
+  buttonContainer:{
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '40%',
