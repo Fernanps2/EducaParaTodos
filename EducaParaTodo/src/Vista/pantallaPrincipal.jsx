@@ -2,8 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, FlatList,ScrollView } from 'react-native';
 import datosAlumnos from '../datosPruebas/datosAlumnos';
 import DatosAlumnos from './DatosAlumnos';
+import alumnos from '../Modelo/alumno';
 
 export default function PantallaPrincipal({ navigation }) {
+
+  const datos = alumnos();  // Llamamos a la función para obtener los datos
+  const alumnosArray = Object.values(datos);   // Convertimos los datos un array
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -11,12 +16,14 @@ export default function PantallaPrincipal({ navigation }) {
       </View>
 
       <View style={styles.barraBotones}>
-        <Button title="Inicio profesor"> </Button>
-        <Button title="Inicio admin"> </Button>
+        <Button title="Inicio profesor"
+          onPress={() => navigation.navigate('LoginEducador', {tipo: 'profesor'})} />
+        <Button title="Inicio admin"
+          onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
-        {datosAlumnos.map((alumno, index) => (
+        {alumnosArray.map((alumno, index) => (
           <View key={index} style={styles.elementoList}>
             <DatosAlumnos alumno={alumno} navigation={navigation} />
           </View>

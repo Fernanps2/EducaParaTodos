@@ -5,6 +5,7 @@ import DatosList from './DatosAlumnos';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el icono FontAwesome
 
 const Tareas = ({ route }) => {
+    
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
     return (
         <ScrollView style={styles.container}>
