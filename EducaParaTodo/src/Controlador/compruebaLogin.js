@@ -6,7 +6,7 @@ import profesores from '../Modelo/profesor'
 import administradores from '../Modelo/administrador'
 
 export default function compruebaLogin ({username, password, tipo}) {
-    const {alumno} = alumnos();
+    const alumno = alumnos();
     const {profesor} = profesores();
     const {administrador} = administradores()
 
@@ -34,7 +34,7 @@ export default function compruebaLogin ({username, password, tipo}) {
                 if (username == administrador[i].username && password == administrador[i].password) {
                     encontrado = true;
                     
-                    token = profesor[i].jwt;
+                    token = administrador[i].jwt;
                 }
             }
         }

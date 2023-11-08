@@ -10,7 +10,7 @@ export default function useUser() {
     }, [setJWT])
 
     const logout = useCallback(() => {
-        setJWT(null)
+        setJWT(null);
     }, [setJWT])
 
     return {

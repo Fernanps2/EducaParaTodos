@@ -1,7 +1,6 @@
 import React from 'react'
 import {Image, Button} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-//import cierraSesion from '../Controlador/cierraSesion';
 import useUser from '../Controlador/useUser';
 
 export function CerrarSesion () {
