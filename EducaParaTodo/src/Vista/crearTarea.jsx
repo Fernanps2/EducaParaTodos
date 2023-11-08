@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+
 
 export default function crearTarea () {
   
@@ -27,6 +27,8 @@ export default function crearTarea () {
   const [nombreTarea, setNombreTarea] = useState ('');
   // Variables para fechay hora
   const [date, setDate] = useState(new Date());
+  //Variables para logo de guardar
+  const [guardando, setGuardando] = useState(false);
 
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
@@ -146,22 +148,64 @@ const handleDeleteInformation = () => {
   //setFinTareaHora('');
 }
 
-    return (
-      <View style={styles.container}>
+const guardarDatos = () => {
+  setGuardando(true);
+  // Simula una operación de guardado que tarda 2 segundos.
+  setTimeout(() => {
+    setGuardando(false);
+    // Aquí iría tu lógica de guardado real
+  }, 2000);
+};
 
+const showAlertDelete = () => {
+  Alert.alert(
+    "¿Quiere borrar?", // Título
+    "Pulsa una opción", // Mensaje
+    [
+      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+      { text: "Confirmar", onPress: () => console.log("Aceptar presionado") }
+    ],
+    { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+  );
+};
+
+const showAlertStore = () => {
+  Alert.alert(
+    "¿Quiere guardar?", // Título
+    "Pulsa una opción", // Mensaje
+    [
+      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+      { text: "Confirmar", onPress: (guardarDatos)}
+    ],
+    { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+  );
+};
+
+    return (
+      <ScrollView style={styles.ScrollView}>
+      <View style={styles.container}>
+      
         <View style={[styles.buttonContainer]}>
-          <TouchableOpacity style={[styles.addButtonDelete, {marginHorizontal: 50}]} >
+          <TouchableOpacity style={[styles.addButtonDelete, {marginHorizontal: 50}]} onPress={showAlertDelete}>
             <Text style={styles.addButtonText}>Borrar</Text>
           </TouchableOpacity>
+          
+          {guardando && (
+            
+            <ActivityIndicator size="large" color="#0000ff" />
+            
+            )
+          }
 
-          <TouchableOpacity style={[styles.addButtonGuardar, {marginHorizontal: 50}]}>
+        <TouchableOpacity style={[styles.addButtonGuardar, {marginHorizontal: 50}]} onPress={showAlertStore}>
             <Text style={styles.addButtonText}>Guardar</Text>
           </TouchableOpacity>
+
         </View>
 
       <Text style={styles.title}>Crear Tarea</Text>
 
-      <Text style={[styles.text,{position: 'relative', left: 0}]}>Nombre Tarea</Text>
+      <Text style={[styles.text]}>Nombre Tarea</Text>
       <TextInput style={[styles.input, {width: 200}, {position: 'relative', left: 12}]} 
         placeholder="Elija Nombre" 
         onChangeText={setNombreTarea}
@@ -169,17 +213,35 @@ const handleDeleteInformation = () => {
       />
 
       <Text style={[styles.text, {position: 'relative', left: -10}]}>Inicio Tarea</Text>
-      <View style={[styles.row, {position: 'relative', left: 15, marginBottom: 15, marginTop: 10}]}>
-        
+      <View style={[styles.row, {position: 'relative', left: 15, marginTop: 10}]}>
+      <TextInput style={[styles.input, {width: 100}]} 
+        placeholder="dd/mm/aaaa" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
+      />
+      <TextInput style={[styles.input, {width: 100}]} 
+        placeholder="hh/mm" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
+      />
       </View>
 
       <Text style={[styles.text, {position: 'relative', left: -15}]}>Fin Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15, marginBottom: 15, marginTop: 10}]}>
-        
+      <TextInput style={[styles.input, {width: 100}]} 
+        placeholder="dd/mm/aaaa" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
+      />
+      <TextInput style={[styles.input, {width: 100}]} 
+        placeholder="hh/mm" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
+      />
       </View>
 
       <View style={[styles.row, {marginBottom: 5}]}>
-        <Text style={styles.textTipoTarea}>Tipo Tarea</Text>
+        <Text style={[{marginHorizontal: 20}]}>Tipo</Text>
         <TouchableOpacity style={[styles.addTypeTask]}>
           <TouchableOpacity onPress={handleActividadClick}>
             <Text style={styles.addButtonText}>Actividad</Text>
@@ -200,7 +262,7 @@ const handleDeleteInformation = () => {
       {showAddForm && (
           <TouchableOpacity style={[styles.addButtonEmergentes, {position: 'relative', left: 10}]}>
             <TouchableOpacity onPress={handleAddFormClick}>
-              <Text style={styles.addButtonEmergenteText}>+ Añadir Formulario</Text>
+              <Text style={[styles.addButtonEmergenteText,{color: 'green'}]}>+ Añadir Formulario</Text>
             </TouchableOpacity>
           </TouchableOpacity>
       )}
@@ -213,8 +275,8 @@ const handleDeleteInformation = () => {
             </TouchableOpacity>
           </TouchableOpacity>
 
-          <View style={styles.row}>
-            <Text style={styles.textFormulario}>Formulario</Text>
+          <View style={[styles.row, {alignItems: 'center'}]}>
+            <Text >Formulario: </Text>
             <Picker
               style={styles.picker}
               selectedValue={selectedValue}
@@ -233,8 +295,8 @@ const handleDeleteInformation = () => {
       {
         (showLugar) && (
           <View style={[styles.row,{marginTop: 15}]}>
-              <Text style={{fontSize: 15}}>Lugar:</Text>
-              <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 47 }]}]} placeholder="Elige Lugar" />
+              <Text style={[{marginHorizontal: 50}]}>Lugar: </Text>
+              <TextInput style={[styles.input, {width: 130}]} placeholder="Elige Lugar" />
           </View>
         )
       }
@@ -266,20 +328,27 @@ const handleDeleteInformation = () => {
 
       <View>
       <View style={[styles.row, {marginBottom: 15}]}>
-        <Text style={[styles.textItemAnadido]}>Nombre Paso:</Text>
-        <TextInput style={[styles.input,{fontSize: 12}, {width: 130},{transform: [{ translateX: 20 }]}]} placeholder="Elija Nombre" />
+        <Text>Nombre_Paso: </Text>
+        <TextInput style={[styles.input,
+          {fontSize: 12}, 
+          {width: 130}, 
+          {transform: [
+            {translateX: 20},
+          ]}
+          ]} 
+          placeholder="Elija Nombre" />
       </View>
-
+       
       {
         (showMoreFieldsAddStep) && (
           <View>
             <View style={[styles.row,{marginBottom: 15}]}>
-              <Text style={{fontSize: 15,  translateX: -20 }}>Recoger en:</Text>
+              <Text style={{fontSize: 15,  translateX: -20 }}>Recoger_en: </Text>
               <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 33 }]}]} placeholder="Lugar origen" />
             </View>
 
             <View style={styles.row}>
-              <Text style={{fontSize: 15,  translateX: -20 }}>Llevar a:</Text>
+              <Text style={{fontSize: 15,  translateX: -20 }}>Llevar_a: </Text>
               <TextInput style={[styles.input, {width: 130},{transform: [{ translateX: 58 }]}]} placeholder="Lugar destino" />
             </View>
 
@@ -295,14 +364,16 @@ const handleDeleteInformation = () => {
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.row, {alignItems: 'center'}, {marginTop: 10}, {marginBottom:10}]}>
+            <View style={[styles.row, {alignItems: 'center'}, {marginTop: 10}, {marginBottom:5}]}>
                 <Text style={[{height: 28},{fontSize: 12}]}>Cantidad total: </Text>
-                <View style={[styles.rectangle, {width: 25}, {height: 18}]}>
-                <Text>X</Text>
-              </View>
-              <Text style={{fontSize: 12}}>  </Text>
-              <Text style={[{height: 28},{fontSize: 12}]}>Cantidad a recoger: </Text>
-              <TextInput style={[styles.rectangle, {height: 18},{width: 25}]} />
+                <View style={styles.smallRectangle}>
+                  <Text style={[{fontSize: 10}]}>X</Text>
+                </View>
+            </View>
+            
+            <View style={[styles.row, {alignItems: 'center'}, {marginTop: 5}, {marginBottom:10}]}>
+            <Text style={[{height: 28},{fontSize: 12}]}>Cantidad a recoger: </Text>
+              <TextInput style={styles.smallRectangle}/>
             </View>
 
           </View>
@@ -327,17 +398,13 @@ const handleDeleteInformation = () => {
       {
       (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage) && (
         <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
-           <Text>Elija que item añadir</Text>
+           <Text style={[{alignItems: 'center'}]}>Elija que item añadir </Text>
         </View>
       )
       }
 
       {(showAddStepAddText) && (
-        <View>Date:   Fri Oct 27 13:05:14 2023 +0200
-
-        Update README.md
-        
-        Finalizacion del README
+        <View>
           <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
           <TextInput 
             multiline 
@@ -347,9 +414,19 @@ const handleDeleteInformation = () => {
           />
           </View>
 
-          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 100}, {transform: [{ translateY: 73}]}]}>
-            <Text style={[styles.addButtonEmergenteText, {color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Texto</Text>
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Texto
+            </Text>
           </TouchableOpacity>
+          
+          
         </View>
       )}
 
@@ -367,8 +444,16 @@ const handleDeleteInformation = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
-            <Text style={[styles.addButtonEmergenteText, {fontSize: 8,},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Pictograma</Text>
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Pictograma
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -384,8 +469,16 @@ const handleDeleteInformation = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
-            <Text style={[styles.addButtonEmergenteText, {fontSize: 10},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Video</Text>
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Video
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -401,8 +494,16 @@ const handleDeleteInformation = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={[styles.addButtonGuardar, {height: 18},{width: 105} ,{transform: [{ translateY: 73}]}]}>
-            <Text style={[styles.addButtonEmergenteText, {fontSize: 10},{color: 'white'},{transform: [{ translateY: -8 }]}]}>Guardar Imagen</Text>
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Video
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -419,8 +520,8 @@ const handleDeleteInformation = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-        <Text>Ninguno</Text>
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
@@ -435,8 +536,8 @@ const handleDeleteInformation = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-        <Text>Ninguno</Text>
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
@@ -451,8 +552,8 @@ const handleDeleteInformation = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-        <Text>Ninguno</Text>
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
@@ -467,16 +568,20 @@ const handleDeleteInformation = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.rectangle, {width: 190}, {height: 60}, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-        <Text>Ninguno</Text>
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
       </View>
       </View>
       )}
     </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  ScrollView: {
+    flex: 1
+  },
   container: {
     flex: 1, 
     alignItems: 'center',
@@ -497,7 +602,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 2,
     marginBottom: 10,
-    transform: [{ translateX: -20 }],
     width: 100,
     height: 30,
   },
@@ -510,7 +614,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   textTipoTarea:{
-    transform: [{ translateX: -10 }],
     fontSize: 15,
   },
   textFormulario:{
@@ -596,15 +699,13 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 30, // Altura del picker
-    width: 120, // Ancho del picker
-    margin: 0, // Margen alrededor del picker
-    padding: 5, // Relleno interno del picker
-    borderWidth: 1, // Grosor del borde
-    borderColor: 'gray', // Color del borde
+    width: 180, // Ancho del picker
+    borderWidth: 15, // Grosor del borde
+    borderColor: '#000000', // Color del borde
     borderRadius: 4, // Redondeo de las esquinas
   },
   rectangle: {
-    width: 219, // Ancho del rectángulo
+    width: 232, // Ancho del rectángulo
     height: 100, // Altura del rectángulo
     backgroundColor: 'white', // Color de fondo del rectángulo
     justifyContent: 'center', // Centra el texto verticalmente
@@ -612,13 +713,39 @@ const styles = StyleSheet.create({
     borderWidth: 1, // Grosor del borde
     marginBottom: 10
   },
+  smallRectangle: {
+    width: 25, // Ancho del rectángulo
+    height: 18, // Altura del rectángulo
+    backgroundColor: 'white', // Color de fondo del rectángulo
+    justifyContent: 'center', // Centra el texto verticalmente
+    alignItems: 'center', // Centra el texto horizontalmente
+    textAlign: 'center',
+    paddingVertical: 0,
+    borderWidth: 1, // Grosor del borde
+    marginBottom: 10
+  },
+  rectangleChoose:
+  {
+    width: 190, // Ancho del rectángulo
+    height: 60, // Altura del rectángulo
+    backgroundColor: 'white', // Color de fondo del rectángulo
+    justifyContent: 'space-around', // Centra el texto verticalmente
+    alignItems: 'center', // Centra el texto horizontalmente
+    flexDirectio: 'row',
+    borderWidth: 1, // Grosor del borde
+    marginBottom: 10,
+    transform: [
+      {translateY: -4},
+      {translateX: 25},
+    ]
+  },
   image: {
     width: 50, // Ancho de la imagen
     height: 50, // Altura de la imagen
     resizeMode: 'contain', // Asegura que escale
   },
   imageTrash: {
-    width: 15, // Ancho de la imagen
-    height: 15, // Altura de la imagen
+    width: 20, // Ancho de la imagen
+    height: 20, // Altura de la imagen
   }
 });
