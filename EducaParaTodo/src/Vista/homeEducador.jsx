@@ -12,8 +12,8 @@ import { StyleSheet, Text, View, ImageBackground, Button } from 'react-native';
         <Text style={styles.text}>EducaParaTodos</Text>
       </ImageBackground>
       <View style={styles.buttonContainer}>
-        <Button title="Añadir alumno" 
-          onPress={() => navigation.navigate('aniadirAlumno')} />
+        {/* <Button title="Añadir alumno" 
+          onPress={() => navigation.navigate('aniadirAlumno')} /> */}
         <Button title="Crear Tarea" 
           onPress={() => navigation.navigate('crearTarea')} />
       </View>

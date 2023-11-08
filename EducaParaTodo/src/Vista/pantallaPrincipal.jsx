@@ -19,7 +19,9 @@ export default function PantallaPrincipal({ navigation }) {
         <Button title="Inicio profesor"
           onPress={() => navigation.navigate('LoginEducador', {tipo: 'profesor'})} />
         <Button title="Inicio admin"
-          onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
+          // onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
+          onPress={() => navigation.navigate('LoginEducador', {tipo: 'admin'})} />
+
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>

@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet } from 'react-native';
-import HomeEducador from './homeEducador';
+import useUser from '../Controlador/useUser'
 
 const LoginScreen = ({ route, navigation} ) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const tipo = route.params.tipo;
+  const {login, isLogged} = useUser();
 
   const handleLogin = () => {
-    // Aquí puedes agregar la lógica de autenticación, como hacer una solicitud a un servidor, validar el usuario y contraseña, etc.
-    if (username && password) {
-      // Realizar la autenticación aquí
-      console.log('Usuario:', username);
-      console.log('Contraseña:', password);
-    } else {
-      console.log('Por favor, ingrese usuario y contraseña');
-    }
+    login(username, password, tipo);
+
+    if (isLogged && tipo == 'profesor')
+      alert('Eres profesor');
+    else if (isLogged && tipo == 'administrador')
+      alert('Eres admin')
+    else
+      alert('Quién sos?');
   };
 
   return (
@@ -36,18 +37,15 @@ const LoginScreen = ({ route, navigation} ) => {
           onChangeText={text => setPassword(text)}
         />
         <View style={styles.containerButton}>
-          <Button style={styles.boton} title="Entrar" onPress={() => {
-                                                  if (tipo == 'profesor'){
-                                                    // return alert('Eres profesor');
-                                                    navigation.navigate('HomeEducador');
-                                                  }
-                                                  else if (tipo == 'administrador')
-                                                    return alert('Eres administrador');
-                                                  else  
-                                                    return alert('El tipo es ', tipo);
-                                                }
+          <Button title="Entrar" onPress={() => {
+            // handleLogin();
+            if(tipo == "profesor")
+              navigation.navigate('HomeEducador')
+            else if(tipo == "admin")
+              navigation.navigate('HomeAdmin');
+          }
                                           } />
-          <Button style={styles.boton} title="Salir" onPress={() => navigation.goBack()}/>
+          <Button title="Salir" onPress={() => navigation.goBack()}/>
         </View>
       </View>
     </View>
@@ -74,9 +72,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 10,
-  },
-  boton:{
-    marginHorizontal: 10,
   },
   texto: {
     alignItems: 'left',
