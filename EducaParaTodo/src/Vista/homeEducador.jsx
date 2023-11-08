@@ -1,52 +1,73 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground, Button } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
+export default function HomeAdmin ({ navigation }) {
+    return (
+      <View style={styles.container}>
+      <Text style={styles.title}>EducaParaTodos</Text>
 
- const HomeEducador = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('../../Imagenes/DiseñoEducaParaTodos.png')}
-        style={styles.image}>
-        <Text style={styles.text}>EducaParaTodos</Text>
-      </ImageBackground>
-      <View style={styles.buttonContainer}>
-        {/* <Button title="Añadir alumno" 
-          onPress={() => navigation.navigate('aniadirAlumno')} /> */}
-        <Button title="Crear Tarea" 
-          onPress={() => navigation.navigate('crearTarea')} />
+      <View style={styles.profileContainer}>
+        <Image
+          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+          style={styles.profileImage}
+        />
+        <Text style={styles.roleText}>Administrador</Text>
       </View>
-    </View>
-  );
-}
 
-export default HomeEducador;
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('crearTarea')}>
+        <Text style={styles.buttonText}>Crear Tarea</Text>
+      </TouchableOpacity>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonContainer:{
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '40%',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'black',
-  },
-  text: {
-    fontSize: 50,
-    paddingTop: 30,
-    alignItems: 'center',
-    fontWeight: 'bold',
-  },
-});
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('pantallaAlumnos')}>
+        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
+      </TouchableOpacity>
+
+      </View>
+
+    )};
+
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'white' // Cambiar si es necesario
+      },
+      title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginVertical: 20,
+      },
+      profileContainer: {
+        alignItems: 'center',
+        marginBottom: 30,
+      },
+      profileImage: {
+        width: 100, // Ajustar según tus necesidades
+        height: 100, // Ajustar según tus necesidades
+        borderRadius: 50, // Esto hará que la imagen sea redonda
+        marginBottom: 10,
+        backgroundColor: 'grey' // Color temporal para simular la imagen
+      },
+      roleText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 20,
+      },
+      button: {
+        backgroundColor: 'blue', // Color de los botones
+        padding: 15,
+        width: '100%', // Ajustar si es necesario
+        borderRadius: 5,
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      buttonText: {
+        color: 'white',
+        fontSize: 18,
+      },
+    });
