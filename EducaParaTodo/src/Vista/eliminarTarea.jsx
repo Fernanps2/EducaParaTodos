@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import Swal from 'sweetalert2';
 
 // Simulación de datos de tareas
 const mockTasks = [

@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import Swal from 'sweetalert2';
 
 export default function AniadirAlumno () {
 
