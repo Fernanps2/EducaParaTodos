@@ -2,9 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button } from 'react-native';
-import Swal from 'sweetalert2';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-native-date-picker';
 
 export default function crearTarea () {
   
@@ -28,7 +26,7 @@ export default function crearTarea () {
   // Variables para guardar input
   const [nombreTarea, setNombreTarea] = useState ('');
   // Variables para fechay hora
-  const [startDate, setStartDate] = useState(new Date());
+  const [date, setDate] = useState(new Date());
 
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
@@ -138,27 +136,6 @@ const handlePictoPressEat = (image) => {
 
 };
 
-const handleDeleteNotification = () =>{
-  Swal.fire({
-    title: '¿Quieres borrar la tarea?',
-    showDenyButton: true,
-    showCancelButton: false,
-    confirmButtonText: 'Borrar',
-    denyButtonText: `Cancelar`,
-  }).then((result) => {
-
-    if (result.isConfirmed) {
-      Swal.fire('¡Tarea borrarda!', '', 'success');
-      handleDeleteInformation ();
-    } else if (result.isDenied) {
-      Swal.fire('Tarea no borrada', '', 'info');
-    }
-  }).finally(() => {
-    // Restablecer desplazamiento en todo el documento
-    document.documentElement.style.overflow = 'auto';
-    document.body.style.overflow = 'auto';
-  })
-};
 
 // Borramos toda la información cuando pulsamos borrar
 const handleDeleteInformation = () => {
@@ -169,35 +146,15 @@ const handleDeleteInformation = () => {
   //setFinTareaHora('');
 }
 
-const handleStoreNotification = () =>{
-  Swal.fire({
-    title: '¿Quieres guardar la tarea?',
-    showDenyButton: true,
-    showCancelButton: false,
-    confirmButtonText: 'Guardar',
-    denyButtonText: `Cancelar`,
-  }).then((result) => {
-        if (result.isConfirmed) {
-      Swal.fire('¡Tarea guardada!', '', 'success')
-    } else if (result.isDenied) {
-      Swal.fire('Tarea no guardada', '', 'info')
-    }
-   }).finally(() => {
-    // Restablecer desplazamiento en todo el documento
-    document.documentElement.style.overflow = 'auto';
-    document.body.style.overflow = 'auto';
-  })
-};
-
     return (
       <View style={styles.container}>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.addButtonDelete} onPress={handleDeleteNotification}>
+        <View style={[styles.buttonContainer]}>
+          <TouchableOpacity style={[styles.addButtonDelete, {marginHorizontal: 50}]} >
             <Text style={styles.addButtonText}>Borrar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.addButtonGuardar} onPress={handleStoreNotification}>
+          <TouchableOpacity style={[styles.addButtonGuardar, {marginHorizontal: 50}]}>
             <Text style={styles.addButtonText}>Guardar</Text>
           </TouchableOpacity>
         </View>
@@ -213,24 +170,12 @@ const handleStoreNotification = () =>{
 
       <Text style={[styles.text, {position: 'relative', left: -10}]}>Inicio Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15, marginBottom: 15, marginTop: 10}]}>
-        <ReactDatePicker
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          timeInputLabel="Time:"
-          dateFormat="MM/dd/yyyy h:mm aa"
-          showTimeInput
-        />
+        
       </View>
 
       <Text style={[styles.text, {position: 'relative', left: -15}]}>Fin Tarea</Text>
       <View style={[styles.row, {position: 'relative', left: 15, marginBottom: 15, marginTop: 10}]}>
-        <ReactDatePicker
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          timeInputLabel="Time:"
-          dateFormat="MM/dd/yyyy h:mm aa"
-          showTimeInput
-        />
+        
       </View>
 
       <View style={[styles.row, {marginBottom: 5}]}>
@@ -533,8 +478,7 @@ const handleStoreNotification = () =>{
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,  
-    justifyContent: 'center',
+    flex: 1, 
     alignItems: 'center',
     padding: 10,
   },
@@ -593,7 +537,7 @@ const styles = StyleSheet.create({
     // Asumiendo que quieres que los botones estén uno al lado del otro
     flexDirection: 'row',
     // Ajusta el espacio como sea necesario
-    marginBottom: 50,
+    marginBottom: 15,
   },
   addButton: {
     backgroundColor: '#808080',
@@ -613,9 +557,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     width: 60,
-    position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: -100 }],
   },
   addButtonGuardar: {
     backgroundColor: '#0000FF',
@@ -623,9 +564,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     width: 60,
-    position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: 25 }],
   },
   addButtonEmergentes: {
     padding: 5,
