@@ -12,11 +12,11 @@ const LoginScreen = ({ route, navigation} ) => {
     login(username, password, tipo);
 
     if (isLogged && tipo == 'profesor')
-      alert('Eres profesor');
+      navigation.navigate('HomeEducador')
     else if (isLogged && tipo == 'administrador')
-      alert('Eres admin')
+      navigation.navigate('HomeAdmin');
     else
-      alert('Quién sos?');
+      alert('Usuario y contraseña inválidos');
   };
 
   return (
@@ -38,11 +38,7 @@ const LoginScreen = ({ route, navigation} ) => {
         />
         <View style={styles.containerButton}>
           <Button title="Entrar" onPress={() => {
-            // handleLogin();
-            if(tipo == "profesor")
-              navigation.navigate('HomeEducador')
-            else if(tipo == "admin")
-              navigation.navigate('HomeAdmin');
+            handleLogin();
           }
                                           } />
           <Button title="Salir" onPress={() => navigation.goBack()}/>

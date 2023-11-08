@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import DatosList from './DatosAlumnos';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el icono FontAwesome
+import { CerrarSesion } from './cerrarSesion';
 
 const Tareas = ({ route, navigation}) => {
     
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
     return (
         <ScrollView style={styles.container}>
+            <CerrarSesion/>
             <Text>Tareas de {usuario.nombre}</Text>
             <View style={styles.caja}>
                 <Text style={styles.titulo}> TAREAS PENDIENTES:</Text>

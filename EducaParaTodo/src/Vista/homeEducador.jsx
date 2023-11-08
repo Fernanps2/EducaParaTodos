@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { CerrarSesion } from './cerrarSesion';
 
 export default function HomeAdmin ({ navigation }) {
     return (
       <View style={styles.container}>
       <Text style={styles.title}>EducaParaTodos</Text>
+      <CerrarSesion/>
 
       <View style={styles.profileContainer}>
         <Image

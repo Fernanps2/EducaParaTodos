@@ -16,7 +16,7 @@ export function CerrarSesion () {
             title='Cerrar Sesion' 
             onPress={() => {
                 handleLogout();
-                navigation.navigate('HomeLogin');
+                navigation.navigate('pantallaPrincipal');
             }}>
                 <Image src={require('../../Imagenes/salirIcon.png')}></Image>
         </Button>

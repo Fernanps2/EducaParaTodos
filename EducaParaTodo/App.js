@@ -20,6 +20,8 @@ import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import RecogerLosPlatos from './Imagenes/verTarea/recogerlosplatos.png';
 import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
 import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
+//Contexto
+import {UserContextProvider} from './src/Controlador/userContext'
 
 // Creamos una instancia del stack
 const Stack = createStackNavigator();
@@ -48,33 +50,35 @@ const PASOS = [
 
 export default function App() {
   return (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="Inicio">
-      <Stack.Screen name="Inicio" component={Main} />
-      <Stack.Screen name="pantallaPrincipal" component={PantallaPrincipal} />
-      <Stack.Screen name="Tareas" component={Tareas} />
-      <Stack.Screen name="LoginEducador" component={LoginScreen} />
-      <Stack.Screen name="LoginAlumno" component={LoginScreenAlumno}/>
-      <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
-      <Stack.Screen name="crearTarea" component={CrearTarea} />
-      <Stack.Screen name="HomeEducador" component={HomeEducador} />
-      <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
-      <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
-      <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
-      <Stack.Screen name="pantallaDatos" component={PantallaDatos} />
-      <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
-      <Stack.Screen name="verTareaPictogramas">
-            {() => (
-              <VerTareaPictogramas
-                nombreTarea={nombTarea}
-                descripcion={descrip}
-                pasos={PASOS}
-              />
-            )}
-          </Stack.Screen>      
-    <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
-    </Stack.Navigator>
-  </NavigationContainer>
+    <UserContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Inicio">
+          <Stack.Screen name="Inicio" component={Main} />
+          <Stack.Screen name="pantallaPrincipal" component={PantallaPrincipal} />
+          <Stack.Screen name="Tareas" component={Tareas} />
+          <Stack.Screen name="LoginEducador" component={LoginScreen} />
+          <Stack.Screen name="LoginAlumno" component={LoginScreenAlumno}/>
+          <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
+          <Stack.Screen name="crearTarea" component={CrearTarea} />
+          <Stack.Screen name="HomeEducador" component={HomeEducador} />
+          <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
+          <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
+          <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
+          <Stack.Screen name="pantallaDatos" component={PantallaDatos} />
+          <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
+          <Stack.Screen name="verTareaPictogramas">
+                {() => (
+                  <VerTareaPictogramas
+                    nombreTarea={nombTarea}
+                    descripcion={descrip}
+                    pasos={PASOS}
+                  />
+                )}
+              </Stack.Screen>      
+        <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContextProvider>
   );
 }
 

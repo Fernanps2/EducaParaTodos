@@ -94,15 +94,15 @@ const LoginScreenAlumno = ({ route, navigation }) => {
     login(username, password, "alumno");
 
     if (isLogged)
-      alert('Eres alumno');
+      navigation.navigate('Tareas', {usuario:alumno})
     else
-      alert('Quién sos?');
+      alert('El usuario o contraseña es inválido');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>EducaParaTodos</Text>
-      {<CerrarSesion/>
+      {//<CerrarSesion/>
       }
       <View style={styles.container}>
         <Text style={styles.text}>Usuario</Text>
@@ -116,8 +116,8 @@ const LoginScreenAlumno = ({ route, navigation }) => {
         />
         <View style={styles.containerButton}>
           <Button title="Entrar" onPress={() => {
-            // handleLogin();
-            navigation.navigate('Tareas', {usuario:alumno})
+             handleLogin();
+            //navigation.navigate('Tareas', {usuario:alumno})
           }
                                           } />
           <Button title="Salir" onPress={() => navigation.goBack()}/>
