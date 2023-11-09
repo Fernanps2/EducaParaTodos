@@ -37,11 +37,11 @@ const LoginScreen = ({ route, navigation} ) => {
           onChangeText={text => setPassword(text)}
         />
         <View style={styles.containerButton}>
-          <Button title="Entrar" onPress={() => {
+          <Button style={styles.button} title="Entrar" onPress={() => {
             handleLogin();
           }
                                           } />
-          <Button title="Salir" onPress={() => navigation.goBack()}/>
+          <Button style={styles.button} title="Salir" onPress={() => navigation.goBack()}/>
         </View>
       </View>
     </View>
@@ -50,11 +50,14 @@ const LoginScreen = ({ route, navigation} ) => {
 
 const styles = StyleSheet.create({
   containerButton: {
-    //flex: 2,
+    //flex: 1,
     flexDirection: 'row',
     //flexWrap: 'wrap',
-    //justifyContent: 'space-between',
+    justifyContent: 'space-between',
     padding: 60,
+  },
+  button: {
+    margin: 30,
   },
   container: {
     flex: 1,

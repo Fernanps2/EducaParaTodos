@@ -1,5 +1,4 @@
 import React from 'react';
-import Main from "./src/Vista/main.jsx"
 import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
 import CrearTarea from './src/Vista/crearTarea.jsx';
 import { NavigationContainer } from '@react-navigation/native';
@@ -52,8 +51,7 @@ export default function App() {
   return (
     <UserContextProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Inicio">
-          <Stack.Screen name="Inicio" component={Main} />
+        <Stack.Navigator initialRouteName="pantallaPrincipal">
           <Stack.Screen name="pantallaPrincipal" component={PantallaPrincipal} />
           <Stack.Screen name="Tareas" component={Tareas} />
           <Stack.Screen name="LoginEducador" component={LoginScreen} />
