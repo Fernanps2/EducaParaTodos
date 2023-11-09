@@ -26,18 +26,7 @@ const Tareas = ({ route, navigation}) => {
                     </TouchableOpacity>
                 </View>
             ))}
-
-            <View style={styles.caja}>
-                <Text style={styles.titulo}> TAREAS COMPLETADAS</Text>
-            </View>
-            {usuario.tareasCompletadas.map((tarea,index) =>(
-                <View style={styles.contenedor_tareas}> 
-                    <View style={styles.contenedor_tarea}>
-                        <Image style={styles.foto} source={{ uri: usuario.fotoTarea }} />
-                        <Text style={styles.texto} key={index}>{tarea}</Text>
-                    </View>
-                </View>
-            ))}
+           
         </ScrollView>
     );
 };
