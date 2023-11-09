@@ -17,13 +17,11 @@ const Tareas = ({ route, navigation}) => {
             {usuario.tareasPendiente.map((tarea, index) => (
                 <View style={styles.contenedor_tareas}>
                     <View style={styles.contenedor_tarea}>
-                        <Image style={styles.foto} source={{ uri: usuario.fotoTarea }} />
+                        <TouchableOpacity onPress={() => navigation.navigate('verTareaPictogramas')} >
+                            <Image style={styles.foto} source={{ uri: usuario.fotoTarea }} />
+                        </TouchableOpacity>
                         <Text style={styles.texto} key={index}>{tarea}</Text>
                     </View>
-                    <Text> Ver subtareas: </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('verTareaPictogramas')} >
-                        <Icon name="question-circle" size={70} color="blue" />
-                    </TouchableOpacity>
                 </View>
             ))}
            
