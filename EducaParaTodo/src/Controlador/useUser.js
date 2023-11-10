@@ -7,6 +7,7 @@ export default function useUser() {
 
     const login = useCallback((username, password, tipo) => {
         setJWT(compruebaLogin({username, password, tipo}));
+        return jwt!=null;
     }, [setJWT])
 
     const logout = useCallback(() => {

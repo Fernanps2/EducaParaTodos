@@ -77,7 +77,6 @@
 
 import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet } from 'react-native';
-import {CerrarSesion} from './cerrarSesion'
 import useUser from '../Controlador/useUser';
 
 
@@ -85,16 +84,16 @@ import useUser from '../Controlador/useUser';
 const LoginScreenAlumno = ({ route, navigation }) => {
   const [password, setPassword] = useState('');
   const {alumno} = route.params;
-  const {login, isLogged} = useUser();
+  const {login} = useUser();
   
 
   const handleLogin = () => {
     const username = alumno.username;
     console.log(username);
-    login(username, password, "alumno");
 
-    if (isLogged)
-      navigation.navigate('Tareas', {usuario:alumno})
+    console.log(login(username, password, "alumno"));
+    if (login(username, password, "alumno"))
+      navigation.navigate('Tareas', {usuario:alumno});
     else
       alert('El usuario o contraseña es inválido');
   };
