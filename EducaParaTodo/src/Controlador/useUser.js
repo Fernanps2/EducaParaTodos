@@ -3,16 +3,16 @@ import compruebaLogin from './compruebaLogin'
 import { useCallback, useContext } from 'react'
 
 export default function useUser() {
-    const {jwt, setJWT} = useContext(Context)
+    let {jwt} = useContext(Context)
 
     const login = useCallback((username, password, tipo) => {
-        setJWT(compruebaLogin({username, password, tipo}));
-        return jwt!=null;
-    }, [setJWT])
+        (jwt = (compruebaLogin({username, password, tipo})));
+        return jwt != null;
+    }, [jwt])
 
     const logout = useCallback(() => {
-        setJWT(null);
-    }, [setJWT])
+        jwt = null;
+    }, [jwt])
 
     return {
         isLogged: Boolean(jwt),
