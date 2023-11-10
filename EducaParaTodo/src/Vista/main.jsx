@@ -11,9 +11,9 @@ import PantallaPrincipal from './pantallaPrincipal';
         source={require('../../Imagenes/DiseñoEducaParaTodos.png')}
         style={styles.image}>
         <Text style={styles.text}>EducaParaTodos</Text>
-      </ImageBackground>
-      <Button title="inicio"
+        <Button style={styles.button} title="inicio"
         onPress={() => navigation.navigate('pantallaPrincipal')} />
+      </ImageBackground>
       {/* <View style={styles.buttonContainer}>
         <Button title="Añadir alumno" 
           onPress={() => navigation.navigate('aniadirAlumno')} />
@@ -27,6 +27,10 @@ import PantallaPrincipal from './pantallaPrincipal';
 export default Main;
 
 const styles = StyleSheet.create({
+  button: {
+    position: 'relative',
+    alignItems: 'bottom'
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 20,
+    borderRadius: 0,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'black',
