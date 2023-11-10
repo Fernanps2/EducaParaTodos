@@ -14,7 +14,6 @@ const PantallaDatos = ({route, navigation}) => {
             </View>
             <Text style={styles.input}> Nombre: {alumno.nombre} </Text>
             <Text style={styles.input}> Apellidos: {alumno.nombre} </Text>
-            <Text style={styles.input}> Teléfono de contacto: </Text>
             <Text style={styles.input}> Visualización preferente: </Text>
         </View>
     )
