@@ -1,10 +1,9 @@
 
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import Swal from 'sweetalert2';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 
-export default function AniadirAlumno () {
+export default function AniadirAlumno ({ navigation }) {
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -17,27 +16,19 @@ export default function AniadirAlumno () {
       setSelectedOptions(selectedOptions.filter(item => item !== option));
     }
   };
-  /*
-  const handleStoreNotification = () =>{
-    Swal.fire({
-      title: '¿Quieres añadir al alumno?',
-      showDenyButton: true,
-      showCancelButton: false,
-      confirmButtonText: 'Añadir',
-      denyButtonText: `Cancelar`,
-    }).then((result) => {
-          if (result.isConfirmed) {
-        Swal.fire('¡Alumno añadido!', '', 'success')
-      } else if (result.isDenied) {
-        Swal.fire('Cancelado', '', 'info')
-      }
-     }).finally(() => {
-      // Restablecer desplazamiento en todo el documento
-      document.documentElement.style.overflow = 'auto';
-      document.body.style.overflow = 'auto';
-    })
-    };
-    */
+  
+  const showAlertStore = () => {
+    Alert.alert(
+      "¿Quiere guardar?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+        { text: "Confirmar", onPress: () => navigation.navigate('HomeAdmin')}
+      ],
+      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+    );
+  };
+
     return (
       <View style={styles.container}>
       <View style={styles.header}>
@@ -46,7 +37,6 @@ export default function AniadirAlumno () {
 
       <TextInput style={styles.input} placeholder="Nombre" />
       <TextInput style={styles.input} placeholder="Apellidos" />
-      <TextInput style={styles.input} placeholder="Teléfono de contacto" />
       <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)} style={styles.input}>
         <Text>{selectedOptions.join(', ') || 'Visualización preferente'}</Text>
       </TouchableOpacity>
@@ -76,7 +66,7 @@ export default function AniadirAlumno () {
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
-                  onPress={() => navigation.navigate('HomeAdmin')}>
+                  onPress={showAlertStore}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
       </View>

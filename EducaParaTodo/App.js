@@ -1,5 +1,4 @@
 import React from 'react';
-import Main from "./src/Vista/main.jsx"
 import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
 import CrearTarea from './src/Vista/crearTarea.jsx';
 import { NavigationContainer } from '@react-navigation/native';
@@ -22,6 +21,14 @@ import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
 import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext'
+
+
+
+// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
+
+import appFirebase from './src/Modelo/firebase.js';
+import {getFirestore,collection,addDoc} from 'firebase/firestore'
+const db = getFirestore(appFirebase);
 
 // Creamos una instancia del stack
 const Stack = createStackNavigator();
@@ -52,8 +59,7 @@ export default function App() {
   return (
     <UserContextProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Inicio">
-          <Stack.Screen name="Inicio" component={Main} />
+        <Stack.Navigator initialRouteName="pantallaPrincipal">
           <Stack.Screen name="pantallaPrincipal" component={PantallaPrincipal} />
           <Stack.Screen name="Tareas" component={Tareas} />
           <Stack.Screen name="LoginEducador" component={LoginScreen} />
