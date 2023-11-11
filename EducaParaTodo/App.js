@@ -22,6 +22,14 @@ import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext'
 
+
+
+// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
+
+import appFirebase from './src/Modelo/firebase.js';
+import {getFirestore,collection,addDoc} from 'firebase/firestore'
+const db = getFirestore(appFirebase);
+
 // Creamos una instancia del stack
 const Stack = createStackNavigator();
 
