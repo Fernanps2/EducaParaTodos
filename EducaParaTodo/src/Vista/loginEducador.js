@@ -6,14 +6,14 @@ const LoginScreen = ({ route, navigation} ) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const tipo = route.params.tipo;
-  const {login, isLogged} = useUser();
+  const {login} = useUser();
 
   const handleLogin = () => {
-    login(username, password, tipo);
+    const logueado = login(username, password, tipo);
 
-    if (isLogged && tipo == 'profesor')
+    if (logueado && tipo == 'profesor')
       navigation.navigate('HomeEducador')
-    else if (isLogged && tipo == 'administrador')
+    else if (logueado && tipo == 'administrador')
       navigation.navigate('HomeAdmin');
     else
       alert('Usuario y contraseña inválidos');
@@ -37,11 +37,11 @@ const LoginScreen = ({ route, navigation} ) => {
           onChangeText={text => setPassword(text)}
         />
         <View style={styles.containerButton}>
-          <Button style={styles.button} title="Entrar" onPress={() => {
+          <Button title="Entrar" onPress={() => {
             handleLogin();
           }
                                           } />
-          <Button style={styles.button} title="Salir" onPress={() => navigation.goBack()}/>
+          <Button title="Salir" onPress={() => navigation.goBack()}/>
         </View>
       </View>
     </View>
@@ -50,14 +50,11 @@ const LoginScreen = ({ route, navigation} ) => {
 
 const styles = StyleSheet.create({
   containerButton: {
-    //flex: 1,
+    //flex: 2,
     flexDirection: 'row',
     //flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    //justifyContent: 'space-between',
     padding: 60,
-  },
-  button: {
-    margin: 30,
   },
   container: {
     flex: 1,
