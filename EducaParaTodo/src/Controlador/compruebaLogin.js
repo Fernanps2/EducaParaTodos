@@ -1,5 +1,3 @@
-
-
 import React from 'react'
 import alumnos from '../Modelo/alumno'
 import profesores from '../Modelo/profesor'

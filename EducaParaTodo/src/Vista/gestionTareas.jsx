@@ -1,51 +1,28 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { CerrarSesion } from './cerrarSesion';
 
-export default function HomeAdmin ({ navigation }) {
+export default function gestionTareas ({ navigation }) {
     return (
       <View style={styles.container}>
-      <Text style={styles.title}>EducaParaTodos</Text>
-      <CerrarSesion/>
-      <View style={styles.profileContainer}>
-        <Image
-          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
-          style={styles.profileImage}
-        />
-        <Text style={styles.roleText}>Administrador</Text>
-      </View>
+      <Text style={styles.title}>Gestión Tareas</Text>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirAlumno')}>
-        <Text style={styles.buttonText}>Añadir alumno</Text>
+        onPress={() => navigation.navigate('tareaActividad')}>
+        <Text style={styles.buttonText}>Actividad </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirProfesor')}>
-        <Text style={styles.buttonText}>Añadir Profesor</Text>
+        onPress={() => navigation.navigate('tareaComanda')}>
+        <Text style={styles.buttonText}>Comanda </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('gestionTareas')}>
-        <Text style={styles.buttonText}>Gestionar Tareas</Text>
+        onPress={() => navigation.navigate('tareaMateriales')}>
+        <Text style={styles.buttonText}>Materiales </Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-        <Text style={styles.buttonText}>Gestionar tareas</Text>
-      </TouchableOpacity>
-
-
 
       </View>
 
