@@ -1,11 +1,10 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 
 // Uso base de datos
 import appFirebase from '../Modelo/firebase';
-import {getFirestore,collection,addDoc} from 'firebase/firestore'
+import {getFirestore, collection, getDocs} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 
 export default function crearTarea () {
@@ -41,6 +40,30 @@ export default function crearTarea () {
   //Variables para logo de guardar
   const [guardando, setGuardando] = useState(false);
 
+  // Variables para pictogramas
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoadind] = useState(false);
+
+  // Funcion para mostrar los pictogramas de la base de datos
+  const cargarPictogramas = (() => {
+    setIsLoadind(true); // Iniciar la carga
+    const querybd = getFirestore(appFirebase);
+    const queryCollection = collection(querybd, 'Pictogramas');
+    getDocs(queryCollection)
+      .then(res => {
+        if(res.docs.length > 0){
+          setData(res.docs.map(item => ({id: item.id, ...item.data()})))
+          setIsLoadind(false);
+        }else{
+          console.log('No se encontraron documentos en la colección.')
+          setIsLoadind(false);
+        }
+    })
+    .catch(error => {
+      console.error('Error al obtener los documentos: ', error)
+      setIsLoadind(false);
+    })
+  })
 
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
@@ -57,6 +80,7 @@ const handleAnadirPicto = () => {
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(false);
   setShowAddStepAddAudio(false);
+  cargarPictogramas();
 }
 // Pulsamos boton añadir video en añadir paso
 const handleAnadirVideo = () => {
@@ -458,17 +482,27 @@ const showAlertStore = () => {
           
         </View>
       )}
-
+      
       {(showAddStepAddPict) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-          <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
-            </TouchableOpacity>
             
+            {isLoading ? (
+              <Text>Cargando_Pictogramas... </Text>
+            ) : (
+
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+
+                {data.map((item, index) =>
+                  <TouchableOpacity>
+                    <Image key={index} source={{uri: item.URL}} style={styles.image} />
+                  </TouchableOpacity>
+                )}
+
+              </ScrollView>
+
+            )}
+
           </View>
 
           <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
@@ -809,6 +843,7 @@ const styles = StyleSheet.create({
     width: 50, // Ancho de la imagen
     height: 50, // Altura de la imagen
     resizeMode: 'contain', // Asegura que escale
+    marginHorizontal: 10
   },
   imageTrash: {
     width: 20, // Ancho de la imagen
