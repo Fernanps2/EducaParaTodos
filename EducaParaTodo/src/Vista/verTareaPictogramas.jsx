@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import Constants from 'expo-constants';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-import { CheckBox } from 'react-native';
+// import { CheckBox } from 'react-native';
 
 export function VerTareaPictogramas ({nombreTarea, descripcion, pasos}){
     const [isChecked, setIsChecked] = useState(false);
@@ -36,11 +36,11 @@ export function VerTareaPictogramas ({nombreTarea, descripcion, pasos}){
                         }
                     />
 
-                    <CheckBox titleProps={styles.check} 
+                    {/* <CheckBox titleProps={styles.check} 
                         title="Marca la casilla para completar la tarea"
                         checked={isChecked}
                         onPress={toggleCheck}
-                    />
+                    /> */}
                 </View>                
             )}
         />              

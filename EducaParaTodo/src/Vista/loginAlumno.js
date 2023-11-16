@@ -112,7 +112,6 @@ const LoginScreenAlumno = ({ route, navigation }) => {
         <View style={styles.containerButton}>
           <Button title="Entrar" onPress={() => {
              handleLogin();
-            //navigation.navigate('Tareas', {usuario:alumno})
           }
                                           } />
           <Button title="Salir" onPress={() => navigation.goBack()}/>
