@@ -43,6 +43,7 @@ export default function crearTarea () {
   // Variables para pictogramas
   const [data, setData] = useState([]);
   const [isLoading, setIsLoadind] = useState(false);
+  const [selectedPictograma, setSelectedPictograma] = useState('');
 
   // Funcion para mostrar los pictogramas de la base de datos
   const cargarPictogramas = (() => {
@@ -172,22 +173,15 @@ const handleHideStepClick = () => {
   setShowAddStep(true);
 };
 
-// Que pasa si clica en Picto Speak
-const handlePictoPressSpeak = (image) => {
-
+// Pulsamos un pictogramaentre los elegidos
+const handlePictoPress = (id) => {
+  setSelectedPictograma(id);
 };
 
-// Que pasa si clica en Picto Drink
-const handlePictoPressDrink = (image) => {
+// elegimos un pictograma
+const handleGuardarPictograma = () => {
   
 };
-
-// Que pasa si clica en Picto Eat
-const handlePictoPressEat = (image) => {
-
-};
-
-
 
 // Borramos toda la información cuando pulsamos borrar
 const handleDeleteInformation = () => {
@@ -493,11 +487,11 @@ const showAlertStore = () => {
 
               <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
 
-                {data.map((item, index) =>
-                  <TouchableOpacity>
+                {data.map((item, index) =>(
+                  <TouchableOpacity key={index} onPress= {() => handlePictoPress(item.Titulo)}>
                     <Image key={index} source={{uri: item.URL}} style={styles.image} />
                   </TouchableOpacity>
-                )}
+                ))}
 
               </ScrollView>
 
