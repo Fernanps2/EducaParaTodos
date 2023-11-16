@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+//import * as Permissions from "expo";
 
 // Uso base de datos
 import appFirebase from '../Modelo/firebase';
@@ -44,6 +45,8 @@ export default function crearTarea () {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoadind] = useState(false);
   const [selectedPictograma, setSelectedPictograma] = useState('');
+  const [storePictograma, setStorePictograma] = useState('');
+  const [isStorePicto, setIsStorePicto] = useState(false);
 
   // Funcion para mostrar los pictogramas de la base de datos
   const cargarPictogramas = (() => {
@@ -174,13 +177,19 @@ const handleHideStepClick = () => {
 };
 
 // Pulsamos un pictogramaentre los elegidos
-const handlePictoPress = (id) => {
-  setSelectedPictograma(id);
+const handlePictoPress = (item) => {
+  setSelectedPictograma(item);
 };
 
 // elegimos un pictograma
 const handleGuardarPictograma = () => {
-  
+  setStorePictograma (selectedPictograma)
+  setIsStorePicto (true)
+};
+
+const handleStashPicto = () => {
+  setIsStorePicto (false);
+  setStorePictograma('');
 };
 
 // Borramos toda la información cuando pulsamos borrar
@@ -488,7 +497,7 @@ const showAlertStore = () => {
               <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
 
                 {data.map((item, index) =>(
-                  <TouchableOpacity key={index} onPress= {() => handlePictoPress(item.Titulo)}>
+                  <TouchableOpacity key={index} onPress= {() => handlePictoPress(item)}>
                     <Image key={index} source={{uri: item.URL}} style={styles.image} />
                   </TouchableOpacity>
                 ))}
@@ -499,7 +508,10 @@ const showAlertStore = () => {
 
           </View>
 
-          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+          <TouchableOpacity 
+            style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}
+            onPress={handleGuardarPictograma()}
+          >
             <Text style={[styles.addButtonEmergenteText, 
               {color: 'white'},
               {fontSize: 9},
@@ -603,7 +615,7 @@ const showAlertStore = () => {
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Pictograma Añadido</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleStashPicto ()}>
           <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
             style={[
               styles.imageTrash,
@@ -614,7 +626,12 @@ const showAlertStore = () => {
       </View>
 
       <View style={styles.rectangleChoose}>
-        <Text>Ninguno </Text>
+        {isStorePicto ? (
+          <Image source={{uri: storePictograma.URL}} style={styles.image} />
+        ) : (
+          <Text>Ninguno </Text>
+        )
+      }
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
