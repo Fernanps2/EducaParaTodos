@@ -4,12 +4,9 @@ import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import {almacenarAlumno} from '../Modelo/modelo';
 
-
-// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
-
-
-
 export default function AniadirAlumno ({ navigation }) {
+
+
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -62,6 +59,7 @@ export default function AniadirAlumno ({ navigation }) {
     }
   }
 
+
     return (
       <View style={styles.container}>
       <View style={styles.header}>
@@ -104,8 +102,12 @@ export default function AniadirAlumno ({ navigation }) {
       )}
 
       <View style={styles.photoSection}>
-        <Text>Foto del usuario:</Text>
-        <View style={styles.userIcon} ></View>
+        <Text>Añdir foto del usuario:</Text>
+        <TouchableOpacity 
+          onPress={()=> abrirGaleria()}>
+          <View style={styles.userIcon} > </View>
+        </TouchableOpacity>
+
       </View>
 
       <View style={styles.buttonContainer}>
