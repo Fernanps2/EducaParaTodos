@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import {almacenarAlumno} from '../Modelo/modelo';

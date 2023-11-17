@@ -1,4 +1,4 @@
-package com.educaparatodo;
+package com.anonymous.EducaParaTodo;
 
 import android.app.Application;
 import android.content.res.Configuration;
@@ -18,6 +18,8 @@ import expo.modules.ReactNativeHostWrapper;
 
 import java.util.List;
 
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -32,7 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
         @SuppressWarnings("UnnecessaryLocalVariable")
         List<ReactPackage> packages = new PackageList(this).getPackages();
         // Packages that cannot be autolinked yet can be added manually here, for example:
-        // packages.add(new MyReactNativePackage());
+        packages.add(new ReactNativeFirebaseAppPackage());
         return packages;
       }
 
