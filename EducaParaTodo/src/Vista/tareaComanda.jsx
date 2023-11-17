@@ -8,7 +8,7 @@ import appFirebase from '../Modelo/firebase';
 import {getFirestore, collection, getDocs} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 
-export default function tareaComanda () {
+export default function TareaComanda ({navigation}) {
   
   // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);

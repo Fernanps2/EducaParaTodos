@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, Button } from 'react-native';
 
 
@@ -7,8 +7,10 @@ import appFirebase from '../Modelo/firebase';
 import {getFirestore, collection, getDocs} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 
-export default function TareaActividad ({navigation}) {
+export default function VerPasosActividad ({navigation}) {
   
+  // Variables para guardar lugar de actividad
+    const [showLugar, setShowLugar] = useState(false);
   // Variables para guardar nombre de la actividad
   const [nombreTarea, setNombreTarea] = useState ('');
   // Variables para guardar fecha y hora
@@ -16,20 +18,17 @@ export default function TareaActividad ({navigation}) {
   const [inicioHora, setInicioHora] = useState ('');
   const [finFecha, setFinFecha] = useState ('');
   const [finHora, setFinHora] = useState ('');
-  // Variable para guardar el lugar
-  const [lugar, setLugar] = useState ();
 
   //Variables para logo de guardar
   const [guardando, setGuardando] = useState(false);
 
 // Borramos toda la información cuando pulsamos borrar
 const handleDeleteInformation = () => {
-  setNombreTarea("");
-  setFinFecha("");
-  setFinHora("");
-  setInicioFecha("");
-  setInicioHora("");
-  setLugar("");
+  setNombreTarea('');
+  //setInicioTareaFecha('');
+  //setInicioTareaHora('');
+  //setFinTareaFecha('');
+  //setFinTareaHora('');
 }
 
 const guardarDatos = () => {
@@ -38,8 +37,7 @@ const guardarDatos = () => {
   setTimeout(() => {
     setGuardando(false);
     // Aquí iría tu lógica de guardado real
-  }, 5000);
-  navigation.navigate('gestionTareas');
+  }, 2000);
 };
 
 const showAlertDelete = () => {
@@ -47,8 +45,8 @@ const showAlertDelete = () => {
     "¿Quiere borrar?", // Título
     "Pulsa una opción", // Mensaje
     [
-      { text: "Cancelar"},
-      { text: "Confirmar", onPress: () => handleDeleteInformation() }
+      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+      { text: "Confirmar", onPress: () => console.log("Aceptar presionado") }
     ],
     { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
   );
@@ -59,8 +57,8 @@ const showAlertStore = () => {
     "¿Quiere guardar?", // Título
     "Pulsa una opción", // Mensaje
     [
-      { text: "Cancelar"},
-      { text: "Confirmar", onPress: () => guardarDatos() }
+      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+      { text: "Confirmar", onPress: (guardarDatos)}
     ],
     { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
   );
@@ -80,9 +78,9 @@ const showAlertStore = () => {
 
       <Text style={styles.text}>Nombre Tarea</Text>
       <TextInput style={[styles.input]} 
-      placeholder="Elija Nombre" 
-      value={nombreTarea}
-      onChangeText={setNombreTarea}
+        placeholder="Elija Nombre" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
       />
 
       <View style={styles.separador} />
@@ -94,13 +92,13 @@ const showAlertStore = () => {
       <View style={[styles.row]}>
       <TextInput style={[styles.inputFechaHora]} 
         placeholder="dd/mm/aaaa" 
-        value={inicioFecha}
         onChangeText={setInicioFecha}
+        value={inicioFecha}
       />
       <TextInput style={[styles.inputFechaHora]} 
         placeholder="hh/mm" 
-        value={inicioHora}
         onChangeText={setInicioHora}
+        value={inicioHora}
       />
       </View>
 
@@ -113,13 +111,13 @@ const showAlertStore = () => {
       <View style={[styles.row]}>
       <TextInput style={[styles.inputFechaHora]} 
         placeholder="dd/mm/aaaa" 
-        value={finFecha}
         onChangeText={setFinFecha}
+        value={finFecha}
       />
       <TextInput style={[styles.inputFechaHora]} 
         placeholder="hh/mm" 
-        value={finHora}
         onChangeText={setFinHora}
+        value={finHora}
       />
       </View>
 
@@ -130,9 +128,9 @@ const showAlertStore = () => {
       <View style={styles.separador} />
 
       <TextInput style={[styles.input]} 
-        placeholder="Elija Lugar"
-        value={lugar} 
-        onChangeText={setLugar}
+        placeholder="Elija Lugar" 
+        onChangeText={setNombreTarea}
+        value={nombreTarea}
       />
       
       <View style={styles.separador} />
@@ -153,7 +151,7 @@ const showAlertStore = () => {
 
       <Button 
         title="Ver todos los pasos" 
-        onPress={() => navigation.navigate('verPasosActividad')} 
+        onPress={() => console.log('Botón 2 presionado')} 
         color='#90EE90'        />
 
       <View style={styles.separador} />
@@ -165,7 +163,7 @@ const showAlertStore = () => {
         <View style={[styles.button]}>
           <Button 
             title="Borrar" 
-            onPress={() => showAlertDelete ()} 
+            onPress={() => showAlertDelete} 
             color= '#FF0000'
             />
         </View>
@@ -180,8 +178,7 @@ const showAlertStore = () => {
         <View style={[styles.button]}>
           <Button 
             title="Guardar" 
-            onPress={() => showAlertStore ()
-            } 
+            onPress={() => showAlertStore} 
             color='#0000FF'
             />
         </View>

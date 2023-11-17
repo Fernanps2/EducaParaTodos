@@ -8,7 +8,7 @@ import appFirebase from '../Modelo/firebase';
 import {getFirestore, collection, getDocs} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 
-export default function pasoActividad () {
+export default function PasoActividad ({navigation}) {
   
   // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);

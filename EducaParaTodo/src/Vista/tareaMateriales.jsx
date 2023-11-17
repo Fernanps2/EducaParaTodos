@@ -8,7 +8,7 @@ import appFirebase from '../Modelo/firebase';
 import {getFirestore, collection, getDocs} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 
-export default function tareaMateriales () {
+export default function TareaMateriales ({navigation}) {
   
   // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);

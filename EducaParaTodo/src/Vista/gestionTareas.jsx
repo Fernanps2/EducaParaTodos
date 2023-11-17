@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function gestionTareas ({ navigation }) {
+export default function GestionTareas ({ navigation }) {
     return (
       <View style={styles.container}>
       <Text style={styles.title}>Gestión Tareas</Text>
