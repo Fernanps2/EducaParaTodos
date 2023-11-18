@@ -9,27 +9,11 @@ const db = getFirestore(appFirebase);
 
 export default function VerPasosActividad ({navigation}) {
   
-  // Variables para guardar lugar de actividad
-    const [showLugar, setShowLugar] = useState(false);
-  // Variables para guardar nombre de la actividad
-  const [nombreTarea, setNombreTarea] = useState ('');
-  // Variables para guardar fecha y hora
-  const [inicioFecha, setInicioFecha] = useState ('');
-  const [inicioHora, setInicioHora] = useState ('');
-  const [finFecha, setFinFecha] = useState ('');
-  const [finHora, setFinHora] = useState ('');
+  // Variables para nombre de paso
+  const [nombrePaso, setNombrePaso] = useState('');
 
   //Variables para logo de guardar
   const [guardando, setGuardando] = useState(false);
-
-// Borramos toda la información cuando pulsamos borrar
-const handleDeleteInformation = () => {
-  setNombreTarea('');
-  //setInicioTareaFecha('');
-  //setInicioTareaHora('');
-  //setFinTareaFecha('');
-  //setFinTareaHora('');
-}
 
 const guardarDatos = () => {
   setGuardando(true);
@@ -70,74 +54,21 @@ const showAlertStore = () => {
      <View style={styles.separador} />
      <View style={styles.separador} />
 
-      <Text style={styles.title}>Actividad</Text>
+      <Text style={styles.title}>Paso de Actividad</Text>
 
       <View style={styles.container}>
 
       <View style={styles.separador} />
 
-      <Text style={styles.text}>Nombre Tarea</Text>
+      <Text style={styles.text}>Nombre Paso</Text>
       <TextInput style={[styles.input]} 
         placeholder="Elija Nombre" 
-        onChangeText={setNombreTarea}
-        value={nombreTarea}
+        onChangeText={setNombrePaso}
+        value={nombrePaso}
       />
 
       <View style={styles.separador} />
-
-      <Text style={styles.text}>Inicio Tarea </Text>
-
-      <View style={styles.separador} />
-
-      <View style={[styles.row]}>
-      <TextInput style={[styles.inputFechaHora]} 
-        placeholder="dd/mm/aaaa" 
-        onChangeText={setInicioFecha}
-        value={inicioFecha}
-      />
-      <TextInput style={[styles.inputFechaHora]} 
-        placeholder="hh/mm" 
-        onChangeText={setInicioHora}
-        value={inicioHora}
-      />
-      </View>
-
-      <View style={styles.separador} />
-
-      <Text style={styles.text}>Fin Tarea </Text>
-
-      <View style={styles.separador} />
-
-      <View style={[styles.row]}>
-      <TextInput style={[styles.inputFechaHora]} 
-        placeholder="dd/mm/aaaa" 
-        onChangeText={setFinFecha}
-        value={finFecha}
-      />
-      <TextInput style={[styles.inputFechaHora]} 
-        placeholder="hh/mm" 
-        onChangeText={setFinHora}
-        value={finHora}
-      />
-      </View>
-
-      <View style={styles.separador} />
-
-      <Text style={styles.text}>Lugar </Text>
-
-      <View style={styles.separador} />
-
-      <TextInput style={[styles.input]} 
-        placeholder="Elija Lugar" 
-        onChangeText={setNombreTarea}
-        value={nombreTarea}
-      />
       
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
       <Button 
         title="Añadir Paso" 
         onPress={() => navigation.navigate('pasoActividad')}

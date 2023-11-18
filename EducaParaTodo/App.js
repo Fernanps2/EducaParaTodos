@@ -5,7 +5,11 @@ import TareaActividad from './src/Vista/tareaActividad.jsx';
 import PasoActividad from './src/Vista/pasoActividad.jsx';
 import VerPasosActividad from './src/Vista/VerPasosActividad.jsx';
 import TareaComanda from './src/Vista/tareaComanda.jsx';
+import AlimentosMenusComanda from './src/Vista/alimentosMenusComanda.jsx';
+import TiposMenusComanda from './src/Vista/tiposMenusComanda.jsx';
 import TareaMateriales from './src/Vista/tareaMateriales.jsx';
+import AnadirMaterial from './src/Vista/anadirMaterial.jsx';
+import VerTodosMateriales from './src/Vista/verTodosMateriales.jsx';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import PantallaPrincipal from './src/Vista/pantallaPrincipal.jsx';
@@ -75,7 +79,11 @@ export default function App() {
           <Stack.Screen name="pasoActividad" component={PasoActividad} />
           <Stack.Screen name="verPasosActividad" component={VerPasosActividad} />
           <Stack.Screen name="tareaComanda" component={TareaComanda} />
+          <Stack.Screen name="alimentosMenusComanda" component={AlimentosMenusComanda} />
+          <Stack.Screen name="tiposMenusComanda" component={TiposMenusComanda} />
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
+          <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
+          <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales} />
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />

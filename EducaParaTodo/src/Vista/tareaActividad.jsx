@@ -79,6 +79,9 @@ const showAlertStore = () => {
       <View style={styles.separador} />
 
       <Text style={styles.text}>Nombre Tarea</Text>
+
+      <View style={styles.separador} />
+
       <TextInput style={[styles.input]} 
       placeholder="Elija Nombre" 
       value={nombreTarea}
