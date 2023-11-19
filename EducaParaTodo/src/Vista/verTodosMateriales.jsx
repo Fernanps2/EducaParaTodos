@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   View,
   Text,
   SafeAreaView,
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Button,
   Image,
-  TextInput,
 } from "react-native";
 
 // Uso base de datos
@@ -74,9 +70,6 @@ export default function VerTodosMateriales({ navigation }) {
   // Variables para los alimentos del menu
   const [data, setData] = useState(initialData);
 
-  //Variables para logo de guardar
-  const [guardando, setGuardando] = useState(false);
-
   const deleteItem = (id) => {
     setData(data.filter((item) => item.id !== id));
   };
@@ -114,7 +107,15 @@ export default function VerTodosMateriales({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <Text style={styles.title}>Materiales en Tarea</Text>
+      <View style={[{flexDirection: 'row'}, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Materiales en Tarea</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("tareaMateriales")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.separador} />
       <View style={styles.separador} />
@@ -181,4 +182,8 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  Image: {
+    width: 20,
+    height: 20,
+  }
 });

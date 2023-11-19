@@ -1,169 +1,199 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, Button } from 'react-native';
-
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
 
 // Uso base de datos
-import appFirebase from '../Modelo/firebase';
-import {getFirestore, collection, getDocs} from 'firebase/firestore'
+import appFirebase from "../Modelo/firebase";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 const db = getFirestore(appFirebase);
 
-export default function VerPasosActividad ({navigation}) {
-  
-  // Variables para nombre de paso
-  const [nombrePaso, setNombrePaso] = useState('');
+const initialData = [
+  {
+    id: "1",
+    Nombre_Paso: "Poner plato en la mesa",
+    Texto: "Ninguno",
+    Pictograma: "Ninguno",
+    Imagen: "Mesa y plato",
+    Video: "Poner Plato",
+    Audio: "Ninguno",
+  },
+  {
+    id: "2",
+    Nombre_Paso: "Colocar los cubiertos",
+    Texto: "Coloca tenedor al lado del plato",
+    Pictograma: "Cubiertos",
+    Imagen: "Cubiertos al lado del plato",
+    Video: "Colocar Cubiertos",
+    Audio: "Ninguno",
+  },
+  {
+    id: "3",
+    Nombre_Paso: "Doblar la servilleta",
+    Texto: "Doblar la servilleta junto al plato",
+    Pictograma: "Servilleta",
+    Imagen: "Servilleta doblada",
+    Video: "Doblar Servilleta",
+    Audio: "Ninguno",
+  },
+  {
+    id: "4",
+    Nombre_Paso: "Llenar el vaso de agua",
+    Texto: "Llenar el vaso de agua",
+    Pictograma: "Vaso de agua",
+    Imagen: "Vaso con agua",
+    Video: "Llenar Vaso",
+    Audio: "Ninguno",
+  },
+  {
+    id: "5",
+    Nombre_Paso: "Colocar el pan",
+    Texto: "Colocar pan en la mesa",
+    Pictograma: "Pan",
+    Imagen: "Pan en la mesa",
+    Video: "Colocar Pan",
+    Audio: "Ninguno",
+  },
+  {
+    id: "6",
+    Nombre_Paso: "Acomodar la silla",
+    Texto: "Poner silla enfrente de la mesa",
+    Pictograma: "Silla",
+    Imagen: "Silla y mesa",
+    Video: "Acomodar Silla",
+    Audio: "Ninguno",
+  },
+];
 
-  //Variables para logo de guardar
-  const [guardando, setGuardando] = useState(false);
+export default function VerPasosActividad({ navigation }) {
+  // Variables para los alimentos del menu
+  const [data, setData] = useState(initialData);
 
-const guardarDatos = () => {
-  setGuardando(true);
-  // Simula una operación de guardado que tarda 2 segundos.
-  setTimeout(() => {
-    setGuardando(false);
-    // Aquí iría tu lógica de guardado real
-  }, 2000);
-};
+  const deleteItem = (id) => {
+    setData(data.filter((item) => item.id !== id));
+  };
 
-const showAlertDelete = () => {
-  Alert.alert(
-    "¿Quiere borrar?", // Título
-    "Pulsa una opción", // Mensaje
-    [
-      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-      { text: "Confirmar", onPress: () => console.log("Aceptar presionado") }
-    ],
-    { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-  );
-};
-
-const showAlertStore = () => {
-  Alert.alert(
-    "¿Quiere guardar?", // Título
-    "Pulsa una opción", // Mensaje
-    [
-      { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-      { text: "Confirmar", onPress: (guardarDatos)}
-    ],
-    { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-  );
-};
-
-    return (
-      <>
-     
-     <View style={styles.separador} />
-     <View style={styles.separador} />
-
-      <Text style={styles.title}>Paso de Actividad</Text>
-
-      <View style={styles.container}>
-
-      <View style={styles.separador} />
-
-      <Text style={styles.text}>Nombre Paso</Text>
-      <TextInput style={[styles.input]} 
-        placeholder="Elija Nombre" 
-        onChangeText={setNombrePaso}
-        value={nombrePaso}
-      />
-
-      <View style={styles.separador} />
-      
-      <Button 
-        title="Añadir Paso" 
-        onPress={() => navigation.navigate('pasoActividad')}
-        color='#D3D3D3'
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <View style={styles.leftColumn}>
+        <Text style={styles.label}>Nombre Paso</Text>
+        <Text style={styles.itemText}>{item.Nombre_Paso}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Texto</Text>
+        <Text style={styles.itemText}>{item.Texto}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Pictograma</Text>
+        <Text style={styles.itemText}>{item.Pictograma}</Text>
+      </View>
+      <View style={styles.rightColumn}>
+        <Text style={styles.label}>Imagen</Text>
+        <Text style={styles.itemText}>{item.Imagen}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Video</Text>
+        <Text style={styles.itemText}>{item.Video}</Text>
+        <Text style={styles.label}>Audio</Text>
+        <Text style={styles.itemText}>{item.Audio}</Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => deleteItem(item.id)}
+        style={styles.deleteButton}
+      >
+        <Image
+          source={require("../../Imagenes/CrearTarea/iconoBasura.png")}
+          style={styles.icon}
         />
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <Button 
-        title="Ver todos los pasos" 
-        onPress={() => console.log('Botón 2 presionado')} 
-        color='#90EE90'        />
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <View style={[styles.buttonContainer]}>
-        <View style={[styles.button]}>
-          <Button 
-            title="Borrar" 
-            onPress={() => showAlertDelete} 
-            color= '#FF0000'
-            />
-        </View>
-          
-          {guardando && (
-            
-            <ActivityIndicator size="large" color="#0000ff" />
-            
-            )
-          }
-
-        <View style={[styles.button]}>
-          <Button 
-            title="Guardar" 
-            onPress={() => showAlertStore} 
-            color='#0000FF'
-            />
-        </View>
-
-        </View>
-
-    
+      </TouchableOpacity>
     </View>
-    </>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.separador} />
+      <View style={styles.separador} />
+
+      <View style={[{ flexDirection: "row" }, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Materiales en Tarea</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("tareaActividad")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.separador} />
+      <View style={styles.separador} />
+
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 26,
-    textAlign: 'center',
+    textAlign: "center",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: 'grey',
-    borderRadius: 5,
-    marginBottom: 10,
-    width: 200,
-    height: 30,
+  separador: {
+    height: 10,
   },
-  inputFechaHora: {
-    borderWidth: 1,
-    borderColor: 'grey',
-    borderRadius: 5,
-    marginBottom: 10,
-    width: 100,
-    height: 30,
+  leftColumn: {
+    flexDirection: "column",
+    justifyContent: "center",
+    marginRight: 30,
   },
-  row: {
-    flexDirection: 'row',
+  rightColumn: {
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  text:{
-    textAlign: 'center',
-    fontSize: 15,
+  itemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#cccccc",
   },
-  buttonContainer: {
-    marginBottom: 10,
-    flexDirection: 'row',
+  itemDetail: {
+    flexDirection: "column",
   },
-  button:{
-    marginHorizontal: 10,
+  label: {
+    fontWeight: "bold",
   },
-  separador:{
-    height: 10
-  }
+  itemText: {
+    fontSize: 16, // Tamaño de fuente mediano para buena legibilidad
+    color: "#333", // Color oscuro para el texto para alto contraste
+    fontWeight: "bold", // Peso de la fuente normal; puede ser 'bold' si es necesario
+    marginVertical: 8,
+  },
+  deleteButton: {
+    padding: 10, // Espacio adicional alrededor del ícono para un área de toque más grande
+    marginRight: 5, // Espacio a la derecha si es necesario
+    justifyContent: "center", // Centra el ícono verticalmente dentro del botón
+    alignItems: "center", // Centra el ícono horizontalmente dentro del botón
+  },
+  icon: {
+    width: 24,
+    height: 24,
+  },
+  Image: {
+    width: 20,
+    height: 20,
+  },
 });

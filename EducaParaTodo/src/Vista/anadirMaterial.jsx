@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -9,9 +8,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Button,
-  Image,
   TextInput,
+  Image,
 } from "react-native";
+import Swal from "sweetalert2";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -24,12 +24,10 @@ const initialMaterials = [
   { id: "3", name: "Folios", total: 50 },
   { id: "4", name: "Tijeras", total: 15 },
   { id: "5", name: "Pegamento", total: 30 },
+  { id: "6", name: "Boligrafos", total: 5 },
 ];
 
 export default function AnadirMaterial({ navigation }) {
-  //Variables para logo de guardar
-  const [guardando, setGuardando] = useState(false);
-
   // Variables para elegir material
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
@@ -54,14 +52,20 @@ export default function AnadirMaterial({ navigation }) {
   };
 
   const selectMaterial = (id) => {
-    setSelectedMaterialId(id);
+    if (selectedMaterialId === id) {
+      setSelectedMaterialId(null);
+    } else {
+      setSelectedMaterialId(id);
+    }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.listItem}>
       <View style={styles.materialInfo}>
         <Text style={styles.materialName}>{item.name}</Text>
-        <Text style={styles.materialTotal}>{`Cantidad total: ${item.total} `}</Text>
+        <Text
+          style={styles.materialTotal}
+        >{`Cantidad total: ${item.total} `}</Text>
       </View>
       <TouchableOpacity
         style={[
@@ -80,25 +84,36 @@ export default function AnadirMaterial({ navigation }) {
   );
 
   const guardarDatos = () => {
-    setGuardando(true);
-    // Simula una operación de guardado que tarda 2 segundos.
-    setTimeout(() => {
-      setGuardando(false);
-      // Aquí iría tu lógica de guardado real
-    }, 5000);
-    navigation.navigate("tareaMateriales");
+    navigation.navigate("tareaComanda");
   };
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar" },
-        { text: "Confirmar", onPress: () => guardarDatos() },
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás listo para guardar?",
+        text: "Verifica la información antes de proceder.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          guardarDatos();
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          { text: "Confirmar", onPress: () => guardarDatos() },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   return (
@@ -106,7 +121,15 @@ export default function AnadirMaterial({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <Text style={styles.title}>Añadir Material</Text>
+      <View style={[styles.row, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Añadir Material</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("tareaMateriales")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.separador} />
       <View style={styles.separador} />
@@ -195,7 +218,6 @@ export default function AnadirMaterial({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.buttonContainer]}>
-        {guardando && <ActivityIndicator size="large" color="#0000ff" />}
 
         <View style={[styles.button]}>
           <Button
@@ -286,14 +308,18 @@ const styles = StyleSheet.create({
     color: "#fff", // Color del texto/caracter de verificación
   },
   materialInfo: {
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   materialName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 8,
   },
   materialTotal: {
     fontSize: 14,
   },
+  Image: {
+    width: 20,
+    height: 20,
+  }
 });

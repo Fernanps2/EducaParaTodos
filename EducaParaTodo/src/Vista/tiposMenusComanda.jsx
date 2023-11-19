@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -11,7 +10,9 @@ import {
   StyleSheet,
   Button,
   Image,
+  Platform,
 } from "react-native";
+import Swal from "sweetalert2";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -22,9 +23,6 @@ export default function TiposMenusComanda({ navigation }) {
   // Variables para tipo de menu
   const [selectedMenuType, setSelectedMenuType] = useState("");
   const [menuList, setMenuList] = useState([]);
-
-  //Variables para logo de guardar
-  const [guardando, setGuardando] = useState(false);
 
   const menuTypes = ["Menu Carne", "Menu Verdura", "Menu Pescado"];
 
@@ -53,25 +51,36 @@ export default function TiposMenusComanda({ navigation }) {
   );
 
   const guardarDatos = () => {
-    setGuardando(true);
-    // Simula una operación de guardado que tarda 2 segundos.
-    setTimeout(() => {
-      setGuardando(false);
-      // Aquí iría tu lógica de guardado real
-    }, 5000);
     navigation.navigate("tareaComanda");
   };
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar" },
-        { text: "Confirmar", onPress: () => guardarDatos() },
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás listo para guardar?",
+        text: "Verifica la información antes de proceder.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          guardarDatos();
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          { text: "Confirmar", onPress: () => guardarDatos() },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   return (
@@ -79,7 +88,15 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <Text style={styles.title}>Tipos de Menu</Text>
+      <View style={[styles.row, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Tipos de Menu</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.separador} />
       <View style={styles.separador} />
@@ -118,8 +135,6 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.buttonContainer]}>
-        {guardando && <ActivityIndicator size="large" color="#0000ff" />}
-
         <View style={[styles.button]}>
           <Button
             title="Guardar"
@@ -192,5 +207,9 @@ const styles = StyleSheet.create({
   deleteButton: {
     width: 20, // Ancho de la imagen
     height: 20, // Altura de la imagen
+  },
+  Image: {
+    width: 20,
+    height: 20,
   },
 });

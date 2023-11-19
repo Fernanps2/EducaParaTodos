@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -12,7 +11,9 @@ import {
   Button,
   Image,
   TextInput,
+  Platform,
 } from "react-native";
+import Swal from "sweetalert2";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -29,9 +30,6 @@ export default function TiposMenusComanda({ navigation }) {
     "Menu Verdura": ["Ensalada", "Brócoli al vapor"],
     // ...otros menús
   });
-
-   //Variables para logo de guardar
-   const [guardando, setGuardando] = useState(false);
 
   const addFood = () => {
     if (newFood) {
@@ -52,25 +50,36 @@ export default function TiposMenusComanda({ navigation }) {
   };
 
   const guardarDatos = () => {
-    setGuardando(true);
-    // Simula una operación de guardado que tarda 2 segundos.
-    setTimeout(() => {
-      setGuardando(false);
-      // Aquí iría tu lógica de guardado real
-    }, 5000);
     navigation.navigate("tareaComanda");
   };
-
+  
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar" },
-        { text: "Confirmar", onPress: () => guardarDatos() },
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás listo para guardar?",
+        text: "Verifica la información antes de proceder.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          guardarDatos();
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          { text: "Confirmar", onPress: () => guardarDatos() },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   return (
@@ -78,7 +87,15 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <Text style={styles.title}>Alimentos Menu</Text>
+      <View style={[styles.row, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Alimentos Menu</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.separador} />
       <View style={styles.separador} />
@@ -142,15 +159,13 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.buttonContainer]}>
-        {guardando && <ActivityIndicator size="large" color="#0000ff" />}
 
-        <View style={[styles.button]}>
           <Button
             title="Guardar"
             onPress={() => showAlertStore()}
             color="#0000FF"
+            style={[styles.button]}
           />
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -175,13 +190,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   buttonContainer: {
-    marginBottom: 10,
-    flexDirection: "row",
+    alignItems: 'center',
+    borderRadius: 4,
+    width: Platform.OS === 'web' ? 80 : 90,
+    justifyContent: "center",
+    marginBottom: 10
   },
   button: {
-    marginHorizontal: 10,
     alignItems: "center", // Centra el texto horizontalmente
-    justifyContent: "center",
     paddingVertical: 10, // Espacio vertical dentro del botón
     paddingHorizontal: 20, // Espacio horizontal dentro del botón
     backgroundColor: "blue", // Color de fondo del botón
@@ -226,4 +242,8 @@ const styles = StyleSheet.create({
     height: 40,
     width: 200,
   },
+  Image: {
+    width: 20,
+    height: 20,
+  }
 });
