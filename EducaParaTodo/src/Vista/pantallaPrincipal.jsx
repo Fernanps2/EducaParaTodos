@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, FlatList,ScrollView } from 'react-native';
 import DatosAlumnos from './DatosAlumnos';
-import alumnos from '../Modelo/alumno';
+//import alumnos from '../Modelo/alumno';
 
 export default function PantallaPrincipal({ navigation }) {
 
-  const datos = alumnos();  // Llamamos a la función para obtener los datos
+  const datos = null;  // Llamamos a la función para obtener los datos
   const alumnosArray = Object.values(datos);   // Convertimos los datos un array
 
   return (

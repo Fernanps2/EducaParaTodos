@@ -1,17 +1,10 @@
-// Importa solo lo necesario de firebase/app
-import { initializeApp } from "firebase/app";
+import React, {useEffect, useState} from 'react';
 
-// Tu configuración de Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyCm6Yg8zGnLR7XAc0tPYTZWK3Y9K3-Jt5I",
-  authDomain: "educaparatodos-39692.firebaseapp.com",
-  projectId: "educaparatodos-39692",
-  storageBucket: "educaparatodos-39692.appspot.com",
-  messagingSenderId: "253598049542",
-  appId: "1:253598049542:web:d6c2d2c725f0b2713b2a87"
-};
+import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firestore';
 
-// Inicializa Firebase y exporta la instancia
-const appFirebase = initializeApp(firebaseConfig);
-
-export default appFirebase;
+function getAlumnos() {
+    const querydb = getFirestore();
+    const queryDoc = doc(querydb, 'alumnos', '4kdUqZKobEDBh1Eh2d1x');
+    getDoc(queryDoc)
+    .then(res => console.log(res))
+}
