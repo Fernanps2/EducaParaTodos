@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import DatosAlumnos from './DatosAlumnos';
 import alumnos from '../Modelo/alumno';
 import '../Modelo/modelo';
-import { getAlumnos } from '../Modelo/modelo';
+import { getAlumnos, getTarea } from '../Modelo/modelo';
+import Tareas from './tareas';
 
 
 export default function PantallaPrincipal({ navigation }) {
@@ -27,6 +28,21 @@ export default function PantallaPrincipal({ navigation }) {
     };
     listaAlumnos();
   }, []);
+
+  // const [tareas,setTareas] =useState([]);
+
+  // useEffect(() => {
+  //   const listaTareas = async () => {
+  //     try{
+  //       const Tareas = await getTarea(2);
+  //       setTareas(Tareas);
+  //       // console.log(Tareas);
+  //     } catch(error){
+  //       console.log(error);
+  //     }
+  //   };
+  //   listaTareas();
+  // }, []);
 
   return (
     <View style={styles.container}>

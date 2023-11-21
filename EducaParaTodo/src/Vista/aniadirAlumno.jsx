@@ -35,7 +35,6 @@ export default function AniadirAlumno ({ navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{ 
-            almacenarAlumnoBD();
             navigation.navigate('HomeAdmin');
           }
         }
@@ -50,7 +49,6 @@ export default function AniadirAlumno ({ navigation }) {
 
 
   const almacenarAlumnoBD = async()=>{
-
     try{
         const mensaje = await almacenarAlumno(estado.nombre, estado.apellidos, selectedOptions);
 
@@ -113,7 +111,9 @@ export default function AniadirAlumno ({ navigation }) {
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
                   onPress={()=>{
-                    showAlertStore();
+                    // showAlertStore();
+                    almacenarAlumnoBD();
+
                   }}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
