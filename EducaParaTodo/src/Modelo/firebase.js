@@ -8,11 +8,14 @@ const COL_ALUMNOS = 'alumnos';
 const COL_PROFESORES = 'profesores';
 const COL_ADMINISTRADORES = 'administradores';
 const COL_FOROS = 'foros';
+const COL_PROFESORES_FOROS = 'profesoresForos';
+const COL_PROFESORES_TAREAS = 'profesoresTareas';
+const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
-export function getAlumnos() {
+export async function getAlumnos() {
     let alumnos = null;
     
     try {
@@ -29,7 +32,7 @@ export function getAlumnos() {
     return alumnos;
 }
 
-export function getAlumnosNombre(nombre) {
+export async function getAlumnosNombre(nombre) {
     let alumnos = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre));
@@ -44,7 +47,7 @@ export function getAlumnosNombre(nombre) {
     return alumnos;
 }
 
-export function getAlumnosApellidos(apellidos) {
+export async function getAlumnosApellidos(apellidos) {
     let alumnos = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('apellidos', '==', apellidos));
@@ -59,7 +62,7 @@ export function getAlumnosApellidos(apellidos) {
     return alumnos;
 }
 
-export function getAlumnosContrasenia(contrasenia) {
+export async function getAlumnosContrasenia(contrasenia) {
     let alumnos = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('password', '==', contrasenia));
@@ -74,7 +77,7 @@ export function getAlumnosContrasenia(contrasenia) {
     return alumnos;
 }
 
-export function getAlumnosVisualizacionPredefinida(visualizacion) {
+export async function getAlumnosVisualizacionPredefinida(visualizacion) {
     let alumnos = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('visualizacionPreferente', '==', visualizacion));
@@ -89,7 +92,7 @@ export function getAlumnosVisualizacionPredefinida(visualizacion) {
     return alumnos;
 }
 
-export function getAlumnosLogin(nombre, contrasenia) {
+export async function getAlumnosLogin(nombre, contrasenia) {
     let alumnos = null;
     try {    
         const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
@@ -104,7 +107,7 @@ export function getAlumnosLogin(nombre, contrasenia) {
     return alumnos;
 }
 
-export function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
+export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
     let alumno = {
         nombre: nombre,
         apellidos: apellidos,
@@ -126,7 +129,7 @@ export function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
     return identificacion;
 }
 
-export function updateAlumno(id, {nombre='', apellidos='', visualizacionPreferente='', password='', foto=''}) {
+export async function updateAlumno(id, {nombre='', apellidos='', visualizacionPreferente='', password='', foto=''}) {
     let editaAlumno = {nombre, apellidos, visualizacionPreferente, password, foto};
     let alumno = null;
 
@@ -152,7 +155,7 @@ export function updateAlumno(id, {nombre='', apellidos='', visualizacionPreferen
 
 /**********  INICIO FUNCIONES PROFESOR ********/
 
-export function getProfesores() {
+export async function getProfesores() {
     let profesores = null;
     
     try {
@@ -168,7 +171,7 @@ export function getProfesores() {
     return profesores;
 }
 
-export function getProfesoresNombre(nombre) {
+export async function getProfesoresNombre(nombre) {
     let profesores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre));
@@ -182,7 +185,7 @@ export function getProfesoresNombre(nombre) {
     return profesores;
 }
 
-export function getProfesoresApellidos(apellidos) {
+export async function getProfesoresApellidos(apellidos) {
     let profesores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('apellidos', '==', apellidos));
@@ -196,7 +199,7 @@ export function getProfesoresApellidos(apellidos) {
     return profesores;
 }
 
-export function getProfesoresContrasenia(contrasenia) {
+export async function getProfesoresContrasenia(contrasenia) {
     let profesores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('passwprd', '==', contrasenia));
@@ -210,7 +213,7 @@ export function getProfesoresContrasenia(contrasenia) {
     return profesores;
 }
 
-export function getProfesoresLogin(nombre, contrasenia) {
+export async function getProfesoresLogin(nombre, contrasenia) {
     let profesores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
@@ -224,7 +227,7 @@ export function getProfesoresLogin(nombre, contrasenia) {
     return profesores;
 }
 
-export function addProfesor(nombre, apellidos, contrasenia, foto) {
+export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     let profesor = {
         nombre: nombre,
         apellidos: apellidos,
@@ -245,7 +248,7 @@ export function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export function updateProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
+export async function updateProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
     let editaProfesor = {nombre, apellidos, password, foto};
     let profesor = null;
 
@@ -270,7 +273,7 @@ export function updateProfesor(id, {nombre='', apellidos='', password='', foto='
 
 /**********  INICIO FUNCIONES ADMINISTRADOR ********/
 
-export function getAdministradores() {
+export async function getAdministradores() {
     let administradores = null;
     
     try {
@@ -286,7 +289,7 @@ export function getAdministradores() {
     return administradores;
 }
 
-export function getAdministradoresNombre(nombre) {
+export async function getAdministradoresNombre(nombre) {
     let administradores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre));
@@ -300,7 +303,7 @@ export function getAdministradoresNombre(nombre) {
     return administradores;
 }
 
-export function getAdministadoresApellidos(apellidos) {
+export async function getAdministadoresApellidos(apellidos) {
     let administradores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
@@ -314,7 +317,7 @@ export function getAdministadoresApellidos(apellidos) {
     return administradores;
 }
 
-export function getAdministradoresContrasenia(contrasenia) {
+export async function getAdministradoresContrasenia(contrasenia) {
     let administradores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('password', '==', contrasenia));
@@ -328,7 +331,7 @@ export function getAdministradoresContrasenia(contrasenia) {
     return administradores;
 }
 
-export function getAdministradoresLogin(nombre, contrasenia) {
+export async function getAdministradoresLogin(nombre, contrasenia) {
     let administradores = null;
     try {
         const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
@@ -342,7 +345,7 @@ export function getAdministradoresLogin(nombre, contrasenia) {
     return administradores;
 }
 
-export function addAdministrador(nombre, apellidos, contrasenia, foto) {
+export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     let admin = {
         nombre: nombre,
         apellidos: apellidos,
@@ -363,7 +366,7 @@ export function addAdministrador(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export function updateAdministrador(id, {nombre='', apellidos='', password='', foto=''}) {
+export async function updateAdministrador(id, {nombre='', apellidos='', password='', foto=''}) {
     let editaAdministrador = {nombre, apellidos, password, foto};
     let Administrador = null;
 
@@ -388,7 +391,7 @@ export function updateAdministrador(id, {nombre='', apellidos='', password='', f
 
 /**********  INICIO FUNCIONES FORO ********/
 
-export function getForos() {
+export async function getForos() {
     let foros = null;
     
     try {
@@ -397,13 +400,13 @@ export function getForos() {
         getDocs(queryCollection)
         .then(res => foros = res.docs.map(foro => ({id: foro.id, nombre: foro.nombre})));
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del foro");
     }
 
     return foros;
 }
 
-export function getForosNombre(nombre) {
+export async function getForosNombre(nombre) {
     let foros = null;
 
     try {
@@ -413,9 +416,11 @@ export function getForosNombre(nombre) {
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del foro");
     }
+
+    return foros;
 }
 
-export function addForo(nombre) {
+export async function addForo(nombre) {
     let foro = {
         nombre: nombre
     }
@@ -433,7 +438,7 @@ export function addForo(nombre) {
     return identificacion;
 }
 
-export function updateAdministrador(id, {nombre=''}) {
+export async function updateForo(id, {nombre=''}) {
     let editaForo = {nombre};
     let foro = null;
 
@@ -453,9 +458,179 @@ export function updateAdministrador(id, {nombre=''}) {
 
 /**********  FINAL FUNCIONES FORO ********/
 
+/**********  FINAL FUNCIONES PROFESOR_TAREA ********/
+
+export async function getProfesorTarea() {
+    let profesorTarea = null;
+    
+    try {
+        const querydb = getFirestore();
+        const queryCollection = collection(querydb, COL_PROFESORES_TAREAS);
+        getDocs(queryCollection)
+        .then(res => profesorTarea = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesorTarea");
+    }
+
+    return profesorTarea;
+}
+
+export async function getProfesorTarea_Profesor(id_profesor) {
+    let instancia = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
+        getDocs(queryFilter)
+        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesorTarea");
+    }
+
+    return instancia;
+}
+
+export async function getProfesorTarea_Tarea(id_tarea) {
+    let instancia = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
+        getDocs(queryFilter)
+        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesorTarea");
+    }
+
+    return instancia;
+}
+
+export async function addProfesorTarea(id_profesor, id_tarea) {
+    let instancia = {
+        profesor: id_profesor,
+        tarea: id_tarea
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(getFirestore(), COL_PROFESORES_TAREAS), instancia)
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del profesorTarea");
+    }
+
+    return identificacion;
+}
+
+export async function updateProfesorTarea(id, {profesor='', tarea=''}) {
+    let editaInstancia = {profesor, tarea};
+    let instancia = null;
+
+    try {
+        let docInstancia = doc(getFirestore(), COL_PROFESORES_TAREAS);
+        instancia = getDoc(docInstancia, id);
+        
+        editaInstancia = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
+        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
+
+        updateDoc(docInstancia, {
+            ...editaInstancia
+        });
+    } catch (error) {
+        console.log("Problema al actualizar datos de profesorTarea");
+    }
+}
+
+/**********  FINAL FUNCIONES PROFESOR_TAREA ********/
+
+/**********  FINAL FUNCIONES ALUMNO_TAREA ********/
+
+export async function getAlumnoTarea() {
+    let instancia = null;
+    
+    try {
+        const querydb = getFirestore();
+        const queryCollection = collection(querydb, COL_ALUMNOS_TAREAS);
+        getDocs(queryCollection)
+        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+    }
+
+    return instancia;
+}
+
+export async function getAlumnoTarea_Alumno(id_alumno) {
+    let instancia = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
+        getDocs(queryFilter)
+        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+    }
+
+    return instancia;
+}
+
+export async function getAlumnoTarea_Tarea(id_tarea) {
+    let instancia = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
+        getDocs(queryFilter)
+        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+    }
+
+    return instancia;
+}
+
+export async function addAlumnoTarea(id_alumno, id_tarea) {
+    let instancia = {
+        alumno: id_alumno,
+        tarea: id_tarea
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(getFirestore(), COL_ALUMNOS_TAREAS), instancia)
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del alumnoTarea");
+    }
+
+    return identificacion;
+}
+
+export async function updateAlumnoTarea(id, {alumno='', tarea=''}) {
+    let editaInstancia = {alumno, tarea};
+    let instancia = null;
+
+    try {
+        let docInstancia = doc(getFirestore(), COL_ALUMNOS_TAREAS);
+        instancia = getDoc(docInstancia, id);
+        
+        editaInstancia = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
+        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
+
+        updateDoc(docInstancia, {
+            ...editaInstancia
+        });
+    } catch (error) {
+        console.log("Problema al actualizar datos de alumnoTarea");
+    }
+}
+
+/**********  FINAL FUNCIONES ALUMNO_TAREA ********/
+
 /**********  INICIO FUNCIONES PROFESOR-FORO ********/
 
-export function getProfesoresForo() {
+export async function getProfesoresForo() {
     let profesoresForos = null;
     
     try {
@@ -468,6 +643,71 @@ export function getProfesoresForo() {
     }
 
     return profesoresForos;
+}
+
+export async function getProfesoresForo_Foro(id_foro) {
+    let profesoresForos = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('foro', '==', id_foro));
+        getDocs(queryFilter)
+        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesorForo");
+    }
+
+    return profesoresForos
+}
+
+export async function getProfesoresForo_Profesores(id_profesores) {
+    let profesoresForos = null;
+
+    try {
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('profesores', 'in', id_profesores));
+        getDocs(queryFilter)
+        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesorForo");
+    }
+
+    return profesoresForos
+}
+
+export async function addProfesoresForo(id_foro, id_profesores) {
+    let profesorForo = {
+        foro: id_foro,
+        profesores: id_profesores
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(getFirestore(), COL_PROFESORES_FOROS), profesorForo)
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del profesorForo");
+    }
+
+    return identificacion;
+}
+
+export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
+    let editaForo = {id_profesores};
+    let foro = null;
+
+    try {
+        let docForo = doc(getFirestore(), COL_PROFESORES_FOROS);
+        foro = getDoc(docForo, id);
+        
+        editaForo = editaForo.id_profesores == '' ? foro.profesores : editaForo.id_profesores;
+
+        updateDoc(docForo, {
+            ...editaForo
+        });
+    } catch (error) {
+        console.log("Problema al actualizar datos de profesorForo");
+    }
 }
 
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
