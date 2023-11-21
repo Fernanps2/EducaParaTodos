@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import DatosAlumnos from './DatosAlumnos';
 import alumnos from '../Modelo/alumno';
 import '../Modelo/modelo';
-import { getAlumnos, getTarea } from '../Modelo/modelo';
+import { getAlimento, getAlumnos, getMaterial, getTarea, getTareasActividad, getTareasComanda,getMateriales, getTareasInventario } from '../Modelo/modelo';
 import Tareas from './tareas';
 
 
@@ -21,7 +21,7 @@ export default function PantallaPrincipal({ navigation }) {
       try {
         const alumnos = await getAlumnos();
         setLista(alumnos);
-        console.log(alumnos);
+        await console.log(alumnos);
       } catch (error) {
         console.log(error);
       }
@@ -29,20 +29,20 @@ export default function PantallaPrincipal({ navigation }) {
     listaAlumnos();
   }, []);
 
-  // const [tareas,setTareas] =useState([]);
+  const [tareas,setTareas] =useState([]);
 
-  // useEffect(() => {
-  //   const listaTareas = async () => {
-  //     try{
-  //       const Tareas = await getTarea(2);
-  //       setTareas(Tareas);
-  //       // console.log(Tareas);
-  //     } catch(error){
-  //       console.log(error);
-  //     }
-  //   };
-  //   listaTareas();
-  // }, []);
+  useEffect(() => {
+    const listaTareas = async () => {
+      try{
+        const Tareas = await getTareasInventario();
+        setTareas(Tareas);
+        await console.log(Tareas);
+      } catch(error){
+        console.log(error);
+      }
+    };
+    listaTareas();
+  }, []);
 
   return (
     <View style={styles.container}>
