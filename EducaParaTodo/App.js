@@ -8,6 +8,8 @@ import Tareas from './src/Vista/tareas.jsx';
 import LoginScreen from './src/Vista/loginEducador.js';
 import LoginScreenAlumno from './src/Vista/loginAlumno.js';
 import HomeEducador from './src/Vista/homeEducador.jsx';
+import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirProfesor from './src/Vista/aniadirProfesor.jsx';
 import HomeAdmin from './src/Vista/homeAdmin.jsx';
 import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
@@ -70,6 +72,8 @@ export default function App() {
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
           <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
+          <Stack.Screen name="datosProfesor" component={DatosProfesor} />
+          <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="pantallaDatos" component={PantallaDatos} />
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="verTareaPictogramas">
