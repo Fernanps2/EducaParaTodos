@@ -13,7 +13,7 @@ export default function HomeAdmin ({ navigation }) {
           source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
-        <Text style={styles.roleText}>Administrador</Text>
+        <Text style={styles.roleText}>Profesor</Text>
       </View>
 
       <TouchableOpacity
@@ -26,6 +26,12 @@ export default function HomeAdmin ({ navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate('pantallaAlumnos')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('datosProfesor')}>
+        <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 
       </View>
