@@ -1,25 +1,27 @@
- import React, { useState, useEffect} from 'react';
- import Constants from 'expo-constants';
- import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
- import tareas from '../Modelo/tareas';
- import { Entypo } from '@expo/vector-icons';
-//  import { CheckBox } from 'react-native-elements';
-
+import React, { useState, useEffect} from 'react';
+import Constants from 'expo-constants';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import tareas from '../Modelo/tareas';
+import { Entypo } from '@expo/vector-icons';
 
 export function VerTarea (){
-    //const [isChecked, setIsChecked] = useState(false);
+    const [checkedStates, setCheckedStates] = useState([]);
     const [pasoActual, setPasoActual] = useState(0);
 
     useEffect(() => {
-        setPasoActual(0);
+        // Inicializar los estados de los pasos
+        const initialCheckedStates = Array(datos[2].length).fill(false);
+        setCheckedStates(initialCheckedStates);
     }, []);
 
-    /*const toggleCheck = () => {
-        setIsChecked(!isChecked);
-    };*/
-
     const datos = tareas();
-    //const tareasArray = Object.values(datos);     
+
+    const handlePress = () => {
+        // Actualizar el estado del paso actual al hacer clic en el botón de check
+        const updatedCheckedStates = [...checkedStates];
+        updatedCheckedStates[pasoActual] = !checkedStates[pasoActual];
+        setCheckedStates(updatedCheckedStates);
+    };
 
     const handleSiguiente = () => {
         if (pasoActual < datos[2].length - 1) setPasoActual(pasoActual + 1);
@@ -35,7 +37,6 @@ export function VerTarea (){
     return (
         <View style={styles.container}>
             <Text style={styles.tarea}>{datos[0]}</Text>
-            {/*<Text style={styles.descripcion}>{datos[1]}</Text>*/}
 
             <View style={styles.pasos}>
                 <Text style={styles.texto}>{pasoActualData.title}</Text>
@@ -46,14 +47,20 @@ export function VerTarea (){
                         {pasoActual > 0 && (
                             <TouchableOpacity onPress={handleAnterior} style={styles.botonAnterior}>
                                 <Entypo name="arrow-long-left" size={36} color="black" />
-                                <Text style={styles.botonTexto}>Anterior</Text>
+                                <Text style={styles.botonTexto}>Anterior        </Text>
                             </TouchableOpacity>
                         )}
                         <TouchableOpacity onPress={handleSiguiente} style={styles.botonSiguiente}>
                             <Entypo name="arrow-long-right" size={36} color="black" />
-                            <Text style={styles.botonTexto}>Siguiente</Text>
+                            <Text style={styles.botonTexto}>        Siguiente</Text>
                         </TouchableOpacity>
                     </View>
+            </View>
+
+            <View style={{margin: 20}}>
+                <TouchableOpacity style={styles.checkBox} onPress={handlePress}>
+                    {checkedStates[pasoActual] ? <Text style={styles.check}>✔️</Text> : null}
+                </TouchableOpacity>
             </View>
             
             <View style={{ alignItems: 'center' }}>
@@ -98,33 +105,13 @@ export function VerTarea (){
                     </View>
                 </View>
             </View>
-
-            
-
-            {/*<Text style={styles.pasos}>Pasos a seguir:</Text>
-
-            <FlatList style={{padding: 20}}   
-                data={pasos}
-                renderItem={({item}) => 
-                <View style={{padding: 0}}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.data}>{item.data}</Text>
-                </View>                
-                }
-            />*/}
-
-            {/*<CheckBox textStyle={styles.check} 
-                title="Marca la casilla para completar la tarea"
-                checked={isChecked}
-                onPress={toggleCheck}
-            />*/}
         </View>                
     )   
 }
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: Constants.statusBarHeight,
+        //marginTop: Constants.statusBarHeight,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -138,7 +125,7 @@ const styles = StyleSheet.create({
     },
     texto:{
         fontSize: 20, 
-        marginTop: Constants.statusBarHeight
+        //marginTop: Constants.statusBarHeight
     },
     botonesContainer: {
         flexDirection: 'row',
@@ -173,7 +160,13 @@ const styles = StyleSheet.create({
         fontSize: 17, padding: 20
     },
     check: {
-        fontSize: 20, 
-        textAlign: 'center'
+        alignSelf: 'center',
+        fontSize: 25
+    },
+    checkBox: {
+        width: 40,
+        height: 40,
+        borderWidth: 2,
+        borderColor: 'green'
     }
 })
