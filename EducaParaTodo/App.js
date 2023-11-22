@@ -8,8 +8,6 @@ import Tareas from './src/Vista/tareas.jsx';
 import LoginScreen from './src/Vista/loginEducador.js';
 import LoginScreenAlumno from './src/Vista/loginAlumno.js';
 import HomeEducador from './src/Vista/homeEducador.jsx';
-import DatosProfesor from './src/Vista/datosProfesor.jsx';
-import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirProfesor from './src/Vista/aniadirProfesor.jsx';
 import HomeAdmin from './src/Vista/homeAdmin.jsx';
 import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
@@ -23,8 +21,8 @@ import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
 import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext'
-
-
+import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 

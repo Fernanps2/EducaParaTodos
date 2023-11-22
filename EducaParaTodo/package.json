@@ -9,21 +9,21 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@expo/webpack-config": "^19.0.0",
-    "@react-native-community/datetimepicker": "^7.2.0",
+    "@expo/webpack-config": "^0.12.52",
+    "@react-native-community/datetimepicker": "7.2.0",
     "@react-native-picker/picker": "2.4.10",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
-    "expo": "^49.0.17",
-    "expo-splash-screen": "~0.20.5",
+    "expo": "^49.0.20",
+    "expo-splash-screen": "^0.10.3",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.72.6",
+    "react-native": "0.72.5",
     "react-native-web": "~0.19.6",
     "sweetalert": "^2.1.2",
-    "sweetalert2": "^11.9.0"
+    "sweetalert2": "^11.6.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
