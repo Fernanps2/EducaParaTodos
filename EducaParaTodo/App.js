@@ -15,7 +15,9 @@ import HomeEducador from './src/Vista/homeEducador.jsx';
 import AniadirProfesor from './src/Vista/aniadirProfesor.jsx';
 import HomeAdmin from './src/Vista/homeAdmin.jsx';
 import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
-import PantallaDatos from './src/Vista/pantallaDatos.jsx';
+import ListaProfesores from './src/Vista/listaProfesores.jsx';
+import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
+import pantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
 // import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
@@ -78,7 +80,9 @@ export default function App() {
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
           <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
-          <Stack.Screen name="pantallaDatos" component={PantallaDatos} />
+          <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
+          <Stack.Screen name="pantallaProfesores" component={ListaProfesores} />
+          <Stack.Screen name="pantallaDatosProfesor" component={pantallaDatosProfesor} />
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="verTareaPictogramas">
                 {() => (

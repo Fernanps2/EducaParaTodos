@@ -4,7 +4,7 @@ export function aniadeProfesor(nombre, apellidos, password, foto) {
     if (nombre != '' || apellidos != '' || password != '' || foto != '')
         addProfesor(nombre, apellidos, password, foto)
 }
-
+/*
 export function buscaProfesor({nombre='', apellidos=''}) {
     let {nombre, apellidos} = {nombre, apellidos};
     let profesores = null;
@@ -18,6 +18,7 @@ export function buscaProfesor({nombre='', apellidos=''}) {
 
     return profesores;
 }
+*/
 
 export function actualizaProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
     let datos = {nombre, apellidos, password, foto};

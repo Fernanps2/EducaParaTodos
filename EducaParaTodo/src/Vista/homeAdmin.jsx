@@ -9,7 +9,7 @@ export default function HomeAdmin ({ navigation }) {
       <CerrarSesion/>
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: 'https://m.media-amazon.com/images/M/MV5BOWU1ODBiNGUtMzVjNi00MzdhLTk0OTktOWRiOTIxMWNhOGI2XkEyXkFqcGdeQXVyMTU2OTM5NDQw._V1_FMjpg_UX1000_.jpg' }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
         <Text style={styles.roleText}>Administrador</Text>
@@ -17,14 +17,14 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirAlumno')}>
-        <Text style={styles.buttonText}>Añadir alumno</Text>
+        onPress={() => navigation.navigate('pantallaAlumnos')}>
+        <Text style={styles.buttonText}>Gestionar Alumnos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirProfesor')}>
-        <Text style={styles.buttonText}>Añadir Profesor</Text>
+        onPress={() => navigation.navigate('pantallaProfesores')}>
+        <Text style={styles.buttonText}>Gestionar Profesores</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -35,17 +35,9 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
         onPress={() => navigation.navigate('gestionarEstadoTareas')}>
         <Text style={styles.buttonText}>Gestionar tareas</Text>
       </TouchableOpacity>
-
-
 
       </View>
 
