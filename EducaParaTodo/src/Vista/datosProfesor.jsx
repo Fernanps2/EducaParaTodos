@@ -1,14 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import profesores from '../Modelo/profesor';
+//import profesores from '../Modelo/profesor';
+import { getProfesorPorId, updateProfesor } from '../Modelo/firebase';
 
 export default function DatosProfesor ({ route, navigation }) {
 
-    const { profesor } = route.params || {};
-    const profe = profesores[0];
-    //const profesor = profesores();
-    //const profesores = obtenerProfesores();
-    //const profe = profesores.profesor1;
+      const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+      const [nombre, setNombre] = useState('');
+      const [apellidos, setApellidos] = useState('');
+      const [contrasenia, setContrasenia] = useState('');
+
+      useEffect(() => {
+        // Obtener datos del profesor al cargar el componente
+        const obtenerDatosProfesor = async () => {
+          const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
+          const datosProfesor = await getProfesorPorId(idProfesor);
+          setProfesorData(datosProfesor);
+          // Asignar los valores iniciales para la edición
+          if (datosProfesor) {
+            setNombre(datosProfesor.nombre);
+            setApellidos(datosProfesor.apellidos);
+            setContrasenia(datosProfesor.password);
+          }
+        };
+        obtenerDatosProfesor();
+      }, []);
+
+
+      // Función para actualizar los datos del profesor
+      const guardarCambios = async () => {
+        // Lógica para guardar los cambios en la base de datos usando updateProfesor
+        const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
+        await updateProfesor(idProfesor, { nombre, apellidos, password: contrasenia });
+        // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
+      };
 
     const showAlertStore = () => {
         Alert.alert(
@@ -22,11 +47,9 @@ export default function DatosProfesor ({ route, navigation }) {
         );
       };
 
-      //const DatosProfesor = ({ route, navigation }) => {
 
-        //const {profesor} =route.params;
 
-        return (
+      return (
           <View style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>EducaParaTodos</Text>
@@ -42,26 +65,45 @@ export default function DatosProfesor ({ route, navigation }) {
             <Text style={styles.roleText}>Profesor</Text>
           </View>
 
-          <Text style={styles.roleText}>Nombre</Text>
-          <TextInput style={styles.input} placeholder= {profe?.username} />
-          <Text style={styles.roleText}>Apellidos</Text>
-          <TextInput style={styles.input} placeholder= {profe?.lastname} />
-          <Text style={styles.roleText}>Contraseña</Text>
-          <TextInput style={styles.input} placeholder= {profe?.password} />
-          <Text style={styles.roleText}>Correo electrónico</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nombre"
+                  value={nombre}
+                  onChangeText={(text) => setNombre(text)}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Apellidos"
+                  value={apellidos}
+                  onChangeText={(text) => setApellidos(text)}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contraseña"
+                  value={contrasenia}
+                  onChangeText={(text) => setContrasenia(text)}
+                  secureTextEntry // Esto oculta los caracteres ingresados para la contraseña
+                />
+
+
+          <Text style={styles.roleText}>Foto</Text>
+          <Image
+             source={{ uri: 'path_to_your_image' }}
+             style={styles.profileImage}
+          />
+
+          {/* <Text style={styles.roleText}>Correo electrónico</Text>
           <TextInput style={styles.input} placeholder= {profe?.email} />
           <Text style={styles.roleText}>Información adicional</Text>
-          <TextInput style={styles.input} placeholder= {profe?.info} />
+          <TextInput style={styles.input} placeholder= {profe?.info} /> */}
 
 
-          <TouchableOpacity style={styles.addButton}
-                      onPress={showAlertStore}>
+          <TouchableOpacity style={styles.addButton} onPress={guardarCambios}>
             <Text style={styles.addButtonText}>Modificar</Text>
           </TouchableOpacity>
 
         </View>
       );
-     //}
     }
 
 
@@ -122,5 +164,6 @@ export default function DatosProfesor ({ route, navigation }) {
           padding: 10,
           alignItems: 'center',
           borderRadius: 5,
+          marginTop: 20,
         }
     });

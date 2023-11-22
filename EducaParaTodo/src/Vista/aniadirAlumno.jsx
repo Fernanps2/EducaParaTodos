@@ -2,14 +2,16 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { addDoc } from 'firebase/firestore';
 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
-import appFirebase from '../Modelo/firebase';
+/*import appFirebase from '../Modelo/firebase';
 import {getFirestore,collection,addDoc} from 'firebase/firestore'
-const db = getFirestore(appFirebase);
+const db = getFirestore(appFirebase);*/
 
 export default function AniadirAlumno ({ navigation }) {
 
@@ -32,14 +34,14 @@ export default function AniadirAlumno ({ navigation }) {
       setSelectedOptions(selectedOptions.filter(item => item !== option));
     }
   };
-  
+
   const showAlertStore = () => {
     Alert.alert(
       "¿Quiere guardar?", // Título
       "Pulsa una opción", // Mensaje
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{ 
+        { text: "Confirmar", onPress: () =>{
             navigation.navigate('HomeAdmin');
           }
         }
@@ -65,7 +67,7 @@ export default function AniadirAlumno ({ navigation }) {
           visualizacion: selectedOptions
         }
         console.log(alumno);
-        
+
         await addDoc(collection(db,'alumnos'),{
           ...alumno
         })
@@ -82,15 +84,15 @@ export default function AniadirAlumno ({ navigation }) {
         <Text style={styles.title}>EducaParaTodos</Text>
       </View>
 
-      <TextInput 
-        style={styles.input} 
-        placeholder="Nombre" 
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre"
         value={estado.nombre}
         onChangeText={(value)=>handeChangeText(value,'nombre')}
         />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Apellidos" 
+      <TextInput
+        style={styles.input}
+        placeholder="Apellidos"
         value={estado.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />
