@@ -1,35 +1,29 @@
+
+
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-// Uso base de datos
+
+
+
+// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
+
 import appFirebase from '../Modelo/firebase';
+import {getFirestore,collection,addDoc} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
-import {getFirestore,collection,addDoc, getDocs} from 'firebase/firestore'
-import {almacenarAlumno} from '../Modelo/modelo';
-
-//Tratado de imagenes
-import { Permission, ImagePicker } from 'expo';
-
 
 export default function AniadirAlumno ({ navigation }) {
 
-  const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
-
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
-  
-  const [datosAlumno, setDatosAlumno] = useState({
-    nombre: "",
-    apellidos: "",
-    opcionesSeleccionadas: []
-  });
-
-
-  const handeChangeText = (value, name) => {
-    setDatosAlumno(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+  const initialState = {
+    nombre:'',
+    apellidos:''
   }
+  const [nombre, setNombre] = useState("empty");
+  const [apellidos,setApellidos] = useState("empty");
+  const[estado,setEstado] = useState(initialState);
+
+  const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
 
   const handleOptionPress = (option) => {
     if (!selectedOptions.includes(option)) {
@@ -39,7 +33,7 @@ export default function AniadirAlumno ({ navigation }) {
     }
   };
   
-  const showAlertStore = async () => {
+  const showAlertStore = () => {
     Alert.alert(
       "¿Quiere guardar?", // Título
       "Pulsa una opción", // Mensaje
@@ -54,37 +48,33 @@ export default function AniadirAlumno ({ navigation }) {
     );
   };
 
-  //Tratado de la imagen
-
-/*
-  openGallery = async () => {
-    const resultPermission = await Permission.askAsync(
-      Permission.CAMERA_ROLL
-    );
-    
-    if (resultPermission) {
-      const resultImagePicker = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [4, 3]
-      });
-
-      if (resultImagePicker.cancelled === false) {
-        const imageUri = resultImagePicker.uri;
-
-        console.log(imageUri);
-      }
-    }
-  };
-*/
-  const almacenarAlumnoBD = async()=>{
-    try{
-        const mensaje = await almacenarAlumno(datosAlumno.nombre, datosAlumno.apellidos, selectedOptions);
-
-    }catch(error){
-      Alert.alert(`Error: ${error.message}`);
-    }
+  const handeChangeText = (value, name) =>{
+    setEstado({...estado, [name]:value})
   }
 
+
+  const almacenarAlumnoBD = async()=>{
+
+    try{
+      if(estado.nombre === '' || estado.apellidos === '')
+        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido')
+      else{
+        const alumno = {
+          nombre: estado.nombre,
+          apellidos: estado.apellidos,
+          visualizacion: selectedOptions
+        }
+        console.log(alumno);
+        
+        await addDoc(collection(db,'alumnos'),{
+          ...alumno
+        })
+        Alert.alert('Alumno guardado con éxito')
+      }
+    }catch(error){
+
+    }
+  }
 
     return (
       <View style={styles.container}>
@@ -95,14 +85,13 @@ export default function AniadirAlumno ({ navigation }) {
       <TextInput 
         style={styles.input} 
         placeholder="Nombre" 
-        value={datosAlumno.nombre}
+        value={estado.nombre}
         onChangeText={(value)=>handeChangeText(value,'nombre')}
         />
-
       <TextInput 
         style={styles.input} 
         placeholder="Apellidos" 
-        value={datosAlumno.apellidos}
+        value={estado.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />
 
@@ -127,26 +116,17 @@ export default function AniadirAlumno ({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-      {/*
+
       <View style={styles.photoSection}>
-        <Text>Añadir foto del usuario:</Text>
-        <TouchableOpacity onPress={() => this.openGallery()}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.userIcon} />
-          ) : (
-            <View style={styles.userIconPlaceholder} />
-          )}
-        </TouchableOpacity>
+        <Text>Foto del usuario:</Text>
+        <View style={styles.userIcon} ></View>
       </View>
-          */}
-  
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
                   onPress={()=>{
-                    // showAlertStore();
-                    almacenarAlumnoBD();
-
+                    // showAlertStore
+                    almacenarAlumnoBD()
                   }}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
@@ -181,17 +161,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   userIcon: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    // Otros estilos para la imagen
-  },
-  userIconPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    backgroundColor: '#cccccc', // Un color de fondo para el placeholder
-    // Otros estilos para el placeholder
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'grey',
+    marginBottom: 10,
   },
   dropdownContainer: {
     flexDirection: 'column',

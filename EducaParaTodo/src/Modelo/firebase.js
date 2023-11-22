@@ -2,6 +2,23 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
+//import * as firebase from 'firebase';
+
+// Importa solo lo necesario de firebase/app
+import { initializeApp } from "firebase/app";
+
+// Tu configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCm6Yg8zGnLR7XAc0tPYTZWK3Y9K3-Jt5I",
+  authDomain: "educaparatodos-39692.firebaseapp.com",
+  projectId: "educaparatodos-39692",
+  storageBucket: "educaparatodos-39692.appspot.com",
+  messagingSenderId: "253598049542",
+  appId: "1:253598049542:web:d6c2d2c725f0b2713b2a87"
+};
+
+// Inicializa Firebase
+export const AppFirebase = initializeApp(firebaseConfig);
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -711,3 +728,66 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 }
 
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
+
+/********** INICIO FUNCIONES PARA MULTIMEDIA ********/
+
+uploadImage= (uri, nameImage) => {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onerror = reject;
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        resolve(xhr.response);
+      }
+    };
+
+    xhr.open("GET", uri);
+    xhr.responseType = "blob";
+    xhr.send();
+  });
+};
+
+export function almacenarImagen(imagen) {
+  this.uploadImage(imagen)
+    .then(resolve => {
+      AppFirebase.storage()
+        .ref()
+        .child(`images/${nombre}`);
+      ref.put(resolve);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export function almacenarPictograma(imagen) {
+  this.uploadImage(imagen)
+    .then(resolve => {
+      AppFirebase.storage()
+        .ref()
+        .child(`Pictogramas/${nombre}`);
+      ref.put(resolve);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export function cargarImagen(imagen) {
+  let imagenCargada = null;
+
+  AppFirebase
+    .storage()
+    .ref(`images/${imagen}`)
+    .getDownloadURL()
+    .then(resolve => {
+      imagenCargada = resolve;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+
+    return imagenCargada;
+}
+
+/********** FINAL FUNCIONES PARA MULTIMEDIA ********/
