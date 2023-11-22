@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+// Uso base de datos
+import appFirebase from '../Modelo/firebase';
+const db = getFirestore(appFirebase);
+import {getFirestore,collection,addDoc, getDocs} from 'firebase/firestore'
 import {almacenarAlumno} from '../Modelo/modelo';
+
+//Tratado de imagenes
+import { Permission, ImagePicker } from 'expo';
+
 
 export default function AniadirAlumno ({ navigation }) {
 
-
+  const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const initialState = {
-    nombre:'',
-    apellidos:''
-  }
-  const [nombre, setNombre] = useState("empty");
-  const [apellidos,setApellidos] = useState("empty");
-  const[estado,setEstado] = useState(initialState);
+  
+  const [datosAlumno, setDatosAlumno] = useState({
+    nombre: "",
+    apellidos: "",
+    opcionesSeleccionadas: []
+  });
 
-  const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
+
+  const handeChangeText = (value, name) => {
+    setDatosAlumno(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
 
   const handleOptionPress = (option) => {
     if (!selectedOptions.includes(option)) {
@@ -42,15 +55,32 @@ export default function AniadirAlumno ({ navigation }) {
     );
   };
 
-  const handeChangeText = (value, name) =>{
-    setEstado({...estado, [name]:value})
-  }
+  //Tratado de la imagen
 
+/*
+  openGallery = async () => {
+    const resultPermission = await Permission.askAsync(
+      Permission.CAMERA_ROLL
+    );
+    
+    if (resultPermission) {
+      const resultImagePicker = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      });
 
+      if (resultImagePicker.cancelled === false) {
+        const imageUri = resultImagePicker.uri;
+
+        console.log(imageUri);
+      }
+    }
+  };
+*/
   const almacenarAlumnoBD = async()=>{
 
     try{
-        const mensaje = await almacenarAlumno(estado.nombre, estado.apellidos, selectedOptions);
+        const mensaje = await almacenarAlumno(datosAlumno.nombre, datosAlumno.apellidos, selectedOptions);
 
     }catch(error){
       Alert.alert(`Error: ${error.message}`);
@@ -67,13 +97,14 @@ export default function AniadirAlumno ({ navigation }) {
       <TextInput 
         style={styles.input} 
         placeholder="Nombre" 
-        value={estado.nombre}
+        value={datosAlumno.nombre}
         onChangeText={(value)=>handeChangeText(value,'nombre')}
         />
+
       <TextInput 
         style={styles.input} 
         placeholder="Apellidos" 
-        value={estado.apellidos}
+        value={datosAlumno.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />
 
@@ -98,15 +129,19 @@ export default function AniadirAlumno ({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-
+      {/*
       <View style={styles.photoSection}>
-        <Text>Añdir foto del usuario:</Text>
-        <TouchableOpacity 
-          onPress={()=> abrirGaleria()}>
-          <View style={styles.userIcon} > </View>
+        <Text>Añadir foto del usuario:</Text>
+        <TouchableOpacity onPress={() => this.openGallery()}>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.userIcon} />
+          ) : (
+            <View style={styles.userIconPlaceholder} />
+          )}
         </TouchableOpacity>
-
       </View>
+          */}
+  
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
@@ -146,11 +181,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   userIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'grey',
-    marginBottom: 10,
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    // Otros estilos para la imagen
+  },
+  userIconPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    backgroundColor: '#cccccc', // Un color de fondo para el placeholder
+    // Otros estilos para el placeholder
   },
   dropdownContainer: {
     flexDirection: 'column',
