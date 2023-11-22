@@ -2,6 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
+import {getStorage, ref} from 'firebase/storage'
+//import {v4} from 'uuid';
+
 //import * as firebase from 'firebase';
 
 // Importa solo lo necesario de firebase/app
@@ -19,6 +22,7 @@ const firebaseConfig = {
 
 // Inicializa Firebase
 export const AppFirebase = initializeApp(firebaseConfig);
+export const storage = getStorage(AppFirebase)
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -731,7 +735,7 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-uploadImage= (uri, nameImage) => {
+uploadImage= (uri) => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onerror = reject;
@@ -748,11 +752,15 @@ uploadImage= (uri, nameImage) => {
 };
 
 export function almacenarImagen(imagen) {
+
+    let num_imagenes = storage.child('images').size();
+    let nombre_imagen = 'imagen_' + (num_imagenes+1);
+
   this.uploadImage(imagen)
     .then(resolve => {
-      AppFirebase.storage()
+      storage
         .ref()
-        .child(`images/${nombre}`);
+        .child(`images/${nombre_imagen}`);
       ref.put(resolve);
     })
     .catch(error => {
@@ -763,10 +771,14 @@ export function almacenarImagen(imagen) {
 export function almacenarPictograma(imagen) {
   this.uploadImage(imagen)
     .then(resolve => {
-      AppFirebase.storage()
+      storage
         .ref()
         .child(`Pictogramas/${nombre}`);
-      ref.put(resolve);
+      ref.put(resolve).then(resolve => {
+        console.log("Imagen subida correctamente");
+      }). catch(error => {
+        console.log("Error al subir la imagen");
+      });
     })
     .catch(error => {
       console.log(error);
@@ -776,8 +788,7 @@ export function almacenarPictograma(imagen) {
 export function cargarImagen(imagen) {
   let imagenCargada = null;
 
-  AppFirebase
-    .storage()
+  storage
     .ref(`images/${imagen}`)
     .getDownloadURL()
     .then(resolve => {

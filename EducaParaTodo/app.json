@@ -6,5 +6,8 @@
     "assetBundlePatterns": [
       "**/*"
     ]
+  },
+  "android": {
+    "permissions": ["CAMERA_ROLL"]
   }
 }
