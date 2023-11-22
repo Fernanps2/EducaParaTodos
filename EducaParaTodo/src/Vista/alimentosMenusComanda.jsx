@@ -18,26 +18,32 @@ import Swal from "sweetalert2";
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {} from "../Modelo/modelo";
 const db = getFirestore(appFirebase);
 
 export default function TiposMenusComanda({ navigation }) {
   // Variables para los alimentos del menu
   const [selectedMenu, setSelectedMenu] = useState("");
-  const [newFood, setNewFood] = useState("");
   const [menus, setMenus] = useState({
-    "Ninguno": [""],
-    "Menu Carne": ["Pechuga de pollo", "Lomo de Cerdo"],
-    "Menu Verdura": ["Ensalada", "Brócoli al vapor"],
-    // ...otros menús
+    'Ninguno': [],
+    "Menu Carne": [],
+    "Menu Verdura": [],
   });
+  const [selectedAlimento, setSelectedAlimento] = useState();
+  const [alimentos, setAlimentos] = useState([
+    'Ninguno',
+    "Ensalada",
+    "Pechuga de pollo",
+    "Lemguado",
+  ]);
 
   const addFood = () => {
-    if (newFood) {
+    if (selectedAlimento) {
       const updatedMenu = { ...menus };
       const currentFoods = updatedMenu[selectedMenu] || [];
-      updatedMenu[selectedMenu] = [...currentFoods, newFood];
+      updatedMenu[selectedMenu] = [...currentFoods, selectedAlimento];
       setMenus(updatedMenu);
-      setNewFood("");
+      setSelectedAlimento("");
     }
   };
 
@@ -49,10 +55,11 @@ export default function TiposMenusComanda({ navigation }) {
     setMenus(updatedMenu);
   };
 
+  // Guardamos los alumentos que se añadieron al menu.
   const guardarDatos = () => {
     navigation.navigate("tareaComanda");
   };
-  
+
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -124,14 +131,19 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.row]}>
-        <TextInput
-          placeholder="Añada alimento"
-          value={newFood}
-          onChangeText={setNewFood}
-          style={styles.input}
-        />
+        <Picker
+          selectedValue={selectedAlimento}
+          onValueChange={(itemValue, itemIndex) =>
+            setSelectedAlimento(itemValue)
+          }
+          style={styles.picker}
+        >
+          {alimentos.map((alimento, index) => (
+          <Picker.Item key={index} label={alimento} value={alimento} />
+        ))}
+        </Picker>
 
-        <TouchableOpacity style={styles.button} onPress={() => addFood()}>
+        <TouchableOpacity style={[styles.button, {marginLeft: 12}]} onPress={() => addFood()}>
           <Text style={styles.buttonText}>Añadir </Text>
         </TouchableOpacity>
       </View>
@@ -146,7 +158,7 @@ export default function TiposMenusComanda({ navigation }) {
             <Text style={styles.itemText}>{item}</Text>
             <TouchableOpacity onPress={() => deleteFood(item)}>
               <Image
-                source={require('../../Imagenes/CrearTarea/iconoBasura.png')}
+                source={require("../../Imagenes/CrearTarea/iconoBasura.png")}
                 style={styles.deleteButton}
               />
             </TouchableOpacity>
@@ -159,13 +171,12 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.buttonContainer]}>
-
-          <Button
-            title="Guardar"
-            onPress={() => showAlertStore()}
-            color="#0000FF"
-            style={[styles.button]}
-          />
+        <Button
+          title="Guardar"
+          onPress={() => showAlertStore()}
+          color="#0000FF"
+          style={[styles.button]}
+        />
       </View>
     </SafeAreaView>
   );
@@ -190,11 +201,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 4,
-    width: Platform.OS === 'web' ? 80 : 90,
+    width: Platform.OS === "web" ? 80 : 90,
     justifyContent: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   button: {
     alignItems: "center", // Centra el texto horizontalmente
@@ -234,7 +245,7 @@ const styles = StyleSheet.create({
     height: 20, // Altura de la imagen
   },
   input: {
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     //flex: 1,
     marginRight: 8,
@@ -245,5 +256,5 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
-  }
+  },
 });

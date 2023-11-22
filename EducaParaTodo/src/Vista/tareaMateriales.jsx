@@ -9,6 +9,7 @@ import {
   Button,
   Image,
   TouchableOpacity,
+  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
 
@@ -25,6 +26,11 @@ export default function TareaActividad({ navigation }) {
   const [inicioHora, setInicioHora] = useState("");
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
+  //Variables para switch
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  //Cambia estado Switch
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -220,20 +226,20 @@ export default function TareaActividad({ navigation }) {
       </View>
 
       <View style={styles.container}>
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        {Platform.OS !== "web" && (
-          <>
-            <Text style={[styles.title]}>Materiales</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("gestionTareas")}
-            >
-              <Image
-                source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                style={[styles.Image, { marginLeft: 40 }]}
-              />
-            </TouchableOpacity>
-          </>
-        )}
+        <View style={[styles.row, { justifyContent: "center" }]}>
+          {Platform.OS !== "web" && (
+            <>
+              <Text style={[styles.title]}>Materiales</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("gestionTareas")}
+              >
+                <Image
+                  source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+                  style={[styles.Image, { marginLeft: 40 }]}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         <View style={styles.separador} />
@@ -290,7 +296,18 @@ export default function TareaActividad({ navigation }) {
             onChangeText={setFinHora}
           />
         </View>
+        <View style={styles.separador} />
 
+        <Text style={styles.text}>Tarea Semanal </Text>
+
+        <View style={styles.separador} />
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />

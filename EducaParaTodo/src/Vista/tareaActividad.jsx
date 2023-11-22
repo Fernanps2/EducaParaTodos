@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -10,6 +9,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
 
@@ -28,6 +28,11 @@ export default function TareaActividad({ navigation }) {
   const [finHora, setFinHora] = useState("");
   // Variable para guardar el lugar
   const [lugar, setLugar] = useState();
+  //Variable para switch
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  // Cambiamos estado del switch
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -211,7 +216,9 @@ export default function TareaActividad({ navigation }) {
         {Platform.OS === "web" && (
           <>
             <Text style={[styles.title]}>Actividad</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("gestionTareas")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("gestionTareas")}
+            >
               <Image
                 source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
                 style={[styles.Image, { marginLeft: 40 }]}
@@ -221,18 +228,20 @@ export default function TareaActividad({ navigation }) {
         )}
       </View>
       <View style={styles.container}>
-      <View style={[styles.row, { justifyContent: "center" }]}>
-      {Platform.OS !== "web" && (
-          <>
-            <Text style={[styles.title]}>Actividad</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("gestionTareas")}>
-              <Image
-                source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                style={[styles.Image, { marginLeft: 40 }]}
-              />
-            </TouchableOpacity>
-          </>
-        )}
+        <View style={[styles.row, { justifyContent: "center" }]}>
+          {Platform.OS !== "web" && (
+            <>
+              <Text style={[styles.title]}>Actividad</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("gestionTareas")}
+              >
+                <Image
+                  source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+                  style={[styles.Image, { marginLeft: 40 }]}
+                />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
         <View style={styles.separador} />
         <Text style={styles.text}>Nombre Tarea</Text>
@@ -286,6 +295,17 @@ export default function TareaActividad({ navigation }) {
           placeholder="Elija Lugar"
           value={lugar}
           onChangeText={setLugar}
+        />
+
+        <View style={styles.separador} />
+        <Text style={styles.text}>Tarea semanal </Text>
+        <View style={styles.separador} />
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
         />
         <View style={styles.separador} />
         <View style={styles.separador} />

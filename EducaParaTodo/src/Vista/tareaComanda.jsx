@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
+  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
 
@@ -28,6 +29,11 @@ export default function TareaActividad({ navigation }) {
   const [finHora, setFinHora] = useState("");
   // Variable para guardar el formulario
   const [formulario, setFormulario] = useState("");
+  // Variable para switch
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  //Cambia de estado Switch
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -312,6 +318,18 @@ export default function TareaActividad({ navigation }) {
           <Picker.Item label="Formulario3" value="formulario3" />
           <Picker.Item label="Formulario4" value="formulario4" />
         </Picker>
+        <View style={styles.separador} />
+
+        <Text style={styles.text}>Tarea Semanal </Text>
+
+        <View style={styles.separador} />
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
 
         <View style={styles.separador} />
         <View style={styles.separador} />
