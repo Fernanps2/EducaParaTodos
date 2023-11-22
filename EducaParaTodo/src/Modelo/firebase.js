@@ -2,7 +2,23 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import * as firebase from 'firebase';
+//import * as firebase from 'firebase';
+
+// Importa solo lo necesario de firebase/app
+import { initializeApp } from "firebase/app";
+
+// Tu configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCm6Yg8zGnLR7XAc0tPYTZWK3Y9K3-Jt5I",
+  authDomain: "educaparatodos-39692.firebaseapp.com",
+  projectId: "educaparatodos-39692",
+  storageBucket: "educaparatodos-39692.appspot.com",
+  messagingSenderId: "253598049542",
+  appId: "1:253598049542:web:d6c2d2c725f0b2713b2a87"
+};
+
+// Inicializa Firebase
+export const AppFirebase = initializeApp(firebaseConfig);
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -734,7 +750,7 @@ uploadImage= (uri, nameImage) => {
 export function almacenarImagen(imagen) {
   this.uploadImage(imagen)
     .then(resolve => {
-      firebase.storage()
+      AppFirebase.storage()
         .ref()
         .child(`images/${nombre}`);
       ref.put(resolve);
@@ -747,7 +763,7 @@ export function almacenarImagen(imagen) {
 export function almacenarPictograma(imagen) {
   this.uploadImage(imagen)
     .then(resolve => {
-      firebase.storage()
+      AppFirebase.storage()
         .ref()
         .child(`Pictogramas/${nombre}`);
       ref.put(resolve);
@@ -760,7 +776,7 @@ export function almacenarPictograma(imagen) {
 export function cargarImagen(imagen) {
   let imagenCargada = null;
 
-  firebase
+  AppFirebase
     .storage()
     .ref(`images/${imagen}`)
     .getDownloadURL()
