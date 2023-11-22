@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import GestionTareas from './src/Vista/gestionTareas.jsx';
 import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
 import TareaActividad from './src/Vista/tareaActividad.jsx';
@@ -29,7 +29,7 @@ import RecogerLosPlatos from './Imagenes/verTarea/recogerlosplatos.png';
 import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
 import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
 //Contexto
-import {UserContextProvider} from './src/Controlador/userContext'
+import {UserContextProvider} from './src/Controlador/userContext';
 
 
 
@@ -64,7 +64,10 @@ const PASOS = [
 ]
 
 
+
 export default function App() {
+  // Variables para materiales
+const [materialesTarea, setMaterialesTarea] = useState([]);
   return (
     <UserContextProvider>
       <NavigationContainer>
@@ -82,8 +85,12 @@ export default function App() {
           <Stack.Screen name="alimentosMenusComanda" component={AlimentosMenusComanda} />
           <Stack.Screen name="tiposMenusComanda" component={TiposMenusComanda} />
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
-          <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
-          <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales} />
+          <Stack.Screen name="anadirMaterial">
+            {(props) => <AnadirMaterial {...props} materialesTarea={materialesTarea} setMaterialesTarea={setMaterialesTarea} />}
+          </Stack.Screen>
+          <Stack.Screen name="verTodosMateriales">
+            {(props) => <VerTodosMateriales {...props} materialesTarea={materialesTarea} />}
+          </Stack.Screen>
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />

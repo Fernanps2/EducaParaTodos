@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,89 +9,46 @@ import {
   Image,
 } from "react-native";
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
+const initialData = [];
 
-const initialData = [
-  {
-    id: "1",
-    material: "Folios",
-    destino: "Aula G",
-    origen: "Almacén",
-    cantidad: 10,
-  },
-  {
-    id: "2",
-    material: "Tijeras",
-    destino: "Aula A",
-    origen: "Aula F",
-    cantidad: 2,
-  },
-  {
-    id: "3",
-    material: "Marcadores",
-    destino: "Aula B",
-    origen: "Almacén",
-    cantidad: 15,
-  },
-  {
-    id: "4",
-    material: "Pinturas",
-    destino: "Aula C",
-    origen: "Almacén",
-    cantidad: 20,
-  },
-  {
-    id: "5",
-    material: "Libros",
-    destino: "Biblioteca",
-    origen: "Almacén",
-    cantidad: 30,
-  },
-  {
-    id: "6",
-    material: "Compases",
-    destino: "Aula D",
-    origen: "Almacén",
-    cantidad: 5,
-  },
-  {
-    id: "7",
-    material: "Reglas",
-    destino: "Aula E",
-    origen: "Almacén",
-    cantidad: 10,
-  },
-];
-
-export default function VerTodosMateriales({ navigation }) {
+export default function VerTodosMateriales({ navigation, AnadirMaterial, setMaterialesTarea }) {
   // Variables para los alimentos del menu
-  const [data, setData] = useState(initialData);
+  //const [data, setData] = useGlobalState();
+/*
+  useEffect(() => {
+    // Esto se ejecutará cada vez que `enviarDatos` cambie
+    if (enviarDatos != undefined && enviarDatos != null) {
+      setData(enviarDatos);
+      console.log(enviarDatos);
+    }
+  }, [enviarDatos]);
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+*/
   const deleteItem = (id) => {
-    setData(data.filter((item) => item.id !== id));
+    setMaterialesTarea(AnadirMaterial.filter((item) => item[0] !== id));
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-          <Text style={styles.label}>Material</Text>
-          <Text style={styles.itemText}>{item.material}</Text>
-          <View style={styles.separador} />
-          <Text style={styles.label}>Cantidad</Text>
-          <Text style={styles.itemText}>{item.cantidad}</Text>
+        <Text style={styles.label}>Material</Text>
+        <Text style={styles.itemText}>{item[4]}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Cantidad</Text>
+        <Text style={styles.itemText}>{item[3]}</Text>
       </View>
       <View style={styles.rightColumn}>
-          <Text style={styles.label}>Lugar destino</Text>
-          <Text style={styles.itemText}>{item.destino}</Text>
-          <View style={styles.separador} />
-          <Text style={styles.label}>Lugar origen</Text>
-          <Text style={styles.itemText}>{item.origen}</Text>
+        <Text style={styles.label}>Lugar destino</Text>
+        <Text style={styles.itemText}>{item[2]}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Lugar origen</Text>
+        <Text style={styles.itemText}>{item[1]}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => deleteItem(item.id)}
+        onPress={() => deleteItem(item[0])}
         style={styles.deleteButton}
       >
         <Image
@@ -107,9 +64,11 @@ export default function VerTodosMateriales({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <View style={[{flexDirection: 'row'}, { justifyContent: "center" }]}>
+      <View style={[{ flexDirection: "row" }, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Materiales en Tarea</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaMateriales")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("tareaMateriales")}
+        >
           <Image
             source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
             style={[styles.Image, { marginLeft: 40 }]}
@@ -121,9 +80,9 @@ export default function VerTodosMateriales({ navigation }) {
       <View style={styles.separador} />
 
       <FlatList
-        data={data}
+        data={AnadirMaterial}
+        keyExtractor={(item, index) => item[0].toString()}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
       />
     </SafeAreaView>
   );
@@ -185,5 +144,5 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
-  }
+  },
 });

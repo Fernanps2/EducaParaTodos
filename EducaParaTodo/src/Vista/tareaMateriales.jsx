@@ -13,11 +13,6 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
-
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
   const [nombreTarea, setNombreTarea] = useState("");

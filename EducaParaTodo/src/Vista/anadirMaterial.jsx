@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Alert,
   View,
@@ -10,36 +10,60 @@ import {
   Button,
   TextInput,
   Image,
+  Platform,
 } from "react-native";
 import Swal from "sweetalert2";
+import { getMateriales } from "../Modelo/modelo";
+import VerTodosMateriales from './verTodosMateriales';
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
+//import { DataContextMateriales } from "./DataContextMateriales";
 
-const initialMaterials = [
-  { id: "1", name: "Lápices", total: 20 },
-  { id: "2", name: "Gomas", total: 10 },
-  { id: "3", name: "Folios", total: 50 },
-  { id: "4", name: "Tijeras", total: 15 },
-  { id: "5", name: "Pegamento", total: 30 },
-  { id: "6", name: "Boligrafos", total: 5 },
-];
-
-export default function AnadirMaterial({ navigation }) {
+export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, navigation }) {
   // Variables para elegir material
+  const [initialMaterials, setInitialMaterials] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    // Función para llamar a getMateriales y almacenar la respuesta
+    const cargarMateriales = async () => {
+      try {
+        const datosMateriales = await getMateriales();
+        setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
+        setInitialMaterials(datosMateriales);
+        setCargando(false);
+      } catch (error) {
+        console.error("Error al obtener materiales:", error);
+        setCargando(false);
+      }
+    };
+
+    cargarMateriales(); // Llamamos a la función al montar el componente
+  }, []); // El array vacío asegura que el efecto se ejecute solo una vez al montar
+
+  // Variables para guardar los datos
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [labelQty, setLabelQty] = useState("");
-  const [materials, setMaterials] = useState(initialMaterials);
   const [selectedMaterialId, setSelectedMaterialId] = useState(null);
+  const [nombreMaterial, setNombreMaterial] = useState('');
+  
+  const enviarDatos = () => {
+    const datoNuevo = [selectedMaterialId, pickupLocation, dropoffLocation, labelQty, nombreMaterial];
+    if (AnadirMaterial === undefined){
+
+      setMaterialesTarea([datoNuevo]);
+    }else{
+
+      setMaterialesTarea([...AnadirMaterial, datoNuevo]);
+    }
+  };
 
   const searchMaterials = () => {
     if (searchQuery) {
       setMaterials(
-        materials.filter((material) => material.name.includes(searchQuery))
+        materials.filter((material) => material.nombre.includes(searchQuery))
       );
     } else {
       setMaterials(initialMaterials);
@@ -51,21 +75,23 @@ export default function AnadirMaterial({ navigation }) {
     setSearchQuery("");
   };
 
-  const selectMaterial = (id) => {
-    if (selectedMaterialId === id) {
+  const selectMaterial = (item) => {
+    if (selectedMaterialId === item.id) {
       setSelectedMaterialId(null);
+      setNombreMaterial('');
     } else {
-      setSelectedMaterialId(id);
+      setSelectedMaterialId(item.id);
+      setNombreMaterial(item.nombre);
     }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.listItem}>
       <View style={styles.materialInfo}>
-        <Text style={styles.materialName}>{item.name}</Text>
+        <Text style={styles.materialName}>{item.nombre}</Text>
         <Text
           style={styles.materialTotal}
-        >{`Cantidad total: ${item.total} `}</Text>
+        >{`Cantidad total: ${item.stock} `}</Text>
       </View>
       <TouchableOpacity
         style={[
@@ -74,7 +100,7 @@ export default function AnadirMaterial({ navigation }) {
             ? styles.checkboxChecked
             : styles.checkboxUnchecked,
         ]}
-        onPress={() => selectMaterial(item.id)}
+        onPress={() => selectMaterial(item)}
       >
         {selectedMaterialId === item.id && (
           <Text style={styles.checkboxLabel}>✓</Text>
@@ -84,7 +110,8 @@ export default function AnadirMaterial({ navigation }) {
   );
 
   const guardarDatos = () => {
-    navigation.navigate("tareaComanda");
+    enviarDatos();
+    navigation.navigate("tareaMateriales");
   };
 
   const showAlertStore = () => {
@@ -100,7 +127,23 @@ export default function AnadirMaterial({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (
+            pickupLocation == "" ||
+            dropoffLocation == "" ||
+            isNaN(labelQty) ||
+            labelQty.trim() === "" ||
+            labelQty == 0 ||
+            selectedMaterialId === null
+          ) {
+            Swal.fire({
+              title: "Campos rellenados incorrectamente",
+              text: "Comprueba que todos los campos estan rellanados correctamente.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          } else {
+            guardarDatos();
+          }
         }
       });
     } else {
@@ -120,20 +163,19 @@ export default function AnadirMaterial({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={[styles.row, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Añadir Material</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaMateriales")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("tareaMateriales")}
+        >
           <Image
             source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
             style={[styles.Image, { marginLeft: 40 }]}
           />
         </TouchableOpacity>
       </View>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={styles.row}>
         <Text style={styles.text}>Recoger en: </Text>
 
@@ -144,10 +186,8 @@ export default function AnadirMaterial({ navigation }) {
           style={styles.input}
         />
       </View>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={styles.row}>
         <Text style={styles.text}>Llevar a: </Text>
 
@@ -158,15 +198,11 @@ export default function AnadirMaterial({ navigation }) {
           style={styles.input}
         />
       </View>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <Text style={styles.text}>Busque material </Text>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={[styles.row]}>
         <TextInput
           placeholder="Buscar"
@@ -182,10 +218,8 @@ export default function AnadirMaterial({ navigation }) {
           <Text style={styles.buttonText}>Buscar </Text>
         </TouchableOpacity>
       </View>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={[styles.row]}>
         <TouchableOpacity
           style={styles.button}
@@ -204,21 +238,21 @@ export default function AnadirMaterial({ navigation }) {
           style={[styles.input, { width: 50 }]}
         />
       </View>
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
+      {cargando && (
+        <View style={styles.text}>
+          <Text>Cargando...</Text>
+        </View>
+      )}
       <FlatList
         data={materials}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       <View style={[styles.buttonContainer]}>
-
         <View style={[styles.button]}>
           <Button
             title="Guardar"
@@ -227,6 +261,7 @@ export default function AnadirMaterial({ navigation }) {
           />
         </View>
       </View>
+      <VerTodosMateriales enviarDatos/>
     </SafeAreaView>
   );
 }
@@ -321,5 +356,5 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
-  }
+  },
 });
