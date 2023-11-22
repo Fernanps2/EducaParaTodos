@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
+import * as firebase from 'firebase';
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -711,3 +712,66 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 }
 
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
+
+/********** INICIO FUNCIONES PARA MULTIMEDIA ********/
+
+uploadImage= (uri, nameImage) => {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onerror = reject;
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        resolve(xhr.response);
+      }
+    };
+
+    xhr.open("GET", uri);
+    xhr.responseType = "blob";
+    xhr.send();
+  });
+};
+
+export function almacenarImagen(imagen) {
+  this.uploadImage(imagen)
+    .then(resolve => {
+      firebase.storage()
+        .ref()
+        .child(`images/${nombre}`);
+      ref.put(resolve);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export function almacenarPictograma(imagen) {
+  this.uploadImage(imagen)
+    .then(resolve => {
+      firebase.storage()
+        .ref()
+        .child(`Pictogramas/${nombre}`);
+      ref.put(resolve);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export function cargarImagen(imagen) {
+  let imagenCargada = null;
+
+  firebase
+    .storage()
+    .ref(`images/${imagen}`)
+    .getDownloadURL()
+    .then(resolve => {
+      imagenCargada = resolve;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+
+    return imagenCargada;
+}
+
+/********** FINAL FUNCIONES PARA MULTIMEDIA ********/
