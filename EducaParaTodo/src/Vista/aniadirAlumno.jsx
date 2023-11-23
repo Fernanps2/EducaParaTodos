@@ -32,14 +32,14 @@ export default function AniadirAlumno ({ navigation }) {
       setSelectedOptions(selectedOptions.filter(item => item !== option));
     }
   };
-  
+
   const showAlertStore = () => {
     Alert.alert(
       "¿Quiere guardar?", // Título
       "Pulsa una opción", // Mensaje
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{ 
+        { text: "Confirmar", onPress: () =>{
             navigation.navigate('HomeAdmin');
           }
         }
@@ -65,7 +65,7 @@ export default function AniadirAlumno ({ navigation }) {
           visualizacion: selectedOptions
         }
         console.log(alumno);
-        
+
         await addDoc(collection(db,'alumnos'),{
           ...alumno
         })
@@ -82,15 +82,15 @@ export default function AniadirAlumno ({ navigation }) {
         <Text style={styles.title}>EducaParaTodos</Text>
       </View>
 
-      <TextInput 
-        style={styles.input} 
-        placeholder="Nombre" 
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre"
         value={estado.nombre}
         onChangeText={(value)=>handeChangeText(value,'nombre')}
         />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Apellidos" 
+      <TextInput
+        style={styles.input}
+        placeholder="Apellidos"
         value={estado.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />

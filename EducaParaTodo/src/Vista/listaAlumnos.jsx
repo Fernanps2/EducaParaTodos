@@ -26,7 +26,7 @@ export default function ListaAlumnos({ navigation }) {
     listaAlumnos();
   }, []);
 
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

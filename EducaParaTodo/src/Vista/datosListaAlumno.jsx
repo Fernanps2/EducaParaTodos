@@ -8,7 +8,7 @@ const DatosAlumnosLista = ({ alumno, navigation }) => {
     return (
             <View>
                 <TouchableOpacity onPress={() => navigation.navigate('pantallaDatosAlumno', { alumno: alumno })}>
-                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
+                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
                     <Image style={styles.image} source={{uri:alumno.fotoUrl}} />
                     <Text style={styles.texto}> Nombre: {alumno.nombre} </Text>

@@ -62,7 +62,7 @@ export function VerTarea (){
                     {checkedStates[pasoActual] ? <Text style={styles.check}>✔️</Text> : null}
                 </TouchableOpacity>
             </View>
-            
+
             <View style={{ alignItems: 'center' }}>
                 <Text style={styles.opciones}>Opciones:</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap' }}>
@@ -105,8 +105,8 @@ export function VerTarea (){
                     </View>
                 </View>
             </View>
-        </View>                
-    )   
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -117,14 +117,14 @@ const styles = StyleSheet.create({
     },
     tarea: {
         textAlign: 'center',
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
         fontSize: 40
     },
     pasos: {
         alignItems: 'center',
     },
     texto:{
-        fontSize: 20, 
+        fontSize: 20,
         //marginTop: Constants.statusBarHeight
     },
     botonesContainer: {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     },
     botonSiguiente: {
         alignItems: 'flex-end',
-        marginLeft: 'auto' 
+        marginLeft: 'auto'
     },
     botonTexto: {
         textAlign: 'center',
@@ -149,12 +149,12 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     descripcion: {
-        fontSize: 17, 
-        padding: 20, 
+        fontSize: 17,
+        padding: 20,
         textAlign: 'center'
     },
     title: {
-        fontSize: 20, 
+        fontSize: 20,
         textDecorationLine: 'underline'
     },
     data: {

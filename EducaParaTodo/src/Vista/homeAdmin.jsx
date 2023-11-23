@@ -9,7 +9,7 @@ export default function HomeAdmin ({ navigation }) {
       <CerrarSesion/>
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'https://m.media-amazon.com/images/M/MV5BOWU1ODBiNGUtMzVjNi00MzdhLTk0OTktOWRiOTIxMWNhOGI2XkEyXkFqcGdeQXVyMTU2OTM5NDQw._V1_FMjpg_UX1000_.jpg' }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
         <Text style={styles.roleText}>Administrador</Text>
@@ -38,6 +38,14 @@ export default function HomeAdmin ({ navigation }) {
         onPress={() => navigation.navigate('gestionarEstadoTareas')}>
         <Text style={styles.buttonText}>Gestionar Estado tareas</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('asignarTarea')}>
+        <Text style={styles.buttonText}>Asignar Tareas</Text>
+      </TouchableOpacity>
+
+
 
       </View>
 
