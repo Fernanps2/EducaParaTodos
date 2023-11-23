@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     opciones: {
         fontSize: 30,
         textAlign: 'center',
+        marginBottom: 10
     },
     descripcion: {
         fontSize: 17, 
