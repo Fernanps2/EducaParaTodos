@@ -511,10 +511,9 @@ export const getMateriales = async() => {
     const docs = [];
 
     querySnapshot.forEach((docu) => {
-      const materialDatos = docu.data();
-      console.log(materialDatos);
-
-      docs.push(materialDatos);
+      const { nombre, stock } = docu.data(); // Extraemos nombre y stock
+      const id = docu.id; // Extraemos el ID del documento
+      docs.push({ id, nombre, stock }); // Añadimos un objeto con el ID, nombre y stock al array
     });
 
     return docs;

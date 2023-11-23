@@ -730,7 +730,7 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
-
+/*
 uploadImage= (uri, nameImage) => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
@@ -746,7 +746,7 @@ uploadImage= (uri, nameImage) => {
     xhr.send();
   });
 };
-
+*/
 export function almacenarImagen(imagen) {
   this.uploadImage(imagen)
     .then(resolve => {
