@@ -1,10 +1,14 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 
 
-export default function crearTarea () {
+// Uso base de datos
+import appFirebase from '../Modelo/firebase';
+import {getFirestore, collection, getDocs} from 'firebase/firestore'
+const db = getFirestore(appFirebase);
+
+export default function tareaMateriales () {
   
   // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);
@@ -14,6 +18,7 @@ export default function crearTarea () {
   const [showAddStepAddPict, setShowAddStepAddPict] = useState(false); // Opcion Añadir pictograma en pasos
   const [showAddStepAddVideo, setShowAddStepAddVideo] = useState(false); // Opcion Añadir video en pasos
   const [showAddStepAddImage, setShowAddStepAddImage] = useState(false); // Opcion Añadir imagen en pasos
+  const [showAddStepAddAudio, setShowAddStepAddAudio] = useState(false); // Opcion Añadir imagen en pasos
   // Variables de campo Lugar cuando es actividad
   const [showLugar, setShowLugar] = useState(false);
   // Variables añadir Paso cuando es comanda
@@ -25,10 +30,72 @@ export default function crearTarea () {
   const [selectedValue, setSelectedValue] = useState('none'); // item seleccionable formulario
   // Variables para guardar input
   const [nombreTarea, setNombreTarea] = useState ('');
+
+  const [inicioFecha, setInicioFecha] = useState ('');
+  const [inicioHora, setInicioHora] = useState ('');
+  const [finFecha, setFinFecha] = useState ('');
+  const [finHora, setFinHora] = useState ('');
+
   // Variables para fechay hora
   const [date, setDate] = useState(new Date());
   //Variables para logo de guardar
   const [guardando, setGuardando] = useState(false);
+
+  // Variables para pictogramas
+  const [dataPicto, setDataPicto] = useState([]);
+  const [isLoadingPicto, setIsLoadindPicto] = useState(false);
+  const [selectedPictograma, setSelectedPictograma] = useState('');
+  const [storePictograma, setStorePictograma] = useState('');
+  const [isStorePicto, setIsStorePicto] = useState(false);
+
+    // Variables para Video
+    const [dataVideo, setDataVideo] = useState([]);
+    const [isLoadingVideo, setIsLoadindVideo] = useState(false);
+    const [selectedVideo, setSelectedVideo] = useState('');
+    const [storeVideo, setStoreVideo] = useState('');
+    const [isStoreVideo, setIsStoreVideo] = useState(false);
+
+  // Funcion para mostrar los pictogramas de la base de datos
+  const cargarPictogramas = (() => {
+    setIsLoadindPicto(true); // Iniciar la carga
+    const querybd = getFirestore(appFirebase);
+    const queryCollection = collection(querybd, 'Pictogramas');
+    getDocs(queryCollection)
+      .then(res => {
+        if(res.docs.length > 0){
+          setDataPicto(res.docs.map(picto => ({id: picto.id, ...picto.data()})))
+          setIsLoadindPicto(false);
+        }else{
+          console.log('No se encontraron documentos en la colección.')
+          setIsLoadindPicto(false);
+        }
+    })
+    .catch(error => {
+      console.error('Error al obtener los documentos: ', error)
+      setIsLoadindPicto(false);
+    })
+  })
+
+    // Funcion para mostrar los pictogramas de la base de datos
+    const cargarVideos = (() => {
+      setIsLoadindVideo(true); // Iniciar la carga
+      const querybd = getFirestore(appFirebase);
+      const queryCollection = collection(querybd, 'Videos');
+      getDocs(queryCollection)
+        .then(res => {
+          if(res.docs.length > 0){
+            setDataVideo(res.docs.map(video => ({id: video.id, ...video.data()})))
+            setIsLoadindVideo(false);
+          }else{
+            console.log('No se encontraron documentos en la colección.')
+            setIsLoadindVideo(false);
+          }
+      })
+      .catch(error => {
+        console.error('Error al obtener los documentos: ', error)
+        setIsLoadindVideo(false);
+      })
+    })
 
 // Pulsamos boton añadir texto en añadir paso
 const handleAnadirTexto = () => {
@@ -36,6 +103,7 @@ const handleAnadirTexto = () => {
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
 }
 // Pulsamos boton añadir pictograma en añadir paso
 const handleAnadirPicto = () => {
@@ -43,6 +111,8 @@ const handleAnadirPicto = () => {
   setShowAddStepAddPict(true);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
+  cargarPictogramas();
 }
 // Pulsamos boton añadir video en añadir paso
 const handleAnadirVideo = () => {
@@ -50,6 +120,8 @@ const handleAnadirVideo = () => {
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(true);
   setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(false);
+  cargarVideos();
 }
 // Pulsamos boton añadir imagen en añadir paso
 const handleAnadirImagen = () => {
@@ -57,6 +129,16 @@ const handleAnadirImagen = () => {
   setShowAddStepAddPict(false);
   setShowAddStepAddVideo(false);
   setShowAddStepAddImage(true);
+  setShowAddStepAddAudio(false);
+}
+
+// Pulsamos boton añadir audio en añadir paso
+const handleAnadirAudio = () => {
+  setShowAddStepAddText(false);
+  setShowAddStepAddPict(false);
+  setShowAddStepAddVideo(false);
+  setShowAddStepAddImage(false);
+  setShowAddStepAddAudio(true);
 }
 
 // Pulsamos boton actividad
@@ -123,21 +205,39 @@ const handleHideStepClick = () => {
   setShowAddStep(true);
 };
 
-// Que pasa si clica en Picto Speak
-const handlePictoPressSpeak = (image) => {
-
+// Pulsamos un pictogramaentre los elegidos
+const handlePictoPress = (item) => {
+  setSelectedPictograma(item);
 };
 
-// Que pasa si clica en Picto Drink
-const handlePictoPressDrink = (image) => {
-  
+// elegimos un pictograma
+const handleGuardarPictograma = () => {
+  setStorePictograma (selectedPictograma)
+  setIsStorePicto (true)
 };
 
-// Que pasa si clica en Picto Eat
-const handlePictoPressEat = (image) => {
-
+// Borramos pictograma
+const handletrashPicto = () => {
+  setIsStorePicto (false);
+  setStorePictograma('');
 };
 
+// Pulsamos un video entre los elegidos
+const handleVideoPress = (item) => {
+  setSelectedVideo(item);
+};
+
+// elegimos un video
+const handleGuardarVideo = () => {
+  setStoreVideo (selectedVideo)
+  setIsStoreVideo (true)
+};
+
+// Borramos video
+const handletrashVideo = () => {
+  setIsStoreVideo (false);
+  setStoreVideo('');
+};
 
 // Borramos toda la información cuando pulsamos borrar
 const handleDeleteInformation = () => {
@@ -393,10 +493,13 @@ const showAlertStore = () => {
         <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirImagen}>
           <Text style={styles.addButtonAñadirPasoText}>Imagen</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.addButtonAñadirPaso} onPress={handleAnadirAudio}>
+          <Text style={styles.addButtonAñadirPasoText}>Audio</Text>
+        </TouchableOpacity>
       </View>
       
       {
-      (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage) && (
+      (!showAddStepAddText && !showAddStepAddPict && !showAddStepAddVideo && !showAddStepAddImage && !showAddStepAddAudio) && (
         <View style={[styles.rectangle, {transform: [{ translateY: -4 }]}]}>
            <Text style={[{alignItems: 'center'}]}>Elija que item añadir </Text>
         </View>
@@ -429,22 +532,33 @@ const showAlertStore = () => {
           
         </View>
       )}
-
+      
       {(showAddStepAddPict) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/speak.png')} style={styles.image}></Image>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/drink.png')} style={styles.image}></Image>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/eat.png')} style={styles.image}></Image>
-            </TouchableOpacity>
+            
+            {isLoadingPicto ? (
+              <Text>Cargando_Pictogramas... </Text>
+            ) : (
+
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+
+                {dataPicto.map((picto, index) =>(
+                  <TouchableOpacity key={index} onPress={() => handlePictoPress (picto)} >
+                    <Image key={index} source={{uri: picto.URL}} style={styles.image} />
+                  </TouchableOpacity>
+                ))}
+
+              </ScrollView>
+
+            )}
+
           </View>
 
-          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+          <TouchableOpacity 
+            style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}
+            onPress={() => handleGuardarPictograma()}
+          >
             <Text style={[styles.addButtonEmergenteText, 
               {color: 'white'},
               {fontSize: 9},
@@ -461,15 +575,29 @@ const showAlertStore = () => {
       {(showAddStepAddVideo) && (
         <View>
           <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/videoMicroondas.png')} style={styles.image}></Image>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={require('../../Imagenes/CrearTarea/videoOrdenarHabitacion.png')} style={styles.image}></Image>
-            </TouchableOpacity>
+            
+          {isLoadingVideo ? (
+              <Text>Cargando_Videos... </Text>
+            ) : (
+
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+
+                {dataVideo.map((video, index) =>(
+                  <TouchableOpacity key={index} onPress={() => handleVideoPress (video)} >
+                    <Text style={styles.videos}>{video.Titulo}</Text>
+                  </TouchableOpacity>
+                ))}
+
+              </ScrollView>
+
+            )}
+
           </View>
 
-          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+          <TouchableOpacity 
+            style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}
+            onPress={() => handleGuardarVideo()}
+          >
             <Text style={[styles.addButtonEmergenteText, 
               {color: 'white'},
               {fontSize: 9},
@@ -508,6 +636,28 @@ const showAlertStore = () => {
         </View>
       )}
 
+      {(showAddStepAddAudio) && (
+        <View>
+          <View style={[styles.rectangle, {justifyContent: 'space-around'}, {flexDirection: 'row'}, {transform: [{ translateY: -4 }]}]}>
+            <TouchableOpacity>
+              <Image source={require('../../Imagenes/CrearTarea/Audio1.png')} style={styles.image}></Image>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={[{padding: 2},{borderRadius: 5},{alignItems: 'center'}, {backgroundColor: 'blue'}, {transform: [{translateY: -36},{translateX: 100}]}, {height: 20},{width: 100}]}>
+            <Text style={[styles.addButtonEmergenteText, 
+              {color: 'white'},
+              {fontSize: 9},
+              {transform: [
+                {translateX: 0}
+              ]}
+              ]}>
+              Guardar Audio
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Texto Añadido</Text>
         <TouchableOpacity>
@@ -526,7 +676,7 @@ const showAlertStore = () => {
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Pictograma Añadido</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => handletrashPicto ()}>
           <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
             style={[
               styles.imageTrash,
@@ -537,12 +687,17 @@ const showAlertStore = () => {
       </View>
 
       <View style={styles.rectangleChoose}>
-        <Text>Ninguno </Text>
+        {isStorePicto ? (
+          <Image source={{uri: storePictograma.URL}} style={styles.image} />
+        ) : (
+          <Text>Ninguno </Text>
+        )
+      }
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
         <Text style={styles.textItemAnadido}>Video Añadido</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => handletrashVideo ()} >
         <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
           style={[
             styles.imageTrash,
@@ -553,7 +708,12 @@ const showAlertStore = () => {
       </View>
 
       <View style={styles.rectangleChoose}>
-        <Text>Ninguno </Text>
+        {isStoreVideo ? (
+          <Text style={styles.videos}>{storeVideo.Titulo}  </Text>
+        ) : (
+          <Text>Ninguno </Text>
+        )
+        }
       </View>
    
       <View style={[styles.row, { marginBottom: 12 }]}>
@@ -571,6 +731,23 @@ const showAlertStore = () => {
       <View style={styles.rectangleChoose}>
         <Text>Ninguno </Text>
       </View>
+
+      <View style={[styles.row, { marginBottom: 12 }]}>
+        <Text style={styles.textItemAnadido}>Audio Añadido</Text>
+        <TouchableOpacity>
+        <Image source={require('../../Imagenes/CrearTarea/iconoBasura.png')} 
+          style={[
+            styles.imageTrash,
+            {transform: [{ translateX:  59 }]}
+          ]}
+        ></Image>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.rectangleChoose}>
+        <Text>Ninguno </Text>
+      </View>
+
       </View>
       )}
     </View>
@@ -705,7 +882,7 @@ const styles = StyleSheet.create({
     borderRadius: 4, // Redondeo de las esquinas
   },
   rectangle: {
-    width: 232, // Ancho del rectángulo
+    width: 278, // Ancho del rectángulo
     height: 100, // Altura del rectángulo
     backgroundColor: 'white', // Color de fondo del rectángulo
     justifyContent: 'center', // Centra el texto verticalmente
@@ -729,9 +906,8 @@ const styles = StyleSheet.create({
     width: 190, // Ancho del rectángulo
     height: 60, // Altura del rectángulo
     backgroundColor: 'white', // Color de fondo del rectángulo
-    justifyContent: 'space-around', // Centra el texto verticalmente
+    justifyContent: 'center', // Centra el texto verticalmente
     alignItems: 'center', // Centra el texto horizontalmente
-    flexDirectio: 'row',
     borderWidth: 1, // Grosor del borde
     marginBottom: 10,
     transform: [
@@ -743,9 +919,15 @@ const styles = StyleSheet.create({
     width: 50, // Ancho de la imagen
     height: 50, // Altura de la imagen
     resizeMode: 'contain', // Asegura que escale
+    marginHorizontal: 10
   },
   imageTrash: {
     width: 20, // Ancho de la imagen
     height: 20, // Altura de la imagen
-  }
+  },
+  videos: {
+    height: 50, // Altura de la imagen
+    resizeMode: 'contain', // Asegura que escale
+    marginHorizontal: 20
+  },
 });

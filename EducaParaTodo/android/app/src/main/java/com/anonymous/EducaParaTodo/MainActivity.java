@@ -1,4 +1,4 @@
-package com.educaparatodo;
+package com.anonymous.EducaParaTodo;
 
 import android.os.Build;
 import android.os.Bundle;
