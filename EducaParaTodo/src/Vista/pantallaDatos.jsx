@@ -4,6 +4,10 @@ import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, 
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 
+
+// Pantalla datos es un componente que muestra los datos de los alumnos
+// Esta pantalla se usa en 
+
 const PantallaDatos = ({route, navigation}) => {
 
     const {alumno} =route.params;

@@ -1,29 +1,30 @@
-// import React from 'react'
+import React from 'react';
+import RecogerLosPlatos from '../../Imagenes/verTarea/recogerlosplatos.png';
+import PonerLaMesa from '../../Imagenes/verTarea/ponerlamesa.png';
+import MesaPuesta  from '../../Imagenes/verTarea/mesapuesta.png';
 
-// export default function tareas(){
+export default function tareas(){
 
-//     const nomTarea: "Poner la mesa",
-//     const descrip = "Debes poner la mesa. Para ello, ve a la cocina, coge los materiales necesarios y llévalos al comedor. A continuación, encontrarás los pasos que debes seguir para completar la tarea.",
+    const nomTarea= "Poner la mesa";
+    const descrip = "Debes poner la mesa. Para ello, ve a la cocina, coge los materiales necesarios y llévalos al comedor. A continuación, encontrarás los pasos que debes seguir para completar la tarea.";
 
-//     const PASOS = [
-//     {
-//         title: "Paso 1: ",
-//         data: ["Coge de la cocina el mantel, los platos, los cubiertos, los vasos y las servilletas."],
-//         imagen: RecogerLosPlatos
-//     },
-//     {
-//         title: "Paso 2: ",
-//         data: ["Lleva todo el material al comedor y coloca correctamente en cada lugar los materiales.."],
-//         imagen: PonerLaMesa
-//     },
-//     {
-//         title: "Paso 3: ",
-//         data: ["Siéntate y espera a que la comida esté hecha."],
-//         imagen: MesaPuesta
-//     }
-// ]
+    const PASOS = [
+    {
+        title: "Paso 1: ",
+        data: ["Coge de la cocina el mantel, los platos, los cubiertos, los vasos y las servilletas."],
+        imagen: RecogerLosPlatos
+    },
+    {
+        title: "Paso 2: ",
+        data: ["Lleva todo el material al comedor y coloca correctamente en cada lugar los materiales.."],
+        imagen: PonerLaMesa
+    },
+    {
+        title: "Paso 3: ",
+        data: ["Siéntate y espera a que la comida esté hecha."],
+        imagen: MesaPuesta
+    }
+    ]
 
-
-
-
-// }
+    return [nomTarea, descrip, PASOS];
+}

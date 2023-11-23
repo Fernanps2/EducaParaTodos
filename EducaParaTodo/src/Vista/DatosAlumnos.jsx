@@ -4,6 +4,8 @@ import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, 
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 
+// Datos alumnos es un componente que se usa para mostrar los datos del alumno y que pinchando en su foto vaya a la pagina del login
+// Se usa en la pantalla principal
 
 const DatosAlumnos = ({ alumno, navigation }) => {
 

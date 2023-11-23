@@ -1,24 +1,20 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
 
-
-// Esta vista sirve para mostrar los datos de un alumno
-const DatosAlumnosLista = ({ alumno, navigation }) => {
+const DatosProfesor = ({ profesor, navigation }) => {
     return (
             <View>
-                <TouchableOpacity onPress={() => navigation.navigate('pantallaDatosAlumno', { alumno: alumno })}>
+                <TouchableOpacity onPress={() => navigation.navigate('pantallaDatosProfesor', { profesor: profesor })}>
                     {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-                    <Image style={styles.image} source={{uri:alumno.fotoUrl}} />
-                    <Text style={styles.texto}> Nombre: {alumno.nombre} </Text>
+                    <Image style={styles.image} source={{uri:profesor.fotoUrl}} />
+                    <Text style={styles.texto}> Nombre: {profesor.nombre} </Text>
                 </TouchableOpacity>
             </View>
     )
 }
-export default DatosAlumnosLista
+export default DatosProfesor
 
 
 const styles = StyleSheet.create({

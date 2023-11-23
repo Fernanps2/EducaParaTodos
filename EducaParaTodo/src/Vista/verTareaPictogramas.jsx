@@ -17,7 +17,7 @@ export function VerTareaPictogramas ({nombreTarea, descripcion, pasos}){
                 <View style={styles.container}>
                     <Text style={styles.tarea}>{nombreTarea}</Text>
                     <View style={styles.centeredImageView}>
-                        <Image style={styles.imagen} source={require('../../Imagenes/verTarea/mesa.png')}/>
+                        {/*<Image style={styles.imagen} source={require('../../Imagenes/verTarea/mesa.png')}/>*/}
                     </View>                    
                     <Text style={styles.descripcion}>{descripcion}</Text>
                     <Text style={styles.pasos}>Pasos a seguir:</Text>

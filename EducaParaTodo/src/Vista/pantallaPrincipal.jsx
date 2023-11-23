@@ -3,15 +3,14 @@ import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import DatosAlumnos from './DatosAlumnos';
 import alumnos from '../Modelo/alumno';
-import '../Modelo/modelo';
-import { getAlimento, getAlumnos, getMaterial, getTarea, getTareasActividad, getTareasComanda,getMateriales, getTareasInventario } from '../Modelo/modelo';
+import {getAlumnos, getTareasInventario} from '../Modelo/firebase.js';
 import Tareas from './tareas';
 
 
-export default function PantallaPrincipal({ navigation }) {
 
-  // const datos = alumnos();  // Llamamos a la función para obtener los datos
-  // const alumnosArray = Object.values(datos);   // Convertimos los datos un array
+// En esta pantalla se usa el componente DatosAlumnos para mostrar los datos
+
+export default function PantallaPrincipal({ navigation }) {
 
   const [lista, setLista] = useState([]);
 

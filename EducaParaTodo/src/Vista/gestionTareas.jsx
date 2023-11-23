@@ -1,42 +1,27 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { CerrarSesion } from './cerrarSesion';
 
-export default function HomeAdmin ({ navigation }) {
+export default function gestionTareas ({ navigation }) {
     return (
       <View style={styles.container}>
-      <Text style={styles.title}>EducaParaTodos</Text>
-      <CerrarSesion/>
-      <View style={styles.profileContainer}>
-        <Image
-          source={{ uri: 'https://m.media-amazon.com/images/M/MV5BOWU1ODBiNGUtMzVjNi00MzdhLTk0OTktOWRiOTIxMWNhOGI2XkEyXkFqcGdeQXVyMTU2OTM5NDQw._V1_FMjpg_UX1000_.jpg' }} // Deberías reemplazar esto con la imagen real
-          style={styles.profileImage}
-        />
-        <Text style={styles.roleText}>Administrador</Text>
-      </View>
+      <Text style={styles.title}>Gestión Tareas</Text>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Gestionar Alumnos</Text>
+        onPress={() => navigation.navigate('tareaActividad')}>
+        <Text style={styles.buttonText}>Actividad </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaProfesores')}>
-        <Text style={styles.buttonText}>Gestionar Profesores</Text>
+        onPress={() => navigation.navigate('tareaComanda')}>
+        <Text style={styles.buttonText}>Comanda </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('gestionTareas')}>
-        <Text style={styles.buttonText}>Gestionar Tareas</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-        <Text style={styles.buttonText}>Gestionar tareas</Text>
+        onPress={() => navigation.navigate('tareaMateriales')}>
+        <Text style={styles.buttonText}>Materiales </Text>
       </TouchableOpacity>
 
       </View>

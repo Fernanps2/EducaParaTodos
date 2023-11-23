@@ -3,27 +3,29 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
-import { getAlumnos } from '../Modelo/firebase.js';
-import DatosAlumnosLista from './datosListaAlumno';
+import { buscaProfesor } from '../Controlador/profesores';
+import { getProfesores } from '../Modelo/firebase';
+import DatosProfesor from './DatosProfesor';
 
-// Esta vista se usa para el homeAdmin para que se muestren todos los alumnos y a su vez la pantalla tenga botones 
-// de añadir alumno
-export default function ListaAlumnos({ navigation }) {
+export default function ListaProfesores({ navigation }) {
 
+  //const datos = getAlumnos();  // Llamamos a la función para obtener los datos
+  //const alumnosArray = Object.values(datos);   // Convertimos los datos un array
   const [lista, setLista] = useState([]);
 
   // useEffect es un Hook de React que te permite sincronizar un componente con un sistema externo.
   useEffect(() => {
-    const listaAlumnos = async () => {
+    const ListaProfesores = async () => {
       try {
-        const alumnos = await getAlumnos();
-        setLista(alumnos);
-        await console.log(alumnos);
+        const profesores = await getProfesores();
+        console.log(profesores);
+        setLista(profesores);
+        await console.log(profesores);
       } catch (error) {
         console.log(error);
       }
     };
-    listaAlumnos();
+    ListaProfesores();
   }, []);
 
   
@@ -34,22 +36,18 @@ export default function ListaAlumnos({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
-        {/* {alumnosArray.map((alumno, index) => (
-          <View key={index} style={styles.elementoList}>
-            <DatosAlumnos alumno={alumno} navigation={navigation} />
-          </View> */}
 
-        {lista.map((alumno, index) => (
+        {lista.map((profesor, index) => (
           <View key={index} style={styles.elementoList}>
-            <DatosAlumnosLista alumno={alumno} navigation={navigation} />
+            <DatosProfesor profesor={profesor} navigation={navigation} />
           </View>
         ))}
       </ScrollView>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirAlumno')}>
-        <Text style={styles.buttonText}>Añadir Alumno</Text>
+        onPress={() => navigation.navigate('aniadirProfesor')}>
+        <Text style={styles.buttonText}>Añadir Profesor</Text>
       </TouchableOpacity>
     </View>
   )
