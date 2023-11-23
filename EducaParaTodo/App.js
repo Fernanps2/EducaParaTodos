@@ -19,6 +19,8 @@ import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import RecogerLosPlatos from './Imagenes/verTarea/recogerlosplatos.png';
 import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
 import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
+import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
+import aniadirPictograma from './src/Vista/aniadirPictograma.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext'
 
@@ -72,6 +74,8 @@ export default function App() {
           <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatos" component={PantallaDatos} />
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
+          <Stack.Screen name="EliminarTareaAlumno" component={EliminarTareaAlumno}/>
+          <Stack.Screen name="aniadirPictograma" component={aniadirPictograma}/>
           <Stack.Screen name="verTareaPictogramas">
                 {() => (
                   <VerTareaPictogramas

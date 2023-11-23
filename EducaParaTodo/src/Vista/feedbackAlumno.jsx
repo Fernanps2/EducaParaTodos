@@ -4,7 +4,6 @@ import appFirebase from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import EliminarTareaAlumno from './EliminarTareaAlumno';
-import aniadirPictograma from './aniadirPictograma';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
@@ -44,7 +43,7 @@ const EliminarTarea = () => {
   }, []);
 
   return (
-    <View>
+    <View contentContainerStyle = {styles.container}>
       {isLoading ? (
         <Text>Cargando...</Text>
       ) : (
@@ -52,7 +51,7 @@ const EliminarTarea = () => {
       {data.map((item, index) => (
         <TouchableOpacity
       key={index}
-      onPress={() => navigation.navigate('EliminarTareaAlumno', {item})} 
+      onPress={() => console.log(item.id)} 
       style={styles.cardWithImage}
     >
       {item.Imagen ? (
@@ -65,7 +64,6 @@ const EliminarTarea = () => {
       ))}
     </ScrollView>
       )}
-      <TouchableOpacity onPress={() => navigation.navigate('aniadirPictograma')} style={styles.cardWithImage}><Text>Añadir Pictograma</Text></TouchableOpacity>
     </View>
   );
 };
@@ -103,7 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
+  }
 });
 
 export default EliminarTarea;
