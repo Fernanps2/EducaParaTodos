@@ -17,7 +17,7 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
           apellidos,
           visualizacionPreferente
         }
-        
+
         await addDoc(collection(db,'alumnos'),{
           ...alumno
         })
@@ -68,14 +68,14 @@ export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFi
             idAlumno,
             tipo
           }
-          
+
           await addDoc(collection(db,'Tarea'),{
             ...objeto
           })
         }
       }catch(error){
         console.log('error' + error);
-      }  
+      }
 }
 
 
@@ -98,16 +98,16 @@ export const asignarFeedback = async (idTarea,feedBack) => {
     }
     else{
 
-      // Creamos las referencias 
+      // Creamos las referencias
       const tareaRef = doc(db, 'Tarea', String(idTarea));
-      
+
       await updateDoc(tareaRef,{
         Feedback: feedBack,
       })
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -199,7 +199,7 @@ export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
     }
     else{
 
-      // Creamos las referencias 
+      // Creamos las referencias
       const pasosRef = doc(db, 'PasosActividad', String(pasos));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
@@ -215,14 +215,14 @@ export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
       if (!(pasosRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
         throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
       }
-      
+
       await addDoc(collection(db,'Tarea-Actividad'),{
         ...objeto
       })
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -255,7 +255,7 @@ export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
     }
     else{
 
-      // Creamos las referencias 
+      // Creamos las referencias
       const idMenuRef = doc(db, 'Menu', String(idMenu));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
@@ -271,14 +271,14 @@ export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
       if (!(idMenuRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
         throw new Error('idMenuRef e idTareaRef deben ser instancias de DocumentReference');
       }
-      
+
       await addDoc(collection(db,'Tarea-Comanda'),{
         ...objeto
       })
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 // ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
@@ -319,7 +319,7 @@ export const setMenu = async(nombreMenu,idAlimentos) => {
       const objeto = {
         idAlimentos:referenciasAlimentos
       }
-      
+
 
       // Lo hacemos así para establecer el nombreMenú como el id del documento
       const menuDocRef = doc(db, 'Menu', nombreMenu);
@@ -331,7 +331,7 @@ export const setMenu = async(nombreMenu,idAlimentos) => {
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -349,7 +349,7 @@ export const setAlimento = async (nombreAlimento,imagen) => {
         nombreAlimento,
         imagen
       }
-      
+
 
       // Lo hacemos así para establecer el nombreMenú como el id del documento
       const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
@@ -361,7 +361,7 @@ export const setAlimento = async (nombreAlimento,imagen) => {
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -399,7 +399,7 @@ export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea)
     }
     else{
 
-      // Creamos las referencias 
+      // Creamos las referencias
       const idMaterialRef = doc(db, 'Material', String(idMaterial));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
@@ -415,14 +415,14 @@ export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea)
       if (!(idMaterialRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
         throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
       }
-      
+
       await addDoc(collection(db,'Tarea-Inventario'),{
         ...objeto
       })
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -440,7 +440,7 @@ export const setMaterial = async (foto,nombre,stock)=> {
         foto,
         stock
       }
-      
+
       // Necesitamos poner setDoc para especificar el ID del documento
       await addDoc(collection(db,'Material'),{
         ...objeto
@@ -448,7 +448,7 @@ export const setMaterial = async (foto,nombre,stock)=> {
     }
   }catch(error){
     console.log(error);
-  }  
+  }
 }
 
 
@@ -543,7 +543,3 @@ export const getTareasInventario = async() => {
       console.log(error);
   }
 }
-
-
-
-
