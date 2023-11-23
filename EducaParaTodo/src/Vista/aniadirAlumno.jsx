@@ -2,16 +2,11 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-
-
-
-// ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
-
-import appFirebase from '../Modelo/firebase';
-import {getFirestore,collection,addDoc} from 'firebase/firestore'
-const db = getFirestore(appFirebase);
+import {almacenarAlumno} from '../Modelo/modelo';
 
 export default function AniadirAlumno ({ navigation }) {
+
+
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -33,7 +28,7 @@ export default function AniadirAlumno ({ navigation }) {
     }
   };
   
-  const showAlertStore = () => {
+  const showAlertStore = async () => {
     Alert.alert(
       "¿Quiere guardar?", // Título
       "Pulsa una opción", // Mensaje
@@ -54,27 +49,14 @@ export default function AniadirAlumno ({ navigation }) {
 
 
   const almacenarAlumnoBD = async()=>{
-
     try{
-      if(estado.nombre === '' || estado.apellidos === '')
-        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido')
-      else{
-        const alumno = {
-          nombre: estado.nombre,
-          apellidos: estado.apellidos,
-          visualizacion: selectedOptions
-        }
-        console.log(alumno);
-        
-        await addDoc(collection(db,'alumnos'),{
-          ...alumno
-        })
-        Alert.alert('Alumno guardado con éxito')
-      }
-    }catch(error){
+        const mensaje = await almacenarAlumno(estado.nombre, estado.apellidos, selectedOptions);
 
+    }catch(error){
+      Alert.alert(`Error: ${error.message}`);
     }
   }
+
 
     return (
       <View style={styles.container}>
@@ -118,15 +100,20 @@ export default function AniadirAlumno ({ navigation }) {
       )}
 
       <View style={styles.photoSection}>
-        <Text>Foto del usuario:</Text>
-        <View style={styles.userIcon} ></View>
+        <Text>Añdir foto del usuario:</Text>
+        <TouchableOpacity 
+          onPress={()=> abrirGaleria()}>
+          <View style={styles.userIcon} > </View>
+        </TouchableOpacity>
+
       </View>
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.addButton}
                   onPress={()=>{
-                    // showAlertStore
-                    almacenarAlumnoBD()
+                    // showAlertStore();
+                    almacenarAlumnoBD();
+
                   }}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
