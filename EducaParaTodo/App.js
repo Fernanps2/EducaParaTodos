@@ -22,14 +22,14 @@ import HomeAdmin from './src/Vista/homeAdmin.jsx';
 import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
 import ListaProfesores from './src/Vista/listaProfesores.jsx';
 import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
-import pantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
-
+import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
@@ -39,6 +39,7 @@ const db = getFirestore(appFirebase);
 
 // Creamos una instancia del stack
 const Stack = createStackNavigator();
+
 
 export default function App() {
   return (
@@ -66,10 +67,11 @@ export default function App() {
           <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaProfesores" component={ListaProfesores} />
-          <Stack.Screen name="pantallaDatosProfesor" component={pantallaDatosProfesor} />
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
-          <Stack.Screen name="verTarea" component={VerTarea}/>      
+          <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
+          <Stack.Screen name="datosProfesor" component={DatosProfesor} />
+          <Stack.Screen name="asignarTarea" component={AsignarTarea} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserContextProvider>
