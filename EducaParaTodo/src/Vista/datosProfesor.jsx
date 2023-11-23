@@ -9,6 +9,8 @@ export default function DatosProfesor ({ route, navigation }) {
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
+      const [email, setEmail] = useState('');
+      const [info, setInfo] = useState('');
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
@@ -21,6 +23,8 @@ export default function DatosProfesor ({ route, navigation }) {
             setNombre(datosProfesor.nombre);
             setApellidos(datosProfesor.apellidos);
             setContrasenia(datosProfesor.password);
+            setEmail(datosProfesor.email);
+            setInfo(datosProfesor.info);
           }
         };
         obtenerDatosProfesor();
@@ -31,7 +35,7 @@ export default function DatosProfesor ({ route, navigation }) {
       const guardarCambios = async () => {
         // Lógica para guardar los cambios en la base de datos usando updateProfesor
         const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
-        await updateProfesor(idProfesor, { nombre, apellidos, password: contrasenia });
+        await updateProfesor(idProfesor, { nombre, apellidos, password: contrasenia, email, info });
         // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
       };
 
@@ -83,6 +87,20 @@ export default function DatosProfesor ({ route, navigation }) {
                   value={contrasenia}
                   onChangeText={(text) => setContrasenia(text)}
                   secureTextEntry // Esto oculta los caracteres ingresados para la contraseña
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Correo electrónico"
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Información adicional"
+                  value={info}
+                  onChangeText={(text) => setInfo(text)}
                 />
 
 
