@@ -17,7 +17,7 @@ const Tareas = ({ route, navigation}) => {
             {usuario.tareasPendiente.map((tarea, index) => (
                 <View style={styles.contenedor_tareas}>
                     <View style={styles.contenedor_tarea}>
-                        <TouchableOpacity onPress={() => navigation.navigate('verTareaPictogramas')} >
+                        <TouchableOpacity onPress={() => navigation.navigate('verTarea')} >
                             <Image style={styles.foto} source={{ uri: usuario.fotoTarea }} />
                         </TouchableOpacity>
                         <Text style={styles.texto} key={index}>{tarea}</Text>
