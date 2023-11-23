@@ -1,31 +1,64 @@
-import {getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno} from '../Modelo/firebase'
+import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
-export function aniadeAlumno(nombre, apellidos, password, foto, visualizacion) {
-    if (nombre != '' || apellidos != '' || password != '' || foto != '' || visualizacion != null) {
-        let id_imagen = almacenaImagen(foto);
-        addAlumno(nombre, apellidos, password, id_imagen, visualizacion);
+export async function aniadeAlumno(nombre, apellidos, password, foto, visualizacion) {
+    if (nombre != '' && apellidos != '' && password != '' && visualizacion != null) {
+        //let id_imagen = almacenaImagen(foto);
+        await addAlumno(nombre, apellidos, password, foto, visualizacion);
     }
 }
 
-export function buscaAlumno({nombre='', apellidos='', visualizacion=''}) {
-    let {nombre, apellidos, visualizacion} = {nombre, apellidos, visualizacion};
+export async function buscaAlumno() {
     let alumnos = null;
 
-    if (nombre != '')
-        alumnos = getAlumnosNombre(nombre);
-    else if (apellidos != '')
-        alumnos = getAlumnosApellidos(apellidos);
-    else if (visualizacion!='')
-        alumnos = getAlumnosVisualizacionPredefinida(visualizacion);
-    else
-        alumnos = getAlumnos();
+    alumnos = await getAlumnos();
+
+    //console.log(alumnos);
+    return alumnos;
+}
+
+export async function buscaAlumnoNombre(nombre) {
+    let alumnos = null;
+
+    if (nombre != null)
+        alumnos = await getAlumnosNombre(nombre);
 
     return alumnos;
 }
 
-export function actualizaAlumno(id, {nombre='', apellidos='', password='', foto='', visualizacion=''}) {
-    let datos = {nombre, apellidos, password, foto, visualizacion};
+export async function buscaAlumnoApellidos(apellidos) {
+    let alumnos = null;
 
-    updateAlumno(id, datos);
+    if (apellidos != null)
+        alumnos = await getAlumnosApellidos(apellidos);
+
+    return alumnos;
+}
+
+export async function buscaAlumnoVisualizacionPredefinida(visualizacion) {
+    let alumnos = null;
+
+    if (visualizacion != null)
+        alumnos = await getAlumnosVisualizacionPredefinida(visualizacion);
+
+    return alumnos;
+}
+
+export async function loginAlumno (nombre, password) {
+    let id = null;
+
+    if (nombre != '' && password != '') {
+        id = await getAlumnosLogin(nombre, password).id;
+    }
+
+    return id;
+}
+
+export async function actualizaAlumno(id, nombre, apellidos, password, foto, visualizacion) {
+    if (nombre != '' && apellidos != '' && password != '' && visualizacion != null) 
+        await updateAlumno(id, nombre, apellidos, password, foto, visualizacion);
+}
+
+export async function borraAlumno(id) {
+    await deleteAlumno(id);
 }

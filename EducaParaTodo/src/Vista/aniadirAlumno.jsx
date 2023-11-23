@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
 import { Permissions, ImagePicker } from "expo";
-import {openGallery} from '../Controlador/multimedia'
+import {openGallery} from '../Controlador/multimedia' 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
 import appFirebase from '../Modelo/firebase';
 import {getFirestore,collection,addDoc} from 'firebase/firestore'
+import { aniadeAlumno, actualizaAlumno, borraAlumno } from '../Controlador/alumnos';
 const db = getFirestore(appFirebase);
 
 export default function AniadirAlumno ({ navigation }) {
@@ -55,7 +56,7 @@ export default function AniadirAlumno ({ navigation }) {
   }
 
 
-  const almacenarAlumnoBD = async()=>{
+  /*const almacenarAlumnoBD = async()=>{
 
     try{
       if(estado.nombre === '' || estado.apellidos === '')
@@ -76,7 +77,7 @@ export default function AniadirAlumno ({ navigation }) {
     }catch(error){
 
     }
-  }
+  }*/
 
     return (
       <View style={styles.container}>
@@ -134,7 +135,8 @@ export default function AniadirAlumno ({ navigation }) {
       <TouchableOpacity style={styles.addButton}
                   onPress={()=>{
                     // showAlertStore
-                    almacenarAlumnoBD()
+                    //borraAlumno("4HjvhR4iIDfWmxLKijMa");
+                    //aniadeAlumno(estado.nombre, estado.apellidos, 'conejita', "", ['texto']);
                   }}>
             <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>

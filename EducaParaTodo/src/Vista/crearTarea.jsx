@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { ActivityIndicator, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 
 
-export default function crearTarea () {
+export default function CrearTarea () {
   
   // VAriables para añadir paso
   const [showAddStep, setShowAddStep] = useState(false);

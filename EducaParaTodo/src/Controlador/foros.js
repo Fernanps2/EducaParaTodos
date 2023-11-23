@@ -1,24 +1,33 @@
 import {getForos, getForosNombre, addForo, updateForo} from '../Modelo/firebase'
 
-export function aniadeForo(nombre) {
+export async function aniadeForo(nombre) {
     if (nombre != '')
-        addForo(nombre)
+        await addForo(nombre)
 }
 
-export function buscaForo({nombre=''}) {
-    let {nombre, apellidos} = {nombre, apellidos};
+export async function buscaForo() {
     let foros = null;
 
-    if (nombre != '')
-        foros = getForosNombre(nombre);
-    else
-        foros = getForos();
+    foros = await getForos();
 
     return foros;
 }
 
-export function actualizaProfesor(id, {nombre=''}) {
-    let datos = {nombre};
+export async function buscaForoNombre(nombre) {
+    let foros = null;
 
-    updateProfesor(id, datos);
+    if (nombre != null) {
+        foros = await getForosNombre(nombre);
+    }
+
+    return foros;
+}
+
+export async function actualizaForo(id, nombre) {
+    if (nombre != '')
+        await updateForo(id, nombre);
+}
+
+export async function borraForo(id) {
+    await deleteForo(id);
 }
