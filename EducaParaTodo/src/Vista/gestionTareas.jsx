@@ -1,10 +1,18 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-export default function gestionTareas ({ navigation }) {
+export default function GestionTareas ({ navigation }) {
     return (
       <View style={styles.container}>
-      <Text style={styles.title}>Gestión Tareas</Text>
+      <View style={[{flexDirection: 'row'}, { justifyContent: "center" }]}>
+        <Text style={[styles.title]}>Gestión Tareas</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("HomeAdmin")}>
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity
         style={styles.button}
@@ -68,4 +76,8 @@ export default function gestionTareas ({ navigation }) {
         color: 'white',
         fontSize: 18,
       },
+      Image: {
+        width: 20,
+        height: 20,
+      }
     });
