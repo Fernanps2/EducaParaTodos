@@ -1408,21 +1408,21 @@ const contarArchivos = async(nombreCarpeta) => {
 
 }
 
-// uploadImage= async(uri) => {
-//   return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//       if (xhr.readyState === 4) {
-//         resolve(xhr.response);
-//       }
-//     };
+uploadImage= async(uri) => {
+    return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onerror = reject;
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            resolve(xhr.response);
+        }
+    };
 
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//   });
-// };
+    xhr.open("GET", uri);
+    xhr.responseType = "blob";
+    xhr.send();
+   });
+};
 
 export async function almacenarImagen(imagen) {
 

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { getAlumnos } from '../Modelo/modelo';
 import DatosAlumnosLista from './datosListaAlumno';
 
-export default function ListaAlumnos({ navigation }) {
+export default function ListaAlumnos({route,  navigation }) {
 
   //const datos = getAlumnos();  // Llamamos a la función para obtener los datos
   //const alumnosArray = Object.values(datos);   // Convertimos los datos un array
