@@ -914,7 +914,41 @@ export const asignarFeedback = async (idTarea,feedBack) => {
 }
 
 
-// PROBADA Y FUNCIONA. SE OBTIENEN LOS DATOS DE LA TAREA PERO NO SE OBTIENE EL NOMBRE DEL ALUMNO QUE LA REALIZA SOLO SE OBTIENE EL ID DEL DOCUMENTO DE ESE ALUMNO
+// PROBADA Y FUNCIONA. 
+
+export const getTareaId = async (idAlumno) => {
+
+  console.log(idAlumno);
+
+  try {
+    const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
+    const querySnapshot = await getDocs(q);
+    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+
+    const docs = [];
+
+    for (const tareaDoc of querySnapshot.docs) {
+      const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
+
+      docs.push({
+        id: tareaDoc.id,
+        Nombre,
+        Completado,
+        Descripción,
+        FechaInicio,
+        FechaFin,
+        Tipo,
+        IdAlumno,
+        fotoURL,
+      });
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+    Alert.alert(error);
+  }
+};
 
 export const getTarea = async (idAlumno) => {
 
