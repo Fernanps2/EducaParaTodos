@@ -170,55 +170,46 @@ export async function updateAlumno(id, {nombre='', apellidos='', visualizacionPr
 
 /**********  FINAL FUNCIONES ALUMNO ********/
 
+
 /**********  INICIO FUNCIONES PROFESOR ********/
 
-{/* export async function getProfesores() {
-  try {
-    const querydb = getFirestore();
-    const queryCollection = collection(querydb, COL_PROFESORES);
-    const querySnapshot = await getDocs(queryCollection);
-    return querySnapshot.docs.map(profesor => ({
-      id: profesor.id,
-      nombre: profesor.data().username,
-      apellidos: profesor.data().lastname,
-      contrasenia: profesor.data().password,
-      foto: profesor.data().foto
-    }));
-  } catch (error) {
-    console.log("Ha habido un error al recoger los datos del profesor:", error);
-    return null;
-  }
+{/*export async function getProfesores() {
+    let profesores = null;
+
+    try {
+        const querydb = getFirestore();
+        const queryCollection = collection(querydb, COL_PROFESORES);
+        getDocs(queryCollection)
+        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
+                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del profesor");
+    }
+
+    return profesores;
 }
 
 export async function getProfesoresNombre(nombre) {
+    let profesores = null;
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('username', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({
-          id: profesor.id,
-          nombre: profesor.data().username,
-          apellidos: profesor.data().lastname,
-          contrasenia: profesor.data().password,
-          foto: profesor.data().foto
-        }));
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre));
+        getDocs(queryFilter)
+        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
+                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor:", error);
-        return null;
+        console.log("Ha habido un error al recoger los datos del profesor");
     }
+
+    return profesores;
 }
 
 export async function getProfesoresApellidos(apellidos) {
     let profesores = null;
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('lastname', '==', apellidos));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({
-          id: profesor.id,
-          nombre: profesor.data().username,
-          apellidos: profesor.data().lastname,
-          contrasenia: profesor.data().password,
-          foto: profesor.data().foto
-        }));
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('apellidos', '==', apellidos));
+        getDocs(queryFilter)
+        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
+                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesor");
     }
@@ -229,15 +220,10 @@ export async function getProfesoresApellidos(apellidos) {
 export async function getProfesoresContrasenia(contrasenia) {
     let profesores = null;
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('password', '==', contrasenia));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({
-          id: profesor.id,
-          nombre: profesor.data().username,
-          apellidos: profesor.data().lastname,
-          contrasenia: profesor.data().password,
-          foto: profesor.data().foto
-        }));
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('passwprd', '==', contrasenia));
+        getDocs(queryFilter)
+        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
+                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesor");
     }
@@ -248,15 +234,10 @@ export async function getProfesoresContrasenia(contrasenia) {
 export async function getProfesoresLogin(nombre, contrasenia) {
     let profesores = null;
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('username', '==', nombre), where('password', '==', contrasenia));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({
-          id: profesor.id,
-          nombre: profesor.data().username,
-          apellidos: profesor.data().lastname,
-          contrasenia: profesor.data().password,
-          foto: profesor.data().foto
-        }));
+        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        getDocs(queryFilter)
+        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
+                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesor");
     }
@@ -265,47 +246,48 @@ export async function getProfesoresLogin(nombre, contrasenia) {
 }
 
 export async function addProfesor(nombre, apellidos, contrasenia, foto) {
-      try {
-        const profesor = {
-          username: nombre,
-          lastname: apellidos,
-          password: contrasenia,
-          foto: foto
-        };
-        const docRef = await addDoc(collection(getFirestore(), COL_PROFESORES), profesor);
-        return docRef.id;
-      } catch (error) {
-        console.log("Ha habido un error al subir los datos del profesor:", error);
-        return null;
-      }
+    let profesor = {
+        nombre: nombre,
+        apellidos: apellidos,
+        password: contrasenia,
+        foto: foto
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(getFirestore(), COL_PROFESORES), profesor)
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del profesor");
+    }
+
+    return identificacion;
 }
 
-export async function updateProfesor(id, { nombre = '', apellidos = '', password = '', foto = '' }) {
+export async function updateProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
+    let editaProfesor = {nombre, apellidos, password, foto};
+    let profesor = null;
+
     try {
-        const docProfesor = doc(collection(getFirestore(), COL_PROFESORES), id);
-        const profesorSnapshot = await getDoc(docProfesor);
+        let docProfesor = doc(getFirestore(), COL_PROFESORES);
+        profesor = getDoc(docProfesor, id);
 
-        if (profesorSnapshot.exists()) {
-            const profesorData = profesorSnapshot.data();
+        editaProfesor = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+        editaProfesor = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+        editaProfesor = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
+        editaProfesor = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
 
-            const nuevoNombre = nombre !== '' ? nombre : profesorData.username;
-            const nuevosApellidos = apellidos !== '' ? apellidos : profesorData.lastname;
-            const nuevaPassword = password !== '' ? password : profesorData.password;
-            const nuevaFoto = foto !== '' ? foto : profesorData.foto;
-
-            await updateDoc(docProfesor, {
-                username: nuevoNombre,
-                lastname: nuevosApellidos,
-                password: nuevaPassword,
-                foto: nuevaFoto
-            });
-        } else {
-            console.log('El profesor no fue encontrado');
-        }
+        updateDoc(docProfesor, {
+            ...editaProfesor
+        });
     } catch (error) {
-        console.log("Problema al actualizar datos de profesor:", error);
+        console.log("Problema al actualizar datos de profesor");
     }
 }*/}
+
+
 
 export async function getProfesorPorId(idProfesor) {
     try {
@@ -877,8 +859,8 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
-
-export const uploadImage= (uri, nameImage) => {
+/*
+uploadImage= (uri, nameImage) => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onerror = reject;
@@ -893,7 +875,7 @@ export const uploadImage= (uri, nameImage) => {
     xhr.send();
   });
 };
-
+*/
 export function almacenarImagen(imagen) {
   this.uploadImage(imagen)
     .then(resolve => {
