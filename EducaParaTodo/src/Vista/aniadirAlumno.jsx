@@ -2,16 +2,14 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { addDoc } from 'firebase/firestore';
 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
-/*import appFirebase from '../Modelo/firebase';
+import appFirebase from '../Modelo/firebase';
 import {getFirestore,collection,addDoc} from 'firebase/firestore'
-const db = getFirestore(appFirebase);*/
+const db = getFirestore(appFirebase);
 
 export default function AniadirAlumno ({ navigation }) {
 
