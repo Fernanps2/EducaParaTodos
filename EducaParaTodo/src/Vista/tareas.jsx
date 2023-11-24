@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
-import { getTarea,AppFirebase, storage } from '../Modelo/firebase';
+import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
 
 
 
@@ -46,7 +46,7 @@ const Tareas = ({ route, navigation }) => {
     useEffect(() => {
         const listaTareas = async () => {
             try {
-                const Tareas = await getTarea(usuario.id);
+                const Tareas = await getTareaId(usuario.id);
                 setTareas(Tareas);
                 await console.log(Tareas);
             } catch (error) {

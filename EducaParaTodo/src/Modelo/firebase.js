@@ -1617,12 +1617,11 @@ try {
 }
 };
 
-export const getTarea = async (idAlumno) => {
-
-console.log(idAlumno);
+// Obtener todas las tareas
+export const getTarea = async () => {
 
 try {
-  const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
+  const q = query(collection(db,"Tarea"));
   const querySnapshot = await getDocs(q);
   // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
 
@@ -1650,6 +1649,103 @@ try {
   Alert.alert(error);
 }
 };
+
+// export const deleteTareaId = async (idTarea) => {
+//     try {
+//         console.log("borrando tarea");
+//         // Borramos la tarea principal que queremos
+//         const q = query(collection(db,"Tarea"), where("idTarea","==",idTarea));
+//         const querySnapshot = await getDoc(q);
+
+//         const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+//         const querySnapshot2 = await getDoc(q2);
+
+//         const q5 = query(collection(db,"PasosActividad",where("idTarea","==",idTarea)));
+//         const querySnapshot5 = await getDoc(q5);
+
+//         const q3 = query(collection(db,"Tarea-Inventario"),where("idTarea","==",idTarea));
+//         const querySnapshot3 = await getDoc(q3);
+
+//         const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+//         const querySnapshot4 = await getDoc(q4);
+
+//         console.log(querySnapshot3);
+
+//         if (!querySnapshot.empty()) {
+//             await deleteDoc(querySnapshot.ref);
+//             console.log("Se ha borrado la tarea correctamente");
+//         }
+//         else {
+//             console.log("No existe la tarea");
+//         }
+
+//         if(!querySnapshot2.empty()){
+//             await deleteDoc(querySnapshot2.ref);
+//             if(!querySnapshot5.empty())
+//                 await deleteDoc(querySnapshot5.ref);
+//             console.log("Se ha borrado la tarea actividad");
+//         } else{
+//             console.log("NO existe la tarea actividad");
+//         }
+
+//         if(!querySnapshot3.empty()){
+//             await deleteDoc(querySnapshot3.ref);
+//             console.log("Se ha borrado la tarea inventario");
+//         } else{
+//             console.log("No existe la tarea inventario");
+//         }
+
+//         if(!querySnapshot4.empty()){
+//             await deleteDoc(querySnapshot4.ref);
+//         } else{
+//             console.log("No existe la tarea comanda")
+//         }
+
+//     } catch(error) {
+//         console.log("Error al borrar la tarea", error);
+//     }
+
+// }
+
+
+
+// Funcion que borra la tarea con ese id
+// Borra tanto la tarea, como el documento de la colección del 
+// tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
+export const deleteTareaId = async (idTarea) => {
+    try {
+        await deleteDoc(doc(db,"Tarea",idTarea));
+        const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+        const Snapshot2 = await getDocs(q2);
+        Snapshot2.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q = query(collection(db, "PasosActividad"), where("idTarea", "==", idTarea));
+
+        const Snapshot = await getDocs(q);
+
+        Snapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+
+        const q3 = query(collection(db,"Tarea-Invetario"),where("idTarea","==",idTarea));
+        const Snapshot3 = await getDocs(q3);
+        Snapshot3.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+        const Snapshot4 = await getDocs(q4);
+        Snapshot4.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+    } catch(error) {
+        console.log("Error al borrar la tarea", error);
+    }
+}
+
 
 
 // EN LA VISTA CON ESTE CÓDIGO SE SACA LA LISTA DE TAREAS
@@ -1689,13 +1785,8 @@ try{
     const objeto = {
       nombre,
       aula,
-      pasos:pasosRef,
-      idTarea:idTareaRef
-    }
-
-    // Comprobamos que las referencias son instancias de la clase DocumentReference
-    if (!(pasosRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-      throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
+      pasos,
+      idTarea
     }
     
     await addDoc(collection(db,'Tarea-Actividad'),{
@@ -1766,6 +1857,8 @@ try {
 
 
 
+// Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
+// menú se cree una fila/documento por menú
 
 // PRUEBA REALIZADA.FUNCIONA
 export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
@@ -1785,15 +1878,9 @@ try{
     const objeto = {
       nombre,
       aula,
-      idMenu:idMenuRef,
-      idTarea:idTareaRef
-    }
-
-    // Comprobamos que las referencias son instancias de la clase DocumentReference
-    if (!(idMenuRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-      throw new Error('idMenuRef e idTareaRef deben ser instancias de DocumentReference');
-    }
-    
+      idMenu,
+      idTarea
+    }    
     await addDoc(collection(db,'Tarea-Comanda'),{
       ...objeto
     })
@@ -1812,7 +1899,6 @@ try {
 
   for (const docu of querySnapshot.docs) {
     const tareaActividadDatos = docu.data();
-    console.log(tareaActividadDatos);
 
     docs.push(tareaActividadDatos);
     }
@@ -1832,17 +1918,10 @@ try{
     Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
   }
   else{
-
-    // Hacemos que los idAlimentos sean referencias
-    const referenciasAlimentos = idAlimentos.map((idAlimento) => {
-      return doc(db, 'Alimentos', idAlimento);
-    });
-
     const objeto = {
-      idAlimentos:referenciasAlimentos
+      idAlimentos
     }
     
-
     // Lo hacemos así para establecer el nombreMenú como el id del documento
     const menuDocRef = doc(db, 'Menu', nombreMenu);
 
@@ -1921,23 +2000,13 @@ try{
   }
   else{
 
-    // Creamos las referencias 
-    const idMaterialRef = doc(db, 'Material', String(idMaterial));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
     const objeto = {
-      idMaterial:idMaterialRef,
+      idMaterial,
       lugarLlevar,
       recogida,
-      idTarea:idTareaRef
+      idTarea
     }
 
-    // Comprobamos que las referencias son instancias de la clase DocumentReference
-    if (!(idMaterialRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-      throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
-    }
-    
     await addDoc(collection(db,'Tarea-Inventario'),{
       ...objeto
     })
@@ -1985,7 +2054,6 @@ try {
 
   querySnapshot.forEach((docu) => {
     const materialDatos = docu.data();
-    console.log(materialDatos);
 
     docs.push(materialDatos);
   });
@@ -2000,26 +2068,26 @@ try {
 
 // FUNCION QUE DEVUELVE LOS DATOS DE UN MATERIAL CORRESPONDIENTE A UN ID
 // PRUEBA REALIZADA. FUNCIONA
-// export const getMaterialId = async(id) => {
-//   try {
-//     const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
-//     const querySnapshot = await getDocs(materialQuery);
+export const getMaterialId = async(id) => {
+  try {
+    const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
+    const querySnapshot = await getDocs(materialQuery);
 
-//     const docs = [];
+    const docs = [];
 
-//     querySnapshot.forEach((docu) => {
-//       const materialDatos = docu.data();
-//       console.log(materialDatos);
+    querySnapshot.forEach((docu) => {
+      const materialDatos = docu.data();
+      console.log(materialDatos);
 
-//       docs.push(materialDatos);
-//     });
+      docs.push(materialDatos);
+    });
 
-//     return docs;
-//   } catch (error) {
-//     console.log(error);
-//     throw error; // Lanza el error para que pueda ser manejado por el llamador
-//   }
-// }
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+}
 
 
 
@@ -2047,7 +2115,7 @@ try {
 }
 
 
-// FUNCIONA QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
+// FUNCION QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
 // PRUEBA REALIZADA. FUNCIONA
 export const getTareasInventario = async() => {
 try {
@@ -2056,7 +2124,6 @@ try {
 
   for (const docu of querySnapshot.docs) {
     const tareaActividadDatos = docu.data();
-    console.log(tareaActividadDatos);
 
     docs.push(tareaActividadDatos);
     }
