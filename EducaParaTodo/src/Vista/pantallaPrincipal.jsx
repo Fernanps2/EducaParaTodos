@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, FlatList,ScrollView } from 'react-native';
 import DatosAlumnos from './DatosAlumnos';
-import alumnos from '../Modelo/alumno';
+//import alumnos from '../Modelo/alumno';
+import { buscaAlumno } from '../Controlador/alumnos';
 
 export default function PantallaPrincipal({ navigation }) {
 
-  const datos = alumnos();  // Llamamos a la función para obtener los datos
-  const alumnosArray = Object.values(datos);   // Convertimos los datos un array
+  const [alumnosArray, setAlumnosArray] = useState([]);
+
+  useEffect(() => {
+    const loadData = async() => {
+      try {
+        const alumnos = await buscaAlumno();
+        setAlumnosArray(Object.values(alumnos)); //Convertimos los datos a un array
+      } catch(error) {
+        console.log(error);
+      }
+    }
+    loadData();
+  }, []);
 
   return (
     <View style={styles.container}>

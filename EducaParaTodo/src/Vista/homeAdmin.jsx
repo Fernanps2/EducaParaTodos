@@ -17,32 +17,32 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('aniadirAlumno')}>
-        <Text style={styles.buttonText}>Añadir alumno</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('aniadirProfesor')}>
-        <Text style={styles.buttonText}>Añadir Profesor</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('crearTarea')}>
-        <Text style={styles.buttonText}>Crear Tarea</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
         onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
+        <Text style={styles.buttonText}>Gestionar Alumnos</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('pantallaProfesores')}>
+        <Text style={styles.buttonText}>Gestionar Profesores</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('gestionTareas')}>
+        <Text style={styles.buttonText}>Gestionar Tareas</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-        <Text style={styles.buttonText}>Gestionar tareas</Text>
+        <Text style={styles.buttonText}>Gestionar Estado tareas</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('asignarTarea')}>
+        <Text style={styles.buttonText}>Asignar Tareas</Text>
       </TouchableOpacity>
 
 

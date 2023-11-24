@@ -6,5 +6,11 @@
     "assetBundlePatterns": [
       "**/*"
     ]
+  },
+  "andorid": {
+    "permissions": ["CAMERA_ROLL"]
+  },
+  "web":{
+    "permissions":["CAMERA_ROLL"]
   }
 }
