@@ -1,4 +1,4 @@
-import {getForos, getForosNombre, addForo, updateForo} from '../Modelo/firebase'
+import {getForos, getForosNombre, addForo, updateForo, getForoID} from '../Modelo/firebase'
 
 export async function aniadeForo(nombre) {
     if (nombre != '')
@@ -21,6 +21,15 @@ export async function buscaForoNombre(nombre) {
     }
 
     return foros;
+}
+
+export async function buscaForoId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getForoID(id);
+
+    return instancia;
 }
 
 export async function actualizaForo(id, nombre) {

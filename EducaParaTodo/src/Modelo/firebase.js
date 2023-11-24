@@ -176,6 +176,25 @@ export async function getAlumnosLogin(nombre, contrasenia) {
     return docs;
 }
 
+export async function getAlumnoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
 export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
     let alumno = {
         nombre: nombre,
@@ -369,6 +388,25 @@ export async function getProfesoresLogin(nombre, contrasenia) {
     return docs;
 }
 
+export async function getProfesorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
 export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     let profesor = {
         nombre: nombre,
@@ -553,6 +591,25 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
     return docs;
 }
 
+export async function getAdministradorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
 export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     let admin = {
         nombre: nombre,
@@ -664,6 +721,25 @@ export async function getForosNombre(nombre) {
     }
 
     return docs;
+}
+
+export async function getForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addForo(nombre) {
@@ -793,6 +869,25 @@ export async function getProfesorTarea_Tarea(id_tarea) {
     }
 
     return docs;
+}
+
+export async function getProfesorTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesorTarea(id_profesor, id_tarea) {
@@ -925,6 +1020,25 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
     return docs;
 }
 
+export async function getAlumnoTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
 export async function addAlumnoTarea(id_alumno, id_tarea) {
     let instancia = {
         alumno: id_alumno,
@@ -1053,6 +1167,25 @@ export async function getProfesoresForo_Profesores(id_profesores) {
     }
 
     return docs;
+}
+
+export async function getProfesorForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesoresForo(id_foro, id_profesores) {
@@ -1185,6 +1318,25 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
     return docs;
 }
 
+export async function getAlumnoForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
 export async function addAlumnosForo(id_foro, id_alumnos) {
     let alumnoForo = {
         foro: id_foro,
@@ -1252,7 +1404,11 @@ export async function deleteAlumnoForo(id) {
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-uploadImage= (uri) => {
+const contarArchivos = async(nombreCarpeta) => {
+
+}
+
+uploadImage= async(uri) => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onerror = reject;
@@ -1268,12 +1424,12 @@ uploadImage= (uri) => {
   });
 };
 
-export function almacenarImagen(imagen) {
+export async function almacenarImagen(imagen) {
 
-    let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_' + (num_imagenes+1);
+    //let num_imagenes = storage.child('images').size();
+    let nombre_imagen = 'imagen_1';
 
-  this.uploadImage(imagen)
+  await uploadImage(imagen)
     .then(resolve => {
       storage
         .ref()
@@ -1285,8 +1441,8 @@ export function almacenarImagen(imagen) {
     });
 }
 
-export function almacenarPictograma(imagen) {
-  this.uploadImage(imagen)
+export async function almacenarPictograma(imagen) {
+  await uploadImage(imagen)
     .then(resolve => {
       storage
         .ref()

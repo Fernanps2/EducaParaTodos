@@ -1,4 +1,4 @@
-import { getProfesoresForo, getProfesoresForo_Foro, getProfesoresForo_Profesores, addProfesoresForo, updateProfesoresForo, deleteProfesorForo, deleteAlumnoForo } from '../Modelo/firebase'
+import { getProfesoresForo, getProfesoresForo_Foro, getProfesoresForo_Profesores, addProfesoresForo, updateProfesoresForo, deleteProfesorForo, deleteAlumnoForo, getAlumnoForoID, getProfesorForoID } from '../Modelo/firebase'
 import { getAlumnoForo, getAlumnoForo_Alumno, getAlumnoForo_Foro, addAlumnosForo, updateAlumnosForo } from '../Modelo/firebase';
 
 //FUNCIONES PARA PROFESOR Foro
@@ -32,6 +32,15 @@ export async function buscaProfesorForo_Foro(id_foro) {
     }
 
     return profesores;
+}
+
+export async function buscaProfesorForoId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getProfesorForoID(id);
+
+    return instancia;
 }
 
 export async function actualizaProfesorForo(id, id_foro, id_profesores) {
@@ -89,6 +98,15 @@ export async function buscaAlumnoForo_Foro(id_Foros) {
         alumnos = await getAlumnoForo_Foro(id_Foros);
 
     return alumnos;
+}
+
+export async function buscaAlumnoForoId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getAlumnoForoID(id);
+
+    return instancia;
 }
 
 export async function actualizaAlumno(id, id_alumno, id_Foro) {

@@ -1,5 +1,5 @@
-import { getProfesorTarea, getProfesorTarea_Profesor, getProfesorTarea_Tarea, addProfesorTarea, updateProfesorTarea, updateAlumno, deleteProfesorTarea} from '../Modelo/firebase'
-import { getAlumnoTarea, getAlumnoTarea_Alumno, getAlumnoTarea_Tarea, addAlumnoTarea, updateAlumnoTarea, deleteAlumnoTarea } from '../Modelo/firebase';
+import { getProfesorTarea, getProfesorTarea_Profesor, getProfesorTarea_Tarea, addProfesorTarea, updateProfesorTarea, updateAlumno, deleteProfesorTarea, getProfesorTareaID} from '../Modelo/firebase'
+import { getAlumnoTarea, getAlumnoTarea_Alumno, getAlumnoTarea_Tarea, addAlumnoTarea, updateAlumnoTarea, deleteAlumnoTarea, getAlumnoTareaID } from '../Modelo/firebase';
 
 //FUNCIONES PARA PROFESOR TAREA
 export async function aniadeProfesorTarea(id_profesor, id_tareas) {
@@ -32,6 +32,15 @@ export async function buscaProfesorTarea_Tarea(id_tareas) {
     }
 
     return profesores;
+}
+
+export async function buscaProfesorTareaId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getProfesorTareaID(id);
+
+    return instancia;
 }
 
 export async function actualizaProfesorTarea(id, id_profesor, id_tarea) {
@@ -89,6 +98,15 @@ export async function buscaAlumnoTarea_Tarea(id_tareas) {
         alumnos = await getAlumnoTarea_Tarea(id_tareas);
 
     return alumnos;
+}
+
+export async function buscaAlumnoTareaId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getAlumnoTareaID(id);
+
+    return instancia;
 }
 
 export async function actualizaAlumno(id, id_alumno, id_tarea) {

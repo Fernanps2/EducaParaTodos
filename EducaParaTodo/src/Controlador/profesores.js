@@ -1,4 +1,4 @@
-import {getProfesoresLogin, getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, deleteProfesor} from '../Modelo/firebase'
+import {getProfesoresLogin, getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, deleteProfesor, getProfesorID} from '../Modelo/firebase'
 
 export async function aniadeProfesor(nombre, apellidos, password, foto) {
     if (nombre != '' && apellidos != '' && password != '')
@@ -41,6 +41,15 @@ export async function loginProfesor (nombre, password) {
     }
 
     return id;
+}
+
+export async function buscaProfesorId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getProfesorID(id);
+
+    return instancia;
 }
 
 export async function actualizaProfesor(id, nombre, apellidos, password, foto) {

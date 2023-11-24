@@ -1,4 +1,4 @@
-import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno} from '../Modelo/firebase'
+import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoID} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
 export async function aniadeAlumno(nombre, apellidos, password, foto, visualizacion) {
@@ -52,6 +52,15 @@ export async function loginAlumno (nombre, password) {
     }
 
     return id;
+}
+
+export async function buscaAlumnoId (id) {
+    let instancia = null;
+
+    if (id != null)
+        instancia = getAlumnoID(id);
+
+    return instancia;
 }
 
 export async function actualizaAlumno(id, nombre, apellidos, password, foto, visualizacion) {
