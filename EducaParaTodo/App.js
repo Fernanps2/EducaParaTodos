@@ -28,7 +28,7 @@ import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
-import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import DatosProfesor from './src/Vista/datosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS

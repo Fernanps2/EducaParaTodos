@@ -125,22 +125,22 @@ const LoginScreenAlumno = ({ route, navigation }) => {
             <View style={styles.row}>
               <TouchableOpacity style={styles.image} onPress={() => handleImagePress(1)}>
                 <Text style={styles.number}>{imagePressOrder.includes(1) ? imagePressOrder.indexOf(4) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img4.png')} style={styles.imageStyle} />
+                <Image source={require('../../Imagenes/DiseñoEducaParaTodos.png')} style={styles.imageStyle} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.image} onPress={() => handleImagePress(2)}>
                 <Text style={styles.number}>{imagePressOrder.includes(2) ? imagePressOrder.indexOf(1) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img1.png')} style={styles.imageStyle} />
+                <Image source={require('../../Imagenes/DiseñoEducaParaTodos.png')} style={styles.imageStyle} />
               </TouchableOpacity>
             </View>
                   {/* Segunda fila */}
             <View style={styles.row}>
               <TouchableOpacity style={styles.image} onPress={() => handleImagePress(3)}>
                 <Text style={styles.number}>{imagePressOrder.includes(3) ? imagePressOrder.indexOf(3) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img3.png')} style={styles.imageStyle} />
+                <Image source={require('../../Imagenes/DiseñoEducaParaTodos.png')} style={styles.imageStyle} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.image} onPress={() => handleImagePress(4)}>
                 <Text style={styles.number}>{imagePressOrder.includes(4) ? imagePressOrder.indexOf(2) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img2.png')} style={styles.imageStyle} />
+                <Image source={require('../../Imagenes/DiseñoEducaParaTodos.png')} style={styles.imageStyle} />
               </TouchableOpacity>
             </View>
         </View>
