@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react';
 
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
+import {getStorage, ref} from 'firebase/storage'
+//import {v4} from 'uuid';
+
 //import * as firebase from 'firebase';
 
 // Importa solo lo necesario de firebase/app
@@ -19,6 +22,8 @@ const firebaseConfig = {
 
 // Inicializa Firebase
 export const AppFirebase = initializeApp(firebaseConfig);
+const storage = getStorage(AppFirebase);
+const db = getFirestore(AppFirebase);
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -26,6 +31,7 @@ const COL_PROFESORES = 'profesores';
 const COL_ADMINISTRADORES = 'administradores';
 const COL_FOROS = 'foros';
 const COL_PROFESORES_FOROS = 'profesoresForos';
+const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 
@@ -33,95 +39,160 @@ const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 /**********  INICIO FUNCIONES ALUMNO ********/
 
 export async function getAlumnos() {
-    let alumnos = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_ALUMNOS);
-        getDocs(queryCollection)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = (collection(db, COL_ALUMNOS));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosNombre(nombre) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosApellidos(apellidos) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosContrasenia(contrasenia) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosVisualizacionPredefinida(visualizacion) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('visualizacionPreferente', '==', visualizacion));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('visualizacionPredefinida', '==', visualizacion));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosLogin(nombre, contrasenia) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
+}
+
+export async function getAlumnoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
@@ -135,114 +206,205 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
 
     let identificacion = null;
 
+    console.log(alumno);
+
     try {
-        addDoc(collection(getFirestore(), COL_ALUMNOS), alumno)
+        await addDoc(collection(db, COL_ALUMNOS), {
+            ...alumno
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
-        console.log("Ha habido un error al subir los datos del alumno");
+        console.log("Ha habido un error al subir los datos del alumno", error);
     }
 
     return identificacion;
 }
 
-export async function updateAlumno(id, {nombre='', apellidos='', visualizacionPreferente='', password='', foto=''}) {
-    let editaAlumno = {nombre, apellidos, visualizacionPreferente, password, foto};
+export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
+    let editaAlumno = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        visualizacionPreferente: visualizacionPreferente, 
+        password: password, 
+        foto: foto
+    };
     let alumno = null;
 
     try {
-        let docAlumno = doc(getFirestore(), COL_ALUMNOS);
-        alumno = getDoc(docAlumno, id);
+        let docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
+        
+        if (docSnapshot.exists()) {
+            alumno = docSnapshot.data();
+            console.log(editaAlumno);
+            //console.log(alumno.visualizacionPreferente);
+            //console.log(editaAlumno.visualizacionPreferente);
+            
+            editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
+            editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
+            editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
+            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
+            editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
-        editaAlumno = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
-        editaAlumno = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
-        editaAlumno = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-        editaAlumno = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
-        editaAlumno = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
-        updateDoc(docAlumno, {
-            ...editaAlumno
-        })
+            await updateDoc(docAlumno, {
+                ...editaAlumno
+            })
+        }
     } catch (error) {
-        console.log("Hubo un error al actualizar datos de alumno");
+        console.log("Hubo un error al actualizar datos de alumno ", error);
+    }
+}
+
+export async function deleteAlumno(id) {
+    try {
+        const docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumno correctamente");
+        }
+        else {
+            console.log("No existe el alumno");
+        }
+    } catch(error) {
+        console.log("Error al borrar alumno", error);
     }
 }
 
 /**********  FINAL FUNCIONES ALUMNO ********/
 
-
 /**********  INICIO FUNCIONES PROFESOR ********/
 
-{/*export async function getProfesores() {
-    let profesores = null;
-
+export async function getProfesores() {
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES);
-        getDocs(queryCollection)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = collection(db, COL_PROFESORES);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresNombre(nombre) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresApellidos(apellidos) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresContrasenia(contrasenia) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('passwprd', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresLogin(nombre, contrasenia) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
+}
+
+export async function getProfesorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesor(nombre, apellidos, contrasenia, foto) {
@@ -256,7 +418,9 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES), profesor)
+        addDoc(collection(db, COL_PROFESORES), {
+            ...profesor
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -266,152 +430,50 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
-    let editaProfesor = {nombre, apellidos, password, foto};
+export async function updateProfesor(id, nombre, apellidos, password, foto) {
+    let editaProfesor = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        foto: foto
+    };
     let profesor = null;
 
     try {
-        let docProfesor = doc(getFirestore(), COL_PROFESORES);
-        profesor = getDoc(docProfesor, id);
+        let docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
+        
+        if (docSnapshot.exists()) {
+            profesor = docSnapshot.data();
 
-        editaProfesor = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
-        editaProfesor = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
-        editaProfesor = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
-        editaProfesor = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+            editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+            editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
+            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
 
-        updateDoc(docProfesor, {
-            ...editaProfesor
-        });
+            await updateDoc(docProfesor, {
+                ...editaProfesor
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesor");
     }
-}*/}
+}
 
-
-
-export async function getProfesorPorId(idProfesor) {
+export async function deleteProfesor(id) {
     try {
-        const profesorRef = doc(collection(getFirestore(), COL_PROFESORES), idProfesor);
-        const profesorSnapshot = await getDoc(profesorRef);
+        const docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
 
-        if (profesorSnapshot.exists()) {
-            const data = profesorSnapshot.data();
-            return {
-                id: profesorSnapshot.id,
-                nombre: data.nombre,
-                apellidos: data.apellidos,
-                password: data.password,
-                email: data.email,
-                info: data.info,
-                foto: data.foto
-            };
-        } else {
-            console.log("No se encontró ningún profesor con ese ID");
-            return null;
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesor correctamente");
         }
-    } catch (error) {
-        console.error("Error al obtener el profesor por ID:", error);
-        return null;
-    }
-}
-
-export async function getProfesores() {
-    let profesores = null;
-
-    try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES);
-        getDocs(queryCollection)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, password: profesor.data().password,
-                                                        email: profesor.email, info: profesor.info, foto: profesor.foto})));
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
-    }
-
-    return profesores;
-}
-
-export async function getProfesoresNombre(nombre) {
-    try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({id: profesor.id, nombre: profesor.data().nombre, apellidos: profesor.data().apellidos, password: profesor.data().password,
-                                                    email: profesor.email, info: profesor.info, foto: profesor.data().foto}));
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor", error);
-        return null;
-    }
-}
-
-export async function getProfesoresApellidos(apellidos) {
-    try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('apellidos', '==', apellidos));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({id: profesor.id, nombre: profesor.data().nombre, apellidos: profesor.data().apellidos, password: profesor.data().password,
-                                                    email: profesor.email, info: profesor.info, foto: profesor.data().foto}));
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor", error);
-        return null;
-    }
-}
-
-export async function getProfesoresContrasenia(contrasenia) {
-    try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('password', '==', contrasenia));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({id: profesor.id, nombre: profesor.data().nombre, apellidos: profesor.data().apellidos, password: profesor.data().password,
-                                                    email: profesor.email, info: profesor.info, foto: profesor.data().foto}));
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor", error);
-        return null;
-    }
-}
-
-export async function getProfesoresLogin(nombre, contrasenia) {
-    try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        const querySnapshot = await getDocs(queryFilter);
-        return querySnapshot.docs.map(profesor => ({id: profesor.id, nombre: profesor.data().nombre, apellidos: profesor.data().apellidos, password: profesor.data().password,
-                                                    email: profesor.email, info: profesor.info, foto: profesor.data().foto}));
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor", error);
-        return null;
-    }
-}
-
-export async function addProfesor(nombre, apellidos, contrasenia, email, info, foto) {
-    let profesor = {
-        nombre: nombre,
-        apellidos: apellidos,
-        password: contrasenia,
-        email: email,
-        info: info,
-        foto: foto
-    }
-
-    try {
-        const docRef = await addDoc(collection(getFirestore(), COL_PROFESORES), profesor);
-        return docRef.id;
-    } catch (error) {
-        console.log("Ha habido un error al subir los datos del profesor", error);
-        return null;
-    }
-}
-
-export async function updateProfesor(id, {nombre='', apellidos='', password='', email='', info='', foto=''}) {
-    try {
-        const docProfesor = doc(collection(getFirestore(), COL_PROFESORES), id);
-        await updateDoc(docProfesor, {
-            nombre: nombre,
-            apellidos: apellidos,
-            password: password,
-            email: email,
-            info: info,
-            foto: foto
-        });
-    } catch (error) {
-        console.log("Problema al actualizar datos de profesor", error);
+        else {
+            console.log("No existe el profesor");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesor", error);
     }
 }
 
@@ -420,75 +482,132 @@ export async function updateProfesor(id, {nombre='', apellidos='', password='', 
 /**********  INICIO FUNCIONES ADMINISTRADOR ********/
 
 export async function getAdministradores() {
-    let administradores = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_ADMINISTRADORES);
-        getDocs(queryCollection)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = collection(db, COL_ADMINISTRADORES);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresNombre(nombre) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministadoresApellidos(apellidos) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresContrasenia(contrasenia) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresLogin(nombre, contrasenia) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
+}
+
+export async function getAdministradorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
@@ -502,7 +621,9 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_ADMINISTRADORES), admin)
+        addDoc(collection(db, COL_ADMINISTRADORES), {
+            ...admin
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -512,24 +633,49 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateAdministrador(id, {nombre='', apellidos='', password='', foto=''}) {
-    let editaAdministrador = {nombre, apellidos, password, foto};
+export async function updateAdministrador(id, nombre, apellidos, password, foto) {
+    let editaAdministrador = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        foto: foto
+    };
     let Administrador = null;
 
     try {
-        let docAdministrador = doc(getFirestore(), COL_ADMINISTRADORES);
-        Administrador = getDoc(docAdministrador, id);
+        let docAdministrador = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdministrador);
+        
+        if (docSnapshot.exists()) {
+            Administrador = docSnapshot.data();
+            editaAdministrador.nombre = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
+            editaAdministrador.apellidos = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
+            editaAdministrador.password = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
+            editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
 
-        editaAdministrador = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
-        editaAdministrador = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
-        editaAdministrador = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
-        editaAdministrador = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
-
-        updateDoc(docAdministrador, {
-            ...editaAdministrador
-        });
+            await updateDoc(docAdministrador, {
+                ...editaAdministrador
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de Administrador");
+    }
+}
+
+export async function deleteAdministrador(id) {
+    try {
+        const docAdministrador = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdministrador);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el administrador correctamente");
+        }
+        else {
+            console.log("No existe el administrador");
+        }
+    } catch(error) {
+        console.log("Error al borrar administrador", error);
     }
 }
 
@@ -538,32 +684,62 @@ export async function updateAdministrador(id, {nombre='', apellidos='', password
 /**********  INICIO FUNCIONES FORO ********/
 
 export async function getForos() {
-    let foros = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_FOROS);
-        getDocs(queryCollection)
-        .then(res => foros = res.docs.map(foro => ({id: foro.id, nombre: foro.nombre})));
+        const queryFilter = collection(db, COL_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre } = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del foro");
+        console.log("Ha habido un error al recoger los datos del foro", error);
     }
 
-    return foros;
+    return docs;
 }
 
 export async function getForosNombre(nombre) {
-    let foros = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_FOROS), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => foros = res.docs.map(foro => ({id: foro.id, nombre: foro.nombre})));
+        const queryFilter = query(collection(db, COL_FOROS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre } = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del foro");
+        console.log("Ha habido un error al recoger los datos del foro", error);
     }
 
-    return foros;
+    return docs;
+}
+
+export async function getForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addForo(nombre) {
@@ -574,7 +750,9 @@ export async function addForo(nombre) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_FOROS), foro)
+        addDoc(collection(db, COL_FOROS), {
+            ...foro
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -584,21 +762,45 @@ export async function addForo(nombre) {
     return identificacion;
 }
 
-export async function updateForo(id, {nombre=''}) {
-    let editaForo = {nombre};
+export async function updateForo(id, nombre) {
+    let editaForo = {
+        nombre:nombre
+    };
+
     let foro = null;
 
     try {
-        let docForo = doc(getFirestore(), COL_FOROS);
-        foro = getDoc(docForo, id);
+        let docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+        
+        if (docSnapshot.exists()) {
+            foro = docSnapshot.data();
 
-        editaForo = editaForo.nombre == '' ? foro.nombre : editaForo.nombre;
+            editaForo.nombre = editaForo.nombre == '' ? foro.nombre : editaForo.nombre;
 
-        updateDoc(docForo, {
-            ...editaForo
-        });
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de foro");
+    }
+}
+
+export async function deleteForo(id) {
+    try {
+        const docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el foro correctamente");
+        }
+        else {
+            console.log("No existe el foro");
+        }
+    } catch(error) {
+        console.log("Error al borrar foro", error);
     }
 }
 
@@ -607,43 +809,82 @@ export async function updateForo(id, {nombre=''}) {
 /**********  FINAL FUNCIONES PROFESOR_TAREA ********/
 
 export async function getProfesorTarea() {
-    let profesorTarea = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES_TAREAS);
-        getDocs(queryCollection)
-        .then(res => profesorTarea = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = collection(db, COL_PROFESORES_TAREAS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
 
-    return profesorTarea;
+    return docs;
 }
 
 export async function getProfesorTarea_Profesor(id_profesor) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getProfesorTarea_Tarea(id_tarea) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
+    }
+
+    return docs;
+}
+
+export async function getProfesorTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
     }
 
     return instancia;
@@ -658,7 +899,9 @@ export async function addProfesorTarea(id_profesor, id_tarea) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES_TAREAS), instancia)
+        addDoc(collection(db, COL_PROFESORES_TAREAS), {
+            ...instancia
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -668,22 +911,45 @@ export async function addProfesorTarea(id_profesor, id_tarea) {
     return identificacion;
 }
 
-export async function updateProfesorTarea(id, {profesor='', tarea=''}) {
-    let editaInstancia = {profesor, tarea};
+export async function updateProfesorTarea(id, profesor, tarea) {
+    let editaInstancia = {
+        profesor: profesor, 
+        tarea: tarea
+    };
     let instancia = null;
 
     try {
-        let docInstancia = doc(getFirestore(), COL_PROFESORES_TAREAS);
-        instancia = getDoc(docInstancia, id);
+        let docInstancia = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(docInstancia);
+        
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.exists();
+            editaInstancia.profesor = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
+            editaInstancia.tarea = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
 
-        editaInstancia = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
-        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
-
-        updateDoc(docInstancia, {
-            ...editaInstancia
-        });
+            updateDoc(docInstancia, {
+                ...editaInstancia
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesorTarea");
+    }
+}
+
+export async function deleteProfesorTarea(id) {
+    try {
+        const doc = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesorTarea correctamente");
+        }
+        else {
+            console.log("No existe el profesorTarea");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesorTarea", error);
     }
 }
 
@@ -692,43 +958,82 @@ export async function updateProfesorTarea(id, {profesor='', tarea=''}) {
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/
 
 export async function getAlumnoTarea() {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_ALUMNOS_TAREAS);
-        getDocs(queryCollection)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = collection(db, COL_ALUMNOS_TAREAS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnosTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getAlumnoTarea_Alumno(id_alumno) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getAlumnoTarea_Tarea(id_tarea) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnoTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
     }
 
     return instancia;
@@ -743,7 +1048,9 @@ export async function addAlumnoTarea(id_alumno, id_tarea) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_ALUMNOS_TAREAS), instancia)
+        addDoc(collection(db, COL_ALUMNOS_TAREAS), {
+            ...instancia
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -753,22 +1060,45 @@ export async function addAlumnoTarea(id_alumno, id_tarea) {
     return identificacion;
 }
 
-export async function updateAlumnoTarea(id, {alumno='', tarea=''}) {
-    let editaInstancia = {alumno, tarea};
+export async function updateAlumnoTarea(id, alumno, tarea) {
+    let editaInstancia = {
+        alumno: alumno, 
+        tarea: tarea
+    };
     let instancia = null;
 
     try {
-        let docInstancia = doc(getFirestore(), COL_ALUMNOS_TAREAS);
-        instancia = getDoc(docInstancia, id);
+        let docInstancia = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(docInstancia);
+        
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            editaInstancia.alumno = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
+            editaInstancia.tarea = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
 
-        editaInstancia = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
-        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
-
-        updateDoc(docInstancia, {
-            ...editaInstancia
-        });
+            updateDoc(docInstancia, {
+                ...editaInstancia
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de alumnoTarea");
+    }
+}
+
+export async function deleteAlumnoTarea(id) {
+    try {
+        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumnoTarea correctamente");
+        }
+        else {
+            console.log("No existe el alumnoTarea");
+        }
+    } catch(error) {
+        console.log("Error al borrar alumnoTarea", error);
     }
 }
 
@@ -777,46 +1107,85 @@ export async function updateAlumnoTarea(id, {alumno='', tarea=''}) {
 /**********  INICIO FUNCIONES PROFESOR-FORO ********/
 
 export async function getProfesoresForo() {
-    let profesoresForos = null;
-
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES_FOROS);
-        getDocs(queryCollection)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = collection(db, COL_PROFESORES_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos de profesoresForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos;
+    return docs;
 }
 
 export async function getProfesoresForo_Foro(id_foro) {
-    let profesoresForos = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('foro', '==', id_foro));
-        getDocs(queryFilter)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('foro', '==', id_foro));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos
+    return docs;
 }
 
 export async function getProfesoresForo_Profesores(id_profesores) {
-    let profesoresForos = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('profesores', 'in', id_profesores));
-        getDocs(queryFilter)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('profesor', 'in', id_profesores));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos
+    return docs;
+}
+
+export async function getProfesorForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesoresForo(id_foro, id_profesores) {
@@ -828,7 +1197,9 @@ export async function addProfesoresForo(id_foro, id_profesores) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES_FOROS), profesorForo)
+        addDoc(collection(db, COL_PROFESORES_FOROS), {
+            ...profesorForo
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -838,29 +1209,206 @@ export async function addProfesoresForo(id_foro, id_profesores) {
     return identificacion;
 }
 
-export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
-    let editaForo = {id_profesores};
-    let foro = null;
+export async function updateProfesoresForo(id, profesores, foro) {
+    let editaForo = {
+        foro: foro,
+        profesores: profesores
+    };
+    let foroDoc = null;
 
     try {
-        let docForo = doc(getFirestore(), COL_PROFESORES_FOROS);
-        foro = getDoc(docForo, id);
+        let docForo = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+        
+        if (docSnapshot.exists()) {
+            foroDoc = docSnapshot.data();
+            editaForo.foro = editaForo.foro == '' ? foroDoc.foro : editaForo.foro;
+            editaForo.profesores = editaForo.profesores == '' ? foroDoc.profesores : editaForo.profesores;
 
-        editaForo = editaForo.id_profesores == '' ? foro.profesores : editaForo.id_profesores;
-
-        updateDoc(docForo, {
-            ...editaForo
-        });
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesorForo");
     }
 }
 
+export async function deleteProfesorForo(id) {
+    try {
+        const doc = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesorForo correctamente");
+        }
+        else {
+            console.log("No existe el profesorForo");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesorForo", error);
+    }
+}
+
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
 
+/********** INICIO FUNCIONES ALUMNO-FORO *********/
+
+export async function getAlumnosForo() {
+    let docs = [];
+    try {
+        const queryFilter = collection(db, COL_ALUMNOS_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnosForo_Foro(id_foro) {
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('foro', '==', id_foro));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnosForo_Alumnos(id_alumnos) {
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('alumno', 'in', id_alumnos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnoForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
+export async function addAlumnosForo(id_foro, id_alumnos) {
+    let alumnoForo = {
+        foro: id_foro,
+        alumno: id_alumnos
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(db, COL_ALUMNOS_FOROS), {
+            ...alumnoForo
+        })
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del alumnoForo");
+    }
+
+    return identificacion;
+}
+
+export async function updateAlumnosForo(id, alumno, foro) {
+    let editaForo = {
+        foro: foro, 
+        alumno: alumno
+    };
+    let foroDoc = null;
+
+    try {
+        let docForo = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+        
+        if (docSnapshot.exists()) {
+            docForo = docSnapshot.data();
+            editaForo.foro = editaForo.foro == '' ? foro.foro : editaForo.foro;
+            editaForo.alumno = editaForo.alumno == '' ? foroDoc.alumno : editaForo.alumno;
+
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
+    } catch (error) {
+        console.log("Problema al actualizar datos de alumnoForo");
+    }
+}
+
+export async function deleteAlumnoForo(id) {
+    try {
+        const doc = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumnoForo correctamente");
+        }
+        else {
+            console.log("No existe el alumnoForo");
+        }
+    } catch(error) {
+        console.log("Error al borrar allumnoForo", error);
+    }
+}
+
+/********** FINAL FUNCIONES ALUMNO-FORO **********/
+
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
-/*
-uploadImage= (uri, nameImage) => {
+
+const contarArchivos = async(nombreCarpeta) => {
+
+}
+
+uploadImage= async(uri) => {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onerror = reject;
@@ -875,13 +1423,17 @@ uploadImage= (uri, nameImage) => {
     xhr.send();
   });
 };
-*/
-export function almacenarImagen(imagen) {
-  this.uploadImage(imagen)
+
+export async function almacenarImagen(imagen) {
+
+    //let num_imagenes = storage.child('images').size();
+    let nombre_imagen = 'imagen_1';
+
+  await uploadImage(imagen)
     .then(resolve => {
-      AppFirebase.storage()
+      storage
         .ref()
-        .child(`images/${nombre}`);
+        .child(`images/${nombre_imagen}`);
       ref.put(resolve);
     })
     .catch(error => {
@@ -889,13 +1441,17 @@ export function almacenarImagen(imagen) {
     });
 }
 
-export function almacenarPictograma(imagen) {
-  this.uploadImage(imagen)
+export async function almacenarPictograma(imagen) {
+  await uploadImage(imagen)
     .then(resolve => {
-      AppFirebase.storage()
+      storage
         .ref()
         .child(`Pictogramas/${nombre}`);
-      ref.put(resolve);
+      ref.put(resolve).then(resolve => {
+        console.log("Imagen subida correctamente");
+      }). catch(error => {
+        console.log("Error al subir la imagen");
+      });
     })
     .catch(error => {
       console.log(error);
@@ -905,8 +1461,7 @@ export function almacenarPictograma(imagen) {
 export function cargarImagen(imagen) {
   let imagenCargada = null;
 
-  AppFirebase
-    .storage()
+  storage
     .ref(`images/${imagen}`)
     .getDownloadURL()
     .then(resolve => {

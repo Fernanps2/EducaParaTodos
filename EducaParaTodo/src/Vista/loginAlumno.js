@@ -88,7 +88,7 @@ const LoginScreenAlumno = ({ route, navigation }) => {
   
 
   const handleLogin = () => {
-    const username = alumno.username;
+    const username = alumno.nombre;
 
     if (login(username, password, "alumno"))
       navigation.navigate('Tareas', {usuario:alumno});
@@ -111,7 +111,7 @@ const LoginScreenAlumno = ({ route, navigation }) => {
       <Text style={styles.title}>EducaParaTodos</Text>
       <View style={styles.container}>
         <Text style={styles.text}>Usuario</Text>
-        <Text style={styles.usuario}>{alumno.username}</Text>
+        <Text style={styles.usuario}>{alumno.nombre}</Text>
         <Text style={styles.text}>Contraseña</Text>
         <TextInput
           style={styles.input}
