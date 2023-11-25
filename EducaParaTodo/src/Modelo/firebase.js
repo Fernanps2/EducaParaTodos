@@ -2,8 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref} from 'firebase/storage'
+//import {getStorage, ref, uploadFile} from 'firebase/storage'
 //import {v4} from 'uuid';
+import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
 //import * as firebase from 'firebase';
 
@@ -1429,7 +1430,7 @@ export async function almacenarImagen(imagen) {
     //let num_imagenes = storage.child('images').size();
     let nombre_imagen = 'imagen_1';
 
-  await uploadImage(imagen)
+  /*await uploadImage(imagen)
     .then(resolve => {
       storage
         .ref()
@@ -1438,7 +1439,16 @@ export async function almacenarImagen(imagen) {
     })
     .catch(error => {
       console.log(error);
-    });
+    });*/
+
+    try {
+        const referenciaStorage = ref(storage, `images/${nombre_imagen}`);
+        await uploadFile(referenciaStorage, imagen);
+
+        console.log("Imagen subida");
+    } catch (error) {
+        console.log("Error al subir la imagen", error);
+    }
 }
 
 export async function almacenarPictograma(imagen) {
