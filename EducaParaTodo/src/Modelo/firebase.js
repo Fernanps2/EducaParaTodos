@@ -1409,21 +1409,21 @@ const contarArchivos = async(nombreCarpeta) => {
 
 }
 
-uploadImage= async(uri) => {
-  return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.onerror = reject;
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4) {
-        resolve(xhr.response);
-      }
-    };
+// uploadImage= async(uri) => {
+//   return new Promise((resolve, reject) => {
+//     let xhr = new XMLHttpRequest();
+//     xhr.onerror = reject;
+//     xhr.onreadystatechange = () => {
+//       if (xhr.readyState === 4) {
+//         resolve(xhr.response);
+//       }
+//     };
 
-    xhr.open("GET", uri);
-    xhr.responseType = "blob";
-    xhr.send();
-  });
-};
+//     xhr.open("GET", uri);
+//     xhr.responseType = "blob";
+//     xhr.send();
+//   });
+// };
 
 export async function almacenarImagen(imagen) {
 
@@ -1485,3 +1485,661 @@ export function cargarImagen(imagen) {
 }
 
 /********** FINAL FUNCIONES PARA MULTIMEDIA ********/
+
+export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>{
+
+    try{
+      if(nombre === '' || apellidos === '' || visualizacionPreferente === null)
+        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido')
+      else{
+        const alumno = {
+          nombre,
+          apellidos,
+          visualizacionPreferente
+        }
+
+        await addDoc(collection(db,'alumnos'),{
+          ...alumno
+        })
+      }
+    }catch(error){
+
+    }
+  }
+
+// export const getAlumnos = async () => {
+//   try{
+//     const querySnapshot = await getDocs(collection(db, 'alumnos'));
+//     const docs = [];
+//     querySnapshot.forEach((doc) => {
+//       const { nombre, apellidos, password, jwt, fotoUrl} = doc.data();
+//       docs.push({
+//         id:doc.id,
+//         nombre,
+//         apellidos,
+//         password,
+//         jwt,
+//         fotoUrl,
+//       });
+//     });
+//     return docs;
+//   } catch(error){
+//     console.log(error);
+//       Alert.alert(error);
+//   }
+// }
+
+
+// Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
+export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
+  try{
+      if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
+        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+        console.log('te faltan campos');
+      }
+      else{
+        console.log('se crea el objeto');
+        const objeto = {
+          titulo,
+          completado,
+          descripcion,
+          fechaFin,
+          fechaInicio,
+          idAlumno,
+          tipo
+        }
+        
+        await addDoc(collection(db,'Tarea'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log('error' + error);
+    }  
+}
+
+
+
+// export const asignarTareaAlumno = async (idTarea,idAlumno) => {
+
+
+
+
+
+// }
+
+
+// PRUEBA REALIZADA. FUNCIONA
+export const asignarFeedback = async (idTarea,feedBack) => {
+try{
+  if(idTarea === '' || feedBack === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    // Creamos las referencias 
+    const tareaRef = doc(db, 'Tarea', String(idTarea));
+    
+    await updateDoc(tareaRef,{
+      Feedback: feedBack,
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+// PROBADA Y FUNCIONA. 
+
+export const getTareaId = async (idAlumno) => {
+
+console.log(idAlumno);
+
+try {
+  const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
+  const querySnapshot = await getDocs(q);
+  // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+
+  const docs = [];
+
+  for (const tareaDoc of querySnapshot.docs) {
+    const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
+
+    docs.push({
+      id: tareaDoc.id,
+      Nombre,
+      Completado,
+      Descripción,
+      FechaInicio,
+      FechaFin,
+      Tipo,
+      IdAlumno,
+      fotoURL,
+    });
+  }
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  Alert.alert(error);
+}
+};
+
+// Obtener todas las tareas
+export const getTarea = async () => {
+
+try {
+  const q = query(collection(db,"Tarea"));
+  const querySnapshot = await getDocs(q);
+  // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+
+  const docs = [];
+
+  for (const tareaDoc of querySnapshot.docs) {
+    const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
+
+    docs.push({
+      id: tareaDoc.id,
+      Nombre,
+      Completado,
+      Descripción,
+      FechaInicio,
+      FechaFin,
+      Tipo,
+      IdAlumno,
+      fotoURL,
+    });
+  }
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  Alert.alert(error);
+}
+};
+
+// export const deleteTareaId = async (idTarea) => {
+//     try {
+//         console.log("borrando tarea");
+//         // Borramos la tarea principal que queremos
+//         const q = query(collection(db,"Tarea"), where("idTarea","==",idTarea));
+//         const querySnapshot = await getDoc(q);
+
+//         const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+//         const querySnapshot2 = await getDoc(q2);
+
+//         const q5 = query(collection(db,"PasosActividad",where("idTarea","==",idTarea)));
+//         const querySnapshot5 = await getDoc(q5);
+
+//         const q3 = query(collection(db,"Tarea-Inventario"),where("idTarea","==",idTarea));
+//         const querySnapshot3 = await getDoc(q3);
+
+//         const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+//         const querySnapshot4 = await getDoc(q4);
+
+//         console.log(querySnapshot3);
+
+//         if (!querySnapshot.empty()) {
+//             await deleteDoc(querySnapshot.ref);
+//             console.log("Se ha borrado la tarea correctamente");
+//         }
+//         else {
+//             console.log("No existe la tarea");
+//         }
+
+//         if(!querySnapshot2.empty()){
+//             await deleteDoc(querySnapshot2.ref);
+//             if(!querySnapshot5.empty())
+//                 await deleteDoc(querySnapshot5.ref);
+//             console.log("Se ha borrado la tarea actividad");
+//         } else{
+//             console.log("NO existe la tarea actividad");
+//         }
+
+//         if(!querySnapshot3.empty()){
+//             await deleteDoc(querySnapshot3.ref);
+//             console.log("Se ha borrado la tarea inventario");
+//         } else{
+//             console.log("No existe la tarea inventario");
+//         }
+
+//         if(!querySnapshot4.empty()){
+//             await deleteDoc(querySnapshot4.ref);
+//         } else{
+//             console.log("No existe la tarea comanda")
+//         }
+
+//     } catch(error) {
+//         console.log("Error al borrar la tarea", error);
+//     }
+
+// }
+
+
+
+// Funcion que borra la tarea con ese id
+// Borra tanto la tarea, como el documento de la colección del 
+// tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
+export const deleteTareaId = async (idTarea) => {
+    try {
+        await deleteDoc(doc(db,"Tarea",idTarea));
+        const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+        const Snapshot2 = await getDocs(q2);
+        Snapshot2.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q = query(collection(db, "PasosActividad"), where("idTarea", "==", idTarea));
+
+        const Snapshot = await getDocs(q);
+
+        Snapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+
+        const q3 = query(collection(db,"Tarea-Invetario"),where("idTarea","==",idTarea));
+        const Snapshot3 = await getDocs(q3);
+        Snapshot3.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+        const Snapshot4 = await getDocs(q4);
+        Snapshot4.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+    } catch(error) {
+        console.log("Error al borrar la tarea", error);
+    }
+}
+
+
+
+// EN LA VISTA CON ESTE CÓDIGO SE SACA LA LISTA DE TAREAS
+
+// const [tareas,setTareas] =useState([]);
+
+// useEffect(() => {
+//   const listaTareas = async () => {
+//     try{
+//       const Tareas = await getTarea(2);
+//       setTareas(Tareas);
+//       // console.log(Tareas);
+//     } catch(error){
+//       console.log(error);
+//     }
+//   };
+//   listaTareas();
+// }, []);
+
+
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
+try{
+
+  if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    // Creamos las referencias 
+    const pasosRef = doc(db, 'PasosActividad', String(pasos));
+    const idTareaRef = doc(db, 'Tarea', String(idTarea));
+
+
+    const objeto = {
+      nombre,
+      aula,
+      pasos,
+      idTarea
+    }
+    
+    await addDoc(collection(db,'Tarea-Actividad'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+
+export const getTareasActividad = async () => {
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Actividad'));
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
+};
+
+export const getTareasActividadId = async (idTarea) => {
+try {
+
+  const q = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+  const querySnapshot = await getDocs(q);
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
+};
+
+export const getPasos = async (idActividad) => {
+try {
+
+  const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
+  const querySnapshot = await getDocs(q);
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
+};
+
+
+
+// Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
+// menú se cree una fila/documento por menú
+
+// PRUEBA REALIZADA.FUNCIONA
+export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
+try{
+
+  if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    // Creamos las referencias 
+    const idMenuRef = doc(db, 'Menu', String(idMenu));
+    const idTareaRef = doc(db, 'Tarea', String(idTarea));
+
+
+    const objeto = {
+      nombre,
+      aula,
+      idMenu,
+      idTarea
+    }    
+    await addDoc(collection(db,'Tarea-Comanda'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+// ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
+// PRUEBA REALIZADA. FUNCIONA
+export const getTareasComanda = async () => {
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Comanda'));
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
+}
+
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setMenu = async(nombreMenu,idAlimentos) => {
+try{
+
+  if(nombreMenu === '' || idAlimentos === null){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
+    const objeto = {
+      idAlimentos
+    }
+    
+    // Lo hacemos así para establecer el nombreMenú como el id del documento
+    const menuDocRef = doc(db, 'Menu', nombreMenu);
+
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await setDoc(menuDocRef, {
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setAlimento = async (nombreAlimento,imagen) => {
+try{
+
+  if(nombreAlimento === '' || imagen === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
+
+    const objeto = {
+      nombreAlimento,
+      imagen
+    }
+    
+
+    // Lo hacemos así para establecer el nombreMenú como el id del documento
+    const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
+
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await setDoc(menuDocRef, {
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+// ESTA FUNCION SIRVE PARA OBTENER UN ALIMENTO A TRAVÉS DE SU NOMBRE
+// PRUEBA REALIZADA. FUNCIONA
+export const getAlimento = async (nombre) => {
+try {
+  const alimentosQuery = query(collection(db, 'Alimentos'), where('Nombre', '==', nombre));
+  const querySnapshot = await getDocs(alimentosQuery);
+
+  const docs = [];
+
+  querySnapshot.forEach((docu) => {
+    const alimentoDatos = docu.data();
+    console.log(alimentoDatos);
+
+    docs.push(alimentoDatos);
+  });
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
+};
+
+
+
+export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
+try{
+
+  if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    const objeto = {
+      idMaterial,
+      lugarLlevar,
+      recogida,
+      idTarea
+    }
+
+    await addDoc(collection(db,'Tarea-Inventario'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setMaterial = async (foto,nombre,stock)=> {
+try{
+
+  if(nombre === '' || foto === '' || stock === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
+
+    const objeto = {
+      nombre,
+      foto,
+      stock
+    }
+    
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await addDoc(collection(db,'Material'),{
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
+}
+
+
+
+// FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
+export const getMaterial = async(nombre) => {
+try {
+  const materialQuery = query(collection(db, 'Material'), where('nombre', '==', nombre));
+  const querySnapshot = await getDocs(materialQuery);
+
+  const docs = [];
+
+  querySnapshot.forEach((docu) => {
+    const materialDatos = docu.data();
+
+    docs.push(materialDatos);
+  });
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
+}
+
+
+// FUNCION QUE DEVUELVE LOS DATOS DE UN MATERIAL CORRESPONDIENTE A UN ID
+// PRUEBA REALIZADA. FUNCIONA
+export const getMaterialId = async(id) => {
+  try {
+    const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
+    const querySnapshot = await getDocs(materialQuery);
+
+    const docs = [];
+
+    querySnapshot.forEach((docu) => {
+      const materialDatos = docu.data();
+      console.log(materialDatos);
+
+      docs.push(materialDatos);
+    });
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+}
+
+
+
+// FUNCION QUE DEVUELVE TODOS LOS MATERIALES QUE TENEMOS EN LA BASE DE DATOS
+// PRUEBA REALIZADA. FUNCIONA
+export const getMateriales = async() => {
+try {
+  const materialQuery = query(collection(db, 'Material'));
+  const querySnapshot = await getDocs(materialQuery);
+
+  const docs = [];
+
+  querySnapshot.forEach((docu) => {
+    const materialDatos = docu.data();
+    console.log(materialDatos);
+
+    docs.push(materialDatos);
+  });
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
+}
+
+
+// FUNCION QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
+// PRUEBA REALIZADA. FUNCIONA
+export const getTareasInventario = async() => {
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Inventario'));
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
+}
