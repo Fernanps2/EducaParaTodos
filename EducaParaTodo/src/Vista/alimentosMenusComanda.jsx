@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
@@ -14,31 +14,51 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
+import * as global from "./VarGlobal";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import {} from "../Modelo/modelo";
+import { getAlimentos } from "../Modelo/modelo";
 const db = getFirestore(appFirebase);
 
 export default function TiposMenusComanda({ navigation }) {
   // Variables para los alimentos del menu
   const [selectedMenu, setSelectedMenu] = useState("");
-  const [menus, setMenus] = useState({
-    'Ninguno': [],
-    "Menu Carne": [],
-    "Menu Verdura": [],
-  });
+
+  const [menus, setMenus] = useState({});
+
+  useEffect(() => {
+    const nuevosMenus = {};
+
+    nuevosMenus['Ninguno'] = [];
+    global.listaMenus.forEach((menuTitulo) => {
+      nuevosMenus[menuTitulo] = [];
+    });
+    setMenus(nuevosMenus); // Actualizamos el estado de menus con este nuevo objeto
+  }, [global.listaMenus]);
+
   const [selectedAlimento, setSelectedAlimento] = useState();
-  const [alimentos, setAlimentos] = useState([
-    'Ninguno',
-    "Ensalada",
-    "Pechuga de pollo",
-    "Lemguado",
-  ]);
+  const [alimentos, setAlimentos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    const cargarAlimentos = async () => {
+      try {
+        const datos = await getAlimentos();
+        const menusConNinguno = ['Ninguno', ...datos.map(item => item)];
+        setAlimentos(menusConNinguno);
+        setCargando(false);
+      } catch (error) {
+        console.error("Error al obtener menus:", error);
+        setCargando(false);
+      }
+    };
+    cargarAlimentos(); // Llamamos a la función al montar el componente
+  }, []);
 
   const addFood = () => {
-    if (selectedAlimento) {
+    if (selectedAlimento && selectedAlimento !== 'Ninguno' && selectedMenu && selectedMenu !== 'Ninguno') {
       const updatedMenu = { ...menus };
       const currentFoods = updatedMenu[selectedMenu] || [];
       updatedMenu[selectedMenu] = [...currentFoods, selectedAlimento];
@@ -131,19 +151,30 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.row]}>
-        <Picker
-          selectedValue={selectedAlimento}
-          onValueChange={(itemValue, itemIndex) =>
-            setSelectedAlimento(itemValue)
-          }
-          style={styles.picker}
+        {cargando && (
+          <View style={styles.text}>
+            <Text>Cargando...</Text>
+          </View>
+        )}
+        
+        {!cargando && (
+          <Picker
+            selectedValue={selectedAlimento}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedAlimento(itemValue)
+            }
+            style={styles.picker}
+          >
+            {alimentos.map((alimento, index) => (
+              <Picker.Item key={index} label={alimento} value={alimento} />
+            ))}
+          </Picker>
+        )}
+        
+        <TouchableOpacity
+          style={[styles.button, { marginLeft: 12 }]}
+          onPress={() => addFood()}
         >
-          {alimentos.map((alimento, index) => (
-          <Picker.Item key={index} label={alimento} value={alimento} />
-        ))}
-        </Picker>
-
-        <TouchableOpacity style={[styles.button, {marginLeft: 12}]} onPress={() => addFood()}>
           <Text style={styles.buttonText}>Añadir </Text>
         </TouchableOpacity>
       </View>

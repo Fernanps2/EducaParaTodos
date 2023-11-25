@@ -3,7 +3,7 @@ import appFirebase from './firebase';
 import {getFirestore,collection,addDoc, getDocs, where, query, getDoc,doc, DocumentReference,setDoc, updateDoc, firestore} from 'firebase/firestore'
 const db = getFirestore(appFirebase);
 import { Alert } from 'react-native';
-
+import Swal from "sweetalert2";
 
 export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>{
 
@@ -50,27 +50,39 @@ export const getAlumnos = async () => {
 
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
+export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
     try{
-        if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
-          Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-          console.log('te faltan campos');
+        if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == ''){
+          if (Platform.OS === "web"){
+            Swal.fire({
+              title: "Mensaje Importante",
+              text: "Debes rellenar los campos requeridos",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            })
+          }else{
+            Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+          }
         }
         else{
-          console.log('se crea el objeto');
+          var idAlumno = '';
+          var completado = 'false';
           const objeto = {
             titulo,
             completado,
-            descripcion,
             fechaFin,
             fechaInicio,
             idAlumno,
-            tipo
+            tipo,
+            periocidad
           }
           
-          await addDoc(collection(db,'Tarea'),{
+          // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.
+          const docRef = await addDoc(collection(db,'Tarea'),{
             ...objeto
           })
+          console.log('Buscamos el id',docRef.id);
+          return docRef.id;
         }
       }catch(error){
         console.log('error' + error);
@@ -92,8 +104,16 @@ export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFi
 export const asignarFeedback = async (idTarea,feedBack) => {
   try{
     if(idTarea === '' || feedBack === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -193,8 +213,16 @@ export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
   try{
 
     if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -245,12 +273,20 @@ export const getTareasActividad = async () => {
 
 
 // PRUEBA REALIZADA.FUNCIONA
-export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
+export const setTareaComanda = async(idTarea,idMenu, aula) => {
   try{
 
-    if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+    if( idMenu === null || idTarea === '' || aula === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -258,10 +294,10 @@ export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
       const idMenuRef = doc(db, 'Menu', String(idMenu));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
-
+      var pedidos = '';
       const objeto = {
-        nombre,
         aula,
+        pedidos,
         idMenu:idMenuRef,
         idTarea:idTareaRef
       }
@@ -306,7 +342,16 @@ export const setMenu = async(nombreMenu,idAlimentos) => {
   try{
 
     if(nombreMenu === '' || idAlimentos === null){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -333,6 +378,26 @@ export const setMenu = async(nombreMenu,idAlimentos) => {
   }  
 }
 
+// Devolvemos todos los menus.
+export const getMenus = async() => {
+  try {
+    const menuQuery = query(collection(db, 'Menu'));
+    const querySnapshot = await getDocs(menuQuery);
+
+    const docs = [];
+
+    querySnapshot.forEach((docu) => {
+      const {nombre} = docu.data(); // Extraemos nombre
+      docs.push(nombre);
+    });
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+}
+
 
 
 // PRUEBA REALIZADA. FUNCIONA
@@ -340,7 +405,16 @@ export const setAlimento = async (nombreAlimento,imagen) => {
   try{
 
     if(nombreAlimento === '' || imagen === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -387,14 +461,41 @@ export const getAlimento = async (nombre) => {
   }
 };
 
+// Obtiene tdos los alimentos.
+export const getAlimentos = async() => {
+  try {
+    const alimentoQuery = query(collection(db, 'Alimentos'));
+    const querySnapshot = await getDocs(alimentoQuery);
+
+    const docs = [];
+
+    querySnapshot.forEach((docu) => {
+      const {Nombre} = docu.data(); // Extraemos nombre
+      docs.push(Nombre);
+    });
+
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+}
 
 
-export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
+export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea) => {
   try{
 
-    if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+    if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 
@@ -405,8 +506,9 @@ export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea)
 
       const objeto = {
         idMaterial:idMaterialRef,
-        lugarLlevar,
-        recogida,
+        cantidad,
+        lugarOrigen,
+        lugarDestino,
         idTarea:idTareaRef
       }
 
@@ -430,7 +532,16 @@ export const setMaterial = async (foto,nombre,stock)=> {
   try{
 
     if(nombre === '' || foto === '' || stock === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
     else{
 

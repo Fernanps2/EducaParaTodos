@@ -42,7 +42,7 @@ export default function HomeAdmin ({ navigation }) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-        <Text style={styles.buttonText}>Gestionar tareas</Text>
+        <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
       </TouchableOpacity>
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
@@ -13,6 +13,8 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
+import { getMenus } from "../Modelo/modelo";
+import * as global from './VarGlobal';
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -23,11 +25,30 @@ export default function TiposMenusComanda({ navigation }) {
   // Variables para tipo de menu
   const [selectedMenuType, setSelectedMenuType] = useState("");
   const [menuList, setMenuList] = useState([]);
+  const [menuTypes, setMenuTypes] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
-  const menuTypes = ["Menu Carne", "Menu Verdura", "Menu Pescado"];
+  useEffect(() => {
+  const cargarMenus = async () => {
+    try {
+      const datos = await getMenus();
+      const menusConNinguno = ['Ninguno', ...datos.map(item => item)];
+      setMenuTypes(menusConNinguno); // Guardamos los datos en la variable de estado
+      setCargando(false);
+    } catch (error) {
+      console.error("Error al obtener menus:", error);
+      setCargando(false);
+    }
+  };
+  cargarMenus(); // Llamamos a la función al montar el componente
+  }, []);
+
+  useEffect(() => {
+console.log(menuTypes);
+  }, [menuTypes])
 
   const addItem = () => {
-    if (selectedMenuType) {
+    if (selectedMenuType && selectedMenuType !== 'Ninguno') {
       setMenuList([...menuList, selectedMenuType]);
     }
   };
@@ -51,6 +72,7 @@ export default function TiposMenusComanda({ navigation }) {
   );
 
   const guardarDatos = () => {
+    global.setListaMenus(menuList);
     navigation.navigate("tareaComanda");
   };
 
@@ -107,15 +129,23 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.row]}>
+      {cargando && (
+        <View style={styles.text}>
+          <Text>Cargando...</Text>
+        </View>
+      )}
+      {!cargando && (
         <Picker
-          selectedValue={selectedMenuType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedMenuType(itemValue)}
-        >
-          {menuTypes.map((menuType, index) => (
-            <Picker.Item key={index} label={menuType} value={menuType} />
-          ))}
-        </Picker>
+        selectedValue={selectedMenuType}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedMenuType(itemValue)}
+        
+      >
+        {menuTypes.map((menuType, index) => (
+          <Picker.Item key={index} label={menuType} value={menuType} />
+        ))}
+      </Picker>
+      )}
 
         <TouchableOpacity style={styles.button} onPress={() => addItem()}>
           <Text style={styles.buttonText}>Añadir </Text>

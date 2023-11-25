@@ -10,9 +10,10 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
+import { getMenus } from "./VarGlobal";
+import { setTarea, setTareaComanda } from "../Modelo/modelo";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -27,13 +28,8 @@ export default function TareaActividad({ navigation }) {
   const [inicioHora, setInicioHora] = useState("");
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
-  // Variable para guardar el formulario
-  const [formulario, setFormulario] = useState("");
   // Variable para switch
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  //Cambia de estado Switch
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [periocidad, setPeriocidad] = useState("Diario");
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -42,7 +38,7 @@ export default function TareaActividad({ navigation }) {
     setFinHora("");
     setInicioFecha("");
     setInicioHora("");
-    setFormulario("");
+    setPeriocidad("Diario");
   };
 
   //Validamos las horas
@@ -119,6 +115,9 @@ export default function TareaActividad({ navigation }) {
           Alert.alert(
             "Error",
             "La fecha de inicio no puede ser posterior a la fecha de finalización."
+            [
+              { text: "De acuerdo"}
+            ]
           );
         }
         return false;
@@ -138,15 +137,34 @@ export default function TareaActividad({ navigation }) {
         Alert.alert(
           "Fechas inválidas",
           "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."
+          [
+            { text: "De acuerdo"}
+          ]
         );
       }
       return false;
     }
   };
 
-  const guardarDatos = () => {
-    if (saveDates() && saveTimes()) {
-      navigation.navigate("gestionTareas");
+  const guardarDatos = async () => {
+    try {
+      if (saveDates() && saveTimes()) {
+        const idTarea = await setTarea(
+          nombreTarea,
+          inicioFecha + "//" + inicioHora,
+          finFecha + "//" + finHora,
+          "comanda",
+          periocidad
+        );
+        // Obtenemos todos los objetos de materiales de la tarea
+        const menus = getMenus();
+        menus.forEach((item) =>
+        setTareaComanda()
+        );
+        navigation.navigate("gestionTareas");
+      }
+    } catch (error) {
+      console.error("Error al crear la tarea materiales:", error);
     }
   };
 
@@ -300,36 +318,24 @@ export default function TareaActividad({ navigation }) {
             onChangeText={setFinHora}
           />
         </View>
-
+        
+        <View style={styles.separador} />
+        <View style={styles.separador} />
         <View style={styles.separador} />
 
-        <Text style={styles.text}>Formulario </Text>
-
-        <View style={styles.separador} />
-
+        <View style={styles.row}>
+          
+        <Text style={[styles.text, {marginRight: 5}]}>Periocidad </Text>
         <Picker
-          selectedValue={formulario}
-          onValueChange={(itemValue, itemIndex) => setFormulario(itemValue)}
+          selectedValue={periocidad}
+          onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
           style={styles.picker}
         >
-          <Picker.Item label="Ninguno" value="" />
-          <Picker.Item label="Formulario1" value="formulario1" />
-          <Picker.Item label="Formulario2" value="formulario2" />
-          <Picker.Item label="Formulario3" value="formulario3" />
-          <Picker.Item label="Formulario4" value="formulario4" />
+          <Picker.Item label="Diario" value="diario" />
+          <Picker.Item label="Semanal" value="semanal" />
+          <Picker.Item label="Mensual" value="mensual" />
         </Picker>
-        <View style={styles.separador} />
-
-        <Text style={styles.text}>Tarea Semanal </Text>
-
-        <View style={styles.separador} />
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
+        </View>
 
         <View style={styles.separador} />
         <View style={styles.separador} />

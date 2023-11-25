@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
   View,
@@ -9,9 +10,9 @@ import {
   Platform,
   Image,
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
+import { setTarea } from "../Modelo/modelo";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -27,13 +28,10 @@ export default function TareaActividad({ navigation }) {
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
   // Variable para guardar el lugar
-  const [lugar, setLugar] = useState();
-  //Variable para switch
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  // Cambiamos estado del switch
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-
+  const [lugar, setLugar] = useState("");
+  //Variable para periocidad
+  const [periocidad, setPeriocidad] = useState("Diario");
+  
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
     setNombreTarea("");
@@ -42,6 +40,7 @@ export default function TareaActividad({ navigation }) {
     setInicioFecha("");
     setInicioHora("");
     setLugar("");
+    setPeriocidad("Diario");
   };
 
   //Validamos las horas
@@ -145,6 +144,7 @@ export default function TareaActividad({ navigation }) {
 
   const guardarDatos = () => {
     if (saveDates() && saveTimes()) {
+      setTarea(nombreTarea, inicioFecha+'//'+inicioHora, finFecha+'//'+finHora, 'Actividad', periocidad);
       navigation.navigate("gestionTareas");
     }
   };
@@ -298,15 +298,21 @@ export default function TareaActividad({ navigation }) {
         />
 
         <View style={styles.separador} />
-        <Text style={styles.text}>Tarea semanal </Text>
+
+        <View style={styles.row}>
+          
+        <Text style={[styles.text, {marginRight: 5}]}>Periocidad </Text>
+        <Picker
+          selectedValue={periocidad}
+          onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Diario" value="diario" />
+          <Picker.Item label="Semanal" value="semanal" />
+          <Picker.Item label="Mensual" value="mensual" />
+        </Picker>
+        </View>
         <View style={styles.separador} />
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />

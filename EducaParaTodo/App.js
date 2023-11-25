@@ -66,8 +66,6 @@ const PASOS = [
 
 
 export default function App() {
-  // Variables para materiales
-const [materialesTarea, setMaterialesTarea] = useState([]);
   return (
     <UserContextProvider>
       <NavigationContainer>
@@ -85,12 +83,8 @@ const [materialesTarea, setMaterialesTarea] = useState([]);
           <Stack.Screen name="alimentosMenusComanda" component={AlimentosMenusComanda} />
           <Stack.Screen name="tiposMenusComanda" component={TiposMenusComanda} />
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
-          <Stack.Screen name="anadirMaterial">
-            {(props) => <AnadirMaterial {...props} materialesTarea={materialesTarea} setMaterialesTarea={setMaterialesTarea} />}
-          </Stack.Screen>
-          <Stack.Screen name="verTodosMateriales">
-            {(props) => <VerTodosMateriales {...props} materialesTarea={materialesTarea} />}
-          </Stack.Screen>
+          <Stack.Screen name="anadirMaterial" component={AnadirMaterial}/>
+          <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
