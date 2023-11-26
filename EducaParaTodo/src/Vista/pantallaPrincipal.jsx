@@ -32,7 +32,6 @@ export default function PantallaPrincipal({ navigation }) {
         <Button title="Inicio admin"
           // onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
           onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
-
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   },
   elementoList: {
     flexDirection: 'column',
-    width:'50%',
+    width:'30%',
     alignItems: 'center',
   }
 });
