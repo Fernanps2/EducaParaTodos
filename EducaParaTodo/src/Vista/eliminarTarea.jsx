@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import appFirebase from '../Modelo/firebase';
+import appFirebase, { getAlumnos } from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import EliminarTareaAlumno from './EliminarTareaAlumno';
-import aniadirPictograma from './aniadirPictograma';
+//import EliminarTareaAlumno from './EliminarTareaAlumno';
+//import aniadirPictograma from './aniadirPictograma';
+//import feedbackAlumno from './feedbackAlumno';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
@@ -23,16 +24,9 @@ const EliminarTarea = () => {
     const mostrarAlumnos = async () => {
       setIsLoading(true); // Iniciar la carga
       try {
-        const querydb = getFirestore(appFirebase);
-        const queryCollection = collection(querydb, 'alumnos');
-        const querySnapshot = await getDocs(queryCollection);
-
-        if (!querySnapshot.empty) {
-          const fetchedData = querySnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
-          setData(fetchedData);
-        } else {
-          console.log('No se encontraron documentos en la colección.');
-        }
+        const alumnos = await getAlumnos();
+        setData(alumnos);
+        console.log(alumnos);
       } catch (error) {
         console.error('Error al obtener los documentos: ', error);
       } finally {
@@ -55,17 +49,13 @@ const EliminarTarea = () => {
       onPress={() => navigation.navigate('EliminarTareaAlumno', {item})} 
       style={styles.cardWithImage}
     >
-      {item.Imagen ? (
-        <Image source={{ uri: item.Imagen }} style={styles.image} />
-      ) : (
-        <View style={styles.image} />
-      )}
       <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
     </TouchableOpacity>
       ))}
     </ScrollView>
       )}
       <TouchableOpacity onPress={() => navigation.navigate('aniadirPictograma')} style={styles.cardWithImage}><Text>Añadir Pictograma</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('feedbackAlumno')} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
     </View>
   );
 };

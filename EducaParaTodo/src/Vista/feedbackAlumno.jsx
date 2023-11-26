@@ -1,70 +1,85 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity } from 'react-native';
 import appFirebase from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import EliminarTareaAlumno from './EliminarTareaAlumno';
+import { getTarea } from '../Modelo/firebase';
+import { asignarFeedback } from '../Modelo/firebase';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
-const EliminarTarea = () => {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
-  /*
-  const handleItemPress = (item) =>  {
-    console.log('Elemento presionado:', item);
-    navigation.navigate('EliminarTareaAlumno', {item});
-  };*/
+const feedbackAlumno = () => {
+  const [tareas, setTareas] = useState([]);
+  const [feedback, setFeedback] = useState('');
 
 
   useEffect(() => {
-    const mostrarAlumnos = async () => {
-      setIsLoading(true); // Iniciar la carga
+    const cargarTareas = async () => {
       try {
-        const querydb = getFirestore(appFirebase);
-        const queryCollection = collection(querydb, 'alumnos');
-        const querySnapshot = await getDocs(queryCollection);
-
-        if (!querySnapshot.empty) {
-          const fetchedData = querySnapshot.docs.map(item => ({ id: item.id, ...item.data() }));
-          setData(fetchedData);
-        } else {
-          console.log('No se encontraron documentos en la colección.');
-        }
+        const idAlumno = 'ID_DEL_ALUMNO'; // Para cuando le pase el id Alumno
+        const tareasObtenidas = await getTarea('P9kEFuZP5t3sUde8ffXQ');
+        setTareas(tareasObtenidas);
+        //console.log(tareasObtenidas.id);
+        
       } catch (error) {
-        console.error('Error al obtener los documentos: ', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error al obtener las tareas:', error);
       }
     };
 
-    mostrarAlumnos();
+    cargarTareas();
   }, []);
+/*
+  useEffect(() => {
+    const actualizarFeedback = async (idTarea, mensaje) => {
+    
+      try {
+  
+        console.log('ID de tarea:', idTarea);
+        console.log('Mensaje a asignar FeedBack', mensaje);
+    
+        await asignarFeedback('P9kEFuZP5t3sUde8ffXQ', mensaje);
+        console.log('Feedback actualizado correctamente');
+      } catch (error) {
+        console.error('Error al actualizar el feedback:', error);
+      }
+    };
+    actualizarFeedback(idTarea, mensaje);
+  }, []);
+*/
+
 
   return (
-    <View contentContainerStyle = {styles.container}>
-      {isLoading ? (
-        <Text>Cargando...</Text>
-      ) : (
-        <ScrollView contentContainerStyle={styles.datos}>
-      {data.map((item, index) => (
-        <TouchableOpacity
-      key={index}
-      onPress={() => console.log(item.id)} 
-      style={styles.cardWithImage}
-    >
-      {item.Imagen ? (
-        <Image source={{ uri: item.Imagen }} style={styles.image} />
+    <ScrollView style={styles.datos}>
+  {tareas.map((tareas) => (
+    <View key={tareas.id} style={styles.datos} > 
+      <View style={styles.cardWithImage}>
+        {tareas.fotoURL ? (
+        <Image source={{ uri: tareas.fotoURL }} style={styles.image} />
       ) : (
         <View style={styles.image} />
       )}
-      <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
-    </TouchableOpacity>
-      ))}
-    </ScrollView>
-      )}
+      <Text style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20, fontSize: 20, }} >{tareas.Nombre}</Text>
+      <TextInput
+        style={{ height: 40, borderColor: 'black', borderWidth: 2 , alignSelf: 'center',}}
+        onChangeText={(text) => setFeedback(text)}
+        value={feedback}
+        placeholder=" Escribe tu feedback aquí"
+      />
+      <TouchableOpacity onPress={() => asignarFeedback(tareas.id, feedback)}>
+          <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10 }}>
+            <Text style={{ color: 'white', textAlign: 'center' }}>Enviar Feedback</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View>
     </View>
+     
+
+    </View>
+  ))}
+</ScrollView>
+
   );
 };
 
@@ -101,7 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  }
+  },
 });
 
-export default EliminarTarea;
+export default feedbackAlumno;

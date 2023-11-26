@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Button,Image, Text } from 'react-native';
 import appFirebase from '../Modelo/firebase';
-import ImagePicker from 'react-native-image-picker';
+//import ImagePicker from 'react-native-image-picker';
 import { getDownloadURL, getStorage, ref, uploadString, UploadTask } from 'firebase/storage';
 import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
 //import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AniadirPictograma() {
-    useEffect(() => {
+ /*   useEffect(() => {
 
     const storage = getStorage(appFirebase);
     const firestore = getFirestore(appFirebase);
@@ -58,7 +58,7 @@ export default function AniadirPictograma() {
 
     selectImage();
     }, []);
-
+*/
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text>NAVEGA BIEN CABRON BRR</Text>
