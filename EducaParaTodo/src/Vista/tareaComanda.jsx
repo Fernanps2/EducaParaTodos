@@ -12,8 +12,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMenus } from "./VarGlobal";
-import { setTarea, setTareaComanda } from "../Modelo/modelo";
+import { inicializarMenus, getIdMenusSeleccionados, filtroID, getObjMenusSeleccionados } from "./VarGlobal";
+import { setTarea, setTareaComanda, setMenu } from "../Modelo/modelo";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -39,6 +39,7 @@ export default function TareaActividad({ navigation }) {
     setInicioFecha("");
     setInicioHora("");
     setPeriocidad("Diario");
+    inicializarMenus();
   };
 
   //Validamos las horas
@@ -156,11 +157,20 @@ export default function TareaActividad({ navigation }) {
           "comanda",
           periocidad
         );
-        // Obtenemos todos los objetos de materiales de la tarea
-        const menus = getMenus();
-        menus.forEach((item) =>
-        setTareaComanda()
-        );
+        // Obtenemos todos los id de los menus de la tarea
+        const menus = getIdMenusSeleccionados();
+        await setTareaComanda(idTarea, menus);
+
+        // Obtenemos todos los objetos de los menus de la tarea
+        const menusObjetos = getObjMenusSeleccionados ();
+        for (const item of menusObjetos) {
+          const idAlimentos = filtroID (item.Nombre);
+          await setMenu (idTarea, item.id, idAlimentos);
+        }   
+
+        // Inicializar menus
+        inicializarMenus ();
+
         navigation.navigate("gestionTareas");
       }
     } catch (error) {

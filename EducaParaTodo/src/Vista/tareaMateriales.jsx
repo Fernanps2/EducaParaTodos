@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import { setTarea, setTareaInventario } from "../Modelo/modelo";
-import { get } from "./VarGlobal";
+import { get, inicializarmateriales } from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
@@ -34,6 +34,7 @@ export default function TareaActividad({ navigation }) {
     setInicioFecha("");
     setInicioHora("");
     setPeriocidad("Diario");
+    inicializarmateriales ();
   };
 
   //Validamos las horas
@@ -164,6 +165,10 @@ export default function TareaActividad({ navigation }) {
             idTarea
           )
         );
+
+        // Reiniciamos los materiales
+        inicializarmateriales ();
+
         navigation.navigate("gestionTareas");
       }
     } catch (error) {

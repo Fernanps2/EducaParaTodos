@@ -12,7 +12,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { setTarea } from "../Modelo/modelo";
+import {
+  setTarea,
+  setTareaActividad,
+  setPasoActividad,
+} from "../Modelo/modelo";
+import { getPasos, inicializarPasos } from "./VarGlobal";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -31,7 +36,7 @@ export default function TareaActividad({ navigation }) {
   const [lugar, setLugar] = useState("");
   //Variable para periocidad
   const [periocidad, setPeriocidad] = useState("Diario");
-  
+
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
     setNombreTarea("");
@@ -41,6 +46,7 @@ export default function TareaActividad({ navigation }) {
     setInicioHora("");
     setLugar("");
     setPeriocidad("Diario");
+    inicializarPasos ();
   };
 
   //Validamos las horas
@@ -142,10 +148,39 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
-  const guardarDatos = () => {
-    if (saveDates() && saveTimes()) {
-      setTarea(nombreTarea, inicioFecha+'//'+inicioHora, finFecha+'//'+finHora, 'Actividad', periocidad);
-      navigation.navigate("gestionTareas");
+  const guardarDatos = async () => {
+    try {
+      if (saveDates() && saveTimes()) {
+        const idTarea = await setTarea(
+          nombreTarea,
+          inicioFecha + "//" + inicioHora,
+          finFecha + "//" + finHora,
+          "Actividad",
+          periocidad
+        );
+        const pasos = getPasos();
+        const idPaso = [];
+        for (const item of pasos) {
+          const pasoId = await setPasoActividad(
+            item.audio.id,
+            item.imagen.id,
+            item.pictograma.id,
+            item.video.id,
+            item.texto,
+            item.nombre,
+            idTarea
+          );
+          idPaso.push(pasoId);
+        }
+        await setTareaActividad(lugar, idPaso, idTarea);
+
+        // Borrar lista de pasos
+        inicializarPasos();
+
+        navigation.navigate("gestionTareas");
+      }
+    } catch (error) {
+      console.error("Error al crear la tarea materiales:", error);
     }
   };
 
@@ -300,17 +335,16 @@ export default function TareaActividad({ navigation }) {
         <View style={styles.separador} />
 
         <View style={styles.row}>
-          
-        <Text style={[styles.text, {marginRight: 5}]}>Periocidad </Text>
-        <Picker
-          selectedValue={periocidad}
-          onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Diario" value="diario" />
-          <Picker.Item label="Semanal" value="semanal" />
-          <Picker.Item label="Mensual" value="mensual" />
-        </Picker>
+          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+          <Picker
+            selectedValue={periocidad}
+            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Diario" value="diario" />
+            <Picker.Item label="Semanal" value="semanal" />
+            <Picker.Item label="Mensual" value="mensual" />
+          </Picker>
         </View>
         <View style={styles.separador} />
         <View style={styles.separador} />

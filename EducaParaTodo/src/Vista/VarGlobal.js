@@ -1,5 +1,8 @@
 //Variable y funciones para la tarea materiales
 export var listaTareaMateriales = [];
+export function inicializarmateriales (){
+    listaTareaMateriales = [];
+}
 export function filtrar (id){
     listaTareaMateriales = listaTareaMateriales.filter((item) => item.id !== id);
 }
@@ -8,6 +11,7 @@ export function get (){
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Variables y funciones para la tarea comanda
+// Tiene la relación entre menus y alimentos.
 export var listaMenus =[];
 export function setListaMenus (lista){
     listaMenus = lista;
@@ -15,10 +19,72 @@ export function setListaMenus (lista){
 export function getMenus (){
     return listaMenus;
 }
+export function filtroID (nombreMenu){
+    const idAlimentos = [];
+  const alimentos = listaMenus[nombreMenu];
+  for (const item of alimentosObjetos) {
+    if (alimentos.includes(item.Nombre)) {
+        idAlimentos.push(item.id);
+    }
+  }
+  return idAlimentos;
+}
+
+// SOlo obtiene los menus selccionados sin las relaciones entre alimentos
+export var soloMenus = [];
+export var cambiadoSoloMenus = false;
+export function setSoloMenus (menus) {
+    soloMenus = menus;
+    cambiadoSoloMenus = true;
+}
+export function getSoloMenus () {
+    return soloMenus;
+}
+export function setChangedSoloMenus (status){
+    cambiadoSoloMenus = status;
+}
+export function isChangedSoloMenus (){
+    return cambiadoSoloMenus;
+}
+
+// Objetos se los menus seleccionados
+export var menusObjetos = [];
+export function setMenusObjetos (objetos, nombreObjetos){
+    menusObjetos = objetos;
+    const objetosFiltrados = menusObjetos.filter(obj => nombreObjetos.includes(obj.Nombre));
+    menusObjetos = objetosFiltrados;
+}
+export function getIdMenusSeleccionados (){
+    const idMenus = [];
+    for (const item of menusObjetos) {
+        idMenus.push(item.id);
+    }
+    return idMenus;
+}
+export function getObjMenusSeleccionados (){
+    return menusObjetos;
+}
+
+// Objetos de los alimentos seleccioandos
+export var alimentosObjetos = [];
+export function setAlimentosObjetos (objetos){
+    alimentosObjetos = objetos;
+}
+
+export function inicializarMenus (){
+    listaMenus = [];
+    soloMenus = [];
+    cambiadoSoloMenus = false;
+    menusObjetos = [];
+    alimentosObjetos = [];
+}
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Variables para los pasos de la actividad
 export var pasos = [];
 export var idPasos = 0;
+export function inicializarPasos (){
+    pasos = [];
+}
 export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVideo, setAudio){
     var textoNuevo = setTexto;
     if (setTexto === ''){
@@ -27,7 +93,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
 
     var imagenNuevo = {
         Titulo: 'Ninguno',
-        URL: ''
+        URL: '',
+        id: 0
     };
     if (setImagen !== ''){
         imagenNuevo = setImagen;
@@ -35,7 +102,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
 
     var pictogramaNuevo = {
         Titulo: 'Ninguno',
-        URL: ''
+        URL: '',
+        id: 0
     };
     if (setPictograma !== ''){
         pictogramaNuevo = setPictograma;
@@ -43,7 +111,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
 
     var videoNuevo = {
         Titulo: 'Ninguno',
-        URL: ''
+        URL: '',
+        id: 0
     };
     if (setVideo !== ''){
         videoNuevo = setVideo;
@@ -51,7 +120,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
 
     var audioNuevo = {
         Titulo: 'Ninguno',
-        URL: ''
+        URL: '',
+        id: 0
     };
     if (setAudio !== ''){
         audioNuevo = setAudio;

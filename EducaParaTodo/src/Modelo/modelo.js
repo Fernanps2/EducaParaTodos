@@ -209,10 +209,10 @@ export const getTarea = async (idAlumno) => {
 
 
   // PRUEBA REALIZADA. FUNCIONA
-export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
+export const setTareaActividad = async(aula,pasos,idTarea) => {
   try{
 
-    if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
+    if( aula === '' || pasos === null || idTarea === ''){
       if (Platform.OS === "web"){
         Swal.fire({
           title: "Mensaje Importante",
@@ -227,20 +227,25 @@ export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
     else{
 
       // Creamos las referencias 
-      const pasosRef = doc(db, 'PasosActividad', String(pasos));
+      const pasosRefs = pasos.map(id => doc(db, 'PasosActividad', String(id)));
+      //const pasosRef = doc(db, 'PasosActividad', String(pasos));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
 
       const objeto = {
-        nombre,
         aula,
-        pasos:pasosRef,
+        pasos:pasosRefs,
         idTarea:idTareaRef
       }
 
-      // Comprobamos que las referencias son instancias de la clase DocumentReference
-      if (!(pasosRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
+      // Validar que cada elemento en pasosRefs sea una instancia de DocumentReference
+      if (!pasosRefs.every(ref => ref instanceof DocumentReference)) {
+        throw new Error('Cada elemento en pasosRefs debe ser una instancia de DocumentReference');
+      }
+
+      // Ya que idTareaRef no es un array, se puede mantener la comprobación como está
+      if (!(idTareaRef instanceof DocumentReference)) {
+        throw new Error('idTareaRef debe ser una instancia de DocumentReference');
       }
       
       await addDoc(collection(db,'Tarea-Actividad'),{
@@ -252,7 +257,83 @@ export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
   }  
 }
 
+  // PRUEBA REALIZADA. FUNCIONA
+  export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
+    try{
+  
+      console.log('AudioID:', idAudioRef)
+      console.log('ImaID:', idImagenRef)
+      console.log('PictoID:', idPictogramaRef)
+      console.log('VieoID:', idVideoRef)
 
+      if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        var idAudioRef, idImagenRef, idPictogramaRef, idVideoRef;
+        // Creamos las referencias 
+        if (audio !== 0){
+          idAudioRef = doc(db, 'Audio', String(audio));
+        }else{
+          idAudioRef = 'Ninguno';
+        }
+        if (imagen !== 0){
+          idImagenRef = doc(db, 'Imagen', String(imagen));
+        }else{
+          idImagenRef = 'Ninguno';
+        }
+        if (pictograma !== 0){
+          idPictogramaRef = doc(db, 'Pictograma', String(pictograma));
+        }else{
+          idPictogramaRef = 'Ninguno';
+        }
+        if (video !== 0){
+          idVideoRef = doc(db, 'Video', String(video));
+        }else{
+          idVideoRef = 'Ninguno';
+        }
+        const idTareaRef = doc(db, 'Tarea', String(idTarea));
+  
+  console.log('AudioREF:', idAudioRef)
+  console.log('ImaREF:', idImagenRef)
+  console.log('PictoREF:', idPictogramaRef)
+  console.log('VieoREF:', idVideoRef)
+
+
+        const objeto = {
+          idAudio: idAudioRef,
+          idImagen: idImagenRef,
+          idPictograma: idPictogramaRef,
+          idVideo: idVideoRef,
+          texto,
+          nombre,
+          idTarea: idTareaRef,
+        }
+  
+        // Comprobamos que las referencias son instancias de la clase DocumentReference
+        if ((idAudioRef !== 'Ninguno' && !(idAudioRef instanceof DocumentReference)) || (idVideoRef !== 'Ninguno' && !(idVideoRef instanceof DocumentReference)) || (idPictogramaRef !== 'Ninguno' && !(idPictogramaRef instanceof DocumentReference)) || (idImagenRef !== 'Ninguno' && !(idImagenRef instanceof DocumentReference)) || !(idTareaRef instanceof DocumentReference)) {
+          throw new Error('idAudioRef, idVideoRef, idPictogramaRef, idImagenRef e idTareaRef deben ser instancias de DocumentReference');
+        }
+        
+        const idPaso = await addDoc(collection(db,'PasosActividad'),{
+          ...objeto
+        })
+        return idPaso.id;
+      }
+    }catch(error){
+      console.log(error);
+    }  
+  }
 
 export const getTareasActividad = async () => {
   try {
@@ -273,10 +354,10 @@ export const getTareasActividad = async () => {
 
 
 // PRUEBA REALIZADA.FUNCIONA
-export const setTareaComanda = async(idTarea,idMenu, aula) => {
+export const setTareaComanda = async(idTarea,menus) => {
   try{
 
-    if( idMenu === null || idTarea === '' || aula === ''){
+    if( menus === null || idTarea === ''){
       if (Platform.OS === "web"){
         Swal.fire({
           title: "Mensaje Importante",
@@ -291,20 +372,23 @@ export const setTareaComanda = async(idTarea,idMenu, aula) => {
     else{
 
       // Creamos las referencias 
-      const idMenuRef = doc(db, 'Menu', String(idMenu));
+      const idMenusRef = menus.map(id => doc(db, 'Menu', String(id)));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
       var pedidos = '';
+
       const objeto = {
-        aula,
         pedidos,
-        idMenu:idMenuRef,
+        menus:idMenusRef,
         idTarea:idTareaRef
       }
 
+      if (!idMenusRef.every(ref => ref instanceof DocumentReference)) {
+        throw new Error('Cada elemento en idMenusRef debe ser una instancia de DocumentReference');
+      }
+
       // Comprobamos que las referencias son instancias de la clase DocumentReference
-      if (!(idMenuRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('idMenuRef e idTareaRef deben ser instancias de DocumentReference');
+      if (!(idTareaRef instanceof DocumentReference)) {
+        throw new Error('idTareaRef deben ser instancias de DocumentReference');
       }
       
       await addDoc(collection(db,'Tarea-Comanda'),{
@@ -338,10 +422,10 @@ export const getTareasComanda = async () => {
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMenu = async(nombreMenu,idAlimentos) => {
+export const setMenu = async(idTarea, idMenu, idAlimentos) => {
   try{
 
-    if(nombreMenu === '' || idAlimentos === null){
+    if(idTarea === '' || idMenu === '' || idAlimentos === null){
       if (Platform.OS === "web"){
         Swal.fire({
           title: "Mensaje Importante",
@@ -355,21 +439,28 @@ export const setMenu = async(nombreMenu,idAlimentos) => {
     }
     else{
 
+      const idTareaRef = doc(db, 'Tarea', String(idTarea));
+      const idMenuRef = doc(db, 'Menu', String(idMenu));
       // Hacemos que los idAlimentos sean referencias
-      const referenciasAlimentos = idAlimentos.map((idAlimento) => {
-        return doc(db, 'Alimentos', idAlimento);
-      });
+      const referenciasAlimentos = idAlimentos.map(idAlimento => doc(db, 'Alimentos', String(idAlimento)));
 
       const objeto = {
-        idAlimentos:referenciasAlimentos
+        idTarea: idTareaRef,
+        idMenu: idMenuRef,
+        idAlimentos: referenciasAlimentos,
       }
       
+      if (!referenciasAlimentos.every(ref => ref instanceof DocumentReference)) {
+        throw new Error('Cada elemento en idAlimentos debe ser una instancia de DocumentReference');
+      }
 
-      // Lo hacemos así para establecer el nombreMenú como el id del documento
-      const menuDocRef = doc(db, 'Menu', nombreMenu);
-
+      // Comprobamos que las referencias son instancias de la clase DocumentReference
+      if (!(idTareaRef instanceof DocumentReference) || !(idMenuRef instanceof DocumentReference)) {
+        throw new Error('idTareaRef e idMenu deben ser instancias de DocumentReference');
+      }
+      
       // Necesitamos poner setDoc para especificar el ID del documento
-      await setDoc(menuDocRef, {
+      await addDoc(collection(db,'Menu'), {
         ...objeto
       });
     }
@@ -387,8 +478,9 @@ export const getMenus = async() => {
     const docs = [];
 
     querySnapshot.forEach((docu) => {
-      const {nombre} = docu.data(); // Extraemos nombre
-      docs.push(nombre);
+      const menu = docu.data(); // Extraemos nombre
+      const id = docu.id; // Extraemos el ID del documento
+      docs.push({id, ...menu});
     });
 
     return docs;
@@ -470,8 +562,9 @@ export const getAlimentos = async() => {
     const docs = [];
 
     querySnapshot.forEach((docu) => {
-      const {Nombre} = docu.data(); // Extraemos nombre
-      docs.push(Nombre);
+      const alimentos = docu.data(); // Extraemos nombre
+      const id = docu.id; // Extraemos el ID del documento
+      docs.push({id, ...alimentos});
     });
 
     return docs;
@@ -514,7 +607,7 @@ export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDes
 
       // Comprobamos que las referencias son instancias de la clase DocumentReference
       if (!(idMaterialRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
+        throw new Error('idMaterialRef e idTareaRef deben ser instancias de DocumentReference');
       }
       
       await addDoc(collection(db,'Tarea-Inventario'),{
