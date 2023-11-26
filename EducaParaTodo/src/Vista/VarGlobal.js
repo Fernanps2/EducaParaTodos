@@ -1,5 +1,11 @@
 //Variable y funciones para la tarea materiales
 export var listaTareaMateriales = [];
+export function isVaciaListaMateriales (){
+    if (listaTareaMateriales.length === 0) {
+        return true;
+    }
+    else return false;
+}
 export function inicializarmateriales (){
     listaTareaMateriales = [];
 }
@@ -13,6 +19,20 @@ export function get (){
 //Variables y funciones para la tarea comanda
 // Tiene la relación entre menus y alimentos.
 export var listaMenus =[];
+export function isVaciaListaMenus (){
+  if (listaMenus.length === 0) {
+    return true;
+  }
+  for (const menu in listaMenus) {
+    if (menu !== 'Ninguno'){
+        if (listaMenus[menu].length === 0) {
+            // Si alguno de los menús está vacío, devolver true
+            return true;
+          }
+    }
+  }
+  return false;
+}
 export function setListaMenus (lista){
     listaMenus = lista;
 }
@@ -82,6 +102,12 @@ export function inicializarMenus (){
 //Variables para los pasos de la actividad
 export var pasos = [];
 export var idPasos = 0;
+export function isVaciaPasos (){
+    if (pasos.length === 0) {
+        return true;
+    }
+    else return false;
+}
 export function inicializarPasos (){
     pasos = [];
 }

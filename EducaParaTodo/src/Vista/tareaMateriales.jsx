@@ -13,7 +13,11 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import { setTarea, setTareaInventario } from "../Modelo/modelo";
-import { get, inicializarmateriales } from "./VarGlobal";
+import {
+  get,
+  inicializarmateriales,
+  isVaciaListaMateriales,
+} from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
@@ -34,7 +38,7 @@ export default function TareaActividad({ navigation }) {
     setInicioFecha("");
     setInicioHora("");
     setPeriocidad("Diario");
-    inicializarmateriales ();
+    inicializarmateriales();
   };
 
   //Validamos las horas
@@ -167,7 +171,7 @@ export default function TareaActividad({ navigation }) {
         );
 
         // Reiniciamos los materiales
-        inicializarmateriales ();
+        inicializarmateriales();
 
         navigation.navigate("gestionTareas");
       }
@@ -218,7 +222,25 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaListaMateriales()) {
+            Swal.fire({
+              title: "Ningún Material elegido",
+              text: "Verifica que hayas elegido algún material.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          } else {
+            if (nombreTarea === ''){
+              Swal.fire({
+                title: "Campo incompleto.",
+                text: "Pon nombre a la tarea.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -227,7 +249,28 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaListaMateriales()) {
+                Alert.alert(
+                  "Ningún Material elegido", // Título
+                  "Verifica que hayas elegido algún material.", // Mensaje
+                  [{ text: "De acuerdo" }]
+                );
+              } else {
+                if (nombreTarea === '' ){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );

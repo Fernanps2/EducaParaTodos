@@ -17,7 +17,7 @@ import {
   setTareaActividad,
   setPasoActividad,
 } from "../Modelo/modelo";
-import { getPasos, inicializarPasos } from "./VarGlobal";
+import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -46,7 +46,7 @@ export default function TareaActividad({ navigation }) {
     setInicioHora("");
     setLugar("");
     setPeriocidad("Diario");
-    inicializarPasos ();
+    inicializarPasos();
   };
 
   //Validamos las horas
@@ -226,7 +226,25 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaPasos()) {
+            Swal.fire({
+              title: "Ningún Pasos creado",
+              text: "Verifica que hayas creado algún paso.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          } else {
+            if (nombreTarea === '' || lugar === ''){
+              Swal.fire({
+                title: "Campo incompletos.",
+                text: "Pon nombre a la tarea y su lugar.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -235,7 +253,28 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaPasos()) {
+                Alert.alert(
+                  "Ningún Pasos creado", // Título
+                  "Verifica que hayas creado algún paso.", // Mensaje
+                  [{ text: "De acuerdo" }]
+                );
+              } else {
+                if (nombreTarea === '' || lugar === ''){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );

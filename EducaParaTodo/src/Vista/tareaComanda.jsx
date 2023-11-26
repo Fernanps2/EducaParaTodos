@@ -12,7 +12,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { inicializarMenus, getIdMenusSeleccionados, filtroID, getObjMenusSeleccionados } from "./VarGlobal";
+import {
+  inicializarMenus,
+  getIdMenusSeleccionados,
+  filtroID,
+  getObjMenusSeleccionados,
+  isVaciaListaMenus,
+} from "./VarGlobal";
 import { setTarea, setTareaComanda, setMenu } from "../Modelo/modelo";
 
 // Uso base de datos
@@ -115,9 +121,8 @@ export default function TareaActividad({ navigation }) {
         } else {
           Alert.alert(
             "Error",
-            "La fecha de inicio no puede ser posterior a la fecha de finalización."
-            [
-              { text: "De acuerdo"}
+            "La fecha de inicio no puede ser posterior a la fecha de finalización."[
+              { text: "De acuerdo" }
             ]
           );
         }
@@ -137,9 +142,8 @@ export default function TareaActividad({ navigation }) {
       } else {
         Alert.alert(
           "Fechas inválidas",
-          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."
-          [
-            { text: "De acuerdo"}
+          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."[
+            { text: "De acuerdo" }
           ]
         );
       }
@@ -162,14 +166,14 @@ export default function TareaActividad({ navigation }) {
         await setTareaComanda(idTarea, menus);
 
         // Obtenemos todos los objetos de los menus de la tarea
-        const menusObjetos = getObjMenusSeleccionados ();
+        const menusObjetos = getObjMenusSeleccionados();
         for (const item of menusObjetos) {
-          const idAlimentos = filtroID (item.Nombre);
-          await setMenu (idTarea, item.id, idAlimentos);
-        }   
+          const idAlimentos = filtroID(item.Nombre);
+          await setMenu(idTarea, item.id, idAlimentos);
+        }
 
         // Inicializar menus
-        inicializarMenus ();
+        inicializarMenus();
 
         navigation.navigate("gestionTareas");
       }
@@ -220,7 +224,26 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaListaMenus ()) {
+            Swal.fire({
+              title: "Menu Vacio",
+              text: "Verifica que hayas elegido algún menú, y que haya alimentos en él.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            })
+            navigation.navigate("tiposMenusComanda");
+          } else {
+            if (nombreTarea === ''){
+              Swal.fire({
+                title: "Campo incompleto.",
+                text: "Pon nombre a la tarea.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -229,7 +252,31 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaListaMenus()) {
+                Alert.alert(
+                  "Menu Vacio", // Título
+                  "Verifica que hayas elegido algún menú, y que haya alimentos en él.", // Mensaje
+                  [
+                    {text: 'De acuerdo'},
+                  ]
+                );
+                navigation.navigate("tiposMenusComanda");
+              } else {
+                if (nombreTarea === '' ){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -328,23 +375,22 @@ export default function TareaActividad({ navigation }) {
             onChangeText={setFinHora}
           />
         </View>
-        
+
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />
 
         <View style={styles.row}>
-          
-        <Text style={[styles.text, {marginRight: 5}]}>Periocidad </Text>
-        <Picker
-          selectedValue={periocidad}
-          onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Diario" value="diario" />
-          <Picker.Item label="Semanal" value="semanal" />
-          <Picker.Item label="Mensual" value="mensual" />
-        </Picker>
+          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+          <Picker
+            selectedValue={periocidad}
+            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Diario" value="diario" />
+            <Picker.Item label="Semanal" value="semanal" />
+            <Picker.Item label="Mensual" value="mensual" />
+          </Picker>
         </View>
 
         <View style={styles.separador} />
