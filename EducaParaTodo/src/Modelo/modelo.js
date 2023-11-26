@@ -89,17 +89,6 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
       }  
 }
 
-
-
-// export const asignarTareaAlumno = async (idTarea,idAlumno) => {
-
-
-
-
-
-// }
-
-
 // PRUEBA REALIZADA. FUNCIONA
 export const asignarFeedback = async (idTarea,feedBack) => {
   try{
@@ -745,4 +734,37 @@ export const getTareasInventario = async() => {
     } catch (error) {
       console.log(error);
   }
+}
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setVideo = async (nombre, url)=> {
+  try{
+
+    if(nombre === '' || url === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }
+    else{
+
+      const objeto = {
+        Titulo: nombre,
+        URL: url
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Videos'),{
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
 }
