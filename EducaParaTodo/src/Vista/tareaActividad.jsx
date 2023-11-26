@@ -372,6 +372,8 @@ export default function TareaActividad({ navigation }) {
         />
 
         <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.separador} />
 
         <View style={styles.row}>
           <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
@@ -385,11 +387,12 @@ export default function TareaActividad({ navigation }) {
             <Picker.Item label="Mensual" value="mensual" />
           </Picker>
         </View>
+
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />
-        <View style={styles.separador} />
+
         <Button
           title="Añadir Paso"
           onPress={() => navigation.navigate("pasoActividad")}
@@ -448,6 +451,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -456,6 +460,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",
@@ -477,5 +482,9 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
+  },
+  picker: {
+    height: 25,
+    width: Platform.OS === "web" ? 150 : 200,
   },
 });

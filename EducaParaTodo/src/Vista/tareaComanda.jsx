@@ -460,6 +460,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -468,6 +469,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",

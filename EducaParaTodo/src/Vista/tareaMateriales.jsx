@@ -450,6 +450,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -458,6 +459,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",
@@ -479,5 +481,9 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
+  },
+  picker: {
+    height: 25,
+    width: Platform.OS === "web" ? 150 : 200,
   },
 });

@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Platform,
+  Alert,
 } from "react-native";
 import { setVideo } from "../Modelo/modelo";
 
@@ -33,33 +35,72 @@ export default function GestionItemActividad() {
   };
   const handleAñadir = () => {
     if (viewVideo) {
-      setVideo(nombreVideo, urlVideo);
+      if (nombreVideo !== "" && urlVideo !== "") {
+        setVideo(nombreVideo, urlVideo);
+      } else {
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Campos Incompletos",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Campos Incompletos,', 'Debes rellenar los campos requeridos');
+        }
+      }
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Items Actividad</Text>
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={handleVideo}>
-          <Text style={styles.buttonText}>Añadir Video</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleAudio}>
-          <Text style={styles.buttonText}>Añadir Audio</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleImagen}>
-          <Text style={styles.buttonText}>Añadir Imagen</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handlePictograma}>
-          <Text style={styles.buttonText}>Añadir Pictograma</Text>
-        </TouchableOpacity>
+      <View>
+        {Platform.OS === "web" ? (
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.button} onPress={handleVideo}>
+              <Text style={styles.buttonText}>Añadir Video</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleAudio}>
+              <Text style={styles.buttonText}>Añadir Audio</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleImagen}>
+              <Text style={styles.buttonText}>Añadir Imagen</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handlePictograma}>
+              <Text style={styles.buttonText}>Añadir Pictograma</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <View style={styles.row}>
+              <TouchableOpacity style={styles.button} onPress={handleVideo}>
+                <Text style={styles.buttonText}>Añadir Video</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleAudio}>
+                <Text style={styles.buttonText}>Añadir Audio</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.separador}></View>
+            <View style={styles.row}>
+              <TouchableOpacity style={styles.button} onPress={handleImagen}>
+                <Text style={styles.buttonText}>Añadir Imagen</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handlePictograma}
+              >
+                <Text style={styles.buttonText}>Añadir Pictograma</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </View>
 
       <View style={styles.separador} />
       <View style={styles.separador} />
       <View style={styles.separador} />
       <View style={styles.separador} />
-
       {viewVideo && (
         <View>
           <Text style={[styles.text]}>Introduzca URL:</Text>
@@ -88,7 +129,6 @@ export default function GestionItemActividad() {
           />
         </View>
       )}
-
       <TouchableOpacity style={styles.addButton} onPress={handleAñadir}>
         <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
@@ -119,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
-    marginHorizontal: 10,
+    marginHorizontal: Platform.OS === "web" ? 10 : 3,
   },
   buttonText: {
     color: "black",
@@ -155,5 +195,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 15,
+  },
+  separador: {
+    height: 10,
   },
 });
