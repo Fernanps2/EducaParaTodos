@@ -121,62 +121,37 @@ export const asignarFeedback = async (idTarea,feedBack) => {
 
 // PROBADA Y FUNCIONA. SE OBTIENEN LOS DATOS DE LA TAREA PERO NO SE OBTIENE EL NOMBRE DEL ALUMNO QUE LA REALIZA SOLO SE OBTIENE EL ID DEL DOCUMENTO DE ESE ALUMNO
 
-export const getTarea = async (idAlumno) => {
+export const getTareaId = async (idAlumno) => {
+
+  console.log(idAlumno);
+  
   try {
-    const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+    const querySnapshot = await getDocs(q);
+    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+  
     const docs = [];
-
+  
     for (const tareaDoc of querySnapshot.docs) {
-      const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno } = tareaDoc.data();
-      console.log(tareaDoc);
-
-      // console.log(IdAlumno);
-
-      // Con esto estamos cogiendo el id del documento que corresponde a ese alumno ya que IdAlumno es un documento de referencia
-      const idDocumento = IdAlumno.id; // Usamos id en lugar de _path.segments
-
-
-      console.log(idDocumento);
-
-      try {
-        // const alumnoDocRef = doc(db, 'alumnos', idDocumento);
-        // console.log(alumnoDocRef);
-        // const alumnoDoc = await getDoc(alumnoDocRef);
-        const alumnosRef = db.collection('alumnos');
-        const alumnoDoc = await alumnosRef.where('IdAlumno','==',idDocumento).get();
-
-        // console.log(alumnoDoc);
-
-        if (alumnoDoc.exists()) {
-          const nombreAlumno = alumnoDoc.data().Nombre;
-          console.log('Nombre del alumno:', nombreAlumno);
-        } else {
-          console.log('El documento del alumno no existe.');
-        }
-      } catch (error) {
-        console.error('Error al obtener el documento del alumno:', error);
-      }
-
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
       docs.push({
         id: tareaDoc.id,
-        Nombre,
-        Completado,
-        Descripción,
-        FechaInicio,
-        FechaFin,
-        Tipo,
-        IdAlumno:idDocumento,
+        titulo,
+        completado,
+        fechaInicio,
+        fechaFin,
+        tipo,
+        idAlumno,
       });
     }
-
+  
     return docs;
   } catch (error) {
     console.log(error);
     Alert.alert(error);
   }
-};
-
+  };
 
 // EN LA VISTA CON ESTE CÓDIGO SE SACA LA LISTA DE TAREAS
 
@@ -214,18 +189,19 @@ export const setTareaActividad = async(aula,pasos,idTarea) => {
       }
     }
     else{
-
+/*
       // Creamos las referencias 
       const pasosRefs = pasos.map(id => doc(db, 'PasosActividad', String(id)));
       //const pasosRef = doc(db, 'PasosActividad', String(pasos));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
+*/
 
       const objeto = {
         aula,
-        pasos:pasosRefs,
-        idTarea:idTareaRef
+        pasos,
+        idTarea,
       }
+      /*
 
       // Validar que cada elemento en pasosRefs sea una instancia de DocumentReference
       if (!pasosRefs.every(ref => ref instanceof DocumentReference)) {
@@ -236,7 +212,7 @@ export const setTareaActividad = async(aula,pasos,idTarea) => {
       if (!(idTareaRef instanceof DocumentReference)) {
         throw new Error('idTareaRef debe ser una instancia de DocumentReference');
       }
-      
+      */
       await addDoc(collection(db,'Tarea-Actividad'),{
         ...objeto
       })
@@ -249,11 +225,6 @@ export const setTareaActividad = async(aula,pasos,idTarea) => {
   // PRUEBA REALIZADA. FUNCIONA
   export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
     try{
-  
-      console.log('AudioID:', idAudioRef)
-      console.log('ImaID:', idImagenRef)
-      console.log('PictoID:', idPictogramaRef)
-      console.log('VieoID:', idVideoRef)
 
       if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
         if (Platform.OS === "web"){
@@ -269,7 +240,8 @@ export const setTareaActividad = async(aula,pasos,idTarea) => {
       }
       else{
   
-        var idAudioRef, idImagenRef, idPictogramaRef, idVideoRef;
+        //var idAudioRef, idImagenRef, idPictogramaRef, idVideoRef;
+        /*
         // Creamos las referencias 
         if (audio !== 0){
           idAudioRef = doc(db, 'Audio', String(audio));
@@ -292,28 +264,37 @@ export const setTareaActividad = async(aula,pasos,idTarea) => {
           idVideoRef = 'Ninguno';
         }
         const idTareaRef = doc(db, 'Tarea', String(idTarea));
-  
-  console.log('AudioREF:', idAudioRef)
-  console.log('ImaREF:', idImagenRef)
-  console.log('PictoREF:', idPictogramaRef)
-  console.log('VieoREF:', idVideoRef)
-
+        */
+        if (audio === 0){
+          audio = 'Ninguno';
+        }
+        if (imagen !== 0){
+          imagen = 'Ninguno';
+        }
+        if (pictograma !== 0){
+          pictograma = 'Ninguno';
+        }
+        if (video !== 0){
+          video = 'Ninguno';
+        }
 
         const objeto = {
-          idAudio: idAudioRef,
-          idImagen: idImagenRef,
-          idPictograma: idPictogramaRef,
-          idVideo: idVideoRef,
+          audio,
+          imagen,
+          pictograma,
+          video,
           texto,
           nombre,
-          idTarea: idTareaRef,
+          idTarea,
         }
   
+        /*
         // Comprobamos que las referencias son instancias de la clase DocumentReference
         if ((idAudioRef !== 'Ninguno' && !(idAudioRef instanceof DocumentReference)) || (idVideoRef !== 'Ninguno' && !(idVideoRef instanceof DocumentReference)) || (idPictogramaRef !== 'Ninguno' && !(idPictogramaRef instanceof DocumentReference)) || (idImagenRef !== 'Ninguno' && !(idImagenRef instanceof DocumentReference)) || !(idTareaRef instanceof DocumentReference)) {
           throw new Error('idAudioRef, idVideoRef, idPictogramaRef, idImagenRef e idTareaRef deben ser instancias de DocumentReference');
         }
-        
+        */
+
         const idPaso = await addDoc(collection(db,'PasosActividad'),{
           ...objeto
         })
@@ -359,18 +340,19 @@ export const setTareaComanda = async(idTarea,menus) => {
       }
     }
     else{
-
+/*
       // Creamos las referencias 
       const idMenusRef = menus.map(id => doc(db, 'Menu', String(id)));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
+      */
       var pedidos = '';
 
       const objeto = {
         pedidos,
-        menus:idMenusRef,
-        idTarea:idTareaRef
+        menus,
+        idTarea,
       }
-
+/*
       if (!idMenusRef.every(ref => ref instanceof DocumentReference)) {
         throw new Error('Cada elemento en idMenusRef debe ser una instancia de DocumentReference');
       }
@@ -379,7 +361,7 @@ export const setTareaComanda = async(idTarea,menus) => {
       if (!(idTareaRef instanceof DocumentReference)) {
         throw new Error('idTareaRef deben ser instancias de DocumentReference');
       }
-      
+      */
       await addDoc(collection(db,'Tarea-Comanda'),{
         ...objeto
       })
@@ -427,18 +409,18 @@ export const setMenu = async(idTarea, idMenu, idAlimentos) => {
       }
     }
     else{
-
+/*
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
       const idMenuRef = doc(db, 'Menu', String(idMenu));
       // Hacemos que los idAlimentos sean referencias
       const referenciasAlimentos = idAlimentos.map(idAlimento => doc(db, 'Alimentos', String(idAlimento)));
-
+*/
       const objeto = {
-        idTarea: idTareaRef,
-        idMenu: idMenuRef,
-        idAlimentos: referenciasAlimentos,
+        idTarea,
+        idMenu,
+        idAlimentos,
       }
-      
+      /*
       if (!referenciasAlimentos.every(ref => ref instanceof DocumentReference)) {
         throw new Error('Cada elemento en idAlimentos debe ser una instancia de DocumentReference');
       }
@@ -447,7 +429,7 @@ export const setMenu = async(idTarea, idMenu, idAlimentos) => {
       if (!(idTareaRef instanceof DocumentReference) || !(idMenuRef instanceof DocumentReference)) {
         throw new Error('idTareaRef e idMenu deben ser instancias de DocumentReference');
       }
-      
+      */
       // Necesitamos poner setDoc para especificar el ID del documento
       await addDoc(collection(db,'Menus-Comanda'), {
         ...objeto
@@ -580,25 +562,25 @@ export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDes
       }
     }
     else{
-
+/*
       // Creamos las referencias 
       const idMaterialRef = doc(db, 'Material', String(idMaterial));
       const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
+*/
 
       const objeto = {
-        idMaterial:idMaterialRef,
+        idMaterial,
         cantidad,
         lugarOrigen,
         lugarDestino,
-        idTarea:idTareaRef
+        idTarea,
       }
-
+/*
       // Comprobamos que las referencias son instancias de la clase DocumentReference
       if (!(idMaterialRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
         throw new Error('idMaterialRef e idTareaRef deben ser instancias de DocumentReference');
       }
-      
+      */
       await addDoc(collection(db,'Tarea-Inventario'),{
         ...objeto
       })
