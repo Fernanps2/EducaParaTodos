@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity } from 'react-native';
-import appFirebase from '../Modelo/firebase';
+import appFirebase, { getTareaId } from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import EliminarTareaAlumno from './EliminarTareaAlumno';
@@ -9,7 +9,8 @@ import { asignarFeedback } from '../Modelo/firebase';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
-const feedbackAlumno = () => {
+const feedbackAlumno = ({route}) => {
+  const {idAlumno} = route.params;
   const [tareas, setTareas] = useState([]);
   const [feedback, setFeedback] = useState('');
 
@@ -17,8 +18,7 @@ const feedbackAlumno = () => {
   useEffect(() => {
     const cargarTareas = async () => {
       try {
-        const idAlumno = 'ID_DEL_ALUMNO'; // Para cuando le pase el id Alumno
-        const tareasObtenidas = await getTarea('P9kEFuZP5t3sUde8ffXQ');
+        const tareasObtenidas = await getTareaId(idAlumno);
         setTareas(tareasObtenidas);
         //console.log(tareasObtenidas.id);
         
@@ -28,7 +28,7 @@ const feedbackAlumno = () => {
     };
 
     cargarTareas();
-  }, []);
+  }, [idAlumno]);
 /*
   useEffect(() => {
     const actualizarFeedback = async (idTarea, mensaje) => {
@@ -54,12 +54,7 @@ const feedbackAlumno = () => {
   {tareas.map((tareas) => (
     <View key={tareas.id} style={styles.datos} > 
       <View style={styles.cardWithImage}>
-        {tareas.fotoURL ? (
-        <Image source={{ uri: tareas.fotoURL }} style={styles.image} />
-      ) : (
-        <View style={styles.image} />
-      )}
-      <Text style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20, fontSize: 20, }} >{tareas.Nombre}</Text>
+      <Text style={{ fontSize: 20,paddingRight: 10, }} >{tareas.titulo}</Text>
       <TextInput
         style={{ height: 40, borderColor: 'black', borderWidth: 2 , alignSelf: 'center',}}
         onChangeText={(text) => setFeedback(text)}
@@ -67,7 +62,7 @@ const feedbackAlumno = () => {
         placeholder=" Escribe tu feedback aquí"
       />
       <TouchableOpacity onPress={() => asignarFeedback(tareas.id, feedback)}>
-          <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10 }}>
+          <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10, marginLeft: 10, }}>
             <Text style={{ color: 'white', textAlign: 'center' }}>Enviar Feedback</Text>
           </View>
         </TouchableOpacity>

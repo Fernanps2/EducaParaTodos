@@ -46,16 +46,16 @@ const EliminarTarea = () => {
       {data.map((item, index) => (
         <TouchableOpacity
       key={index}
-      onPress={() => navigation.navigate('EliminarTareaAlumno', {item})} 
+      onPress={() => navigation.navigate('EliminarTareaAlumno', {idAlumno: item.id})} 
       style={styles.cardWithImage}
     >
       <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('feedbackAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
     </TouchableOpacity>
       ))}
     </ScrollView>
       )}
       <TouchableOpacity onPress={() => navigation.navigate('aniadirPictograma')} style={styles.cardWithImage}><Text>Añadir Pictograma</Text></TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('feedbackAlumno')} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
     </View>
   );
 };

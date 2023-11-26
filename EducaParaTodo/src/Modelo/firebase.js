@@ -1,9 +1,8 @@
-import React, {cloneElement, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, where, query } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
 import {getStorage, ref} from 'firebase/storage'
-
 //import {v4} from 'uuid';
 
 //import * as firebase from 'firebase';
@@ -21,14 +20,10 @@ const firebaseConfig = {
   appId: "1:253598049542:web:d6c2d2c725f0b2713b2a87"
 };
 
-
 // Inicializa Firebase
 export const AppFirebase = initializeApp(firebaseConfig);
-
-export const storage = getStorage(AppFirebase);
-
+const storage = getStorage(AppFirebase);
 const db = getFirestore(AppFirebase);
-
 
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
@@ -36,102 +31,168 @@ const COL_PROFESORES = 'profesores';
 const COL_ADMINISTRADORES = 'administradores';
 const COL_FOROS = 'foros';
 const COL_PROFESORES_FOROS = 'profesoresForos';
+const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
-// export async function getAlumnos() {
-//     let alumnos = null;
-    
-//     try {
-//         const querydb = getFirestore();
-//         const queryCollection = collection(querydb, COL_ALUMNOS);
-//         getDocs(queryCollection)
-//         .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-//                                                         apellidos: alumno.apellidos, foto: alumno.foto,
-//                                                         visualizacionPreferente: alumno.visualizacionPreferente})));
-//     } catch (error) {
-//         console.log("Ha habido un error al recoger los datos del alumno");
-//     }
-
-//     return alumnos;
-// }
-
-export async function getAlumnosNombre(nombre) {
-    let alumnos = null;
+export async function getAlumnos() {
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = (collection(db, COL_ALUMNOS));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
+}
+
+export async function getAlumnosNombre(nombre) {
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumno", error);
+    }
+
+    return docs;
 }
 
 export async function getAlumnosApellidos(apellidos) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto,
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosContrasenia(contrasenia) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto, 
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosVisualizacionPredefinida(visualizacion) {
-    let alumnos = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('visualizacionPreferente', '==', visualizacion));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto, 
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('visualizacionPredefinida', '==', visualizacion));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
+        console.log("Ha habido un error al recoger los datos del alumno", error);
     }
 
-    return alumnos;
+    return docs;
 }
 
 export async function getAlumnosLogin(nombre, contrasenia) {
-    let alumnos = null;
-    try {    
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => alumnos = res.docs.map(alumno => ({id: alumno.id, nombre: alumno.nombre,
-                                                        apellidos: alumno.apellidos, foto: alumno.foto, 
-                                                        visualizacionPreferente: alumno.visualizacionPreferente})));
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              visualizacionPreferente,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno");
-    }    
+        console.log("Ha habido un error al recoger los datos del alumno", error);
+    }
 
-    return alumnos;
+    return docs;
+}
+
+export async function getAlumnoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
@@ -145,36 +206,71 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
 
     let identificacion = null;
 
+    console.log(alumno);
+
     try {
-        addDoc(collection(getFirestore(), COL_ALUMNOS), alumno)
+        await addDoc(collection(db, COL_ALUMNOS), {
+            ...alumno
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
-        console.log("Ha habido un error al subir los datos del alumno");
+        console.log("Ha habido un error al subir los datos del alumno", error);
     }
 
     return identificacion;
 }
 
-export async function updateAlumno(id, {nombre='', apellidos='', visualizacionPreferente='', password='', foto=''}) {
-    let editaAlumno = {nombre, apellidos, visualizacionPreferente, password, foto};
+export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
+    let editaAlumno = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        visualizacionPreferente: visualizacionPreferente, 
+        password: password, 
+        foto: foto
+    };
     let alumno = null;
 
     try {
-        let docAlumno = doc(getFirestore(), COL_ALUMNOS);
-        alumno = getDoc(docAlumno, id);
+        let docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
         
-        editaAlumno = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
-        editaAlumno = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
-        editaAlumno = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-        editaAlumno = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
-        editaAlumno = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
+        if (docSnapshot.exists()) {
+            alumno = docSnapshot.data();
+            console.log(editaAlumno);
+            //console.log(alumno.visualizacionPreferente);
+            //console.log(editaAlumno.visualizacionPreferente);
+            
+            editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
+            editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
+            editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
+            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
+            editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
-        updateDoc(docAlumno, {
-            ...editaAlumno
-        })
+
+            await updateDoc(docAlumno, {
+                ...editaAlumno
+            })
+        }
     } catch (error) {
-        console.log("Hubo un error al actualizar datos de alumno");
+        console.log("Hubo un error al actualizar datos de alumno ", error);
+    }
+}
+
+export async function deleteAlumno(id) {
+    try {
+        const docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumno correctamente");
+        }
+        else {
+            console.log("No existe el alumno");
+        }
+    } catch(error) {
+        console.log("Error al borrar alumno", error);
     }
 }
 
@@ -183,75 +279,132 @@ export async function updateAlumno(id, {nombre='', apellidos='', visualizacionPr
 /**********  INICIO FUNCIONES PROFESOR ********/
 
 export async function getProfesores() {
-    let profesores = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES);
-        getDocs(queryCollection)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = collection(db, COL_PROFESORES);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresNombre(nombre) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresApellidos(apellidos) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresContrasenia(contrasenia) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('passwprd', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
 }
 
 export async function getProfesoresLogin(nombre, contrasenia) {
-    let profesores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => profesores = res.docs.map(profesor => ({id: profesor.id, nombre: profesor.nombre,
-                                                        apellidos: profesor.apellidos, foto: profesor.foto})));
+        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor");
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
 
-    return profesores;
+    return docs;
+}
+
+export async function getProfesorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesor(nombre, apellidos, contrasenia, foto) {
@@ -265,7 +418,9 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES), profesor)
+        addDoc(collection(db, COL_PROFESORES), {
+            ...profesor
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -275,24 +430,50 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
-    let editaProfesor = {nombre, apellidos, password, foto};
+export async function updateProfesor(id, nombre, apellidos, password, foto) {
+    let editaProfesor = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        foto: foto
+    };
     let profesor = null;
 
     try {
-        let docProfesor = doc(getFirestore(), COL_PROFESORES);
-        profesor = getDoc(docProfesor, id);
+        let docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
         
-        editaProfesor = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
-        editaProfesor = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
-        editaProfesor = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
-        editaProfesor = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+        if (docSnapshot.exists()) {
+            profesor = docSnapshot.data();
 
-        updateDoc(docProfesor, {
-            ...editaProfesor
-        });
+            editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+            editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+            editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
+            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+
+            await updateDoc(docProfesor, {
+                ...editaProfesor
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesor");
+    }
+}
+
+export async function deleteProfesor(id) {
+    try {
+        const docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesor correctamente");
+        }
+        else {
+            console.log("No existe el profesor");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesor", error);
     }
 }
 
@@ -301,75 +482,132 @@ export async function updateProfesor(id, {nombre='', apellidos='', password='', 
 /**********  INICIO FUNCIONES ADMINISTRADOR ********/
 
 export async function getAdministradores() {
-    let administradores = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_ADMINISTRADORES);
-        getDocs(queryCollection)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = collection(db, COL_ADMINISTRADORES);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresNombre(nombre) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministadoresApellidos(apellidos) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresContrasenia(contrasenia) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
 }
 
 export async function getAdministradoresLogin(nombre, contrasenia) {
-    let administradores = null;
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
-        getDocs(queryFilter)
-        .then(res => administradores = res.docs.map(admin => ({id: admin.id, nombre: admin.nombre,
-                                                        apellidos: admin.apellidos, foto: admin.foto})));
+        const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del administrador");
+        console.log("Ha habido un error al recoger los datos del administrador", error);
     }
 
-    return administradores;
+    return docs;
+}
+
+export async function getAdministradorID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
@@ -383,7 +621,9 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_ADMINISTRADORES), admin)
+        addDoc(collection(db, COL_ADMINISTRADORES), {
+            ...admin
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -393,24 +633,49 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateAdministrador(id, {nombre='', apellidos='', password='', foto=''}) {
-    let editaAdministrador = {nombre, apellidos, password, foto};
+export async function updateAdministrador(id, nombre, apellidos, password, foto) {
+    let editaAdministrador = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        foto: foto
+    };
     let Administrador = null;
 
     try {
-        let docAdministrador = doc(getFirestore(), COL_ADMINISTRADORES);
-        Administrador = getDoc(docAdministrador, id);
+        let docAdministrador = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdministrador);
         
-        editaAdministrador = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
-        editaAdministrador = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
-        editaAdministrador = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
-        editaAdministrador = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
+        if (docSnapshot.exists()) {
+            Administrador = docSnapshot.data();
+            editaAdministrador.nombre = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
+            editaAdministrador.apellidos = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
+            editaAdministrador.password = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
+            editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
 
-        updateDoc(docAdministrador, {
-            ...editaAdministrador
-        });
+            await updateDoc(docAdministrador, {
+                ...editaAdministrador
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de Administrador");
+    }
+}
+
+export async function deleteAdministrador(id) {
+    try {
+        const docAdministrador = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdministrador);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el administrador correctamente");
+        }
+        else {
+            console.log("No existe el administrador");
+        }
+    } catch(error) {
+        console.log("Error al borrar administrador", error);
     }
 }
 
@@ -419,32 +684,62 @@ export async function updateAdministrador(id, {nombre='', apellidos='', password
 /**********  INICIO FUNCIONES FORO ********/
 
 export async function getForos() {
-    let foros = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_FOROS);
-        getDocs(queryCollection)
-        .then(res => foros = res.docs.map(foro => ({id: foro.id, nombre: foro.nombre})));
+        const queryFilter = collection(db, COL_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre } = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del foro");
+        console.log("Ha habido un error al recoger los datos del foro", error);
     }
 
-    return foros;
+    return docs;
 }
 
 export async function getForosNombre(nombre) {
-    let foros = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_FOROS), where('nombre', '==', nombre));
-        getDocs(queryFilter)
-        .then(res => foros = res.docs.map(foro => ({id: foro.id, nombre: foro.nombre})));
+        const queryFilter = query(collection(db, COL_FOROS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre } = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del foro");
+        console.log("Ha habido un error al recoger los datos del foro", error);
     }
 
-    return foros;
+    return docs;
+}
+
+export async function getForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addForo(nombre) {
@@ -455,7 +750,9 @@ export async function addForo(nombre) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_FOROS), foro)
+        addDoc(collection(db, COL_FOROS), {
+            ...foro
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -465,21 +762,45 @@ export async function addForo(nombre) {
     return identificacion;
 }
 
-export async function updateForo(id, {nombre=''}) {
-    let editaForo = {nombre};
+export async function updateForo(id, nombre) {
+    let editaForo = {
+        nombre:nombre
+    };
+
     let foro = null;
 
     try {
-        let docForo = doc(getFirestore(), COL_FOROS);
-        foro = getDoc(docForo, id);
+        let docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
         
-        editaForo = editaForo.nombre == '' ? foro.nombre : editaForo.nombre;
+        if (docSnapshot.exists()) {
+            foro = docSnapshot.data();
 
-        updateDoc(docForo, {
-            ...editaForo
-        });
+            editaForo.nombre = editaForo.nombre == '' ? foro.nombre : editaForo.nombre;
+
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de foro");
+    }
+}
+
+export async function deleteForo(id) {
+    try {
+        const docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el foro correctamente");
+        }
+        else {
+            console.log("No existe el foro");
+        }
+    } catch(error) {
+        console.log("Error al borrar foro", error);
     }
 }
 
@@ -488,43 +809,82 @@ export async function updateForo(id, {nombre=''}) {
 /**********  FINAL FUNCIONES PROFESOR_TAREA ********/
 
 export async function getProfesorTarea() {
-    let profesorTarea = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES_TAREAS);
-        getDocs(queryCollection)
-        .then(res => profesorTarea = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = collection(db, COL_PROFESORES_TAREAS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
 
-    return profesorTarea;
+    return docs;
 }
 
 export async function getProfesorTarea_Profesor(id_profesor) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getProfesorTarea_Tarea(id_tarea) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorTarea");
+        console.log("Ha habido un error al recoger los datos del profesorTarea", error);
+    }
+
+    return docs;
+}
+
+export async function getProfesorTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
     }
 
     return instancia;
@@ -539,7 +899,9 @@ export async function addProfesorTarea(id_profesor, id_tarea) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES_TAREAS), instancia)
+        addDoc(collection(db, COL_PROFESORES_TAREAS), {
+            ...instancia
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -549,22 +911,45 @@ export async function addProfesorTarea(id_profesor, id_tarea) {
     return identificacion;
 }
 
-export async function updateProfesorTarea(id, {profesor='', tarea=''}) {
-    let editaInstancia = {profesor, tarea};
+export async function updateProfesorTarea(id, profesor, tarea) {
+    let editaInstancia = {
+        profesor: profesor, 
+        tarea: tarea
+    };
     let instancia = null;
 
     try {
-        let docInstancia = doc(getFirestore(), COL_PROFESORES_TAREAS);
-        instancia = getDoc(docInstancia, id);
+        let docInstancia = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(docInstancia);
         
-        editaInstancia = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
-        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.exists();
+            editaInstancia.profesor = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
+            editaInstancia.tarea = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
 
-        updateDoc(docInstancia, {
-            ...editaInstancia
-        });
+            updateDoc(docInstancia, {
+                ...editaInstancia
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesorTarea");
+    }
+}
+
+export async function deleteProfesorTarea(id) {
+    try {
+        const doc = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesorTarea correctamente");
+        }
+        else {
+            console.log("No existe el profesorTarea");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesorTarea", error);
     }
 }
 
@@ -573,43 +958,82 @@ export async function updateProfesorTarea(id, {profesor='', tarea=''}) {
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/
 
 export async function getAlumnoTarea() {
-    let instancia = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_ALUMNOS_TAREAS);
-        getDocs(queryCollection)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = collection(db, COL_ALUMNOS_TAREAS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnosTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getAlumnoTarea_Alumno(id_alumno) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
     }
 
-    return instancia;
+    return docs;
 }
 
 export async function getAlumnoTarea_Tarea(id_tarea) {
-    let instancia = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
-        getDocs(queryFilter)
-        .then(res => instancia = res.docs.map(i => ({id: i.id, ...i})));
+        const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { alumno, tarea } = doc.data();
+            docs.push({
+              id:doc.id,
+              alumno,
+              tarea
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumnoTarea");
+        console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnoTareaID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
     }
 
     return instancia;
@@ -624,7 +1048,9 @@ export async function addAlumnoTarea(id_alumno, id_tarea) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_ALUMNOS_TAREAS), instancia)
+        addDoc(collection(db, COL_ALUMNOS_TAREAS), {
+            ...instancia
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -634,22 +1060,45 @@ export async function addAlumnoTarea(id_alumno, id_tarea) {
     return identificacion;
 }
 
-export async function updateAlumnoTarea(id, {alumno='', tarea=''}) {
-    let editaInstancia = {alumno, tarea};
+export async function updateAlumnoTarea(id, alumno, tarea) {
+    let editaInstancia = {
+        alumno: alumno, 
+        tarea: tarea
+    };
     let instancia = null;
 
     try {
-        let docInstancia = doc(getFirestore(), COL_ALUMNOS_TAREAS);
-        instancia = getDoc(docInstancia, id);
+        let docInstancia = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(docInstancia);
         
-        editaInstancia = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
-        editaInstancia = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            editaInstancia.alumno = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
+            editaInstancia.tarea = editaInstancia.tarea == '' ? instancia.tarea : editaInstancia.tarea;
 
-        updateDoc(docInstancia, {
-            ...editaInstancia
-        });
+            updateDoc(docInstancia, {
+                ...editaInstancia
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de alumnoTarea");
+    }
+}
+
+export async function deleteAlumnoTarea(id) {
+    try {
+        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumnoTarea correctamente");
+        }
+        else {
+            console.log("No existe el alumnoTarea");
+        }
+    } catch(error) {
+        console.log("Error al borrar alumnoTarea", error);
     }
 }
 
@@ -658,46 +1107,85 @@ export async function updateAlumnoTarea(id, {alumno='', tarea=''}) {
 /**********  INICIO FUNCIONES PROFESOR-FORO ********/
 
 export async function getProfesoresForo() {
-    let profesoresForos = null;
-    
+    let docs = [];
     try {
-        const querydb = getFirestore();
-        const queryCollection = collection(querydb, COL_PROFESORES_FOROS);
-        getDocs(queryCollection)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = collection(db, COL_PROFESORES_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos de profesoresForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos;
+    return docs;
 }
 
 export async function getProfesoresForo_Foro(id_foro) {
-    let profesoresForos = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('foro', '==', id_foro));
-        getDocs(queryFilter)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('foro', '==', id_foro));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos
+    return docs;
 }
 
 export async function getProfesoresForo_Profesores(id_profesores) {
-    let profesoresForos = null;
-
+    let docs = [];
     try {
-        const queryFilter = query(collection(getFirestore(), COL_PROFESORES_FOROS), where('profesores', 'in', id_profesores));
-        getDocs(queryFilter)
-        .then(res => profesoresForos = res.docs.map(profesoresForo => ({id: profesoresForo.id, ...profesoresForo})));
+        const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('profesor', 'in', id_profesores));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, profesor } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              profesor
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesorForo");
+        console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
 
-    return profesoresForos
+    return docs;
+}
+
+export async function getProfesorForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
 }
 
 export async function addProfesoresForo(id_foro, id_profesores) {
@@ -709,7 +1197,9 @@ export async function addProfesoresForo(id_foro, id_profesores) {
     let identificacion = null;
 
     try {
-        addDoc(collection(getFirestore(), COL_PROFESORES_FOROS), profesorForo)
+        addDoc(collection(db, COL_PROFESORES_FOROS), {
+            ...profesorForo
+        })
             .then(({id}) => identificacion = id);
     }
     catch (error) {
@@ -719,29 +1209,206 @@ export async function addProfesoresForo(id_foro, id_profesores) {
     return identificacion;
 }
 
-export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
-    let editaForo = {id_profesores};
-    let foro = null;
+export async function updateProfesoresForo(id, profesores, foro) {
+    let editaForo = {
+        foro: foro,
+        profesores: profesores
+    };
+    let foroDoc = null;
 
     try {
-        let docForo = doc(getFirestore(), COL_PROFESORES_FOROS);
-        foro = getDoc(docForo, id);
+        let docForo = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
         
-        editaForo = editaForo.id_profesores == '' ? foro.profesores : editaForo.id_profesores;
+        if (docSnapshot.exists()) {
+            foroDoc = docSnapshot.data();
+            editaForo.foro = editaForo.foro == '' ? foroDoc.foro : editaForo.foro;
+            editaForo.profesores = editaForo.profesores == '' ? foroDoc.profesores : editaForo.profesores;
 
-        updateDoc(docForo, {
-            ...editaForo
-        });
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
     } catch (error) {
         console.log("Problema al actualizar datos de profesorForo");
     }
 }
 
+export async function deleteProfesorForo(id) {
+    try {
+        const doc = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el profesorForo correctamente");
+        }
+        else {
+            console.log("No existe el profesorForo");
+        }
+    } catch(error) {
+        console.log("Error al borrar profesorForo", error);
+    }
+}
+
 /**********  FINAL FUNCIONES PROFESOR-FORO ********/
+
+/********** INICIO FUNCIONES ALUMNO-FORO *********/
+
+export async function getAlumnosForo() {
+    let docs = [];
+    try {
+        const queryFilter = collection(db, COL_ALUMNOS_FOROS);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnosForo_Foro(id_foro) {
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('foro', '==', id_foro));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnosForo_Alumnos(id_alumnos) {
+    let docs = [];
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('alumno', 'in', id_alumnos));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { foro, alumno } = doc.data();
+            docs.push({
+              id:doc.id,
+              foro,
+              alumno
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumnoForo", error);
+    }
+
+    return docs;
+}
+
+export async function getAlumnoForoID(id) {
+    let instancia = null;
+    try {
+        const doc = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
+export async function addAlumnosForo(id_foro, id_alumnos) {
+    let alumnoForo = {
+        foro: id_foro,
+        alumno: id_alumnos
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(db, COL_ALUMNOS_FOROS), {
+            ...alumnoForo
+        })
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos del alumnoForo");
+    }
+
+    return identificacion;
+}
+
+export async function updateAlumnosForo(id, alumno, foro) {
+    let editaForo = {
+        foro: foro, 
+        alumno: alumno
+    };
+    let foroDoc = null;
+
+    try {
+        let docForo = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
+        
+        if (docSnapshot.exists()) {
+            docForo = docSnapshot.data();
+            editaForo.foro = editaForo.foro == '' ? foro.foro : editaForo.foro;
+            editaForo.alumno = editaForo.alumno == '' ? foroDoc.alumno : editaForo.alumno;
+
+            updateDoc(docForo, {
+                ...editaForo
+            });
+        }
+    } catch (error) {
+        console.log("Problema al actualizar datos de alumnoForo");
+    }
+}
+
+export async function deleteAlumnoForo(id) {
+    try {
+        const doc = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(doc);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el alumnoForo correctamente");
+        }
+        else {
+            console.log("No existe el alumnoForo");
+        }
+    } catch(error) {
+        console.log("Error al borrar allumnoForo", error);
+    }
+}
+
+/********** FINAL FUNCIONES ALUMNO-FORO **********/
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-// uploadImage= (uri) => {
+const contarArchivos = async(nombreCarpeta) => {
+
+}
+
+// uploadImage= async(uri) => {
 //   return new Promise((resolve, reject) => {
 //     let xhr = new XMLHttpRequest();
 //     xhr.onerror = reject;
@@ -757,12 +1424,12 @@ export async function updateProfesoresForo(id_foro, {id_profesores=''}) {
 //   });
 // };
 
-export function almacenarImagen(imagen) {
+export async function almacenarImagen(imagen) {
 
-    let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_' + (num_imagenes+1);
+    //let num_imagenes = storage.child('images').size();
+    let nombre_imagen = 'imagen_1';
 
-  this.uploadImage(imagen)
+  await uploadImage(imagen)
     .then(resolve => {
       storage
         .ref()
@@ -774,8 +1441,8 @@ export function almacenarImagen(imagen) {
     });
 }
 
-export function almacenarPictograma(imagen) {
-  this.uploadImage(imagen)
+export async function almacenarPictograma(imagen) {
+  await uploadImage(imagen)
     .then(resolve => {
       storage
         .ref()
@@ -820,7 +1487,7 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
           apellidos,
           visualizacionPreferente
         }
-        
+
         await addDoc(collection(db,'alumnos'),{
           ...alumno
         })
@@ -830,55 +1497,55 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
     }
   }
 
-export const getAlumnos = async () => {
-  try{
-    const querySnapshot = await getDocs(collection(db, 'alumnos'));
-    const docs = [];
-    querySnapshot.forEach((doc) => {
-      const { nombre, apellidos, password, jwt, fotoUrl} = doc.data();
-      docs.push({
-        id:doc.id,
-        nombre,
-        apellidos,
-        password,
-        jwt,
-        fotoUrl,
-      });
-    });
-    return docs;
-  } catch(error){
-    console.log(error);
-      Alert.alert(error);
-  }
-}
+// export const getAlumnos = async () => {
+//   try{
+//     const querySnapshot = await getDocs(collection(db, 'alumnos'));
+//     const docs = [];
+//     querySnapshot.forEach((doc) => {
+//       const { nombre, apellidos, password, jwt, fotoUrl} = doc.data();
+//       docs.push({
+//         id:doc.id,
+//         nombre,
+//         apellidos,
+//         password,
+//         jwt,
+//         fotoUrl,
+//       });
+//     });
+//     return docs;
+//   } catch(error){
+//     console.log(error);
+//       Alert.alert(error);
+//   }
+// }
 
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
 export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
-    try{
-        if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
-          Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-          console.log('te faltan campos');
+  try{
+      if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
+        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+        console.log('te faltan campos');
+      }
+      else{
+        console.log('se crea el objeto');
+        const objeto = {
+          titulo,
+          completado,
+          descripcion,
+          fechaFin,
+          fechaInicio,
+          idAlumno,
+          tipo
         }
-        else{
-          console.log('se crea el objeto');
-          const objeto = {
-            titulo,
-            completado,
-            descripcion,
-            fechaFin,
-            fechaInicio,
-            idAlumno,
-            tipo
-          }
-          
-          await addDoc(collection(db,'Tarea'),{
-            ...objeto
-          })
-        }
-      }catch(error){
-        console.log('error' + error);
-      }  
+        
+        await addDoc(collection(db,'Tarea'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log('error' + error);
+    }  
 }
 
 
@@ -894,390 +1561,510 @@ export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFi
 
 // PRUEBA REALIZADA. FUNCIONA
 export const asignarFeedback = async (idTarea,feedBack) => {
-  try{
-    if(idTarea === '' || feedBack === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
-    }
-    else{
+try{
+  if(idTarea === '' || feedBack === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
 
-      // Creamos las referencias 
-      const tareaRef = doc(db, 'Tarea', String(idTarea));
-      
-      await updateDoc(tareaRef,{
-        Feedback: feedBack,
-      })
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    // Creamos las referencias 
+    const tareaRef = doc(db, 'Tarea', String(idTarea));
+    
+    await updateDoc(tareaRef,{
+      Feedback: feedBack,
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
 }
+// PROBADA Y FUNCIONA. 
 
-
-// PROBADA Y FUNCIONA. SE OBTIENEN LOS DATOS DE LA TAREA PERO NO SE OBTIENE EL NOMBRE DEL ALUMNO QUE LA REALIZA SOLO SE OBTIENE EL ID DEL DOCUMENTO DE ESE ALUMNO
-
-export const getTarea = async (idAlumno) => {
+export const getTareaId = async (idAlumno) => {
 
   console.log(idAlumno);
-
+  
   try {
-    const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
     const querySnapshot = await getDocs(q);
     // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-
+  
     const docs = [];
-
+  
     for (const tareaDoc of querySnapshot.docs) {
-      const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
-
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
       docs.push({
         id: tareaDoc.id,
-        Nombre,
-        Completado,
-        Descripción,
-        FechaInicio,
-        FechaFin,
-        Tipo,
-        IdAlumno,
-        fotoURL,
+        titulo,
+        completado,
+        fechaInicio,
+        fechaFin,
+        tipo,
+        idAlumno,
       });
     }
-
+  
     return docs;
   } catch (error) {
     console.log(error);
     Alert.alert(error);
   }
-};
+  };
+  
+  // Obtener todas las tareas
+  export const getTareas = async () => {
+  
+  try {
+    const q = query(collection(db,"Tarea"));
+    const querySnapshot = await getDocs(q);
+    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+  
+    const docs = [];
+  
+    for (const tareaDoc of querySnapshot.docs) {
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
+      docs.push({
+        id: tareaDoc.id,
+        titulo,
+        completado,
+        fechaInicio,
+        fechaFin,
+        tipo,
+        idAlumno,
+      });
+    }
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    Alert.alert(error);
+  }
+  };
+
+// export const deleteTareaId = async (idTarea) => {
+//     try {
+//         console.log("borrando tarea");
+//         // Borramos la tarea principal que queremos
+//         const q = query(collection(db,"Tarea"), where("idTarea","==",idTarea));
+//         const querySnapshot = await getDoc(q);
+
+//         const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+//         const querySnapshot2 = await getDoc(q2);
+
+//         const q5 = query(collection(db,"PasosActividad",where("idTarea","==",idTarea)));
+//         const querySnapshot5 = await getDoc(q5);
+
+//         const q3 = query(collection(db,"Tarea-Inventario"),where("idTarea","==",idTarea));
+//         const querySnapshot3 = await getDoc(q3);
+
+//         const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+//         const querySnapshot4 = await getDoc(q4);
+
+//         console.log(querySnapshot3);
+
+//         if (!querySnapshot.empty()) {
+//             await deleteDoc(querySnapshot.ref);
+//             console.log("Se ha borrado la tarea correctamente");
+//         }
+//         else {
+//             console.log("No existe la tarea");
+//         }
+
+//         if(!querySnapshot2.empty()){
+//             await deleteDoc(querySnapshot2.ref);
+//             if(!querySnapshot5.empty())
+//                 await deleteDoc(querySnapshot5.ref);
+//             console.log("Se ha borrado la tarea actividad");
+//         } else{
+//             console.log("NO existe la tarea actividad");
+//         }
+
+//         if(!querySnapshot3.empty()){
+//             await deleteDoc(querySnapshot3.ref);
+//             console.log("Se ha borrado la tarea inventario");
+//         } else{
+//             console.log("No existe la tarea inventario");
+//         }
+
+//         if(!querySnapshot4.empty()){
+//             await deleteDoc(querySnapshot4.ref);
+//         } else{
+//             console.log("No existe la tarea comanda")
+//         }
+
+//     } catch(error) {
+//         console.log("Error al borrar la tarea", error);
+//     }
+
+// }
+
+
+
+// Funcion que borra la tarea con ese id
+// Borra tanto la tarea, como el documento de la colección del 
+// tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
+export const deleteTareaId = async (idTarea) => {
+    try {
+        await deleteDoc(doc(db,"Tarea",idTarea));
+        const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+        const Snapshot2 = await getDocs(q2);
+        Snapshot2.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q = query(collection(db, "PasosActividad"), where("idTarea", "==", idTarea));
+
+        const Snapshot = await getDocs(q);
+
+        Snapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+
+        const q3 = query(collection(db,"Tarea-Invetario"),where("idTarea","==",idTarea));
+        const Snapshot3 = await getDocs(q3);
+        Snapshot3.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+        const q4 = query(collection(db,"Tarea-Comanda"),where("idTarea","==",idTarea));
+        const Snapshot4 = await getDocs(q4);
+        Snapshot4.forEach(async(doc) =>{
+            await deleteDoc(doc.ref);
+        })
+
+    } catch(error) {
+        console.log("Error al borrar la tarea", error);
+    }
+}
+
 
 
 // EN LA VISTA CON ESTE CÓDIGO SE SACA LA LISTA DE TAREAS
 
-  // const [tareas,setTareas] =useState([]);
+// const [tareas,setTareas] =useState([]);
 
-  // useEffect(() => {
-  //   const listaTareas = async () => {
-  //     try{
-  //       const Tareas = await getTarea(2);
-  //       setTareas(Tareas);
-  //       // console.log(Tareas);
-  //     } catch(error){
-  //       console.log(error);
-  //     }
-  //   };
-  //   listaTareas();
-  // }, []);
+// useEffect(() => {
+//   const listaTareas = async () => {
+//     try{
+//       const Tareas = await getTarea(2);
+//       setTareas(Tareas);
+//       // console.log(Tareas);
+//     } catch(error){
+//       console.log(error);
+//     }
+//   };
+//   listaTareas();
+// }, []);
 
 
 
-  // PRUEBA REALIZADA. FUNCIONA
+// PRUEBA REALIZADA. FUNCIONA
 export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
-  try{
+try{
 
-    if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+  if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    // Creamos las referencias 
+    const pasosRef = doc(db, 'PasosActividad', String(pasos));
+    const idTareaRef = doc(db, 'Tarea', String(idTarea));
+
+
+    const objeto = {
+      nombre,
+      aula,
+      pasos,
+      idTarea
     }
-    else{
-
-      // Creamos las referencias 
-      const pasosRef = doc(db, 'PasosActividad', String(pasos));
-      const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-      const objeto = {
-        nombre,
-        aula,
-        pasos:pasosRef,
-        idTarea:idTareaRef
-      }
-
-      // Comprobamos que las referencias son instancias de la clase DocumentReference
-      if (!(pasosRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
-      }
-      
-      await addDoc(collection(db,'Tarea-Actividad'),{
-        ...objeto
-      })
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    
+    await addDoc(collection(db,'Tarea-Actividad'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 
 
 export const getTareasActividad = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'Tarea-Actividad'));
-    const docs=[];
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Actividad'));
+  const docs=[];
 
-    for (const docu of querySnapshot.docs) {
-      const tareaActividadDatos = docu.data();
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
 
-      docs.push(tareaActividadDatos);
-      }
+    docs.push(tareaActividadDatos);
+    }
 
-      return docs;
-    } catch (error) {
-      console.log(error);
-  }
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
 };
 
 export const getTareasActividadId = async (idTarea) => {
-  try {
+try {
 
-    const q = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
-    const querySnapshot = await getDocs(q);
-    const docs=[];
+  const q = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
+  const querySnapshot = await getDocs(q);
+  const docs=[];
 
-    for (const docu of querySnapshot.docs) {
-      const tareaActividadDatos = docu.data();
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
 
-      docs.push(tareaActividadDatos);
-      }
+    docs.push(tareaActividadDatos);
+    }
 
-      return docs;
-    } catch (error) {
-      console.log(error);
-  }
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
 };
 
 export const getPasos = async (idActividad) => {
-  try {
+try {
 
-    const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
-    const querySnapshot = await getDocs(q);
-    const docs=[];
+  const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
+  const querySnapshot = await getDocs(q);
+  const docs=[];
 
-    for (const docu of querySnapshot.docs) {
-      const tareaActividadDatos = docu.data();
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
 
-      docs.push(tareaActividadDatos);
-      }
+    docs.push(tareaActividadDatos);
+    }
 
-      return docs;
-    } catch (error) {
-      console.log(error);
-  }
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
 };
 
 
 
+// Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
+// menú se cree una fila/documento por menú
 
 // PRUEBA REALIZADA.FUNCIONA
 export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
-  try{
+try{
 
-    if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
-    }
-    else{
+  if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
 
-      // Creamos las referencias 
-      const idMenuRef = doc(db, 'Menu', String(idMenu));
-      const idTareaRef = doc(db, 'Tarea', String(idTarea));
+    // Creamos las referencias 
+    const idMenuRef = doc(db, 'Menu', String(idMenu));
+    const idTareaRef = doc(db, 'Tarea', String(idTarea));
 
 
-      const objeto = {
-        nombre,
-        aula,
-        idMenu:idMenuRef,
-        idTarea:idTareaRef
-      }
-
-      // Comprobamos que las referencias son instancias de la clase DocumentReference
-      if (!(idMenuRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('idMenuRef e idTareaRef deben ser instancias de DocumentReference');
-      }
-      
-      await addDoc(collection(db,'Tarea-Comanda'),{
-        ...objeto
-      })
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    const objeto = {
+      nombre,
+      aula,
+      idMenu,
+      idTarea
+    }    
+    await addDoc(collection(db,'Tarea-Comanda'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 // ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
 // PRUEBA REALIZADA. FUNCIONA
 export const getTareasComanda = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'Tarea-Comanda'));
-    const docs=[];
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Comanda'));
+  const docs=[];
 
-    for (const docu of querySnapshot.docs) {
-      const tareaActividadDatos = docu.data();
-      console.log(tareaActividadDatos);
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
 
-      docs.push(tareaActividadDatos);
-      }
+    docs.push(tareaActividadDatos);
+    }
 
-      return docs;
-    } catch (error) {
-      console.log(error);
-  }
+    return docs;
+  } catch (error) {
+    console.log(error);
+}
 }
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setMenu = async(nombreMenu,idAlimentos) => {
-  try{
+try{
 
-    if(nombreMenu === '' || idAlimentos === null){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  if(nombreMenu === '' || idAlimentos === null){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
+    const objeto = {
+      idAlimentos
     }
-    else{
+    
+    // Lo hacemos así para establecer el nombreMenú como el id del documento
+    const menuDocRef = doc(db, 'Menu', nombreMenu);
 
-      // Hacemos que los idAlimentos sean referencias
-      const referenciasAlimentos = idAlimentos.map((idAlimento) => {
-        return doc(db, 'Alimentos', idAlimento);
-      });
-
-      const objeto = {
-        idAlimentos:referenciasAlimentos
-      }
-      
-
-      // Lo hacemos así para establecer el nombreMenú como el id del documento
-      const menuDocRef = doc(db, 'Menu', nombreMenu);
-
-      // Necesitamos poner setDoc para especificar el ID del documento
-      await setDoc(menuDocRef, {
-        ...objeto
-      });
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await setDoc(menuDocRef, {
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setAlimento = async (nombreAlimento,imagen) => {
-  try{
+try{
 
-    if(nombreAlimento === '' || imagen === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  if(nombreAlimento === '' || imagen === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
+
+    const objeto = {
+      nombreAlimento,
+      imagen
     }
-    else{
+    
 
-      const objeto = {
-        nombreAlimento,
-        imagen
-      }
-      
+    // Lo hacemos así para establecer el nombreMenú como el id del documento
+    const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
 
-      // Lo hacemos así para establecer el nombreMenú como el id del documento
-      const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
-
-      // Necesitamos poner setDoc para especificar el ID del documento
-      await setDoc(menuDocRef, {
-        ...objeto
-      });
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await setDoc(menuDocRef, {
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 
 // ESTA FUNCION SIRVE PARA OBTENER UN ALIMENTO A TRAVÉS DE SU NOMBRE
 // PRUEBA REALIZADA. FUNCIONA
 export const getAlimento = async (nombre) => {
-  try {
-    const alimentosQuery = query(collection(db, 'Alimentos'), where('Nombre', '==', nombre));
-    const querySnapshot = await getDocs(alimentosQuery);
+try {
+  const alimentosQuery = query(collection(db, 'Alimentos'), where('Nombre', '==', nombre));
+  const querySnapshot = await getDocs(alimentosQuery);
 
-    const docs = [];
+  const docs = [];
 
-    querySnapshot.forEach((docu) => {
-      const alimentoDatos = docu.data();
-      console.log(alimentoDatos);
+  querySnapshot.forEach((docu) => {
+    const alimentoDatos = docu.data();
+    console.log(alimentoDatos);
 
-      docs.push(alimentoDatos);
-    });
+    docs.push(alimentoDatos);
+  });
 
-    return docs;
-  } catch (error) {
-    console.log(error);
-    throw error; // Lanza el error para que pueda ser manejado por el llamador
-  }
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
 };
 
 
 
 export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
-  try{
+try{
 
-    if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-      console.log('te faltan campos');
+  if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    console.log('te faltan campos');
+  }
+  else{
+
+    const objeto = {
+      idMaterial,
+      lugarLlevar,
+      recogida,
+      idTarea
     }
-    else{
 
-      // Creamos las referencias 
-      const idMaterialRef = doc(db, 'Material', String(idMaterial));
-      const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-      const objeto = {
-        idMaterial:idMaterialRef,
-        lugarLlevar,
-        recogida,
-        idTarea:idTareaRef
-      }
-
-      // Comprobamos que las referencias son instancias de la clase DocumentReference
-      if (!(idMaterialRef instanceof DocumentReference) || !(idTareaRef instanceof DocumentReference)) {
-        throw new Error('pasosRef e idTareaRef deben ser instancias de DocumentReference');
-      }
-      
-      await addDoc(collection(db,'Tarea-Inventario'),{
-        ...objeto
-      })
-    }
-  }catch(error){
-    console.log(error);
-  }  
+    await addDoc(collection(db,'Tarea-Inventario'),{
+      ...objeto
+    })
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setMaterial = async (foto,nombre,stock)=> {
-  try{
+try{
 
-    if(nombre === '' || foto === '' || stock === ''){
-      Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    }
-    else{
+  if(nombre === '' || foto === '' || stock === ''){
+    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+  }
+  else{
 
-      const objeto = {
-        nombre,
-        foto,
-        stock
-      }
-      
-      // Necesitamos poner setDoc para especificar el ID del documento
-      await addDoc(collection(db,'Material'),{
-        ...objeto
-      });
+    const objeto = {
+      nombre,
+      foto,
+      stock
     }
-  }catch(error){
-    console.log(error);
-  }  
+    
+    // Necesitamos poner setDoc para especificar el ID del documento
+    await addDoc(collection(db,'Material'),{
+      ...objeto
+    });
+  }
+}catch(error){
+  console.log(error);
+}  
 }
 
 
 
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
 export const getMaterial = async(nombre) => {
+try {
+  const materialQuery = query(collection(db, 'Material'), where('nombre', '==', nombre));
+  const querySnapshot = await getDocs(materialQuery);
+
+  const docs = [];
+
+  querySnapshot.forEach((docu) => {
+    const materialDatos = docu.data();
+
+    docs.push(materialDatos);
+  });
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
+}
+
+
+// FUNCION QUE DEVUELVE LOS DATOS DE UN MATERIAL CORRESPONDIENTE A UN ID
+// PRUEBA REALIZADA. FUNCIONA
+export const getMaterialId = async(id) => {
   try {
-    const materialQuery = query(collection(db, 'Material'), where('nombre', '==', nombre));
+    const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
     const querySnapshot = await getDocs(materialQuery);
 
     const docs = [];
@@ -1295,73 +2082,48 @@ export const getMaterial = async(nombre) => {
     throw error; // Lanza el error para que pueda ser manejado por el llamador
   }
 }
-
-
-// FUNCION QUE DEVUELVE LOS DATOS DE UN MATERIAL CORRESPONDIENTE A UN ID
-// PRUEBA REALIZADA. FUNCIONA
-// export const getMaterialId = async(id) => {
-//   try {
-//     const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
-//     const querySnapshot = await getDocs(materialQuery);
-
-//     const docs = [];
-
-//     querySnapshot.forEach((docu) => {
-//       const materialDatos = docu.data();
-//       console.log(materialDatos);
-
-//       docs.push(materialDatos);
-//     });
-
-//     return docs;
-//   } catch (error) {
-//     console.log(error);
-//     throw error; // Lanza el error para que pueda ser manejado por el llamador
-//   }
-// }
 
 
 
 // FUNCION QUE DEVUELVE TODOS LOS MATERIALES QUE TENEMOS EN LA BASE DE DATOS
 // PRUEBA REALIZADA. FUNCIONA
 export const getMateriales = async() => {
-  try {
-    const materialQuery = query(collection(db, 'Material'));
-    const querySnapshot = await getDocs(materialQuery);
+try {
+  const materialQuery = query(collection(db, 'Material'));
+  const querySnapshot = await getDocs(materialQuery);
 
-    const docs = [];
+  const docs = [];
 
-    querySnapshot.forEach((docu) => {
-      const materialDatos = docu.data();
-      console.log(materialDatos);
+  querySnapshot.forEach((docu) => {
+    const materialDatos = docu.data();
+    console.log(materialDatos);
 
-      docs.push(materialDatos);
-    });
+    docs.push(materialDatos);
+  });
+
+  return docs;
+} catch (error) {
+  console.log(error);
+  throw error; // Lanza el error para que pueda ser manejado por el llamador
+}
+}
+
+
+// FUNCION QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
+// PRUEBA REALIZADA. FUNCIONA
+export const getTareasInventario = async() => {
+try {
+  const querySnapshot = await getDocs(collection(db, 'Tarea-Inventario'));
+  const docs=[];
+
+  for (const docu of querySnapshot.docs) {
+    const tareaActividadDatos = docu.data();
+
+    docs.push(tareaActividadDatos);
+    }
 
     return docs;
   } catch (error) {
     console.log(error);
-    throw error; // Lanza el error para que pueda ser manejado por el llamador
-  }
 }
-
-
-// FUNCIONA QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
-// PRUEBA REALIZADA. FUNCIONA
-export const getTareasInventario = async() => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'Tarea-Inventario'));
-    const docs=[];
-
-    for (const docu of querySnapshot.docs) {
-      const tareaActividadDatos = docu.data();
-      console.log(tareaActividadDatos);
-
-      docs.push(tareaActividadDatos);
-      }
-
-      return docs;
-    } catch (error) {
-      console.log(error);
-  }
 }
