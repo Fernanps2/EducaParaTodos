@@ -460,7 +460,7 @@ export const setMenu = async(idTarea, idMenu, idAlimentos) => {
       }
       
       // Necesitamos poner setDoc para especificar el ID del documento
-      await addDoc(collection(db,'Menu'), {
+      await addDoc(collection(db,'Menus-Comanda'), {
         ...objeto
       });
     }
