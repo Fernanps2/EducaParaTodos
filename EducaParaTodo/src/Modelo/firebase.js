@@ -2,8 +2,10 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref} from 'firebase/storage'
+//import {getStorage, ref} from 'firebase/storage'
+import { getStorage } from 'firebase/storage';
 //import {v4} from 'uuid';
+//import { getStorage, ref, uploadFile } from '@react-native-firebase/storage';
 
 //import * as firebase from 'firebase';
 
@@ -1427,7 +1429,7 @@ const contarArchivos = async(nombreCarpeta) => {
 export async function almacenarImagen(imagen) {
 
     //let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_1';
+    /*let nombre_imagen = 'imagen_1';
 
   await uploadImage(imagen)
     .then(resolve => {
@@ -1438,7 +1440,18 @@ export async function almacenarImagen(imagen) {
     })
     .catch(error => {
       console.log(error);
-    });
+    });*/
+
+    try {
+        const response = await fetch(imagen);
+        const blob = await response.blob();
+        const storageRef = AppFirebase.storage().ref();
+        let ref = storageRef.child("/Imagenes/imagen1");
+        return ref.put(blob);
+    } catch(error) {
+        console.log(error);
+    }
+
 }
 
 export async function almacenarPictograma(imagen) {

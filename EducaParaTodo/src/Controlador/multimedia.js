@@ -1,5 +1,5 @@
 import { almacenarImagen, cargarImagen } from "../Modelo/firebase";
-// import { PermissionsAndroid } from "react-native";
+import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
 export async function almacenaImagen(imagen) {

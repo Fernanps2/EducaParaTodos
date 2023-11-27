@@ -7,7 +7,7 @@
       "**/*"
     ]
   },
-  "andorid": {
+  "android": {
     "permissions": ["CAMERA_ROLL"]
   },
   "web":{
