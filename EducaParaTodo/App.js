@@ -22,7 +22,9 @@ import HomeAdmin from './src/Vista/homeAdmin.jsx';
 import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
 import ListaProfesores from './src/Vista/listaProfesores.jsx';
 import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
+import PantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
+import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
@@ -64,14 +66,16 @@ export default function App() {
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
-          <Stack.Screen name="pantallaAlumnos" component={ListaAlumnos} />
+          <Stack.Screen name="listaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
-          <Stack.Screen name="pantallaProfesores" component={ListaProfesores} />
+          <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
+          <Stack.Screen name="listaProfesores" component={ListaProfesores} />
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="datosProfesor" component={DatosProfesor} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
+          <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserContextProvider>

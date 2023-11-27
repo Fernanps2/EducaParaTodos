@@ -3,7 +3,6 @@ import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
-import BotonModificarAlumno from './botonModificarAlumno';
 
 const PantallaDatosAlumno = ({route, navigation}) => {
 
@@ -16,19 +15,6 @@ const PantallaDatosAlumno = ({route, navigation}) => {
             <Text style={styles.input}> Nombre: {alumno.nombre} </Text>
             <Text style={styles.input}> Apellidos: {alumno.apellidos} </Text>
             <Text style={styles.input}> Visualización preferente: {alumno.visualizacionPreferente}</Text>
-
-          
-        <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Modificar Alumno</Text>
-        <BotonModificarAlumno alumno={alumno} navigation={navigation} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Eliminar Alumno</Text>
-      </TouchableOpacity>
-        </View>
-
-
         </View>
     )
 }

@@ -17,13 +17,13 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
+        onPress={() => navigation.navigate('listaAlumnos')}>
         <Text style={styles.buttonText}>Gestionar Alumnos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaProfesores')}>
+        onPress={() => navigation.navigate('listaProfesores')}>
         <Text style={styles.buttonText}>Gestionar Profesores</Text>
       </TouchableOpacity>
 
