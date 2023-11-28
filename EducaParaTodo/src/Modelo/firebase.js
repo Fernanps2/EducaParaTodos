@@ -1586,7 +1586,6 @@ export const asignarFeedback = async (idTarea,feedBack) => {
         }
       }
       else{
-  
         // Creamos las referencias 
         const tareaRef = doc(db, 'Tarea', String(idTarea));
         
@@ -2251,5 +2250,5 @@ try {
     return docs;
   } catch (error) {
     console.log(error);
-}
+  }
 }
