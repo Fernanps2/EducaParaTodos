@@ -1475,7 +1475,7 @@ export async function getMensajeID(id) {
 }
 
 export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, hora) {
-    let mensaje = {
+    let mensajeDoc = {
         administrador: id_admin,
         profesor: id_profesor,
         mensaje: mensaje,
@@ -1488,7 +1488,7 @@ export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, ho
 
     try {
         addDoc(collection(db, COL_MENSAJES), {
-            ...mensaje
+            ...mensajeDoc
         })
             .then(({id}) => identificacion = id);
     }
@@ -1499,11 +1499,11 @@ export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, ho
     return identificacion;
 }
 
-export async function updateMensaje(id, id_admin, id_profe, mensaje, aula, fecha, hora) {
+export async function updateMensaje(id, id_admin, id_profe, mensajeA, aula, fecha, hora) {
     let editaMensaje = {
         administrador: id_admin,
         profesor: id_profe,
-        mensaje: mensaje,
+        mensaje: mensajeA,
         aula: aula,
         fecha: fecha,
         hora: hora
