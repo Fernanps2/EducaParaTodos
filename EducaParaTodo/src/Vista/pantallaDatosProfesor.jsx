@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
+import BotonModificarProfesor from './botonModificarProfesor';
 
 
 const PantallaDatosProfesor = ({route, navigation}) => {
@@ -9,16 +10,16 @@ const PantallaDatosProfesor = ({route, navigation}) => {
     return(
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}> Datos del alumno</Text>
+                <Text style={styles.title}> Datos del profesor</Text>
             </View>
             <Text style={styles.input}> Nombre: {profesor.nombre} </Text>
             <Text style={styles.input}> Apellidos: {profesor.apellidos} </Text>
-            <Text style={styles.input}> Correo:  </Text>
+            <Text style={styles.input}> foto: {profesor.foto} </Text>
 
           
         <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Modificar Profesor</Text>
+      <TouchableOpacity style={styles.button}>
+        <BotonModificarProfesor texto={"Modificar profesor"} profesor={profesor} navigation={navigation} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Eliminar Profesor</Text>

@@ -4,19 +4,17 @@ import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, 
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 
-const DatosAlumnosLista = ({ alumno, navigation }) => {
+const BotonModificarProfesor = ({ texto, profesor, navigation }) => {
     return (
             <View>
-                <TouchableOpacity onPress={() => navigation.navigate('pantallaDatosAlumno', { alumno: alumno })}>
-                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
-                 para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-                    <Image style={styles.image} source={{uri:alumno.foto}} />
-                    <Text style={styles.texto}> Nombre: {alumno.nombre} </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('modificarProfesor', { profesor: profesor })}>
+                 <Text style={styles.buttonText}>{texto}</Text>
                 </TouchableOpacity>
+                
             </View>
     )
 }
-export default DatosAlumnosLista
+export default BotonModificarProfesor
 
 
 const styles = StyleSheet.create({
@@ -35,5 +33,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 50,
         marginTop: 5,
-    }
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 18,
+    },
 })

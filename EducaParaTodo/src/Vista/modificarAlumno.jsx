@@ -5,7 +5,7 @@ import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 import { actualizaAlumno } from '../Controlador/alumnos';
 
-const ModifiarAlumno = ({route, navigation}) => {
+const ModificarAlumno = ({route, navigation}) => {
 
   const { alumno } = route.params;
 
@@ -61,7 +61,7 @@ const ModifiarAlumno = ({route, navigation}) => {
   )
 }
 
-export default ModifiarAlumno;
+export default ModificarAlumno;
 
 const styles = StyleSheet.create({
     container: {

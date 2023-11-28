@@ -458,6 +458,34 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
     }
 }
 
+export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+    let editaProfesor = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        foto: foto
+    };
+    let profesor = null;
+
+    try {
+        let docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
+        
+        if (docSnapshot.exists()) {
+            profesor = docSnapshot.data();
+
+            editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+            editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+
+            await updateDoc(docProfesor, {
+                ...editaProfesor
+            });
+        }
+    } catch (error) {
+        console.log("Problema al actualizar datos de profesor");
+    }
+}
+
 export async function deleteProfesor(id) {
     try {
         const docProfesor = doc(db, COL_PROFESORES, id);
