@@ -15,13 +15,17 @@ const PantallaDatosAlumno = ({route, navigation}) => {
             </View>
             <Text style={styles.input}> Nombre: {alumno.nombre} </Text>
             <Text style={styles.input}> Apellidos: {alumno.apellidos} </Text>
-            <Text style={styles.input}> Visualización preferente: {alumno.visualizacionPreferente}</Text>
-
+            <Text style={styles.input}> Visualización preferente: 
+              {alumno.visualizacionPreferente.map((item, index) => (
+                <Text key={index} style={styles.input}>
+                  {index > 0 && ', '}{index == 0 && ' '}{item}
+                </Text>
+              ))}
+            </Text>
           
         <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Modificar Alumno</Text>
-        <BotonModificarAlumno alumno={alumno} navigation={navigation} />
+        <BotonModificarAlumno texto={"Modificar alumno"} alumno={alumno} navigation={navigation} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Eliminar Alumno</Text>
@@ -49,6 +53,13 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     input: {
+      borderWidth: 1,
+      borderColor: 'grey',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    input2: {
       borderWidth: 1,
       borderColor: 'grey',
       borderRadius: 5,

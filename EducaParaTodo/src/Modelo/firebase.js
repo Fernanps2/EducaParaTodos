@@ -221,12 +221,11 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
+export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
     let editaAlumno = {
         nombre: nombre, 
         apellidos: apellidos, 
-        visualizacionPreferente: visualizacionPreferente, 
-        password: password, 
+        visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
         foto: foto
     };
     let alumno = null;
@@ -244,7 +243,6 @@ export async function updateAlumno(id, nombre, apellidos, password, foto, visual
             editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
 

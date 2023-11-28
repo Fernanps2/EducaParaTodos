@@ -63,9 +63,9 @@ export async function buscaAlumnoId (id) {
     return instancia;
 }
 
-export async function actualizaAlumno(id, nombre, apellidos, password, foto, visualizacion) {
-    if (nombre != '' && apellidos != '' && password != '' && visualizacion != null) 
-        await updateAlumno(id, nombre, apellidos, password, foto, visualizacion);
+export async function actualizaAlumno(id, nombre, apellidos, foto, visualizacion) {
+    if (nombre != '' && apellidos != '' && visualizacion != null) 
+        await updateAlumno(id, nombre, apellidos, foto, visualizacion);
 }
 
 export async function borraAlumno(id) {

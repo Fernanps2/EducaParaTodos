@@ -4,13 +4,13 @@ import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, 
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 
-const BotonModificarAlumno = ({ alumno, navigation }) => {
+const BotonModificarAlumno = ({ texto, alumno, navigation }) => {
     return (
             <View>
                 <TouchableOpacity onPress={() => navigation.navigate('modificarAlumno', { alumno: alumno })}>
-                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
-                 para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
+                 <Text style={styles.buttonText}>{texto}</Text>
                 </TouchableOpacity>
+                
             </View>
     )
 }
@@ -33,5 +33,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 50,
         marginTop: 5,
-    }
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 18,
+    },
 })

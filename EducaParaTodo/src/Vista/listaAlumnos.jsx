@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
-import { getAlumnos } from '../Modelo/modelo';
+import { getAlumnos } from '../Modelo/firebase';
 import DatosAlumnosLista from './datosListaAlumno';
 
 export default function ListaAlumnos({route,  navigation }) {

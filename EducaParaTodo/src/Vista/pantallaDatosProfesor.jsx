@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
 
 
-const pantallaDatosProfesor = ({route, navigation}) => {
+const PantallaDatosProfesor = ({route, navigation}) => {
 
     const {profesor} =route.params;
     return(
@@ -30,7 +30,7 @@ const pantallaDatosProfesor = ({route, navigation}) => {
     )
 }
 
-export default pantallaDatosProfesor;
+export default PantallaDatosProfesor;
 
 const styles = StyleSheet.create({
     container: {
