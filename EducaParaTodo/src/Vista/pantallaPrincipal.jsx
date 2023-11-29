@@ -12,14 +12,15 @@ export default function PantallaPrincipal({ navigation }) {
     const loadData = async() => {
       try {
         const alumnos = await buscaAlumno();
+        
         setAlumnosArray(Object.values(alumnos)); //Convertimos los datos a un array
+        console.log(alumnosArray);
       } catch(error) {
         console.log(error);
       }
     }
     loadData();
   }, []);
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
