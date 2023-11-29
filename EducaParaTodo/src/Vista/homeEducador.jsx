@@ -2,7 +2,10 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
 
-export default function HomeAdmin ({ navigation }) {
+export default function HomeAdmin ({ route, navigation }) {
+
+    const nombreUsuario = route.params.nombreProf;
+
     return (
       <View style={styles.container}>
       <Text style={styles.title}>EducaParaTodos</Text>
@@ -13,7 +16,7 @@ export default function HomeAdmin ({ navigation }) {
           source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
-        <Text style={styles.roleText}>Profesor</Text>
+        <Text style={styles.roleText}>{nombreUsuario}</Text>
       </View>
 
       <TouchableOpacity
@@ -30,7 +33,7 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('datosProfesor')}>
+        onPress={() => navigation.navigate('datosProfesor', { nombreUsuario })}>
         <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 

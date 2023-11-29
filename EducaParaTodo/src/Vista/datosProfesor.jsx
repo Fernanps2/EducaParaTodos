@@ -1,25 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 //import profesores from '../Modelo/profesor';
-import { getProfesorPorId, updateProfesor } from '../Modelo/firebase';
+import { getProfesorPorId, getProfesoresNombre, updateProfesorv2 } from '../Modelo/firebase';
 
 export default function DatosProfesor ({ route, navigation }) {
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+      const [profesorId, setProfesorId] = useState('');
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
       const [email, setEmail] = useState('');
       const [info, setInfo] = useState('');
+      const nombreProfesor = route.params.nombreUsuario;
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
         const obtenerDatosProfesor = async () => {
-          const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
-          const datosProfesor = await getProfesorPorId(idProfesor);
+          {/*const idProfesor = 'yQcGbUqwKJOkSdGW4GuM';
+          const datosProfesor = await getProfesorPorId(idProfesor);*/}
+
+          const datosProfesor = await getProfesoresNombre(nombreProfesor);
           setProfesorData(datosProfesor);
           // Asignar los valores iniciales para la edición
           if (datosProfesor) {
+            setProfesorId(datosProfesor.id);
             setNombre(datosProfesor.nombre);
             setApellidos(datosProfesor.apellidos);
             setContrasenia(datosProfesor.password);
@@ -31,13 +36,21 @@ export default function DatosProfesor ({ route, navigation }) {
       }, []);
 
 
-      // Función para actualizar los datos del profesor
-      const guardarCambios = async () => {
-        // Lógica para guardar los cambios en la base de datos usando updateProfesor
-        const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
-        await updateProfesor(idProfesor, { nombre, apellidos, password: contrasenia, email, info });
-        // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
-      };
+        // Función para actualizar los datos del profesor
+        const guardarCambios = async () => {
+          if (profesorId) {
+            await updateProfesorv2(profesorId, {
+              nombre,
+              apellidos,
+              password: contrasenia,
+              email,
+              info
+            });
+            navigation.navigate('pantallaPrincipal');
+          } else {
+            console.log('No se encontró ningún profesor');
+          }
+        };
 
     const showAlertStore = () => {
         Alert.alert(
@@ -60,13 +73,12 @@ export default function DatosProfesor ({ route, navigation }) {
           </View>
 
           <Text style={styles.title}> Modificar mis datos </Text>
-
           <View style={styles.profileContainer}>
             <Image
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
               style={styles.profileImage}
             />
-            <Text style={styles.roleText}>Profesor</Text>
+            <Text style={styles.roleText}>{nombreProfesor}</Text>
           </View>
 
                 <TextInput

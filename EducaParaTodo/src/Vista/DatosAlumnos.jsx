@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform } from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
-
+//import Tareas from './tareas';
+//import alumnos from '../Modelo/alumno';
 
 const DatosAlumnos = ({ alumno, navigation }) => {
-
-    console.log(alumno);
-
     return (
             <View>
                 <TouchableOpacity onPress={() => navigation.navigate('LoginAlumno', { alumno: alumno })}>
                     {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-                    <Image style={styles.image} source={{uri:alumno.fotoUrl}} />
+                    <Image style={styles.image} source={{uri:alumno.foto}} />
                     <Text style={styles.texto}> Nombre: {alumno.nombre} </Text>
                 </TouchableOpacity>
             </View>

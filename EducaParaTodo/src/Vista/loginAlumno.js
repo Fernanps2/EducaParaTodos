@@ -75,43 +75,82 @@
 // export default LoginScreenAlumno;
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
+import { getAlumnoImagenesLogin } from '../Modelo/firebase';
 
 
 
 const LoginScreenAlumno = ({ route, navigation }) => {
+
+
+  const [alumnoImagenes, setAlumnoImagenes] = useState([]);
+  const [selectedImages, setSelectedImages] = useState(Array(4).fill(false));
+  const [expectedOrder, setExpectedOrder] = useState([0, 1, 2, 3]); // Orden requerido de las imágenes
+  const [currentOrder, setCurrentOrder] = useState([]); // Orden actual en el que el usuario presiona las imágenes
   const [password, setPassword] = useState('');
-  const {alumno} = route.params;
-  const {login} = useUser();
-  
+  const { alumno } = route.params;
+  const { login } = useUser();
+
+
+  useEffect(() => {
+    // Obtener las imágenes del alumno al cargar la pantalla
+    const obtenerImagenesAlumno = async () => {
+      try {
+        // Llamar a la función getAlumnoImagenes con el ID del alumno
+        const imagenes = await getAlumnoImagenesLogin('P9kEFuZP5t3sUde8ffXQ');
+        setAlumnoImagenes(imagenes);
+      } catch (error) {
+        console.log(error);
+        // Manejar el error si ocurre al obtener las imágenes   jQf6vBMzubYnjZSzB7wC
+      }
+    };
+
+    obtenerImagenesAlumno();
+  }, []);
+
 
   const handleLogin = () => {
     const username = alumno.username;
 
-    if (login(username, password, "alumno"))
-      navigation.navigate('Tareas', {usuario:alumno});
-    else
+    if (login(username, password, 'alumno')) {
+      navigation.navigate('Tareas', { usuario: alumno });
+    } else {
       alert('El usuario o contraseña es inválido');
+    }
   };
 
-  // Estado para mantener el orden de pulsación de las imágenes
-  const [imagePressOrder, setImagePressOrder] = useState([]);
 
-  // Manejador de pulsaciones en las imágenes
-  const handleImagePress = (number) => {
-    const order = [...imagePressOrder]; // Copiar el orden actual
-    order.push(number); // Añadir el número de la imagen pulsada al orden
-    setImagePressOrder(order); // Actualizar el estado con el nuevo orden
+
+
+  // cambio de estado al pulsar sobre una imagen y orden de pulsación
+  const toggleImageSelection = (index) => {
+
+    const updatedSelectedImages = [...selectedImages];
+    updatedSelectedImages[index] = !updatedSelectedImages[index];
+    setSelectedImages(updatedSelectedImages);
+
+    const updatedCurrentOrder = [...currentOrder, index];
+    setCurrentOrder(updatedCurrentOrder);
+
+    // Comprobar si el usuario ha pulsado las imágenes en el orden correcto
+    if (JSON.stringify(updatedCurrentOrder) === JSON.stringify(expectedOrder)) {
+      handleLogin(); // Esto se ejecutará si el orden es correcto
+    } else if (updatedCurrentOrder.length === expectedOrder.length) {
+      // Si el orden es incorrecto y el usuario ha presionado todas las imágenes, reiniciar el orden
+      setSelectedImages(Array(4).fill(false));
+      setCurrentOrder([]);
+    }
   };
+
 
   return (
     <View style={styles.containerTitle}>
       <Text style={styles.title}>EducaParaTodos</Text>
       <View style={styles.container}>
         <Text style={styles.text}>Usuario</Text>
-        <Text style={styles.usuario}>{alumno.username}</Text>
+        <Text style={styles.usuario}>{alumno.nombre}</Text>
         <Text style={styles.text}>Contraseña</Text>
         <TextInput
           style={styles.input}
@@ -120,29 +159,37 @@ const LoginScreenAlumno = ({ route, navigation }) => {
           onChangeText={text => setPassword(text)}
         />
 
+
+
         <View style={styles.imageContainer}>
-                  {/* Primera fila */}
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.image} onPress={() => handleImagePress(1)}>
-                <Text style={styles.number}>{imagePressOrder.includes(1) ? imagePressOrder.indexOf(4) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img4.png')} style={styles.imageStyle} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.image} onPress={() => handleImagePress(2)}>
-                <Text style={styles.number}>{imagePressOrder.includes(2) ? imagePressOrder.indexOf(1) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img1.png')} style={styles.imageStyle} />
-              </TouchableOpacity>
+          {alumnoImagenes.map((imagenData, index) => (
+            <View key={index} style={styles.imageGroup}>
+              <View style={styles.imageRow}>
+                {[imagenData.img1, imagenData.img2].map((imgSrc, imgIndex) => (
+                  <TouchableOpacity key={imgIndex} onPress={() => toggleImageSelection(index * 2 + imgIndex)}>
+                    <Image
+                      source={{ uri: imgSrc }}
+                      style={[styles.imageStyle, selectedImages[index * 2 + imgIndex] && styles.selectedImage]}
+                      onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 1}:`, error)}
+                    />
+                    {selectedImages[index * 2 + imgIndex] && <Text>✓</Text>}
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={styles.imageRow}>
+                {[imagenData.img3, imagenData.img4].map((imgSrc, imgIndex) => (
+                  <TouchableOpacity key={imgIndex + 2} onPress={() => toggleImageSelection(index * 2 + imgIndex + 2)}>
+                    <Image
+                      source={{ uri: imgSrc }}
+                      style={[styles.imageStyle, selectedImages[index * 2 + imgIndex + 2] && styles.selectedImage]}
+                      onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 3}:`, error)}
+                    />
+                    {selectedImages[index * 2 + imgIndex + 2] && <Text>✓</Text>}
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-                  {/* Segunda fila */}
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.image} onPress={() => handleImagePress(3)}>
-                <Text style={styles.number}>{imagePressOrder.includes(3) ? imagePressOrder.indexOf(3) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img3.png')} style={styles.imageStyle} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.image} onPress={() => handleImagePress(4)}>
-                <Text style={styles.number}>{imagePressOrder.includes(4) ? imagePressOrder.indexOf(2) + 1 : ''}</Text>
-                <Image source={require('../../Imagenes/img2.png')} style={styles.imageStyle} />
-              </TouchableOpacity>
-            </View>
+          ))}
         </View>
 
         <View style={styles.containerButton}>
@@ -201,25 +248,29 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   imageContainer: {
-      // Ajusta los estilos del contenedor de las imágenes
-    },
-    row: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginBottom: 20,
-    },
-    image: {
-      width: 100,
-      height: 100,
-      borderWidth: 1,
-      borderColor: 'black',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    number: {
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  column: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageStyle: {
+    width: 150,
+    height: 150,
+    margin: 5,
+  },
+  number: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 });
 
 export default LoginScreenAlumno;
