@@ -28,7 +28,7 @@ export const openGallery = async () => {
         if (resultImagePicker.canceled === false) {
             const imageUri = resultImagePicker.assets[0].uri;
 
-            almacenaImagen(imageUri);
+           // almacenaImagen(imageUri);
 
             return (imageUri);
         }

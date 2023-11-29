@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
-import { getAlumnos } from '../Modelo/modelo';
+import { buscaAlumno } from '../Controlador/alumnos';
 import DatosAlumnosLista from './datosListaAlumno';
 
 export default function ListaAlumnos({ navigation }) {
@@ -16,7 +16,7 @@ export default function ListaAlumnos({ navigation }) {
   useEffect(() => {
     const listaAlumnos = async () => {
       try {
-        const alumnos = await getAlumnos();
+        const alumnos = await buscaAlumno();
         setLista(alumnos);
         await console.log(alumnos);
       } catch (error) {

@@ -1,12 +1,27 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
+import { borraAlumno } from '../Controlador/alumnos';
 
 const PantallaDatosAlumno = ({route, navigation}) => {
+  const {alumno} = route.params;
 
-    const {alumno} =route.params;
+  const showAlertStore = () => {
+    Alert.alert(
+      "¿Quiere eliminar el alumno?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+        { text: "Confirmar", onPress: () =>{
+            borraAlumno(alumno.id);
+            navigation.navigate('pantallaAlumnos');
+          }
+        }
+      ],
+      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+    );
+  };
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -14,14 +29,15 @@ const PantallaDatosAlumno = ({route, navigation}) => {
             </View>
             <Text style={styles.input}> Nombre: {alumno.nombre} </Text>
             <Text style={styles.input}> Apellidos: {alumno.apellidos} </Text>
-            <Text style={styles.input}> Visualización preferente: </Text>
+            <Text style={styles.input}> Visualización preferente: {alumno.visualizacionPreferente} </Text>
 
           
         <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Modificar Alumno</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button}
+        onPress={()=>{ showAlertStore()}}>
         <Text style={styles.buttonText}>Eliminar Alumno</Text>
       </TouchableOpacity>
         </View>

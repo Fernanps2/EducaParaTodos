@@ -1,11 +1,28 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { borraProfesor } from '../Controlador/profesores';
 
 
 const pantallaDatosProfesor = ({route, navigation}) => {
 
     const {profesor} =route.params;
+
+    const showAlertStore = () => {
+      Alert.alert(
+        "¿Quiere eliminar el Profesor?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              borraProfesor(profesor.id);
+              navigation.navigate('pantallaProfesores');
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    };
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -20,7 +37,8 @@ const pantallaDatosProfesor = ({route, navigation}) => {
         <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Modificar Profesor</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button}
+        onPress={()=>{ showAlertStore()}}>
         <Text style={styles.buttonText}>Eliminar Profesor</Text>
       </TouchableOpacity>
         </View>
