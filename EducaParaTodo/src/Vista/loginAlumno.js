@@ -78,7 +78,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
-import { getAlumnoImagenesLogin } from '../Modelo/firebase';
+import { getAlumnoImagenesLogin, getAlumnoIdPorNombre } from '../Modelo/firebase';
 
 
 
@@ -94,21 +94,25 @@ const LoginScreenAlumno = ({ route, navigation }) => {
   const { login } = useUser();
 
 
-  useEffect(() => {
-    // Obtener las imágenes del alumno al cargar la pantalla
-    const obtenerImagenesAlumno = async () => {
-      try {
-        // Llamar a la función getAlumnoImagenes con el ID del alumno
-        const imagenes = await getAlumnoImagenesLogin('P9kEFuZP5t3sUde8ffXQ');
-        setAlumnoImagenes(imagenes);
-      } catch (error) {
-        console.log(error);
-        // Manejar el error si ocurre al obtener las imágenes   jQf6vBMzubYnjZSzB7wC
-      }
-    };
+    useEffect(() => {
+      const obtenerImagenesAlumno = async () => {
+        try {
+          console.log("Buscando ID del alumno...");
+          const alumnoId = await getAlumnoIdPorNombre(alumno.nombre);
+          console.log("ID del alumno encontrado:", alumnoId);
 
-    obtenerImagenesAlumno();
-  }, []);
+          console.log("Obteniendo imágenes para el alumno con ID:", alumnoId);
+          const imagenes = await getAlumnoImagenesLogin(alumnoId);
+          console.log("Imágenes obtenidas:", imagenes);
+
+          setAlumnoImagenes(imagenes);
+        } catch (error) {
+          console.log("Error al obtener imágenes o ID del alumno:", error);
+        }
+      };
+
+      obtenerImagenesAlumno();
+    }, [alumno.nombre]);
 
 
   const handleLogin = () => {
@@ -172,7 +176,7 @@ const LoginScreenAlumno = ({ route, navigation }) => {
                       style={[styles.imageStyle, selectedImages[index * 2 + imgIndex] && styles.selectedImage]}
                       onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 1}:`, error)}
                     />
-                    {selectedImages[index * 2 + imgIndex] && <Text>✓</Text>}
+                    {selectedImages[index * 2 + imgIndex] && <Text style={styles.tick}>✓</Text>}
                   </TouchableOpacity>
                 ))}
               </View>
@@ -184,7 +188,7 @@ const LoginScreenAlumno = ({ route, navigation }) => {
                       style={[styles.imageStyle, selectedImages[index * 2 + imgIndex + 2] && styles.selectedImage]}
                       onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 3}:`, error)}
                     />
-                    {selectedImages[index * 2 + imgIndex + 2] && <Text>✓</Text>}
+                    {selectedImages[index * 2 + imgIndex + 2] && <Text style={styles.tick}>✓</Text>}
                   </TouchableOpacity>
                 ))}
               </View>
@@ -270,6 +274,13 @@ const styles = StyleSheet.create({
   number: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  tick: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    fontSize: 50,
+    color: '#77EF13',
   },
 });
 
