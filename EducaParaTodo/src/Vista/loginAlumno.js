@@ -95,16 +95,11 @@ const LoginScreenAlumno = ({ route, navigation }) => {
 
 
     useEffect(() => {
+      
       const obtenerImagenesAlumno = async () => {
         try {
-          console.log("Buscando ID del alumno...");
           const alumnoId = await getAlumnoIdPorNombre(alumno.nombre);
-          console.log("ID del alumno encontrado:", alumnoId);
-
-          console.log("Obteniendo imágenes para el alumno con ID:", alumnoId);
           const imagenes = await getAlumnoImagenesLogin(alumnoId);
-          console.log("Imágenes obtenidas:", imagenes);
-
           setAlumnoImagenes(imagenes);
         } catch (error) {
           console.log("Error al obtener imágenes o ID del alumno:", error);
