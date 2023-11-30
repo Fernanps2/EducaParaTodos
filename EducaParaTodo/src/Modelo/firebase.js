@@ -61,6 +61,23 @@ export async function getAlumnos() {
     return docs;
 }
 
+export async function getAlumnoIdPorNombre(nombre) {
+    let alumnoId = null;
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+
+        if (!querySnapshot.empty) {
+            // Obtener el ID del primer alumno que coincide con el nombre
+            alumnoId = querySnapshot.docs[0].id;
+        }
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumno", error);
+    }
+
+    return alumnoId;
+}
+
 export async function getAlumnosNombre(nombre) {
     let docs = [];
     try {
