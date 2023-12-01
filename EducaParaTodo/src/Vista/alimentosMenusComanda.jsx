@@ -18,7 +18,7 @@ import Swal from "sweetalert2";
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import {} from "../Modelo/modelo";
+import {} from "../Modelo/firebase";
 const db = getFirestore(appFirebase);
 
 export default function TiposMenusComanda({ navigation }) {
