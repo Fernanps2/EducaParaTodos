@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
 //import {getStorage, ref} from 'firebase/storage'
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 //import {v4} from 'uuid';
 //import { getStorage, ref, uploadFile } from '@react-native-firebase/storage';
 
@@ -1443,11 +1443,10 @@ export async function almacenarImagen(imagen) {
     });*/
 
     try {
-        const response = await fetch(imagen);
-        const blob = await response.blob();
-        const storageRef = AppFirebase.storage().ref();
-        let ref = storageRef.child("/Imagenes/imagen1");
-        return ref.put(blob);
+        const refImagenes = ref(storage, 'Imagenes/imagen.jpg')
+        uploadBytes(refImagenes, imagen).then((snapshot) => {
+            console.log('Se ha subido la imagen');
+        })
     } catch(error) {
         console.log(error);
     }

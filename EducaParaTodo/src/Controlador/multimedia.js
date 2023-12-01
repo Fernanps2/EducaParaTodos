@@ -11,7 +11,7 @@ export async function cargaImagen(imagen) {
     let imagenCargada = null;
 
     if (imagen != '')
-        imagenCargada = cargarImagen()
+        imagenCargada = cargarImagen();
 
     return imagenCargada;
 }
