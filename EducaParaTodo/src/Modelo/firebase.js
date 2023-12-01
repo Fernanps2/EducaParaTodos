@@ -222,12 +222,11 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
+export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
     let editaAlumno = {
         nombre: nombre, 
         apellidos: apellidos, 
-        visualizacionPreferente: visualizacionPreferente, 
-        password: password, 
+        visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
         foto: foto
     };
     let alumno = null;
@@ -245,7 +244,6 @@ export async function updateAlumno(id, nombre, apellidos, password, foto, visual
             editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
 
@@ -450,6 +448,34 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
+            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+
+            await updateDoc(docProfesor, {
+                ...editaProfesor
+            });
+        }
+    } catch (error) {
+        console.log("Problema al actualizar datos de profesor");
+    }
+}
+
+export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+    let editaProfesor = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        foto: foto
+    };
+    let profesor = null;
+
+    try {
+        let docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
+        
+        if (docSnapshot.exists()) {
+            profesor = docSnapshot.data();
+
+            editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+            editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
 
             await updateDoc(docProfesor, {
@@ -1559,21 +1585,21 @@ const contarArchivos = async(nombreCarpeta) => {
 
 }
 
-// uploadImage= async(uri) => {
-//   return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//       if (xhr.readyState === 4) {
-//         resolve(xhr.response);
-//       }
-//     };
+uploadImage= async(uri) => {
+    return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onerror = reject;
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            resolve(xhr.response);
+        }
+    };
 
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//   });
-// };
+    xhr.open("GET", uri);
+    xhr.responseType = "blob";
+    xhr.send();
+   });
+};
 
 export async function almacenarImagen(imagen) {
 

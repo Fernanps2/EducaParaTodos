@@ -38,7 +38,6 @@ const Tareas = ({ route, navigation }) => {
         };
         listaTareas();
     }, []);
-
     return (
         <View style={styles.container}>
             <CerrarSesion />
