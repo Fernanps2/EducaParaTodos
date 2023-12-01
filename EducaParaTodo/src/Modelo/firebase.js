@@ -1672,33 +1672,44 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
 
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
-  try{
-      if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
-        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-        console.log('te faltan campos');
-      }
-      else{
-        console.log('se crea el objeto');
-        const objeto = {
-          titulo,
-          completado,
-          descripcion,
-          fechaFin,
-          fechaInicio,
-          idAlumno,
-          tipo
+export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
+    try{
+        if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == ''){
+          if (Platform.OS === "web"){
+            Swal.fire({
+              title: "Mensaje Importante",
+              text: "Debes rellenar los campos requeridos",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            })
+          }else{
+            Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+          }
         }
-        
-        await addDoc(collection(db,'Tarea'),{
-          ...objeto
-        })
-      }
-    }catch(error){
-      console.log('error' + error);
-    }  
+        else{
+          var idAlumno = '';
+          var completado = 'false';
+          const objeto = {
+            titulo,
+            completado,
+            fechaFin,
+            fechaInicio,
+            idAlumno,
+            tipo,
+            periocidad
+          }
+          
+          // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.
+          const docRef = await addDoc(collection(db,'Tarea'),{
+            ...objeto
+          })
+          console.log('Buscamos el id',docRef.id);
+          return docRef.id;
+        }
+      }catch(error){
+        console.log('error' + error);
+      }  
 }
-
 
 
 // export const asignarTareaAlumno = async (idTarea,idAlumno) => {
@@ -1712,64 +1723,68 @@ export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFi
 
 // PRUEBA REALIZADA. FUNCIONA
 export const asignarFeedback = async (idTarea,feedBack) => {
-try{
-  if(idTarea === '' || feedBack === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+    try{
+      if(idTarea === '' || feedBack === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+        // Creamos las referencias 
+        const tareaRef = doc(db, 'Tarea', String(idTarea));
+        
+        await updateDoc(tareaRef,{
+          Feedback: feedBack,
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    // Creamos las referencias 
-    const tareaRef = doc(db, 'Tarea', String(idTarea));
-    
-    await updateDoc(tareaRef,{
-      Feedback: feedBack,
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
 
 // PROBADA Y FUNCIONA. 
 
 export const getTareaId = async (idAlumno) => {
 
-console.log(idAlumno);
-
-try {
-  const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
-  const querySnapshot = await getDocs(q);
-  // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-
-  const docs = [];
-
-  for (const tareaDoc of querySnapshot.docs) {
-    const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
-
-    docs.push({
-      id: tareaDoc.id,
-      Nombre,
-      Completado,
-      Descripción,
-      FechaInicio,
-      FechaFin,
-      Tipo,
-      IdAlumno,
-      fotoURL,
-    });
-  }
-
-  return docs;
-} catch (error) {
-  console.log(error);
-  Alert.alert(error);
-}
+    console.log(idAlumno);
+    
+    try {
+      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+      const querySnapshot = await getDocs(q);
+      // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+    
+      const docs = [];
+    
+      for (const tareaDoc of querySnapshot.docs) {
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+    
+        docs.push({
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
+        });
+      }
+    
+      return docs;
+    } catch (error) {
+      console.log(error);
+      Alert.alert(error);
+    }
 };
 
 // Obtener todas las tareas
-export const getTarea = async () => {
+export const getTareas = async () => {
 
 try {
   const q = query(collection(db,"Tarea"));
@@ -1779,18 +1794,16 @@ try {
   const docs = [];
 
   for (const tareaDoc of querySnapshot.docs) {
-    const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
+    const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
 
     docs.push({
       id: tareaDoc.id,
-      Nombre,
-      Completado,
-      Descripción,
-      FechaInicio,
-      FechaFin,
-      Tipo,
-      IdAlumno,
-      fotoURL,
+      titulo,
+      completado,
+      fechaInicio,
+      fechaFin,
+      tipo,
+      idAlumno,
     });
   }
 
@@ -1918,37 +1931,38 @@ export const deleteTareaId = async (idTarea) => {
 
 
 
-// PRUEBA REALIZADA. FUNCIONA
-export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
-try{
-
-  if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+  // PRUEBA REALIZADA. FUNCIONA
+  export const setTareaActividad = async(aula,pasos,idTarea) => {
+    try{
+  
+      if( aula === '' || pasos === null || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          aula,
+          pasos,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Actividad'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    // Creamos las referencias 
-    const pasosRef = doc(db, 'PasosActividad', String(pasos));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      pasos,
-      idTarea
-    }
-    
-    await addDoc(collection(db,'Tarea-Actividad'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
 
 
 export const getTareasActividad = async () => {
@@ -2006,40 +2020,86 @@ try {
 }
 };
 
+  // PRUEBA REALIZADA. FUNCIONA
+  export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
+    try{
+  
+      console.log('AudioID:', idAudioRef)
+      console.log('ImaID:', idImagenRef)
+      console.log('PictoID:', idPictogramaRef)
+      console.log('VieoID:', idVideoRef)
+
+      if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+
+        const objeto = {
+          idAudio,
+          idImagen,
+          idPictograma,
+          idVideo,
+          texto,
+          nombre,
+          idTarea
+        }
+        
+        const idPaso = await addDoc(collection(db,'PasosActividad'),{
+          ...objeto
+        })
+        return idPaso.id;
+      }
+    }catch(error){
+      console.log(error);
+    }  
+  }
 
 
 // Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
 // menú se cree una fila/documento por menú
 
 // PRUEBA REALIZADA.FUNCIONA
-export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
-try{
-
-  if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+export const setTareaComanda = async(idTarea,menus) => {
+    try{
+  
+      if( menus === null || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+        var pedidos = '';
+  
+        const objeto = {
+          pedidos,
+          menus,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Comanda'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    // Creamos las referencias 
-    const idMenuRef = doc(db, 'Menu', String(idMenu));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      idMenu,
-      idTarea
-    }    
-    await addDoc(collection(db,'Tarea-Comanda'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
 
 // ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
 // PRUEBA REALIZADA. FUNCIONA
@@ -2062,60 +2122,100 @@ try {
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMenu = async(nombreMenu,idAlimentos) => {
-try{
+export const setMenu = async(idTarea, idMenu, idAlimentos) => {
+  try{
 
-  if(nombreMenu === '' || idAlimentos === null){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-  }
-  else{
-    const objeto = {
-      idAlimentos
+    if(idTarea === '' || idMenu === '' || idAlimentos === null){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
-    
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Menu', nombreMenu);
+    else{
 
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
+      const objeto = {
+        idTarea,
+        idMenu,
+        idAlimentos,
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Menus-Comanda'), {
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
 }
+
+
+// Devolvemos todos los menus.
+export const getMenus = async() => {
+    try {
+      const menuQuery = query(collection(db, 'Menu'));
+      const querySnapshot = await getDocs(menuQuery);
+  
+      const docs = [];
+  
+      querySnapshot.forEach((docu) => {
+        const menu = docu.data(); // Extraemos nombre
+        const id = docu.id; // Extraemos el ID del documento
+        docs.push({id, ...menu});
+      });
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+      throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+  }
+
 
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setAlimento = async (nombreAlimento,imagen) => {
-try{
-
-  if(nombreAlimento === '' || imagen === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    try{
+  
+      if(nombreAlimento === '' || imagen === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          nombreAlimento,
+          imagen
+        }
+        
+  
+        // Lo hacemos así para establecer el nombreMenú como el id del documento
+        const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
+  
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await setDoc(menuDocRef, {
+          ...objeto
+        });
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      nombreAlimento,
-      imagen
-    }
-    
-
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
-
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
 
 // ESTA FUNCION SIRVE PARA OBTENER UN ALIMENTO A TRAVÉS DE SU NOMBRE
 // PRUEBA REALIZADA. FUNCIONA
@@ -2142,57 +2242,76 @@ try {
 
 
 
-export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
-try{
 
-  if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea) => {
+    try{
+  
+      if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+  
+        const objeto = {
+          idMaterial,
+          cantidad,
+          lugarOrigen,
+          lugarDestino,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Inventario'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      idMaterial,
-      lugarLlevar,
-      recogida,
-      idTarea
-    }
-
-    await addDoc(collection(db,'Tarea-Inventario'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setMaterial = async (foto,nombre,stock)=> {
-try{
-
-  if(nombre === '' || foto === '' || stock === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    try{
+  
+      if(nombre === '' || foto === '' || stock === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          nombre,
+          foto,
+          stock
+        }
+        
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await addDoc(collection(db,'Material'),{
+          ...objeto
+        });
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      nombre,
-      foto,
-      stock
-    }
-    
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await addDoc(collection(db,'Material'),{
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
 
 
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
@@ -2282,5 +2401,5 @@ try {
     return docs;
   } catch (error) {
     console.log(error);
-}
+  }
 }
