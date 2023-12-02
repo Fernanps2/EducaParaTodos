@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
 import { borraAlumno } from '../Controlador/alumnos';
+import BotonModificarAlumno from './botonModificarAlumno';
 
 const PantallaDatosAlumno = ({route, navigation}) => {
   const {alumno} = route.params;

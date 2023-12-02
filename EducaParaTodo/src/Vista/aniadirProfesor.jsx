@@ -29,7 +29,7 @@ export default function AniadirProfesor ({navigation }) {
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
             aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia, "");
-            navigation.navigate('pantallaProfesores');
+            navigation.navigate('listaProfesores');
           }
         }
       ],

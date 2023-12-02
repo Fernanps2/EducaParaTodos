@@ -15,7 +15,7 @@ const PantallaDatosProfesor = ({route, navigation}) => {
           { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
           { text: "Confirmar", onPress: () =>{
               borraProfesor(profesor.id);
-              navigation.navigate('pantallaProfesores');
+              navigation.navigate('listaProfesores');
             }
           }
         ],
