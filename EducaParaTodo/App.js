@@ -70,7 +70,12 @@ export default function App() {
           <Stack.Screen name="listaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
+
+
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />
+          <Stack.Screen name="pantallaProfesores" component={ListaProfesores} />
+
+          
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
