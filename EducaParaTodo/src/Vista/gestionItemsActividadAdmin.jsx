@@ -8,7 +8,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { setVideo } from "../Modelo/modelo";
+import { setVideo } from "../Modelo/firebase";
 
 export default function GestionItemActividad() {
   const [urlVideo, setUrlVideo] = useState("");

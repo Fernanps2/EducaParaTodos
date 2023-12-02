@@ -19,7 +19,7 @@ import {
   getObjMenusSeleccionados,
   isVaciaListaMenus,
 } from "./VarGlobal";
-import { setTarea, setTareaComanda, setMenu } from "../Modelo/modelo";
+import { setTarea, setTareaComanda, setMenu } from "../Modelo/firebase";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";

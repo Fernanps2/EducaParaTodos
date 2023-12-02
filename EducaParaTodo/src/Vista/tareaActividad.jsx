@@ -16,7 +16,7 @@ import {
   setTarea,
   setTareaActividad,
   setPasoActividad,
-} from "../Modelo/modelo";
+} from "../Modelo/firebase";
 import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
 
 // Uso base de datos

@@ -35,9 +35,8 @@ import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import {UserContextProvider} from './src/Controlador/userContext';
 import DatosProfesor from './src/Vista/datosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
-import {UserContextProvider} from './src/Controlador/userContext'
-import DatosProfesor from './src/Vista/datosProfesor.jsx';
-import AsignarTarea from './src/Vista/asignarTarea.jsx';
+// import DatosProfesor from './src/Vista/datosProfesor.jsx';
+// import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
@@ -69,10 +68,8 @@ export default function App() {
           <Stack.Screen name="alimentosMenusComanda" component={AlimentosMenusComanda} />
           <Stack.Screen name="tiposMenusComanda" component={TiposMenusComanda} />
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
-          <Stack.Screen name="anadirMaterial" component={AnadirMaterial}/>
           <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
-          <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />

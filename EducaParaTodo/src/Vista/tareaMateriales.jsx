@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { setTarea, setTareaInventario } from "../Modelo/modelo";
+import { setTarea, setTareaInventario } from "../Modelo/firebase";
 import {
   get,
   inicializarmateriales,

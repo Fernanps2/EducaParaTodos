@@ -13,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMenus, setMenu } from "../Modelo/modelo";
+import { getMenus, setMenu } from "../Modelo/firebase";
 import * as global from "./VarGlobal";
 
 // Uso base de datos

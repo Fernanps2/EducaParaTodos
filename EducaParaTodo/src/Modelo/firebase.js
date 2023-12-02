@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-//import {getStorage, ref, uploadFile} from 'firebase/storage'
+import {getStorage, ref, uploadFile} from 'firebase/storage'
 //import {v4} from 'uuid';
-import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
+// import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
+
 
 //import * as firebase from 'firebase';
 
