@@ -72,22 +72,46 @@
 /*import React, { useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
+import { getAlumnoImagenesLogin, getAlumnoIdPorNombre } from '../Modelo/firebase';
 
 
 
 const LoginScreenAlumno = ({ route, navigation }) => {
+
+
+  const [alumnoImagenes, setAlumnoImagenes] = useState([]);
+  const [selectedImages, setSelectedImages] = useState(Array(4).fill(false));
+  const [expectedOrder, setExpectedOrder] = useState([0, 1, 2, 3]); // Orden requerido de las imágenes
+  const [currentOrder, setCurrentOrder] = useState([]); // Orden actual en el que el usuario presiona las imágenes
   const [password, setPassword] = useState('');
-  const {alumno} = route.params;
-  const {login} = useUser();
-  
+  const { alumno } = route.params;
+  const { login } = useUser();
+
+
+    useEffect(() => {
+      
+      const obtenerImagenesAlumno = async () => {
+        try {
+          const alumnoId = await getAlumnoIdPorNombre(alumno.nombre);
+          const imagenes = await getAlumnoImagenesLogin(alumnoId);
+          setAlumnoImagenes(imagenes);
+        } catch (error) {
+          console.log("Error al obtener imágenes o ID del alumno:", error);
+        }
+      };
+
+      obtenerImagenesAlumno();
+    }, [alumno.nombre]);
+
 
   const handleLogin = () => {
     const username = alumno.nombre;
 
-    if (login(username, password, "alumno"))
-      navigation.navigate('Tareas', {usuario:alumno});
-    else
+    if (login(username, password, 'alumno')) {
+      navigation.navigate('Tareas', { usuario: alumno });
+    } else {
       alert('El usuario o contraseña es inválido');
+    }
   };
 
   // Estado para mantener el orden de pulsación de las imágenes

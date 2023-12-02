@@ -1,80 +1,116 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
-import { View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
+import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import { getTarea , getAlumnos, addAlumnoTarea } from '../Modelo/firebase';
 
-export function AsignarTarea (props){
+export function AsignarTarea ({props, navigation}){
 
     const [selectedValue, setSelectedValue] = useState('');
-    const [selectedValue2, setSelectedValue2] = useState('');
+    const [alumnos, setAlumnos] = useState([]);
+    const [tareas, setTareas] = useState([]);
 
-    const [alumnos, setAlumnos] = useState([
 
-        { id: '1', nombre: 'Juan', asignado: false },
-        { id: '2', nombre: 'María', asignado: false },
-        { id: '3', nombre: 'Hector', asignado: false },
-        { id: '4', nombre: 'Pablo', asignado: false },
+   useEffect(() => {
+     const cargarTareas = async () => {
+       try {
+         const tareas = await getTarea();
+         setTareas(tareas);
+       } catch (error) {
+         console.log(error);
+         Alert.alert('Error al cargar las tareas');
+       }
+     };
 
-    ]);
+     cargarTareas();
 
-    const [tempSelectedValue2, setTempSelectedValue2] = useState('');
+     const cargarAlumnos = async () => {
+       try {
+         const alumnos = await getAlumnos();
+         const alumnosConAsignado = alumnos.map(alumno => ({ ...alumno, asignado: false }));
+         setAlumnos(alumnosConAsignado);
+       } catch (error) {
+         console.log(error);
+         Alert.alert('Error al cargar los alumnos');
+       }
+     };
 
-  const handlePickerChange = (itemValue, setItemValue) => {
-    setItemValue(itemValue);
+     cargarAlumnos();
+   }, []);
+
+    const handlePickerChange = (itemValue, setItemValue) => {
+      setItemValue(itemValue);
+    };
+
+  const handleAlumnoSelection = (id) => {
+    const updatedAlumnos = alumnos.map((alumno) =>
+      alumno.id === id ? { ...alumno, asignado: !alumno.asignado } : alumno
+    );
+    setAlumnos(updatedAlumnos);
   };
+    const handleGuardar = async () => {
+        try {
+            const alumnosAsignados = alumnos.filter((alumno) => alumno.asignado);
+            const promises = alumnosAsignados.map((alumno) =>
+                alumno.asignado ? addAlumnoTarea(alumno.id, selectedValue) : null
+            );
+            await Promise.all(promises); // Espera a que todas las asignaciones se completen
+            Alert.alert('Tareas asignadas con éxito');
+            navigation.navigate('HomeAdmin');
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Error al asignar las tareas');
+        }
+    };
 
-   const handleAlumnoSelection = (id) => {
-     const updatedAlumnos = alumnos.map((alumno) =>
-         alumno.id === id ? { ...alumno, asignado: !alumno.asignado } : alumno
-     );
-     setAlumnos(updatedAlumnos);
-   };
-
-   const renderAlumnoItem = ({ item }) => (
-     <View style={styles.alumnoItem}>
-       <View style={styles.checkboxContainer}>
-         <CheckBox
-           value={item.asignado}
-           onValueChange={() => handleAlumnoSelection(item.id)}
-         />
-       </View>
-       <View style={styles.textContainer}>
-         <Text>{item.nombre}</Text>
-       </View>
-     </View>
-   );
+    const renderAlumnoItem = ({ item }) => (
+        <View style={styles.alumnoItem}>
+            <View style={styles.checkboxContainer}>
+                <CheckBox
+                    value={item.asignado}
+                    onValueChange={() => handleAlumnoSelection(item.id)}
+                />
+            </View>
+            <View style={styles.textContainer}>
+                <Text>{item.nombre}</Text>
+                {/* Adaptar según la estructura actualizada */}
+                <Text>{item.apellidos}</Text>
+                {/* Otros campos si son necesarios */}
+            </View>
+        </View>
+    );
 
     return(
 
         <View style={styles.container}>
             <Text style={styles.titulo}> Tareas disponibles: </Text>
             <View style={styles.pickerContainer}>
-                <Picker style={styles.picker}
-                    selectedValue={selectedValue}
-                    onValueChange={(itemValue) =>
-                    setSelectedValue(itemValue)
-                }>
-                    <Picker.Item label="Seleccione una tarea a asignar" value="" />
-                    <Picker.Item label="Tarea1" value="Tarea1" />
-                    <Picker.Item label="Tarea2" value="Tarea2" />
-                    <Picker.Item label="Tarea3" value="Tarea3" />
+                <Picker
+                  style={styles.picker}
+                  selectedValue={selectedValue}
+                  onValueChange={(itemValue) => setSelectedValue(itemValue)}
+                >
+                  <Picker.Item label="Seleccione una tarea a asignar" value="" />
+                  {tareas.map((tarea) => (
+                    <Picker.Item key={tarea.id} label={tarea.titulo} value={tarea.id} />
+                  ))}
                 </Picker>
             </View>
 
-            <Text style={styles.selectedValue}> {selectedValue}</Text>
 
             <Text style={styles.titulo}> Alumnos disponibles: </Text>
 
             <FlatList
-              data={alumnos}
-              renderItem={renderAlumnoItem}
-              keyExtractor={(item) => item.id}
+                data={alumnos}
+                renderItem={renderAlumnoItem}
+                keyExtractor={(item) => item.id}
             />
 
             <View style={styles.boton}>
                 <Button
-                   title="Guardar"
-               />
+                    title="Guardar"
+                    onPress={handleGuardar}
+                />
             </View>
         </View>
     )
@@ -93,14 +129,16 @@ const styles = StyleSheet.create({
         fontSize: 30,
         textAlign: 'center',
         fontWeight: 'bold',
-        paddingBottom: 30
+        paddingBottom: 30,
+        marginTop: 20,
     },
     pickerContainer: {
         borderColor: 'black', // Borde negro
         borderWidth: 1,
         borderRadius: 5, // Bordes redondeados
         width: 240,
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBotom: 20,
     },
     picker: {
         width: '100%',

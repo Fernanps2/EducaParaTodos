@@ -20,6 +20,9 @@ export function VerTarea ({route, navigation}){
         setCheckedStates(initialCheckedStates);
     }, []);
 
+export function VerTarea (){
+    const [checkedStates, setCheckedStates] = useState([]);
+    const [pasoActual, setPasoActual] = useState(0);
 
     // Solo una tareaActividad va a estar asociada a un idTarea en concreto
     const [tareasL, setTareas] = useState([]);
@@ -213,4 +216,4 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'green'
     }
-})
+})}

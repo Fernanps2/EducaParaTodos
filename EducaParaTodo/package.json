@@ -28,7 +28,7 @@
     "react-native-vector-icons": "^10.0.2",
     "react-native-web": "~0.19.6",
     "sweetalert": "^2.1.2",
-    "sweetalert2": "^11.9.0"
+    "sweetalert2": "^11.6.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

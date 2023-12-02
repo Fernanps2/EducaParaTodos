@@ -29,14 +29,19 @@ export default function PantallaPrincipal({ navigation }) {
 
       <View style={styles.barraBotones}>
         <Button title="Inicio profesor"
-          onPress={() => navigation.navigate('LoginEducador', {tipo: 'profesor'})} />
+          onPress={() => navigation.navigate('LoginEducador', { tipo: 'profesor' })} />
         <Button title="Inicio admin"
           // onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
           onPress={() => navigation.navigate('LoginEducador', {tipo: 'administrador'})} />
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
-        {alumnosArray.map((alumno, index) => (
+        {/* {alumnosArray.map((alumno, index) => (
+          <View key={index} style={styles.elementoList}>
+            <DatosAlumnos alumno={alumno} navigation={navigation} />
+          </View> */}
+
+        {lista.map((alumno, index) => (
           <View key={index} style={styles.elementoList}>
             <DatosAlumnos alumno={alumno} navigation={navigation} />
           </View>

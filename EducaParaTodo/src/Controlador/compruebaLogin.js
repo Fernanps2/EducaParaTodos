@@ -11,7 +11,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
             /*for (let i = 0; i < alumno.length && !encontrado; i++) {
                 if (username == alumno[i].username && password == alumno[i].password) {
                     encontrado = true;
-                    
+
                     token = alumno[i].jwt;
                 }
             }*/
@@ -21,7 +21,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
             /*for (let i = 0; i < profesor.length && !encontrado; i++) {
                 if (username == profesor[i].username && password == profesor[i].password) {
                     encontrado = true;
-                    
+
                     token = profesor[i].jwt;
                 }
             }*/
@@ -31,7 +31,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
             /*for (let i = 0; i < administrador.length && !encontrado; i++) {
                 if (username == administrador[i].username && password == administrador[i].password) {
                     encontrado = true;
-                    
+
                     token = administrador[i].jwt;
                 }
             }*/
@@ -70,7 +70,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i <alumno.length && !encontrado; i++) {
 //                 if (username ==alumno[i].username && password == alumno[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = alumno[i].jwt;
 //                 }
 //             }
@@ -78,7 +78,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i < profesor.length && !encontrado; i++) {
 //                 if (username == profesor[i].username && password == profesor[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = profesor[i].jwt;
 //                 }
 //             }
@@ -86,7 +86,7 @@ export default async function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i < administrador.length && !encontrado; i++) {
 //                 if (username == administrador[i].username && password == administrador[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = profesor[i].jwt;
 //                 }
 //             }

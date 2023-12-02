@@ -33,6 +33,9 @@ import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import {UserContextProvider} from './src/Controlador/userContext';
 import DatosProfesor from './src/Vista/datosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
+import {UserContextProvider} from './src/Controlador/userContext'
+import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
