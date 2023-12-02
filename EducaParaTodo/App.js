@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import GestionMateriales from './src/Vista/gestionMaterialesAdmin.jsx';
+import GestionItemActividad from './src/Vista/gestionItemsActividadAdmin.jsx';
 import GestionTareas from './src/Vista/gestionTareas.jsx';
 import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
 import TareaActividad from './src/Vista/tareaActividad.jsx';
@@ -57,6 +59,8 @@ export default function App() {
           <Stack.Screen name="LoginEducador" component={LoginScreen} />
           <Stack.Screen name="LoginAlumno" component={LoginScreenAlumno}/>
           <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
+          <Stack.Screen name="gestionMateriales" component={GestionMateriales} />
+          <Stack.Screen name="gestionItemActividad" component={GestionItemActividad} />
           <Stack.Screen name="gestionTareas" component={GestionTareas} />
           <Stack.Screen name="tareaActividad" component={TareaActividad} />
           <Stack.Screen name="pasoActividad" component={PasoActividad} />
@@ -65,6 +69,8 @@ export default function App() {
           <Stack.Screen name="alimentosMenusComanda" component={AlimentosMenusComanda} />
           <Stack.Screen name="tiposMenusComanda" component={TiposMenusComanda} />
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
+          <Stack.Screen name="anadirMaterial" component={AnadirMaterial}/>
+          <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
           <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="HomeEducador" component={HomeEducador} />

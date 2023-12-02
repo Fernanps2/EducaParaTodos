@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
 import {
   Platform,
   Alert,
@@ -9,9 +10,14 @@ import {
   Button,
   Image,
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
+import { setTarea, setTareaInventario } from "../Modelo/modelo";
+import {
+  get,
+  inicializarmateriales,
+  isVaciaListaMateriales,
+} from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
@@ -22,10 +28,7 @@ export default function TareaActividad({ navigation }) {
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
   //Variables para switch
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  //Cambia estado Switch
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [periocidad, setPeriocidad] = useState("Diario");
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -34,6 +37,8 @@ export default function TareaActividad({ navigation }) {
     setFinHora("");
     setInicioFecha("");
     setInicioHora("");
+    setPeriocidad("Diario");
+    inicializarmateriales();
   };
 
   //Validamos las horas
@@ -53,7 +58,9 @@ export default function TareaActividad({ navigation }) {
       } else {
         Alert.alert(
           "Horas inválidas",
-          "Por favor, ingresa las horas en el formato hh:mm."
+          "Por favor, ingresa las horas en el formato hh:mm."[
+            { text: "De acuerdo" }
+          ]
         );
       }
       return false;
@@ -81,7 +88,9 @@ export default function TareaActividad({ navigation }) {
       } else {
         Alert.alert(
           "Error",
-          "La hora de inicio debe ser menor que la hora de finalización."
+          "La hora de inicio debe ser menor que la hora de finalización."[
+            { text: "De acuerdo" }
+          ]
         );
       }
       return false;
@@ -109,7 +118,9 @@ export default function TareaActividad({ navigation }) {
         } else {
           Alert.alert(
             "Error",
-            "La fecha de inicio no puede ser posterior a la fecha de finalización."
+            "La fecha de inicio no puede ser posterior a la fecha de finalización."[
+              { text: "De acuerdo" }
+            ]
           );
         }
         return false;
@@ -128,16 +139,44 @@ export default function TareaActividad({ navigation }) {
       } else {
         Alert.alert(
           "Fechas inválidas",
-          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."
+          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."[
+            { text: "De acuerdo" }
+          ]
         );
       }
       return false;
     }
   };
 
-  const guardarDatos = () => {
-    if (saveDates() && saveTimes()) {
-      navigation.navigate("gestionTareas");
+  const guardarDatos = async () => {
+    try {
+      if (saveDates() && saveTimes()) {
+        const idTarea = await setTarea(
+          nombreTarea,
+          inicioFecha + "//" + inicioHora,
+          finFecha + "//" + finHora,
+          "material",
+          periocidad
+        );
+        // Obtenemos todos los objetos de materiales de la tarea
+        const materiales = get();
+        materiales.forEach((item) =>
+          setTareaInventario(
+            item.id,
+            item.cantidad,
+            item.origen,
+            item.destino,
+            idTarea
+          )
+        );
+
+        // Reiniciamos los materiales
+        inicializarmateriales();
+
+        navigation.navigate("gestionTareas");
+      }
+    } catch (error) {
+      console.error("Error al crear la tarea materiales:", error);
     }
   };
 
@@ -183,7 +222,25 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaListaMateriales()) {
+            Swal.fire({
+              title: "Ningún Material elegido",
+              text: "Verifica que hayas elegido algún material.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          } else {
+            if (nombreTarea === ''){
+              Swal.fire({
+                title: "Campo incompleto.",
+                text: "Pon nombre a la tarea.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -192,7 +249,28 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaListaMateriales()) {
+                Alert.alert(
+                  "Ningún Material elegido", // Título
+                  "Verifica que hayas elegido algún material.", // Mensaje
+                  [{ text: "De acuerdo" }]
+                );
+              } else {
+                if (nombreTarea === '' ){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -293,16 +371,18 @@ export default function TareaActividad({ navigation }) {
         </View>
         <View style={styles.separador} />
 
-        <Text style={styles.text}>Tarea Semanal </Text>
-
-        <View style={styles.separador} />
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
+        <View style={styles.row}>
+          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+          <Picker
+            selectedValue={periocidad}
+            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Diario" value="diario" />
+            <Picker.Item label="Semanal" value="semanal" />
+            <Picker.Item label="Mensual" value="mensual" />
+          </Picker>
+        </View>
         <View style={styles.separador} />
         <View style={styles.separador} />
         <View style={styles.separador} />
@@ -370,6 +450,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -378,6 +459,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",
@@ -399,5 +481,9 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
+  },
+  picker: {
+    height: 25,
+    width: Platform.OS === "web" ? 150 : 200,
   },
 });

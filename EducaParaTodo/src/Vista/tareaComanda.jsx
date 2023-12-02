@@ -10,9 +10,16 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
+import {
+  inicializarMenus,
+  getIdMenusSeleccionados,
+  filtroID,
+  getObjMenusSeleccionados,
+  isVaciaListaMenus,
+} from "./VarGlobal";
+import { setTarea, setTareaComanda, setMenu } from "../Modelo/modelo";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -27,13 +34,8 @@ export default function TareaActividad({ navigation }) {
   const [inicioHora, setInicioHora] = useState("");
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
-  // Variable para guardar el formulario
-  const [formulario, setFormulario] = useState("");
   // Variable para switch
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  //Cambia de estado Switch
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [periocidad, setPeriocidad] = useState("Diario");
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -42,7 +44,8 @@ export default function TareaActividad({ navigation }) {
     setFinHora("");
     setInicioFecha("");
     setInicioHora("");
-    setFormulario("");
+    setPeriocidad("Diario");
+    inicializarMenus();
   };
 
   //Validamos las horas
@@ -118,7 +121,9 @@ export default function TareaActividad({ navigation }) {
         } else {
           Alert.alert(
             "Error",
-            "La fecha de inicio no puede ser posterior a la fecha de finalización."
+            "La fecha de inicio no puede ser posterior a la fecha de finalización."[
+              { text: "De acuerdo" }
+            ]
           );
         }
         return false;
@@ -137,16 +142,43 @@ export default function TareaActividad({ navigation }) {
       } else {
         Alert.alert(
           "Fechas inválidas",
-          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."
+          "Por favor, ingresa fechas válidas en el formato aaaa-mm-dd."[
+            { text: "De acuerdo" }
+          ]
         );
       }
       return false;
     }
   };
 
-  const guardarDatos = () => {
-    if (saveDates() && saveTimes()) {
-      navigation.navigate("gestionTareas");
+  const guardarDatos = async () => {
+    try {
+      if (saveDates() && saveTimes()) {
+        const idTarea = await setTarea(
+          nombreTarea,
+          inicioFecha + "//" + inicioHora,
+          finFecha + "//" + finHora,
+          "comanda",
+          periocidad
+        );
+        // Obtenemos todos los id de los menus de la tarea
+        const menus = getIdMenusSeleccionados();
+        await setTareaComanda(idTarea, menus);
+
+        // Obtenemos todos los objetos de los menus de la tarea
+        const menusObjetos = getObjMenusSeleccionados();
+        for (const item of menusObjetos) {
+          const idAlimentos = filtroID(item.Nombre);
+          await setMenu(idTarea, item.id, idAlimentos);
+        }
+
+        // Inicializar menus
+        inicializarMenus();
+
+        navigation.navigate("gestionTareas");
+      }
+    } catch (error) {
+      console.error("Error al crear la tarea materiales:", error);
     }
   };
 
@@ -192,7 +224,26 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaListaMenus ()) {
+            Swal.fire({
+              title: "Menu Vacio",
+              text: "Verifica que hayas elegido algún menú, y que haya alimentos en él.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            })
+            navigation.navigate("tiposMenusComanda");
+          } else {
+            if (nombreTarea === ''){
+              Swal.fire({
+                title: "Campo incompleto.",
+                text: "Pon nombre a la tarea.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -201,7 +252,31 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaListaMenus()) {
+                Alert.alert(
+                  "Menu Vacio", // Título
+                  "Verifica que hayas elegido algún menú, y que haya alimentos en él.", // Mensaje
+                  [
+                    {text: 'De acuerdo'},
+                  ]
+                );
+                navigation.navigate("tiposMenusComanda");
+              } else {
+                if (nombreTarea === '' ){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -302,34 +377,21 @@ export default function TareaActividad({ navigation }) {
         </View>
 
         <View style={styles.separador} />
-
-        <Text style={styles.text}>Formulario </Text>
-
+        <View style={styles.separador} />
         <View style={styles.separador} />
 
-        <Picker
-          selectedValue={formulario}
-          onValueChange={(itemValue, itemIndex) => setFormulario(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Ninguno" value="" />
-          <Picker.Item label="Formulario1" value="formulario1" />
-          <Picker.Item label="Formulario2" value="formulario2" />
-          <Picker.Item label="Formulario3" value="formulario3" />
-          <Picker.Item label="Formulario4" value="formulario4" />
-        </Picker>
-        <View style={styles.separador} />
-
-        <Text style={styles.text}>Tarea Semanal </Text>
-
-        <View style={styles.separador} />
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
+        <View style={styles.row}>
+          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+          <Picker
+            selectedValue={periocidad}
+            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Diario" value="diario" />
+            <Picker.Item label="Semanal" value="semanal" />
+            <Picker.Item label="Mensual" value="mensual" />
+          </Picker>
+        </View>
 
         <View style={styles.separador} />
         <View style={styles.separador} />
@@ -398,6 +460,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -406,6 +469,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",

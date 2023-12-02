@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,47 +8,49 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import * as lista from "./VarGlobal";
 
-const initialData = [];
 
-export default function VerTodosMateriales({ navigation, AnadirMaterial, setMaterialesTarea }) {
-  // Variables para los alimentos del menu
-  //const [data, setData] = useGlobalState();
-/*
+export default function VerTodosMateriales({ navigation }) {
+  const route = useRoute();
+  const [materialesTarea, setMaterialesTarea] = useState([]);
+
   useEffect(() => {
-    // Esto se ejecutará cada vez que `enviarDatos` cambie
-    if (enviarDatos != undefined && enviarDatos != null) {
-      setData(enviarDatos);
-      console.log(enviarDatos);
+    if (route.params !== undefined) {
+      // Añades el objeto al array
+      lista.listaTareaMateriales.push(route.params);
+      setMaterialesTarea(lista.get);
     }
-  }, [enviarDatos]);
+  }, [route.params]);
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
-*/
+    setMaterialesTarea(lista.get);
+  }, );
+
   const deleteItem = (id) => {
-    setMaterialesTarea(AnadirMaterial.filter((item) => item[0] !== id));
+    lista.filtrar(id);
+    setMaterialesTarea(lista.get)
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
         <Text style={styles.label}>Material</Text>
-        <Text style={styles.itemText}>{item[4]}</Text>
+        <Text style={styles.itemText}>{item.nombre}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Cantidad</Text>
-        <Text style={styles.itemText}>{item[3]}</Text>
+        <Text style={styles.itemText}>{item.cantidad}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Lugar destino</Text>
-        <Text style={styles.itemText}>{item[2]}</Text>
+        <Text style={styles.itemText}>{item.destino}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Lugar origen</Text>
-        <Text style={styles.itemText}>{item[1]}</Text>
+        <Text style={styles.itemText}>{item.origen}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => deleteItem(item[0])}
+        onPress={() => deleteItem(item.id)}
         style={styles.deleteButton}
       >
         <Image
@@ -80,8 +82,8 @@ export default function VerTodosMateriales({ navigation, AnadirMaterial, setMate
       <View style={styles.separador} />
 
       <FlatList
-        data={AnadirMaterial}
-        keyExtractor={(item, index) => item[0].toString()}
+        data={materialesTarea}
+        keyExtractor={(item, index) => item.id}
         renderItem={renderItem}
       />
     </SafeAreaView>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
   View,
@@ -9,9 +10,14 @@ import {
   Platform,
   Image,
   TouchableOpacity,
-  Switch,
 } from "react-native";
 import Swal from "sweetalert2";
+import {
+  setTarea,
+  setTareaActividad,
+  setPasoActividad,
+} from "../Modelo/modelo";
+import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -27,12 +33,9 @@ export default function TareaActividad({ navigation }) {
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
   // Variable para guardar el lugar
-  const [lugar, setLugar] = useState();
-  //Variable para switch
-  const [isEnabled, setIsEnabled] = useState(false);
-
-  // Cambiamos estado del switch
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [lugar, setLugar] = useState("");
+  //Variable para periocidad
+  const [periocidad, setPeriocidad] = useState("Diario");
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -42,6 +45,8 @@ export default function TareaActividad({ navigation }) {
     setInicioFecha("");
     setInicioHora("");
     setLugar("");
+    setPeriocidad("Diario");
+    inicializarPasos();
   };
 
   //Validamos las horas
@@ -143,9 +148,39 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
-  const guardarDatos = () => {
-    if (saveDates() && saveTimes()) {
-      navigation.navigate("gestionTareas");
+  const guardarDatos = async () => {
+    try {
+      if (saveDates() && saveTimes()) {
+        const idTarea = await setTarea(
+          nombreTarea,
+          inicioFecha + "//" + inicioHora,
+          finFecha + "//" + finHora,
+          "Actividad",
+          periocidad
+        );
+        const pasos = getPasos();
+        const idPaso = [];
+        for (const item of pasos) {
+          const pasoId = await setPasoActividad(
+            item.audio.id,
+            item.imagen.id,
+            item.pictograma.id,
+            item.video.id,
+            item.texto,
+            item.nombre,
+            idTarea
+          );
+          idPaso.push(pasoId);
+        }
+        await setTareaActividad(lugar, idPaso, idTarea);
+
+        // Borrar lista de pasos
+        inicializarPasos();
+
+        navigation.navigate("gestionTareas");
+      }
+    } catch (error) {
+      console.error("Error al crear la tarea materiales:", error);
     }
   };
 
@@ -191,7 +226,25 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (isVaciaPasos()) {
+            Swal.fire({
+              title: "Ningún Pasos creado",
+              text: "Verifica que hayas creado algún paso.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          } else {
+            if (nombreTarea === '' || lugar === ''){
+              Swal.fire({
+                title: "Campo incompletos.",
+                text: "Pon nombre a la tarea y su lugar.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            }else{
+              guardarDatos();
+            }
+          }
         }
       });
     } else {
@@ -200,7 +253,28 @@ export default function TareaActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (isVaciaPasos()) {
+                Alert.alert(
+                  "Ningún Pasos creado", // Título
+                  "Verifica que hayas creado algún paso.", // Mensaje
+                  [{ text: "De acuerdo" }]
+                );
+              } else {
+                if (nombreTarea === '' || lugar === ''){
+                  Alert.alert(
+                    "Campo incompletos", // Título
+                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    [{ text: "De acuerdo" }]
+                  );
+                }else{
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -298,19 +372,27 @@ export default function TareaActividad({ navigation }) {
         />
 
         <View style={styles.separador} />
-        <Text style={styles.text}>Tarea semanal </Text>
-        <View style={styles.separador} />
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
         <View style={styles.separador} />
         <View style={styles.separador} />
+
+        <View style={styles.row}>
+          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+          <Picker
+            selectedValue={periocidad}
+            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Diario" value="diario" />
+            <Picker.Item label="Semanal" value="semanal" />
+            <Picker.Item label="Mensual" value="mensual" />
+          </Picker>
+        </View>
+
         <View style={styles.separador} />
         <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
         <Button
           title="Añadir Paso"
           onPress={() => navigation.navigate("pasoActividad")}
@@ -369,6 +451,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 200,
     height: 30,
+    padding: 5,
   },
   inputFechaHora: {
     borderWidth: 1,
@@ -377,6 +460,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: 100,
     height: 30,
+    padding: 5,
   },
   row: {
     flexDirection: "row",
@@ -398,5 +482,9 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
+  },
+  picker: {
+    height: 25,
+    width: Platform.OS === "web" ? 150 : 200,
   },
 });

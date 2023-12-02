@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,97 +8,59 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+import * as global from './VarGlobal';
+import { useRoute } from "@react-navigation/native";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 const db = getFirestore(appFirebase);
 
-const initialData = [
-  {
-    id: "1",
-    Nombre_Paso: "Poner plato en la mesa",
-    Texto: "Ninguno",
-    Pictograma: "Ninguno",
-    Imagen: "Mesa y plato",
-    Video: "Poner Plato",
-    Audio: "Ninguno",
-  },
-  {
-    id: "2",
-    Nombre_Paso: "Colocar los cubiertos",
-    Texto: "Coloca tenedor al lado del plato",
-    Pictograma: "Cubiertos",
-    Imagen: "Cubiertos al lado del plato",
-    Video: "Colocar Cubiertos",
-    Audio: "Ninguno",
-  },
-  {
-    id: "3",
-    Nombre_Paso: "Doblar la servilleta",
-    Texto: "Doblar la servilleta junto al plato",
-    Pictograma: "Servilleta",
-    Imagen: "Servilleta doblada",
-    Video: "Doblar Servilleta",
-    Audio: "Ninguno",
-  },
-  {
-    id: "4",
-    Nombre_Paso: "Llenar el vaso de agua",
-    Texto: "Llenar el vaso de agua",
-    Pictograma: "Vaso de agua",
-    Imagen: "Vaso con agua",
-    Video: "Llenar Vaso",
-    Audio: "Ninguno",
-  },
-  {
-    id: "5",
-    Nombre_Paso: "Colocar el pan",
-    Texto: "Colocar pan en la mesa",
-    Pictograma: "Pan",
-    Imagen: "Pan en la mesa",
-    Video: "Colocar Pan",
-    Audio: "Ninguno",
-  },
-  {
-    id: "6",
-    Nombre_Paso: "Acomodar la silla",
-    Texto: "Poner silla enfrente de la mesa",
-    Pictograma: "Silla",
-    Imagen: "Silla y mesa",
-    Video: "Acomodar Silla",
-    Audio: "Ninguno",
-  },
-];
-
 export default function VerPasosActividad({ navigation }) {
   // Variables para los alimentos del menu
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+
+  const route = useRoute();
+
+  useEffect(() => {
+    if (route.params !== undefined) {
+      // Añades el objeto al array
+      console.log("Estamos actualizando")
+      const { nombre, texto, imagen, pictograma, video, audio } = route.params;
+      global.pushPasos(nombre, texto, imagen, pictograma, video, audio);
+      setData(global.getPasos);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    setData(global.getPasos);
+  }, );
 
   const deleteItem = (id) => {
-    setData(data.filter((item) => item.id !== id));
+    global.filtrarPasos(id);
+    setData(global.getPasos)
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
         <Text style={styles.label}>Nombre Paso</Text>
-        <Text style={styles.itemText}>{item.Nombre_Paso}</Text>
+        <Text style={styles.itemText}>{item.nombre}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Texto</Text>
-        <Text style={styles.itemText}>{item.Texto}</Text>
+        <Text style={styles.itemText}>{item.texto}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Pictograma</Text>
-        <Text style={styles.itemText}>{item.Pictograma}</Text>
+        <Text style={styles.itemText}>{item.pictograma.Titulo}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Imagen</Text>
-        <Text style={styles.itemText}>{item.Imagen}</Text>
+        <Text style={styles.itemText}>{item.imagen.Titulo}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Video</Text>
-        <Text style={styles.itemText}>{item.Video}</Text>
+        <Text style={styles.itemText}>{item.video.Titulo}</Text>
         <Text style={styles.label}>Audio</Text>
-        <Text style={styles.itemText}>{item.Audio}</Text>
+        <Text style={styles.itemText}>{item.audio.Titulo}</Text>
       </View>
       <TouchableOpacity
         onPress={() => deleteItem(item.id)}
