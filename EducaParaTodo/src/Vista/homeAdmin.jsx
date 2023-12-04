@@ -41,12 +41,6 @@ export default function HomeAdmin ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
         onPress={() => navigation.navigate('gestionarEstadoTareas')}>
         <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
       </TouchableOpacity>

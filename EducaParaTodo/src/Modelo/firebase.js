@@ -1434,149 +1434,120 @@ export async function deleteAlumnoForo(id) {
 /**********  INICIO FUNCIONES MENSAJES ********/
 
 export async function getMensajes() {
-    let docs = [];
-    try {
-        const queryFilter = collection(db, COL_MENSAJES);
-        const querySnapshot = await getDocs(queryFilter)
-        
-        for (const doc of querySnapshot.docs) {
-            const { administrador, profesor, mensaje, aula, fecha, hora } = doc.data();
-            docs.push({
-              id:doc.id,
-              administrador,
-              profesor,
-              mensaje,
-              aula,
-              fecha,
-              hora
-            });
-        }        
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos de mensajes", error);
-    }
+  let docs = [];
+  try {
+      const queryFilter = collection(db, COL_MENSAJES);
+      const querySnapshot = await getDocs(queryFilter)
+      
+      for (const doc of querySnapshot.docs) {
+          const { profesor, mensaje, aula, fecha, hora } = doc.data();
+          docs.push({
+            id:doc.id,
+            profesor,
+            mensaje,
+            aula,
+            fecha,
+            hora
+          });
+      }        
+  } catch (error) {
+      console.log("Ha habido un error al recoger los datos de mensajes", error);
+  }
 
-    return docs;
-}
-
-export async function getMensajesAdministrador(id_administrador) {
-    let docs = [];
-    try {
-        const queryFilter = query(collection(db, COL_MENSAJES), where('administrador', '==', id_administrador));
-        const querySnapshot = await getDocs(queryFilter)
-        
-        for (const doc of querySnapshot.docs) {
-            const { administrador, profesor, mensaje, aula, fecha, hora } = doc.data();
-            docs.push({
-              id:doc.id,
-              administrador,
-              profesor,
-              mensaje,
-              aula,
-              fecha,
-              hora
-            });
-        }        
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos de mensajes", error);
-    }
-
-    return docs;
+  return docs;
 }
 
 export async function getMensajeID(id) {
-    let instancia = null;
-    try {
-        const doc = doc(db, COL_MENSAJES, id);
-        const docSnapshot = await getDoc(doc);
+  let instancia = null;
+  try {
+      const doc = doc(db, COL_MENSAJES, id);
+      const docSnapshot = await getDoc(doc);
 
-        if (docSnapshot.exists()) {
-            instancia = docSnapshot.data();
-            console.log("Se ha recibido la información");
-        } else {
-            console.log("No existe la instancia");
-        }
-    } catch (error) {
-        console.log(error);
-    }
+      if (docSnapshot.exists()) {
+          instancia = docSnapshot.data();
+          console.log("Se ha recibido la información");
+      } else {
+          console.log("No existe la instancia");
+      }
+  } catch (error) {
+      console.log(error);
+  }
 
-    return instancia;
+  return instancia;
 }
 
-export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, hora) {
-    let mensajeDoc = {
-        administrador: id_admin,
-        profesor: id_profesor,
-        mensaje: mensaje,
-        aula: aula,
-        fecha: fecha,
-        hora: hora
-    }
+export async function addMensaje(id_profesor, mensaje, aula, fecha, hora) {
+  let mensajeDoc = {
+      profesor: id_profesor,
+      mensaje: mensaje,
+      aula: aula,
+      fecha: fecha,
+      hora: hora
+  }
 
-    let identificacion = null;
+  let identificacion = null;
 
-    try {
-        addDoc(collection(db, COL_MENSAJES), {
-            ...mensajeDoc
-        })
-            .then(({id}) => identificacion = id);
-    }
-    catch (error) {
-        console.log("Ha habido un error al subir los datos de mensaje");
-    }
+  try {
+      addDoc(collection(db, COL_MENSAJES), {
+          ...mensajeDoc
+      })
+          .then(({id}) => identificacion = id);
+  }
+  catch (error) {
+      console.log("Ha habido un error al subir los datos de mensaje");
+  }
 
-    return identificacion;
+  return identificacion;
 }
 
-export async function updateMensaje(id, id_admin, id_profe, mensajeA, aula, fecha, hora) {
-    let editaMensaje = {
-        administrador: id_admin,
-        profesor: id_profe,
-        mensaje: mensajeA,
-        aula: aula,
-        fecha: fecha,
-        hora: hora
-    };
+export async function updateMensaje(id, id_profe, mensajeA, aula, fecha, hora) {
+  let editaMensaje = {
+      profesor: id_profe,
+      mensaje: mensajeA,
+      aula: aula,
+      fecha: fecha,
+      hora: hora
+  };
 
-    let mensaje = null;
+  let mensaje = null;
 
-    try {
-        let docMensaje = doc(db, COL_MENSAJES, id);
-        const docSnapshot = await getDoc(docMensaje);
-        
-        if (docSnapshot.exists()) {
-            mensaje = docSnapshot.data();
+  try {
+      let docMensaje = doc(db, COL_MENSAJES, id);
+      const docSnapshot = await getDoc(docMensaje);
+      
+      if (docSnapshot.exists()) {
+          mensaje = docSnapshot.data();
 
-            editaMensaje.administrador = editaMensaje.administrador == '' ? mensaje.administrador : editaMensaje.administrador;
-            editaMensaje.profesor = editaMensaje.profesor == '' ? mensaje.profesor : editaMensaje.profesor;
-            editaMensaje.mensaje = editaMensaje.mensaje == '' ? mensaje.mensaje : editaMensaje.mensaje;
-            editaMensaje.aula = editaMensaje.aula == '' ? mensaje.aula : editaMensaje.aula;
-            editaMensaje.fecha = editaMensaje.fecha == '' ? mensaje.fecha : editaMensaje.fecha;
-            editaMensaje.hora = editaMensaje.hora == '' ? mensaje.hora : editaMensaje.hora;
+          editaMensaje.profesor = editaMensaje.profesor == '' ? mensaje.profesor : editaMensaje.profesor;
+          editaMensaje.mensaje = editaMensaje.mensaje == '' ? mensaje.mensaje : editaMensaje.mensaje;
+          editaMensaje.aula = editaMensaje.aula == '' ? mensaje.aula : editaMensaje.aula;
+          editaMensaje.fecha = editaMensaje.fecha == '' ? mensaje.fecha : editaMensaje.fecha;
+          editaMensaje.hora = editaMensaje.hora == '' ? mensaje.hora : editaMensaje.hora;
 
-            updateDoc(docMensaje, {
-                ...editaMensaje
-            });
-        }
-    } catch (error) {
-        console.log("Problema al actualizar datos de mensaje");
-    }
+          updateDoc(docMensaje, {
+              ...editaMensaje
+          });
+      }
+  } catch (error) {
+      console.log("Problema al actualizar datos de mensaje");
+  }
 }
 
 export async function deleteMensaje(id) {
-    try {
-        const docMensaje = doc(db, COL_MENSAJES, id);
-        const docSnapshot = await getDoc(docMensaje);
+  try {
+      const docMensaje = doc(db, COL_MENSAJES, id);
+      const docSnapshot = await getDoc(docMensaje);
 
-        if (docSnapshot.exists()) {
-            await deleteDoc(docSnapshot.ref);
-            console.log("Se ha borrado el mensaje correctamente");
-        }
-        else {
-            console.log("No existe el mensaje");
-        }
-    } catch(error) {
-        console.log("Error al borrar mensaje", error);
-    }
+      if (docSnapshot.exists()) {
+          await deleteDoc(docSnapshot.ref);
+          console.log("Se ha borrado el mensaje correctamente");
+      }
+      else {
+          console.log("No existe el mensaje");
+      }
+  } catch(error) {
+      console.log("Error al borrar mensaje", error);
+  }
 }
 
 /**********  FINAL FUNCIONES MENSAJES ********/
