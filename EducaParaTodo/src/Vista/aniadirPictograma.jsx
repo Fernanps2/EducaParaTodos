@@ -61,7 +61,7 @@ export default function AniadirPictograma() {
 */
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>NAVEGA BIEN CABRON BRR</Text>
+           <Button title="Añadir Pictograma"><Text>Añadir pictograma</Text></Button>
       </View>
     );
   };
