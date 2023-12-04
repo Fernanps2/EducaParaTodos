@@ -1425,7 +1425,7 @@ export async function deleteAlumnoForo(id) {
             console.log("No existe el alumnoForo");
         }
     } catch(error) {
-        console.log("Error al borrar allumnoForo", error);
+        console.log("Error al borrar alumnoForo", error);
     }
 }
 
@@ -1440,35 +1440,9 @@ export async function getMensajes() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { administrador, profesor, mensaje, aula, fecha, hora } = doc.data();
+            const { profesor, mensaje, aula, fecha, hora } = doc.data();
             docs.push({
               id:doc.id,
-              administrador,
-              profesor,
-              mensaje,
-              aula,
-              fecha,
-              hora
-            });
-        }        
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos de mensajes", error);
-    }
-
-    return docs;
-}
-
-export async function getMensajesAdministrador(id_administrador) {
-    let docs = [];
-    try {
-        const queryFilter = query(collection(db, COL_MENSAJES), where('administrador', '==', id_administrador));
-        const querySnapshot = await getDocs(queryFilter)
-        
-        for (const doc of querySnapshot.docs) {
-            const { administrador, profesor, mensaje, aula, fecha, hora } = doc.data();
-            docs.push({
-              id:doc.id,
-              administrador,
               profesor,
               mensaje,
               aula,
@@ -1502,9 +1476,8 @@ export async function getMensajeID(id) {
     return instancia;
 }
 
-export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, hora) {
+export async function addMensaje(id_profesor, mensaje, aula, fecha, hora) {
     let mensajeDoc = {
-        administrador: id_admin,
         profesor: id_profesor,
         mensaje: mensaje,
         aula: aula,
@@ -1527,9 +1500,8 @@ export async function addMensaje(id_admin, id_profesor, mensaje, aula, fecha, ho
     return identificacion;
 }
 
-export async function updateMensaje(id, id_admin, id_profe, mensajeA, aula, fecha, hora) {
+export async function updateMensaje(id, id_profe, mensajeA, aula, fecha, hora) {
     let editaMensaje = {
-        administrador: id_admin,
         profesor: id_profe,
         mensaje: mensajeA,
         aula: aula,
@@ -1546,7 +1518,6 @@ export async function updateMensaje(id, id_admin, id_profe, mensajeA, aula, fech
         if (docSnapshot.exists()) {
             mensaje = docSnapshot.data();
 
-            editaMensaje.administrador = editaMensaje.administrador == '' ? mensaje.administrador : editaMensaje.administrador;
             editaMensaje.profesor = editaMensaje.profesor == '' ? mensaje.profesor : editaMensaje.profesor;
             editaMensaje.mensaje = editaMensaje.mensaje == '' ? mensaje.mensaje : editaMensaje.mensaje;
             editaMensaje.aula = editaMensaje.aula == '' ? mensaje.aula : editaMensaje.aula;
