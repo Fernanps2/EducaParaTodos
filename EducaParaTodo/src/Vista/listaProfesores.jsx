@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
 import { buscaProfesor } from '../Controlador/profesores';
-import { getProfesores } from '../Modelo/firebase';
+// import { getProfesores } from '../Modelo/firebase';
 import DatosProfesor from './datosProfesor';
 
 export default function ListaProfesores({ navigation }) {
@@ -17,12 +17,12 @@ export default function ListaProfesores({ navigation }) {
   useEffect(() => {
     const ListaProfesores = async () => {
       try {
-        const profesores = await getProfesores();
-        console.log(profesores);
+        const profesores = await buscaProfesor();
+        console.log('profesores' + profesores);
         setLista(profesores);
-        await console.log(profesores);
+        await console.log('lista' + lista);
       } catch (error) {
-        console.log(error);
+        console.log('error' + error);
       }
     };
     ListaProfesores();

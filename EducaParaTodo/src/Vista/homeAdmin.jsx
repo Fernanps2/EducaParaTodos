@@ -1,59 +1,49 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
 
 export default function HomeAdmin ({ navigation }) {
     return (
+      <ScrollView>
+
       <View style={styles.container}>
-      <Text style={styles.title}>EducaParaTodos</Text>
-      <CerrarSesion/>
-      <View style={styles.profileContainer}>
-        <Image
-          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
-          style={styles.profileImage}
-        />
-        <Text style={styles.roleText}>Administrador</Text>
-      </View>
+        <Text style={styles.title}>EducaParaTodos</Text>
+        <CerrarSesion/>
+        <View style={styles.profileContainer}>
+          <Image
+            source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+            style={styles.profileImage}
+          />
+          <Text style={styles.roleText}>Administrador</Text>
+        </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('listaAlumnos')}>
-        <Text style={styles.buttonText}>Gestionar Alumnos</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('listaAlumnos')}>
+            <Text style={styles.buttonText}>Gestionar Alumnos</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('listaProfesores')}>
-        <Text style={styles.buttonText}>Gestionar Profesores</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('listaProfesores')}>
+            <Text style={styles.buttonText}>Gestionar Profesores</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('gestionTareas')}>
-        <Text style={styles.buttonText}>Gestionar Tareas</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('gestionTareas')}>
+            <Text style={styles.buttonText}>Gestionar Tareas</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('gestionMateriales')}>
-        <Text style={styles.buttonText}>Gestión Materiales</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
-        <Text style={styles.buttonText}>Ver datos de alumnos</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-        <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
-      </TouchableOpacity>
-
-
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('gestionMateriales')}>
+            <Text style={styles.buttonText}>Gestión Materiales</Text>
+          </TouchableOpacity>
 
       </View>
+      </ScrollView>
+
 
     )};
 

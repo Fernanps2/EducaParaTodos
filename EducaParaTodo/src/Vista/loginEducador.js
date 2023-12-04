@@ -13,8 +13,9 @@ const LoginScreen = ({ route, navigation} ) => {
 
     console.log(logueado);
 
-    if (logueado && tipo == 'profesor')
-      navigation.navigate('HomeEducador', {nombreProf: username} )
+    if (logueado && tipo == 'profesor'){
+      navigation.navigate('HomeEducador', {nombreUsuario:username} );
+    }
     else if (logueado && tipo == 'administrador')
       navigation.navigate('HomeAdmin', {nombreAdm: username});
     else

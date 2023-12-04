@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 //import profesores from '../Modelo/profesor';
-import { getProfesorPorId, updateProfesor } from '../Modelo/firebase';
+import { updateProfesor } from '../Modelo/firebase';
+import { buscaProfesorNombre } from '../Controlador/profesores';
 
-export default function DatosProfesor ({ route, navigation }) {
+// Se usa para cambiar los datos del propio profesor
+// HomeEducador > modificar mis datos
+export default function ModificarDatosProfesor ({ route, navigation }) {
+      const { nombreUsuario } = route.params;
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
       const [email, setEmail] = useState('');
-      const [info, setInfo] = useState('');
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
         const obtenerDatosProfesor = async () => {
-          const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
-          const datosProfesor = await getProfesorPorId(idProfesor);
+          const datosProfesor = await buscaProfesorNombre(nombreUsuario);
           setProfesorData(datosProfesor);
           // Asignar los valores iniciales para la edición
-          if (datosProfesor) {
-            setNombre(datosProfesor.nombre);
-            setApellidos(datosProfesor.apellidos);
-            setContrasenia(datosProfesor.password);
-            setEmail(datosProfesor.email);
-            setInfo(datosProfesor.info);
+          if (profesorData) {
+            setNombre(profesorData.nombre);
+            setApellidos(profesorData.apellidos);
+            setContrasenia(profesorData.password);
+            setEmail(profesorData.email);
           }
         };
         obtenerDatosProfesor();
@@ -34,8 +35,15 @@ export default function DatosProfesor ({ route, navigation }) {
       // Función para actualizar los datos del profesor
       const guardarCambios = async () => {
         // Lógica para guardar los cambios en la base de datos usando updateProfesor
-        const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
-        await updateProfesor(idProfesor, { nombre, apellidos, password: contrasenia, email, info });
+        const idProfesor = 'YAfvRkMFpFBI9A2Cxzmf'; // Reemplaza con el ID correcto
+        console.log(nombre);
+        console.log(apellidos);
+        console.log(contrasenia);
+        console.log(email);
+
+
+
+        await updateProfesor(idProfesor,nombre, apellidos, contrasenia, email);
         // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
       };
 
@@ -61,6 +69,7 @@ export default function DatosProfesor ({ route, navigation }) {
 
           <Text style={styles.title}> Modificar mis datos </Text>
 
+        <ScrollView>
           <View style={styles.profileContainer}>
             <Image
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
@@ -68,7 +77,6 @@ export default function DatosProfesor ({ route, navigation }) {
             />
             <Text style={styles.roleText}>Profesor</Text>
           </View>
-
                 <TextInput
                   style={styles.input}
                   placeholder="Nombre"
@@ -96,13 +104,12 @@ export default function DatosProfesor ({ route, navigation }) {
                   onChangeText={(text) => setEmail(text)}
                 />
 
-                <TextInput
+                {/* <TextInput
                   style={styles.input}
                   placeholder="Información adicional"
                   value={info}
                   onChangeText={(text) => setInfo(text)}
-                />
-
+                /> */}
 
           <Text style={styles.roleText}>Foto</Text>
           <Image
@@ -119,6 +126,7 @@ export default function DatosProfesor ({ route, navigation }) {
           <TouchableOpacity style={styles.addButton} onPress={guardarCambios}>
             <Text style={styles.addButtonText}>Modificar</Text>
           </TouchableOpacity>
+        </ScrollView>
 
         </View>
       );

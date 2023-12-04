@@ -1,21 +1,54 @@
-import {React, useState} from 'react';
+import {React, useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
 import Tareas from './tareas';
 import alumnos from '../Modelo/alumno';
 import { actualizaProfesorAdmin } from '../Controlador/profesores';
+import { buscaProfesorNombre } from '../Controlador/profesores';
 
+// No se usa
 const ModificarProfesor = ({route, navigation}) => {
-    const { profesor } = route.params;
-    console.log(profesor);
+    const { nombreUsuario } = route.params;
+
+    const [profesor, setProfesor] = useState([]);
+    const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+    const [nombre, setNombre] = useState('');
+    const [apellidos, setApellidos] = useState('');
+    const [contrasenia, setContrasenia] = useState('');
+    const [email, setEmail] = useState('');
+    const [info, setInfo] = useState('');
+
+
+    // Tenemos que traer los datos del profesor
+    useEffect(() => {
+      const datosProf = async () => {
+          try {
+              const prof = await buscaProfesorNombre(nombreUsuario);
+              setProfesorData(prof);
+              console.log(prof);
+
+              if (profesorData) {
+                setNombre(datosProfesor.nombre);
+                setApellidos(datosProfesor.apellidos);
+                setContrasenia(datosProfesor.password);
+                setEmail(datosProfesor.email);
+                setInfo(datosProfesor.info);
+              }
+    
+          } catch (error) {
+              console.log(error);
+          }
+      };
+      datosProf();
+  }, []);
+
+
+
 
     // Utiliza el estado local para manejar la información del formulario
-    const [nombre, setNombre] = useState(profesor.nombre);
-    const [apellidos, setApellidos] = useState(profesor.apellidos);
-    const [foto, setFoto] = useState(profesor.foto);
 
     const handleUpdateProfesor = () => {
-        // Llama a la función de la base de datos para actualizar el alumno
+        // Llama a la función de la base de datos para actualizar el profesosr
         actualizaProfesorAdmin(profesor.id, nombre, apellidos, foto);
         // Puedes agregar lógica adicional después de la actualización si es necesario
     };

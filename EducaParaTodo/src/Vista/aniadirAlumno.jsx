@@ -49,7 +49,7 @@ export default function AniadirAlumno ({ navigation }) {
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
             aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, "", selectedOptions);
-            navigation.navigate('pantallaAlumnos');
+            navigation.navigate('pantallaDatosAlumnos');
           }
         }
       ],

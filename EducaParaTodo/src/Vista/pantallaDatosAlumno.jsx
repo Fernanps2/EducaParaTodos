@@ -15,7 +15,7 @@ const PantallaDatosAlumno = ({route, navigation}) => {
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
             borraAlumno(alumno.id);
-            navigation.navigate('pantallaAlumnos');
+            navigation.navigate('pantallaDatosAlumnos');
           }
         }
       ],

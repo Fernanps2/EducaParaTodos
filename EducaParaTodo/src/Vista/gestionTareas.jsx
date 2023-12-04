@@ -32,6 +32,13 @@ export default function GestionTareas ({ navigation }) {
         <Text style={styles.buttonText}>Materiales </Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('gestionarEstadoTareas')}>
+            <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
+      </TouchableOpacity>
+
+
       </View>
 
     )};

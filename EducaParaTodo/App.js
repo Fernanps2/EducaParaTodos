@@ -28,6 +28,7 @@ import PantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
 import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
+import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
@@ -86,6 +87,7 @@ export default function App() {
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="datosProfesor" component={DatosProfesor} />
+          <Stack.Screen name="modDatosProfesor" component={ModificarDatosProfesor} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
           <Stack.Screen name="modificarProfesor" component={ModificarProfesor} />

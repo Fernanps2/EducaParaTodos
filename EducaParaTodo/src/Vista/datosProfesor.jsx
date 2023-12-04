@@ -3,7 +3,10 @@ import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Plat
 //import profesores from '../Modelo/profesor';
 import { getProfesorPorId, getProfesoresNombre, updateProfesorv2 } from '../Modelo/firebase';
 
-export default function DatosProfesor ({ route, navigation }) {
+// Esta página muestra los datos de cada profesor y lleva incluida la función para modificar los datos de un profesor 
+// Es utilizada por el admin
+
+export default function DatosProfesor ({ profesor, navigation }) {
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
       const [profesorId, setProfesorId] = useState('');
@@ -11,8 +14,7 @@ export default function DatosProfesor ({ route, navigation }) {
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
       const [email, setEmail] = useState('');
-      const [info, setInfo] = useState('');
-      const nombreProfesor = route.params.nombreUsuario;
+      const nombreProfesor = profesor.nombre;
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
@@ -29,7 +31,6 @@ export default function DatosProfesor ({ route, navigation }) {
             setApellidos(datosProfesor.apellidos);
             setContrasenia(datosProfesor.password);
             setEmail(datosProfesor.email);
-            setInfo(datosProfesor.info);
           }
         };
         obtenerDatosProfesor();
@@ -39,13 +40,12 @@ export default function DatosProfesor ({ route, navigation }) {
         // Función para actualizar los datos del profesor
         const guardarCambios = async () => {
           if (profesorId) {
-            await updateProfesorv2(profesorId, {
+            await updateProfesorv2(profesorId,
               nombre,
               apellidos,
-              password: contrasenia,
+              contrasenia,
               email,
-              info
-            });
+            );
             navigation.navigate('pantallaPrincipal');
           } else {
             console.log('No se encontró ningún profesor');
@@ -106,13 +106,6 @@ export default function DatosProfesor ({ route, navigation }) {
                   placeholder="Correo electrónico"
                   value={email}
                   onChangeText={(text) => setEmail(text)}
-                />
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Información adicional"
-                  value={info}
-                  onChangeText={(text) => setInfo(text)}
                 />
 
 

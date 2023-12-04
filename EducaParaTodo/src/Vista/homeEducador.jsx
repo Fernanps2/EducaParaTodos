@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
 
-export default function HomeAdmin ({ route, navigation }) {
+export default function HomeEducador ({ route, navigation }) {
 
-    const nombreUsuario = route.params.nombreProf;
+    const {nombreUsuario} = route.params;
 
     return (
       <View style={styles.container}>
@@ -27,13 +27,13 @@ export default function HomeAdmin ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
+        onPress={() => navigation.navigate('pantallaDatosAlumnos')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('datosProfesor', { nombreUsuario })}>
+        onPress={() => navigation.navigate('modDatosProfesor', { nombreUsuario, navigation })}>
         <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 

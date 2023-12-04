@@ -432,12 +432,14 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
 }
 
 export async function updateProfesor(id, nombre, apellidos, password, foto) {
+  console.log(' APlelidios: ' + apellidos);
     let editaProfesor = {
-        nombre: nombre, 
-        apellidos: apellidos, 
-        password: password, 
-        foto: foto
+        nombre,
+        apellidos: apellidos,
+        password,
+        foto
     };
+
     let profesor = null;
 
     try {
@@ -446,7 +448,10 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
         
         if (docSnapshot.exists()) {
             profesor = docSnapshot.data();
+            console.log('datos bd: ' + profesor.apellidos);
+            console.log('edita apellidos: ' + editaProfesor.apellidos);
 
+          
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
@@ -457,7 +462,7 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
             });
         }
     } catch (error) {
-        console.log("Problema al actualizar datos de profesor");
+        console.log("Problema al actualizar datos de profesor" + error);
     }
 }
 
@@ -1587,21 +1592,21 @@ const contarArchivos = async(nombreCarpeta) => {
 
 }
 
-uploadImage= async(uri) => {
-    return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.onerror = reject;
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            resolve(xhr.response);
-        }
-    };
+// uploadImage= async(uri) => {
+//     return new Promise((resolve, reject) => {
+//     let xhr = new XMLHttpRequest();
+//     xhr.onerror = reject;
+//     xhr.onreadystatechange = () => {
+//         if (xhr.readyState === 4) {
+//             resolve(xhr.response);
+//         }
+//     };
 
-    xhr.open("GET", uri);
-    xhr.responseType = "blob";
-    xhr.send();
-   });
-};
+//     xhr.open("GET", uri);
+//     xhr.responseType = "blob";
+//     xhr.send();
+//    });
+// };
 
 export async function almacenarImagen(imagen) {
 
