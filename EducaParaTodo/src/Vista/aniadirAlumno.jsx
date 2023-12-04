@@ -58,8 +58,8 @@ export default function AniadirAlumno ({ navigation }) {
   };
 
   const handleImage = async() => {
-    //setImageUri(await openGallery());
-    setImageUri(await descargaImagen());
+    setImageUri(await openGallery());
+    //setImageUri(await descargaImagen());
   }
 
     return (

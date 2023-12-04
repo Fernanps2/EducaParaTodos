@@ -1557,8 +1557,10 @@ export async function deleteMensaje(id) {
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
 export async function almacenarImagen(imagen) {
+    const nombreImagen = imagen.split('/')[imagen.split('/').length-1];
+    
     try {
-        const refImagenes = ref(storage, 'Imagenes/imagen.jpg')
+        const refImagenes = ref(storage, 'Imagenes/'+nombreImagen)
         const file = await(await fetch(imagen)).blob();
         uploadBytes(refImagenes, file).then((snapshot) => {
             console.log('Se ha subido la imagen');
@@ -1569,8 +1571,10 @@ export async function almacenarImagen(imagen) {
 }
 
 export async function almacenarPictograma(imagen) {
+    const nombreImagen = imagen.split('/')[imagen.split('/').length-1];
+
     try {
-        const refImagenes = ref(storage, 'Pictogramas/imagen.jpg')
+        const refImagenes = ref(storage, 'Pictogramas/'+nombreImagen)
         const file = await(await fetch(imagen)).blob();
         uploadBytes(refImagenes, file).then((snapshot) => {
             console.log('Se ha subido el pictograma');
@@ -1581,8 +1585,10 @@ export async function almacenarPictograma(imagen) {
 }
 
 export async function almacenarVideo(video) {
+    const nombreVideo = video.split('/')[video.split('/').length-1];
+
     try {
-        const refImagenes = ref(storage, 'Videos/imagen.jpg')
+        const refImagenes = ref(storage, 'Videos/'+nombreVideo)
         const file = await(await fetch(video)).blob();
         uploadBytes(refImagenes, file).then((snapshot) => {
             console.log('Se ha subido el video');
@@ -1595,7 +1601,7 @@ export async function almacenarVideo(video) {
 export async function descargarImagen(nombreImagen) {
     let imagenUri = null;
 
-    const refImagen = ref(storage, 'Imagenes/imagen.jpg');
+    const refImagen = ref(storage, 'Imagenes/'+nombreImagen);
 
     await getDownloadURL(refImagen)
         .then((url) => {
@@ -1611,7 +1617,7 @@ export async function descargarImagen(nombreImagen) {
 export async function descargarPictograma(nombreImagen) {
     let imagenUri = null;
 
-    const refImagen = ref(storage, 'Pictogramas/imagen.jpg');
+    const refImagen = ref(storage, 'Pictogramas/'+nombreImagen);
 
     await getDownloadURL(refImagen)
         .then((url) => {
@@ -1627,7 +1633,7 @@ export async function descargarPictograma(nombreImagen) {
 export async function descargarVideo(nombreVideo) {
     let videoUri = null;
 
-    const refVideo = ref(storage, 'Videos/imagen.jpg');
+    const refVideo = ref(storage, 'Videos/'+nombreVideo);
 
     await getDownloadURL(refVideo)
         .then((url) => {

@@ -52,7 +52,7 @@ export const openGallery = async () => {
         quality: 1,
     });
 
-    console.log(result);
+    //console.log(result);
 
     if (!result.canceled) {
         const imageUri = result.assets[0].uri;
