@@ -1557,12 +1557,8 @@ export async function deleteMensaje(id) {
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
 export async function almacenarImagen(imagen) {
-
-    console.log(imagen);
-
     try {
         const refImagenes = ref(storage, 'Imagenes/imagen.jpg')
-        //const file = dataUriToBlob(imagen);
         const file = await(await fetch(imagen)).blob();
         uploadBytes(refImagenes, file).then((snapshot) => {
             console.log('Se ha subido la imagen');
@@ -1573,20 +1569,27 @@ export async function almacenarImagen(imagen) {
 }
 
 export async function almacenarPictograma(imagen) {
-  await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`Pictogramas/${nombre}`);
-      ref.put(resolve).then(resolve => {
-        console.log("Imagen subida correctamente");
-      }). catch(error => {
-        console.log("Error al subir la imagen");
-      });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    try {
+        const refImagenes = ref(storage, 'Pictogramas/imagen.jpg')
+        const file = await(await fetch(imagen)).blob();
+        uploadBytes(refImagenes, file).then((snapshot) => {
+            console.log('Se ha subido el pictograma');
+        });
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarVideo(video) {
+    try {
+        const refImagenes = ref(storage, 'Videos/imagen.jpg')
+        const file = await(await fetch(video)).blob();
+        uploadBytes(refImagenes, file).then((snapshot) => {
+            console.log('Se ha subido el video');
+        });
+    } catch(error) {
+        console.log(error);
+    }
 }
 
 export async function descargarImagen(nombreImagen) {
@@ -1603,6 +1606,38 @@ export async function descargarImagen(nombreImagen) {
         });
 
     return imagenUri;
+}
+
+export async function descargarPictograma(nombreImagen) {
+    let imagenUri = null;
+
+    const refImagen = ref(storage, 'Pictogramas/imagen.jpg');
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = url;
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarVideo(nombreVideo) {
+    let videoUri = null;
+
+    const refVideo = ref(storage, 'Videos/imagen.jpg');
+
+    await getDownloadURL(refVideo)
+        .then((url) => {
+            videoUri = url;
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+
+    return videoUri;
 }
 
 /******** FINAL FUNCIONES PARA MULTIMEDIA ********/

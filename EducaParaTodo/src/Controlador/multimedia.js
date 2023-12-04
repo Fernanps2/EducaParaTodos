@@ -1,4 +1,4 @@
-import { almacenarImagen, descargarImagen } from "../Modelo/firebase";
+import { almacenarImagen, almacenarPictograma, almacenarVideo, descargarImagen, descargarPictograma, descargarVideo } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -7,33 +7,44 @@ export async function almacenaImagen(imagen) {
         almacenarImagen(imagen);
 }
 
+export async function almacenaPictograma(imagen) {
+    if (imagen != '')
+        almacenarPictograma(imagen);
+}
+
+export async function almacenaVideo(video) {
+    if (video != '')
+        almacenarVideo(video);
+}
+
 export async function descargaImagen(imagen) {
     let imagenCargada = null;
 
-    //if (imagen != '')
+    if (imagen != '')
         imagenCargada = await descargarImagen(imagen);
 
     return imagenCargada;
 }
 
+export async function descargaPictograma(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarPictograma(imagen);
+
+    return imagenCargada;
+}
+
+export async function descargaVideo(video) {
+    let videoCargada = null;
+
+    if (video != '')
+        videoCargada = await descargarVideo(video);
+
+    return videoCargada;
+}
+
 export const openGallery = async () => {
-    /*const resultPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
-
-    if (PermissionsAndroid.RESULTS) {
-        const resultImagePicker = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [4, 3]
-        });
-
-        if (resultImagePicker.canceled === false) {
-            const imageUri = resultImagePicker.assets[0].uri;
-
-           // almacenaImagen(imageUri);
-
-            return (imageUri);
-        }
-    }*/
-
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
