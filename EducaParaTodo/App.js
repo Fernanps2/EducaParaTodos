@@ -26,6 +26,7 @@ import ListaProfesores from './src/Vista/listaProfesores.jsx';
 import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
 import PantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
+import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
 import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
 import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
@@ -34,8 +35,9 @@ import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
-import DatosProfesor from './src/Vista/datosProfesor.jsx'
+import DatosProfesor from './src/Vista/DatosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
+import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -43,6 +45,7 @@ import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 import appFirebase from './src/Modelo/firebase.js';
 import {getFirestore,collection,addDoc} from 'firebase/firestore'
+import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 const db = getFirestore(appFirebase);
 
 // Creamos una instancia del stack
@@ -84,6 +87,9 @@ export default function App() {
 
 
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
+          <Stack.Screen name="EliminarTareaAlumno" component={EliminarTareaAlumno}/>
+          <Stack.Screen name= "FeedbackAlumno" component={FeedbackAlumno}/>
+          <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="datosProfesor" component={DatosProfesor} />

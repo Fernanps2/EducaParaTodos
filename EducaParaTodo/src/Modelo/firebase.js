@@ -1796,6 +1796,38 @@ export const getTareaId = async (idAlumno) => {
     }
 };
 
+export const getTareaIdCompletada = async (idAlumno) => {
+
+  console.log(idAlumno);
+  
+  try {
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
+    const querySnapshot = await getDocs(q);
+    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+  
+    const docs = [];
+  
+    for (const tareaDoc of querySnapshot.docs) {
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
+      docs.push({
+        id: tareaDoc.id,
+        titulo,
+        completado,
+        fechaInicio,
+        fechaFin,
+        tipo,
+        idAlumno,
+      });
+    }
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    Alert.alert(error);
+  }
+};
+
 // Obtener todas las tareas
 export const getTareas = async () => {
 

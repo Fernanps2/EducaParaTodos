@@ -10,6 +10,7 @@ export default function ModificarDatosProfesor ({ route, navigation }) {
       const { nombreUsuario } = route.params;
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+      const [profesorId, setProfesorId] = useState('');
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
@@ -75,7 +76,7 @@ export default function ModificarDatosProfesor ({ route, navigation }) {
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
               style={styles.profileImage}
             />
-            <Text style={styles.roleText}>Profesor</Text>
+            <Text style={styles.roleText}>{nombreProfesor}</Text>
           </View>
                 <TextInput
                   style={styles.input}
