@@ -2,7 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadFile} from 'firebase/storage'
+import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage'
+import {encode as atob, decode as btoa} from 'base-64';
+
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
@@ -1583,49 +1585,19 @@ export async function deleteMensaje(id) {
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-const contarArchivos = async(nombreCarpeta) => {
-
-}
-
-uploadImage= async(uri) => {
-    return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.onerror = reject;
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            resolve(xhr.response);
-        }
-    };
-
-    xhr.open("GET", uri);
-    xhr.responseType = "blob";
-    xhr.send();
-   });
-};
-
 export async function almacenarImagen(imagen) {
 
-    //let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_1';
-
-  /*await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`images/${nombre_imagen}`);
-      ref.put(resolve);
-    })
-    .catch(error => {
-      console.log(error);
-    });*/
+    console.log(imagen);
 
     try {
-        const referenciaStorage = ref(storage, `images/${nombre_imagen}`);
-        await uploadFile(referenciaStorage, imagen);
-
-        console.log("Imagen subida");
-    } catch (error) {
-        console.log("Error al subir la imagen", error);
+        const refImagenes = ref(storage, 'Imagenes/imagen.jpg')
+        //const file = dataUriToBlob(imagen);
+        const file = await(await fetch(imagen)).blob();
+        uploadBytes(refImagenes, file).then((snapshot) => {
+            console.log('Se ha subido la imagen');
+        });
+    } catch(error) {
+        console.log(error);
     }
 }
 
@@ -1646,23 +1618,23 @@ export async function almacenarPictograma(imagen) {
     });
 }
 
-export function cargarImagen(imagen) {
-  let imagenCargada = null;
+export async function descargarImagen(nombreImagen) {
+    let imagenUri = null;
 
-  storage
-    .ref(`images/${imagen}`)
-    .getDownloadURL()
-    .then(resolve => {
-      imagenCargada = resolve;
-    })
-    .catch(error => {
-      console.log(error);
-    })
+    const refImagen = ref(storage, 'Imagenes/imagen.jpg');
 
-    return imagenCargada;
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = url;
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+
+    return imagenUri;
 }
 
-/********** FINAL FUNCIONES PARA MULTIMEDIA ********/
+/******** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
 export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>{
 
