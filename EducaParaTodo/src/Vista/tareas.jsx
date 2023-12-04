@@ -1,31 +1,58 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-import DatosList from './DatosAlumnos';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el icono FontAwesome
 import { CerrarSesion } from './cerrarSesion';
+import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
 
-const Tareas = ({ route, navigation}) => {
-    
-    const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
+
+
+// Componente que muestra los datos de las tareas
+const DatosTareas = ({ tarea, navigation }) => {
     return (
-        <ScrollView style={styles.container}>
-            <CerrarSesion/>
-            <Text>Tareas de {usuario.nombre}</Text>
+        <View>
+            <TouchableOpacity onPress={() => navigation.navigate('verTarea',  {id:tarea.id})}>
+                {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
+                 para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
+                <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
+                <Text style={styles.texto}> Nombre: {tarea.titulo} </Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+const Tareas = ({ route, navigation }) => {
+
+    const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
+
+    const [tareas, setTareas] = useState([]);
+
+    useEffect(() => {
+        const listaTareas = async () => {
+            try {
+                const Tareas = await getTareaId(usuario.id);
+                setTareas(Tareas);
+                console.log(tareas);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaTareas();
+    }, []);
+    return (
+        <View style={styles.container}>
+            <CerrarSesion />
             <View style={styles.caja}>
                 <Text style={styles.titulo}> TAREAS PENDIENTES:</Text>
             </View>
-            {usuario.tareasPendiente.map((tarea, index) => (
-                <View style={styles.contenedor_tareas}>
-                    <View style={styles.contenedor_tarea}>
-                        <TouchableOpacity onPress={() => navigation.navigate('verTareaPictogramas')} >
-                            <Image style={styles.foto} source={{ uri: usuario.fotoTarea }} />
-                        </TouchableOpacity>
-                        <Text style={styles.texto} key={index}>{tarea}</Text>
+            <ScrollView contentContainerStyle={styles.datos}>
+                {tareas.map((tarea, index) => (
+                    <View key={index} style={styles.contenedor_tareas}>
+                        <DatosTareas tarea={tarea} navigation={navigation} />
                     </View>
-                </View>
-            ))}
-           
-        </ScrollView>
+                ))}
+
+            </ScrollView>
+        </View>
     );
 };
 
@@ -33,8 +60,13 @@ export default Tareas;
 
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
+    container: {
+        flex: 1,
+        padding: 20,    
+    },
+    datos: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',    
     },
     caja: {
         margin: 30,
@@ -48,26 +80,30 @@ const styles = StyleSheet.create({
         fontSize: 40,
     },
     texto: {
-        marginLeft: 30,
-        marginBottom: 30,
-        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 50,
+        marginTop: 5,
+        flexWrap: 'wrap',    
+
     },
     foto: {
-        padding: 20,
-        marginTop: 30,
-        marginLeft: 30,
-        marginRight: 10,
-        borderRadius: 15,
-        width: 100,
-        height: 100,
+        width: 150,
+        height: 150,
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 2,
+        borderColor: 'black',
+
+
     },
     contenedor_tareas: {
-        flex:1,
-        flexDirection: 'row',
+        flexDirection: 'column',
+        width:'50%',
         alignItems: 'center',
     },
-    contenedor_tarea: {
-        flexDirection: 'column',
-    }
-});
+    image: {
+        width: 200,
+        height: 200,
+    },
 
+});

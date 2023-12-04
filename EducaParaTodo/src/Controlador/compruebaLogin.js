@@ -1,42 +1,42 @@
-
-
 import React from 'react'
-import alumnos from '../Modelo/alumno'
-import profesores from '../Modelo/profesor'
-import administradores from '../Modelo/administrador'
+import { loginAdministrador } from './administradores';
+import { loginAlumno } from './alumnos';
+import { loginProfesor } from './profesores';
 
-export default function compruebaLogin ({username, password, tipo}) {
-    const alumno = alumnos();
-    const {profesor} = profesores();
-    const {administrador} = administradores()
-
+export default async function compruebaLogin ({username, password, tipo}) {
     //function esLogin() {
-        let encontrado = false;
+        //let encontrado = false;
         let token = null;
         if (tipo == 'alumno') {
-            for (let i = 0; i < alumno.length && !encontrado; i++) {
+            /*for (let i = 0; i < alumno.length && !encontrado; i++) {
                 if (username == alumno[i].username && password == alumno[i].password) {
                     encontrado = true;
-                    
+
                     token = alumno[i].jwt;
                 }
-            }
+            }*/
+
+            token = await loginAlumno(username, password);
         } else if (tipo == 'profesor') {
-            for (let i = 0; i < profesor.length && !encontrado; i++) {
+            /*for (let i = 0; i < profesor.length && !encontrado; i++) {
                 if (username == profesor[i].username && password == profesor[i].password) {
                     encontrado = true;
-                    
+
                     token = profesor[i].jwt;
                 }
-            }
+            }*/
+
+            token = await loginProfesor(username, password);
         } else if (tipo == 'administrador') {
-            for (let i = 0; i < administrador.length && !encontrado; i++) {
+            /*for (let i = 0; i < administrador.length && !encontrado; i++) {
                 if (username == administrador[i].username && password == administrador[i].password) {
                     encontrado = true;
-                    
+
                     token = administrador[i].jwt;
                 }
-            }
+            }*/
+
+            token = await loginAdministrador(username, password);
         }
 
         return token;
@@ -70,7 +70,7 @@ export default function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i <alumno.length && !encontrado; i++) {
 //                 if (username ==alumno[i].username && password == alumno[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = alumno[i].jwt;
 //                 }
 //             }
@@ -78,7 +78,7 @@ export default function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i < profesor.length && !encontrado; i++) {
 //                 if (username == profesor[i].username && password == profesor[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = profesor[i].jwt;
 //                 }
 //             }
@@ -86,7 +86,7 @@ export default function compruebaLogin ({username, password, tipo}) {
 //             for (let i = 0; i < administrador.length && !encontrado; i++) {
 //                 if (username == administrador[i].username && password == administrador[i].password) {
 //                     encontrado = true;
-                    
+
 //                     token = profesor[i].jwt;
 //                 }
 //             }

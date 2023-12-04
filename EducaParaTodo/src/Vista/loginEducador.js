@@ -8,13 +8,15 @@ const LoginScreen = ({ route, navigation} ) => {
   const tipo = route.params.tipo;
   const {login} = useUser();
 
-  const handleLogin = () => {
-    const logueado = login(username, password, tipo);
+  const handleLogin = async () => {
+    const logueado = await login(username, password, tipo);
+
+    console.log(logueado);
 
     if (logueado && tipo == 'profesor')
-      navigation.navigate('HomeEducador')
+      navigation.navigate('HomeEducador', {nombreProf: username} )
     else if (logueado && tipo == 'administrador')
-      navigation.navigate('HomeAdmin');
+      navigation.navigate('HomeAdmin', {nombreAdm: username});
     else
       alert('Usuario y contraseña inválidos');
   };
