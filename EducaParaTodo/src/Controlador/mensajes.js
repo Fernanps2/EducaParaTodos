@@ -1,7 +1,7 @@
 import {getMensajes, getMensajeID, addMensaje, updateMensaje, deleteMensaje} from '../Modelo/firebase'
 
 export async function aniadeMensaje(id_profe, mensaje, aula, fecha, hora) {
-    if (id_profe != '' && id_mensaje != '')
+    if (id_profe != '' && mensaje != '')
         await addMensaje(id_profe, mensaje, aula, fecha, hora);
 }
 
@@ -23,7 +23,7 @@ export async function buscaMensajeId (id) {
 }
 
 export async function actualizaMensaje(id, id_profe, mensaje, aula, fecha, hora) {
-    if (id_profe != '')
+    if (id_profe != '' && mensaje != '')
         await updateMensaje(id, id_profe, mensaje, aula, fecha, hora);
 }
 
