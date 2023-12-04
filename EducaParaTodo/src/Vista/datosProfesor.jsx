@@ -3,13 +3,9 @@ import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Plat
 //import profesores from '../Modelo/profesor';
 import { getProfesorPorId, getProfesoresNombre, updateProfesorv2 } from '../Modelo/firebase';
 
-// Esta página muestra los datos de cada profesor y lleva incluida la función para modificar los datos de un profesor 
-// Es utilizada por el admin
-
 export default function DatosProfesor ({ profesor, navigation }) {
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
-      const [profesorId, setProfesorId] = useState('');
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
@@ -19,14 +15,11 @@ export default function DatosProfesor ({ profesor, navigation }) {
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
         const obtenerDatosProfesor = async () => {
-          {/*const idProfesor = 'yQcGbUqwKJOkSdGW4GuM';
-          const datosProfesor = await getProfesorPorId(idProfesor);*/}
-
-          const datosProfesor = await getProfesoresNombre(nombreProfesor);
+          const idProfesor = 'yQcGbUqwKJOkSdGW4GuM'; // Reemplaza con el ID correcto
+          const datosProfesor = await getProfesorPorId(idProfesor);
           setProfesorData(datosProfesor);
           // Asignar los valores iniciales para la edición
           if (datosProfesor) {
-            setProfesorId(datosProfesor.id);
             setNombre(datosProfesor.nombre);
             setApellidos(datosProfesor.apellidos);
             setContrasenia(datosProfesor.password);
@@ -73,12 +66,13 @@ export default function DatosProfesor ({ profesor, navigation }) {
           </View>
 
           <Text style={styles.title}> Modificar mis datos </Text>
+
           <View style={styles.profileContainer}>
             <Image
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
               style={styles.profileImage}
             />
-            <Text style={styles.roleText}>{nombreProfesor}</Text>
+            <Text style={styles.roleText}>Profesor</Text>
           </View>
 
                 <TextInput
