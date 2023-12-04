@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
-import { Permissions, ImagePicker } from "expo";
+//import { Permissions, ImagePicker } from "expo";
 import {openGallery} from '../Controlador/multimedia' 
 
 

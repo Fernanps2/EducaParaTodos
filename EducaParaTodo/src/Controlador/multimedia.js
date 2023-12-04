@@ -17,13 +17,15 @@ export async function cargaImagen(imagen) {
 }
 
 export const openGallery = async () => {
-    const resultPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+    /*const resultPermission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
 
     if (PermissionsAndroid.RESULTS) {
         const resultImagePicker = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [4, 3]
         });
+
+        console.log(resultImagePicker);
 
         if (resultImagePicker.canceled === false) {
             const imageUri = resultImagePicker.assets[0].uri;
@@ -32,6 +34,21 @@ export const openGallery = async () => {
 
             return (imageUri);
         }
+    }*/
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+        const imageUri = result.assets[0].uri;
+
+        return imageUri;
     }
 
     return null;
