@@ -26,21 +26,17 @@ import ListaProfesores from './src/Vista/listaProfesores.jsx';
 import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
 import PantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
+import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
 import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
-import RecogerLosPlatos from './Imagenes/verTarea/recogerlosplatos.png';
-import PonerLaMesa from './Imagenes/verTarea/ponerlamesa.png';
-import MesaPuesta from './Imagenes/verTarea/mesapuesta.png';
-import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
-import aniadirPictograma from './src/Vista/aniadirPictograma.jsx';
-import feedbackAlumno from './src/Vista/feedbackAlumno.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
-import DatosProfesor from './src/Vista/datosProfesor.jsx'
+import DatosProfesor from './src/Vista/DatosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
+import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -48,6 +44,7 @@ import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 import appFirebase from './src/Modelo/firebase.js';
 import {getFirestore,collection,addDoc} from 'firebase/firestore'
+import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 const db = getFirestore(appFirebase);
 
 // Creamos una instancia del stack
@@ -89,28 +86,15 @@ export default function App() {
 
 
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
-<<<<<<< HEAD
           <Stack.Screen name="EliminarTareaAlumno" component={EliminarTareaAlumno}/>
-          <Stack.Screen name="aniadirPictograma" component={aniadirPictograma}/>
-          <Stack.Screen name="feedbackAlumno" component={feedbackAlumno}/>
-          <Stack.Screen name="verTareaPictogramas">
-                {() => (
-                  <VerTareaPictogramas
-                    nombreTarea={nombTarea}
-                    descripcion={descrip}
-                    pasos={PASOS}
-                  />
-                )}
-              </Stack.Screen>      
-        <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
-=======
+          <Stack.Screen name= "FeedbackAlumno" component={FeedbackAlumno}/>
+          <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="datosProfesor" component={DatosProfesor} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
           <Stack.Screen name="modificarProfesor" component={ModificarProfesor} />
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
         </Stack.Navigator>
       </NavigationContainer>
     </UserContextProvider>

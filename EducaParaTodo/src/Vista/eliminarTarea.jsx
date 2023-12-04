@@ -50,7 +50,7 @@ const EliminarTarea = () => {
       style={styles.cardWithImage}
     >
       <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('feedbackAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('FeedbackAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
     </TouchableOpacity>
       ))}
     </ScrollView>
@@ -96,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EliminarTarea;
+export default EliminarTarea;

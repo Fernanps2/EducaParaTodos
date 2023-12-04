@@ -63,5 +63,5 @@ export default function AniadirPictograma() {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
            <Button title="Añadir Pictograma"><Text>Añadir pictograma</Text></Button>
       </View>
-    );
-  };
+    );
+  };

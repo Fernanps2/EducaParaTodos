@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 //import { buscaAlumno } from '../Controlador/alumnos';
 import { buscaProfesor } from '../Controlador/profesores';
 import { getProfesores } from '../Modelo/firebase';
-import DatosProfesor from './datosProfesor';
+import DatosProfesor from './DatosProfesor';
 
 export default function ListaProfesores({ navigation }) {
 

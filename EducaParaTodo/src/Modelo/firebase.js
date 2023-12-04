@@ -2,15 +2,10 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-<<<<<<< HEAD
-import {getStorage, ref} from 'firebase/storage'
-//import {v4} from 'uuid';
-=======
 import {getStorage, ref, uploadFile} from 'firebase/storage'
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 //import * as firebase from 'firebase';
 
@@ -41,10 +36,7 @@ const COL_PROFESORES_FOROS = 'profesoresForos';
 const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
-<<<<<<< HEAD
-=======
 const COL_MENSAJES = 'mensajes';
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -232,20 +224,11 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-<<<<<<< HEAD
-export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
-    let editaAlumno = {
-        nombre: nombre, 
-        apellidos: apellidos, 
-        visualizacionPreferente: visualizacionPreferente, 
-        password: password, 
-=======
 export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
     let editaAlumno = {
         nombre: nombre, 
         apellidos: apellidos, 
         visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
         foto: foto
     };
     let alumno = null;
@@ -263,10 +246,6 @@ export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPre
             editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-<<<<<<< HEAD
-            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
-=======
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
 
@@ -482,8 +461,6 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
     }
 }
 
-<<<<<<< HEAD
-=======
 export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
     let editaProfesor = {
         nombre: nombre, 
@@ -512,7 +489,6 @@ export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
     }
 }
 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 export async function deleteProfesor(id) {
     try {
         const docProfesor = doc(db, COL_PROFESORES, id);
@@ -1455,8 +1431,6 @@ export async function deleteAlumnoForo(id) {
 
 /********** FINAL FUNCIONES ALUMNO-FORO **********/
 
-<<<<<<< HEAD
-=======
 /**********  INICIO FUNCIONES MENSAJES ********/
 
 export async function getMensajes() {
@@ -1607,31 +1581,13 @@ export async function deleteMensaje(id) {
 
 /**********  FINAL FUNCIONES MENSAJES ********/
 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
 const contarArchivos = async(nombreCarpeta) => {
 
 }
 
-<<<<<<< HEAD
-// uploadImage= async(uri) => {
-//   return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//       if (xhr.readyState === 4) {
-//         resolve(xhr.response);
-//       }
-//     };
-
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//   });
-// };
-=======
-uploadImage= async(uri) => {
+const uploadImage= async(uri) => {
     return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onerror = reject;
@@ -1646,18 +1602,13 @@ uploadImage= async(uri) => {
     xhr.send();
    });
 };
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 export async function almacenarImagen(imagen) {
 
     //let num_imagenes = storage.child('images').size();
     let nombre_imagen = 'imagen_1';
 
-<<<<<<< HEAD
-  await uploadImage(imagen)
-=======
   /*await uploadImage(imagen)
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
     .then(resolve => {
       storage
         .ref()
@@ -1666,9 +1617,6 @@ export async function almacenarImagen(imagen) {
     })
     .catch(error => {
       console.log(error);
-<<<<<<< HEAD
-    });
-=======
     });*/
 
     try {
@@ -1679,7 +1627,6 @@ export async function almacenarImagen(imagen) {
     } catch (error) {
         console.log("Error al subir la imagen", error);
     }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 }
 
 export async function almacenarPictograma(imagen) {
@@ -1762,37 +1709,6 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
 
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-<<<<<<< HEAD
-export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
-  try{
-      if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
-        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-        console.log('te faltan campos');
-      }
-      else{
-        console.log('se crea el objeto');
-        const objeto = {
-          titulo,
-          completado,
-          descripcion,
-          fechaFin,
-          fechaInicio,
-          idAlumno,
-          tipo
-        }
-        
-        await addDoc(collection(db,'Tarea'),{
-          ...objeto
-        })
-      }
-    }catch(error){
-      console.log('error' + error);
-    }  
-}
-
-
-
-=======
 export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
     try{
         if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == ''){
@@ -1833,7 +1749,6 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
 }
 
 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 // export const asignarTareaAlumno = async (idTarea,idAlumno) => {
 
 
@@ -1845,26 +1760,6 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
 
 // PRUEBA REALIZADA. FUNCIONA
 export const asignarFeedback = async (idTarea,feedBack) => {
-<<<<<<< HEAD
-try{
-  if(idTarea === '' || feedBack === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
-  }
-  else{
-
-    // Creamos las referencias 
-    const tareaRef = doc(db, 'Tarea', String(idTarea));
-    
-    await updateDoc(tareaRef,{
-      Feedback: feedBack,
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-=======
     try{
       if(idTarea === '' || feedBack === ''){
         if (Platform.OS === "web"){
@@ -1891,55 +1786,14 @@ try{
     }  
   }
 
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 // PROBADA Y FUNCIONA. 
 
 export const getTareaId = async (idAlumno) => {
 
-<<<<<<< HEAD
-  console.log(idAlumno);
-  
-  try {
-    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
-    const querySnapshot = await getDocs(q);
-    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-  
-    const docs = [];
-  
-    for (const tareaDoc of querySnapshot.docs) {
-      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
-  
-      docs.push({
-        id: tareaDoc.id,
-        titulo,
-        completado,
-        fechaInicio,
-        fechaFin,
-        tipo,
-        idAlumno,
-      });
-    }
-  
-    return docs;
-  } catch (error) {
-    console.log(error);
-    Alert.alert(error);
-  }
-  };
-  
-// Prueba para obtener las tareas completadas
-  export const getTareaIdCompletada = async (idAlumno) => {
-
-    console.log(idAlumno);
-    
-    try {
-      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno),where("completado","==","true"));
-=======
     console.log(idAlumno);
     
     try {
       const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
       const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     
@@ -1964,16 +1818,14 @@ export const getTareaId = async (idAlumno) => {
       console.log(error);
       Alert.alert(error);
     }
-<<<<<<< HEAD
-    };
-  
+};
 
+export const getTareaIdCompletada = async (idAlumno) => {
 
-  // Obtener todas las tareas
-  export const getTareas = async () => {
+  console.log(idAlumno);
   
   try {
-    const q = query(collection(db,"Tarea"));
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
     const querySnapshot = await getDocs(q);
     // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
   
@@ -1998,8 +1850,6 @@ export const getTareaId = async (idAlumno) => {
     console.log(error);
     Alert.alert(error);
   }
-  };
-=======
 };
 
 // Obtener todas las tareas
@@ -2032,7 +1882,6 @@ try {
   Alert.alert(error);
 }
 };
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 // export const deleteTareaId = async (idTarea) => {
 //     try {
@@ -2151,39 +2000,6 @@ export const deleteTareaId = async (idTarea) => {
 
 
 
-<<<<<<< HEAD
-// PRUEBA REALIZADA. FUNCIONA
-export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
-try{
-
-  if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
-  }
-  else{
-
-    // Creamos las referencias 
-    const pasosRef = doc(db, 'PasosActividad', String(pasos));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      pasos,
-      idTarea
-    }
-    
-    await addDoc(collection(db,'Tarea-Actividad'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
-=======
   // PRUEBA REALIZADA. FUNCIONA
   export const setTareaActividad = async(aula,pasos,idTarea) => {
     try{
@@ -2216,7 +2032,6 @@ try{
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 
 export const getTareasActividad = async () => {
@@ -2274,8 +2089,6 @@ try {
 }
 };
 
-<<<<<<< HEAD
-=======
   // PRUEBA REALIZADA. FUNCIONA
   export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
     try{
@@ -2318,43 +2131,12 @@ try {
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 
 // Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
 // menú se cree una fila/documento por menú
 
 // PRUEBA REALIZADA.FUNCIONA
-<<<<<<< HEAD
-export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
-try{
-
-  if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
-  }
-  else{
-
-    // Creamos las referencias 
-    const idMenuRef = doc(db, 'Menu', String(idMenu));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      idMenu,
-      idTarea
-    }    
-    await addDoc(collection(db,'Tarea-Comanda'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-=======
 export const setTareaComanda = async(idTarea,menus) => {
     try{
   
@@ -2387,7 +2169,6 @@ export const setTareaComanda = async(idTarea,menus) => {
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 // ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
 // PRUEBA REALIZADA. FUNCIONA
@@ -2410,62 +2191,6 @@ try {
 
 
 // PRUEBA REALIZADA. FUNCIONA
-<<<<<<< HEAD
-export const setMenu = async(nombreMenu,idAlimentos) => {
-try{
-
-  if(nombreMenu === '' || idAlimentos === null){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-  }
-  else{
-    const objeto = {
-      idAlimentos
-    }
-    
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Menu', nombreMenu);
-
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
-
-
-// PRUEBA REALIZADA. FUNCIONA
-export const setAlimento = async (nombreAlimento,imagen) => {
-try{
-
-  if(nombreAlimento === '' || imagen === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-  }
-  else{
-
-    const objeto = {
-      nombreAlimento,
-      imagen
-    }
-    
-
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
-
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
-=======
 export const setMenu = async(idTarea, idMenu, idAlimentos) => {
   try{
 
@@ -2560,7 +2285,6 @@ export const setAlimento = async (nombreAlimento,imagen) => {
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 // ESTA FUNCION SIRVE PARA OBTENER UN ALIMENTO A TRAVÉS DE SU NOMBRE
 // PRUEBA REALIZADA. FUNCIONA
@@ -2587,32 +2311,6 @@ try {
 
 
 
-<<<<<<< HEAD
-export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
-try{
-
-  if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
-  }
-  else{
-
-    const objeto = {
-      idMaterial,
-      lugarLlevar,
-      recogida,
-      idTarea
-    }
-
-    await addDoc(collection(db,'Tarea-Inventario'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-=======
 
 export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea) => {
     try{
@@ -2648,36 +2346,10 @@ export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDes
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setMaterial = async (foto,nombre,stock)=> {
-<<<<<<< HEAD
-try{
-
-  if(nombre === '' || foto === '' || stock === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-  }
-  else{
-
-    const objeto = {
-      nombre,
-      foto,
-      stock
-    }
-    
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await addDoc(collection(db,'Material'),{
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}  
-}
-
-=======
     try{
   
       if(nombre === '' || foto === '' || stock === ''){
@@ -2709,7 +2381,6 @@ try{
       console.log(error);
     }  
   }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
 
 
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
@@ -2799,10 +2470,5 @@ try {
     return docs;
   } catch (error) {
     console.log(error);
-<<<<<<< HEAD
-}
-}
-=======
   }
 }
->>>>>>> 5f8900e3d6a916e2cb617fb8206c0129345af7ba
