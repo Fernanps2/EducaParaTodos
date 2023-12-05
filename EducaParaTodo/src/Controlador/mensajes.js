@@ -1,7 +1,7 @@
 import {getMensajes, getMensajeID, addMensaje, updateMensaje, deleteMensaje} from '../Modelo/firebase'
 
 export async function aniadeMensaje(id_profe, mensaje, aula, fecha, hora) {
-    if (id_profe != '' && id_mensaje != '')
+    if (id_profe != '' && mensaje != '')
         await addMensaje(id_profe, mensaje, aula, fecha, hora);
 }
 
