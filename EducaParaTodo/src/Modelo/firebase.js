@@ -305,7 +305,7 @@ export async function getProfesoresNombre(nombre) {
     let docs = [];
     try {
         const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter)
+        const querySnapshot = await getDocs(queryFilter);
         
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
@@ -315,7 +315,10 @@ export async function getProfesoresNombre(nombre) {
               apellidos,
               foto,
             });
-        }        
+        } 
+
+        console.log('los documentos son: ' + JSON.stringify(docs));
+        return docs;       
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -392,8 +395,8 @@ export async function getProfesoresLogin(nombre, contrasenia) {
 export async function getProfesorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docRef = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docRef);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -432,7 +435,7 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
 }
 
 export async function updateProfesor(id, nombre, apellidos, password, foto) {
-  console.log(' APlelidios: ' + apellidos);
+  console.log('id prof: ' + id);
     let editaProfesor = {
         nombre,
         apellidos: apellidos,
@@ -456,6 +459,11 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+
+            console.log('nombre editado: ' + editaProfesor.nombre);
+            console.log('apellidos editado: ' + editaProfesor.apellidos);
+            console.log('password editado: ' + editaProfesor.password);
+            console.log('foto editado: ' + editaProfesor.foto);
 
             await updateDoc(docProfesor, {
                 ...editaProfesor

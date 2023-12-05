@@ -35,9 +35,9 @@ import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
-import DatosProfesor from './src/Vista/DatosProfesor.jsx'
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
+import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -80,6 +80,7 @@ export default function App() {
           <Stack.Screen name="listaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
+          <Stack.Screen name="datosProfesor" component={DatosProfesor} />
 
 
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />
@@ -92,7 +93,6 @@ export default function App() {
           <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
-          <Stack.Screen name="datosProfesor" component={DatosProfesor} />
           <Stack.Screen name="modDatosProfesor" component={ModificarDatosProfesor} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />

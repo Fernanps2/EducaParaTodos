@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
 import { buscaProfesor } from '../Controlador/profesores';
-// import { getProfesores } from '../Modelo/firebase';
 import DatosProfesor from './datosProfesor';
+// import { getProfesores } from '../Modelo/firebase';
 
 export default function ListaProfesores({ navigation }) {
 
