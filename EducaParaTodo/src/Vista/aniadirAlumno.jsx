@@ -59,8 +59,8 @@ export default function AniadirAlumno ({ navigation }) {
 
   const handleImage = async() => {
     //setImageUri(await openGallery());
-    //setImageUri(await descargaImagen('Microondas.jpg'));
-    console.log(await descargaImagenes());
+    setImageUri(await descargaImagen('Microondas.jpg'));
+    //setImageUri(await descargaImagenes());
   }
 
     return (

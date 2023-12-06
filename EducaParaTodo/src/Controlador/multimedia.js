@@ -17,6 +17,17 @@ import * as ImagePicker from 'expo-image-picker';
 export async function almacenaImagen(imagen, nombre) {
     if (imagen != '' && nombre != '')
         almacenarImagen(imagen);
+    else 
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
 }
 
 /**
@@ -32,6 +43,17 @@ export async function almacenaImagen(imagen, nombre) {
 export async function almacenaPictograma(imagen, nombre) {
     if (imagen != '' && nombre != '')
         almacenarPictograma(imagen);
+    else 
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
 }
 
 /**
@@ -47,6 +69,17 @@ export async function almacenaPictograma(imagen, nombre) {
 export async function almacenaVideo(video, nombre) {
     if (video != '' && nombre != '')
         almacenarVideo(video);
+    else
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
 }
 
 /**
@@ -62,6 +95,18 @@ export async function almacenaVideo(video, nombre) {
 export async function almacenaFotoPersona(foto, nombre) {
     if (foto != '')
         almacenarFotoPersona(foto);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío');
+        }
+    }
 }
 
 /**
@@ -77,6 +122,18 @@ export async function almacenaFotoPersona(foto, nombre) {
 export async function almacenaImagenLogin(imagen, nombre) {
     if (imagen != '' && nombre != '')
         almacenarImagenLogin(imagen);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
 }
 
 /**
