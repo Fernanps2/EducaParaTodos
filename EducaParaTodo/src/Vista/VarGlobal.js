@@ -63,6 +63,7 @@ export function getSoloMenus () {
 export function setChangedSoloMenus (status){
     cambiadoSoloMenus = status;
 }
+
 export function isChangedSoloMenus (){
     return cambiadoSoloMenus;
 }

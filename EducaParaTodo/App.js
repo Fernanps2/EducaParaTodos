@@ -38,6 +38,9 @@ import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
 import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import seleccionAula from './src/Vista/seleccionAula.jsx';
+import seleccionMenus from './src/Vista/seleccionMenu.jsx';
+import seleccionCantidad from './src/Vista/seleccionCantidad.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -97,6 +100,10 @@ export default function App() {
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
           <Stack.Screen name="modificarProfesor" component={ModificarProfesor} />
+          <Stack.Screen name="seleccionAula" component={seleccionAula} />
+          <Stack.Screen name="seleccionMenu" component={seleccionMenus} />
+          <Stack.Screen name="seleccionCantidad" component={seleccionCantidad} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </UserContextProvider>

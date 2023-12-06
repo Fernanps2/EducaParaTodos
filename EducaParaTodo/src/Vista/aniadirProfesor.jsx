@@ -10,6 +10,7 @@ export default function AniadirProfesor ({navigation }) {
     apellidos: "",
     contrasenia: "",
     email: "",
+    aula: "",
   });
 
   const [imageUri, setImageUri] = useState("");
@@ -28,7 +29,7 @@ export default function AniadirProfesor ({navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia, "");
+            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,datosProfesor.aula, "");
             navigation.navigate('listaProfesores');
           }
         }
@@ -69,6 +70,14 @@ export default function AniadirProfesor ({navigation }) {
         value={datosProfesor.email}
         onChangeText={(value)=>handeChangeText(value,'email')}
         />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Aula"
+        value={datosProfesor.aula}
+        onChangeText={(value)=>handeChangeText(value,'aula')}
+        />
+
 
       <View style={styles.photoSection}>
         <Text>Añadir foto del usuario:</Text>

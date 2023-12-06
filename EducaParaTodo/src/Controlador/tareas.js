@@ -1,12 +1,12 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario } from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario } from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
     if(titulo != '' && fechaInicio != '' && fechaFin != '' && tipo != '' && periodicidad != '' )
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
 
-export async function asignarFeedback (idTarea, feedBack){
+export async function aniadirFeedback (idTarea, feedBack){
     if(idTarea != '' && feedBack != ''){
         await asignarFeedback(idTarea, feedBack);
     }
@@ -109,12 +109,23 @@ export async function buscarMenus(){
     return menus;
 }
 
+// Esta función muestra el menú con ese id
+export async function buscarMenu(idMenu){
+    let menu = null;
+
+    menus = await getMenu(idMenu);
+
+    return menu;
+}
+
+
 export async function aniadeAlimento(nombreAlimento,imagen){
     if(nombreAlimento != '' && imagen != ''){
         await setAlimento(nombreAlimento, imagen);
     }
 }
 
+// Devuelve el alimento con ese nombre
 export async function buscarAlimento(nombre){
     let alimento = null;
 
@@ -124,6 +135,16 @@ export async function buscarAlimento(nombre){
 
     return alimento;
 }
+
+// Devuelve todos los alimentos
+export async function buscarAlimentos(){
+    let alimentos = null;
+
+    alimentos = await getAlimentos();
+
+    return alimentos;
+}
+
 
 export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
     if(idMaterial != '' && cantidad != '' && lugarOrigen != '' && lugarDestino != '' && idTarea != ''){
@@ -149,7 +170,7 @@ export async function buscarMaterial(nombre){
 }
 
 // Esta función devuelve el material con ese id
-export async function getMaterialId(id){
+export async function buscarMaterialId(id){
     let material = null;
 
     if(id != ''){

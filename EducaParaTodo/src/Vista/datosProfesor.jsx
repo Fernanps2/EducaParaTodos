@@ -8,14 +8,13 @@ export default function DatosProfesor ({ profesor, navigation }) {
 
     const idProf = profesor.id;
     const nombreProf = profesor.nombre
-    console.log(' id profesor ' + idProf);
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
       const [email, setEmail] = useState('');
-      const [info, setInfo] = useState('');
+      const [aula, setAula] = useState('');
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
@@ -39,7 +38,7 @@ export default function DatosProfesor ({ profesor, navigation }) {
       // Función para actualizar los datos del profesor
       const guardarCambios = async () => {
         // Lógica para guardar los cambios en la base de datos usando updateProfesor
-        await updateProfesor(idProf, nombre, apellidos, contrasenia, email, info);
+        await updateProfesor(idProf, nombre, apellidos, contrasenia, email, aula);
         // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
       };
 
@@ -99,6 +98,14 @@ export default function DatosProfesor ({ profesor, navigation }) {
                   value={email}
                   onChangeText={(text) => setEmail(text)}
                 />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Aula"
+                  value={aula}
+                  onChangeText={(text) => setAula(text)}
+                />
+
 {/* 
                 <TextInput
                   style={styles.input}

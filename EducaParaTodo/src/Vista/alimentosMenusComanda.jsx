@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import * as global from "./VarGlobal";
+import { buscarAlimentos } from "../Controlador/tareas";
 
 // Uso base de datos
 import appFirebase from "../Modelo/firebase";
@@ -53,7 +54,7 @@ export default function TiposMenusComanda({ navigation }) {
   useEffect(() => {
     const cargarAlimentos = async () => {
       try {
-        const datos = await getAlimentos();
+        const datos = await buscarAlimentos();
         const storeObjetos = [...datos.map((item) => item)];
         setAlimentosObjetos(storeObjetos);
         const menusConNinguno = ["Ninguno", ...datos.map((item) => item.Nombre)];

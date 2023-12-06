@@ -4,13 +4,25 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'rea
 import { CerrarSesion } from './cerrarSesion';
 import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
 
+const manejoPresionarBoton = (tarea, navigation) => {
+    
+    const id = tarea.id;
+    console.log("id tareas es: " + id);
 
+    if (tarea.tipo == "comanda"){
+        const id = tarea.id;
+        console.log("ididid " + id);
+        navigation.navigate('seleccionAula', {id,navigation});
+    } else if(tarea.tipo == "actividad"){
+        navigation.navigate('verTarea',{id:tarea.id,navigation});
+    }
+}
 
 // Componente que muestra los datos de las tareas
 const DatosTareas = ({ tarea, navigation }) => {
     return (
         <View>
-            <TouchableOpacity onPress={() => navigation.navigate('verTarea',  {id:tarea.id})}>
+            <TouchableOpacity onPress={() => manejoPresionarBoton(tarea,navigation)}>
                 {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
                 <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
@@ -38,6 +50,8 @@ const Tareas = ({ route, navigation }) => {
         };
         listaTareas();
     }, []);
+
+
     return (
         <View style={styles.container}>
             <CerrarSesion />

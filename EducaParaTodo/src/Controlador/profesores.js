@@ -1,8 +1,8 @@
 import {getProfesoresLogin, getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, updateProfesorAdmin, deleteProfesor, getProfesorID} from '../Modelo/firebase'
 
-export async function aniadeProfesor(nombre, apellidos, password, foto) {
+export async function aniadeProfesor(nombre, apellidos, password, aula,foto) {
     if (nombre != '' && apellidos != '' && password != '')
-        await addProfesor(nombre, apellidos, password, foto)
+        await addProfesor(nombre, apellidos, password, aula,foto)
 }
 
 export async function buscaProfesor() {

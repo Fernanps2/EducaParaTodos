@@ -286,11 +286,12 @@ export async function getProfesores() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, aula, foto} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
+              aula,
               foto,
             });
         }        
@@ -301,31 +302,32 @@ export async function getProfesores() {
     return docs;
 }
 
+
 export async function getProfesoresNombre(nombre) {
-    let docs = [];
-    try {
-        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter);
-        
-        for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
-            docs.push({
-              id:doc.id,
-              nombre,
-              apellidos,
-              foto,
-            });
-        } 
+  let docs = [];
+  try {
+      const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
+      const querySnapshot = await getDocs(queryFilter);
+      
+      for (const doc of querySnapshot.docs) {
+          const { nombre, apellidos, aula, foto} = doc.data();
+          docs.push({
+            id:doc.id,
+            nombre,
+            apellidos,
+            aula,
+            foto,
+          });
+      } 
 
-        console.log('los documentos son: ' + JSON.stringify(docs));
-        return docs;       
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesores", error);
-    }
+      console.log('los documentos son: ' + JSON.stringify(docs));
+      return docs;       
+  } catch (error) {
+      console.log("Ha habido un error al recoger los datos del profesores", error);
+  }
 
-    return docs;
+  return docs;
 }
-
 export async function getProfesoresApellidos(apellidos) {
     let docs = [];
     try {
@@ -411,12 +413,13 @@ export async function getProfesorID(id) {
     return instancia;
 }
 
-export async function addProfesor(nombre, apellidos, contrasenia, foto) {
+export async function addProfesor(nombre, apellidos, contrasenia, aula, foto) {
     let profesor = {
         nombre: nombre,
         apellidos: apellidos,
         password: contrasenia,
-        foto: foto
+        aula:aula,
+        foto: foto,
     }
 
     let identificacion = null;
@@ -434,13 +437,14 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, nombre, apellidos, password, foto) {
-  console.log('id prof: ' + id);
+export async function updateProfesor(id, nombre, apellidos, password, email, aula,foto) {
     let editaProfesor = {
         nombre,
         apellidos: apellidos,
         password,
-        foto
+        email,
+        aula,
+        // foto,
     };
 
     let profesor = null;
@@ -451,19 +455,14 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
         
         if (docSnapshot.exists()) {
             profesor = docSnapshot.data();
-            console.log('datos bd: ' + profesor.apellidos);
-            console.log('edita apellidos: ' + editaProfesor.apellidos);
-
           
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
-            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            // editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
+            editaProfesor.email = editaProfesor.email == '' ? profesor.email : editaProfesor.email;
 
-            console.log('nombre editado: ' + editaProfesor.nombre);
-            console.log('apellidos editado: ' + editaProfesor.apellidos);
-            console.log('password editado: ' + editaProfesor.password);
-            console.log('foto editado: ' + editaProfesor.foto);
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
@@ -474,10 +473,11 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
     }
 }
 
-export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+export async function updateProfesorAdmin(id, nombre, apellidos, aula,foto) {
     let editaProfesor = {
         nombre: nombre, 
         apellidos: apellidos, 
+        aula:aula,
         foto: foto
     };
     let profesor = null;
@@ -491,6 +491,7 @@ export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
 
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
 
             await updateDoc(docProfesor, {
@@ -1796,7 +1797,7 @@ export const getTareaId = async (idAlumno) => {
           idAlumno,
         });
       }
-    
+      console.log(docs);
       return docs;
     } catch (error) {
       console.log(error);
@@ -2048,6 +2049,7 @@ try {
     docs.push(tareaActividadDatos);
     }
 
+    console.log("funciona getTarea: " + docs);
     return docs;
   } catch (error) {
     console.log(error);
@@ -2230,6 +2232,26 @@ export const getMenus = async() => {
     }
   }
 
+  export const getMenu = async(idMenu) => {
+    try {
+      const menuQuery = query(collection(db, 'Menu'), where('id', '==', idMenu));
+      const querySnapshot = await getDocs(menuQuery);
+  
+      const docs = [];
+  
+      querySnapshot.forEach((docu) => {
+        const menu = docu.data(); // Extraemos nombre
+        const id = docu.id; // Extraemos el ID del documento
+        docs.push({id, ...menu});
+      });
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+      throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+  }
+
 
 
 
@@ -2292,6 +2314,28 @@ try {
   throw error; // Lanza el error para que pueda ser manejado por el llamador
 }
 };
+
+// Esta función devuelve todos los alimentos que tengamos
+export const getAlimentos = async () => {
+  try {
+    const alimentosQuery = query(collection(db, 'Alimentos'));
+    const querySnapshot = await getDocs(alimentosQuery);
+  
+    const docs = [];
+  
+    querySnapshot.forEach((docu) => {
+      const alimentoDatos = docu.data();
+  
+      docs.push(alimentoDatos);
+    });
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+  };
+  
 
 
 
