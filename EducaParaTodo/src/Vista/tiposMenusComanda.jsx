@@ -49,9 +49,41 @@ export default function TiposMenusComanda({ navigation }) {
   };
 
   const deleteItem = (index) => {
-    let arrayCopy = [...menuList];
-    arrayCopy.splice(index, 1);
-    setMenuList(arrayCopy);
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let arrayCopy = [...menuList];
+          arrayCopy.splice(index, 1);
+          setMenuList(arrayCopy);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              let arrayCopy = [...menuList];
+              arrayCopy.splice(index, 1);
+              setMenuList(arrayCopy);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   const renderItem = ({ item, index }) => (

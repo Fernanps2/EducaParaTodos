@@ -164,6 +164,7 @@ export default function TareaActividad({ navigation }) {
         const menusObjetos = getObjMenusSeleccionados();
         for (const item of menusObjetos) {
           const idAlimentos = filtroID(item.Nombre);
+          console.log(idAlimentos);
           await setMenu(idTarea, item.id, idAlimentos);
         }
 

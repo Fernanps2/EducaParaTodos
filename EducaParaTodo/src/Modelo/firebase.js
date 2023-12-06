@@ -2362,7 +2362,8 @@ export const getAlimentos = async() => {
   
     querySnapshot.forEach((docu) => {
       const alimentosDatos = docu.data();  
-      docs.push(alimentosDatos);
+      const id = docu.id;
+      docs.push({id, ...alimentosDatos});
     });
   
     return docs;
@@ -2530,9 +2531,8 @@ try {
 
   querySnapshot.forEach((docu) => {
     const materialDatos = docu.data();
-    console.log(materialDatos);
-
-    docs.push(materialDatos);
+    const id = docu.id;
+    docs.push({id, ...materialDatos});
   });
 
   return docs;

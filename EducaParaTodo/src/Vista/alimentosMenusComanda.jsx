@@ -36,7 +36,12 @@ export default function TiposMenusComanda({ navigation }) {
       actualizarMenus();
       global.setChangedSoloMenus(false);
     } else {
-      setMenus(global.getMenus);
+      if (global.isVaciaListaMenus){
+        const nuevosMenus = { "Ninguno": [] };
+        setMenus(nuevosMenus);
+      }else{
+        setMenus(global.getMenus);
+      }
     }
   }, []);
 
@@ -81,11 +86,45 @@ export default function TiposMenusComanda({ navigation }) {
   };
 
   const deleteFood = (food) => {
-    const updatedMenu = { ...menus };
-    updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
-      (item) => item !== food
-    );
-    setMenus(updatedMenu);
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const updatedMenu = { ...menus };
+          updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
+            (item) => item !== food
+          );
+          setMenus(updatedMenu);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              const updatedMenu = { ...menus };
+              updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
+                (item) => item !== food
+              );
+              setMenus(updatedMenu);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   // Guardamos los alumentos que se añadieron al menu.

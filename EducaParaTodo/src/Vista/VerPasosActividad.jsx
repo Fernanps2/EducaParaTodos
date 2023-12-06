@@ -7,8 +7,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
+  Platform,
 } from "react-native";
-import * as global from './VarGlobal';
+import Swal from "sweetalert2";
+import * as global from "./VarGlobal";
 import { useRoute } from "@react-navigation/native";
 
 export default function VerPasosActividad({ navigation }) {
@@ -20,7 +23,7 @@ export default function VerPasosActividad({ navigation }) {
   useEffect(() => {
     if (route.params !== undefined) {
       // Añades el objeto al array
-      console.log("Estamos actualizando")
+      console.log("Estamos actualizando");
       const { nombre, texto, imagen, pictograma, video, audio } = route.params;
       global.pushPasos(nombre, texto, imagen, pictograma, video, audio);
       setData(global.getPasos);
@@ -29,11 +32,42 @@ export default function VerPasosActividad({ navigation }) {
 
   useEffect(() => {
     setData(global.getPasos);
-  }, );
+  });
 
   const deleteItem = (id) => {
-    global.filtrarPasos(id);
-    setData(global.getPasos)
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          global.filtrarPasos(id);
+          setData(global.getPasos);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              global.filtrarPasos(id);
+              setData(global.getPasos);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   const renderItem = ({ item }) => (
