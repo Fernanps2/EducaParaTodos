@@ -6,7 +6,7 @@ export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodici
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
 
-export async function asignarFeedback (idTarea, feedBack){
+export async function asignarFeedbackCon(idTarea, feedBack){
     if(idTarea != '' && feedBack != ''){
         await asignarFeedback(idTarea, feedBack);
     }
@@ -149,7 +149,7 @@ export async function buscarMaterial(nombre){
 }
 
 // Esta función devuelve el material con ese id
-export async function getMaterialId(id){
+export async function buscarMaterialId(id){
     let material = null;
 
     if(id != ''){

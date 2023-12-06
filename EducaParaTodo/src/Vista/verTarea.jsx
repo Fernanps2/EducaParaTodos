@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import tareas from '../Modelo/tareas';
-import { getPasos, getTareasActividadId } from '../Modelo/firebase';
+import { buscarPasos, buscarTareaActividad } from '../Controlador/tareas';
 import { Entypo } from '@expo/vector-icons';
 
 export function VerTarea ({route, navigation}){
@@ -27,7 +27,7 @@ export function VerTarea ({route, navigation}){
     useEffect(() => {
         const listaTareas = async () => {
             try {
-                const Tareas = await getTareasActividadId(id);
+                const Tareas = await buscarTareaActividad(id);
                 setTareas(Tareas);
 
                 // Como esta función solo nos va a devolver un documeno, es decir, una tarea no hay problema en asignar el id
@@ -41,14 +41,14 @@ export function VerTarea ({route, navigation}){
     }, []);
 
 
-    const [pasos,setPasos] = useState();
+    const [pasos,setPasos] = useState([]);
 
     useEffect(() => {
         const listaPasos = async () => {
             try {
-                const Tareas = await getPasos(id);
-                setTareas(Tareas);
-                await console.log(Tareas);
+                const Pasos = await buscarPasos(id);
+                setPasos(Pasos);
+                console.log(pasos);
             } catch (error) {
                 console.log(error);
             }
