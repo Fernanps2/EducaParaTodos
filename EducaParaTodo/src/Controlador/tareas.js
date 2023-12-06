@@ -1,4 +1,4 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
+import { getTareaById, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -9,11 +9,19 @@ export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
 }
 
-// Esta función busca la tarea con ese ID
-export async function buscarTarea(idTarea){
+// Esta función busca la tarea con ese ID de alumno
+export async function buscarTarea(idAlumno){
     let tarea = null;
 
-    tarea = await getTareaId(idTarea);
+    tarea = await getTareaId(idAlumno);
+
+    return tarea;
+}
+
+export async function buscarTareaId(idTarea){
+    let tarea = null;
+
+    tarea = await getTareaById(idTarea);
 
     return tarea;
 }
@@ -75,6 +83,14 @@ export async function buscarTareasComandas(){
     let tareas = null;
 
     tareas = await getTareasComanda();
+
+    return tareas;
+}
+
+export async function buscarTareasComandasId(idTarea){
+    let tareas = null;
+
+    tareas = await getTareasComandaId(idTarea);
 
     return tareas;
 }
@@ -152,6 +168,14 @@ export async function buscarTareasInventario(){
     let tareasInventario = null;
 
     tareasInventario = await getTareasInventario();
+
+    return tareasInventario;
+}
+
+export async function buscarTareasInventarioId(idTarea){
+    let tareasInventario = null;
+
+    tareasInventario = await getTareasInventarioId(idTarea);
 
     return tareasInventario;
 }

@@ -2173,6 +2173,36 @@ export const getTareaId = async (idAlumno) => {
     }
 };
 
+export const getTareaById = async (tareaId) => {
+    try {
+      const q = query(collection(db, 'Tarea'), where('__name__', '==', tareaId));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const tareaDoc = querySnapshot.docs[0];
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
+        return {
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
+        };
+      } else {
+        // Si el documento no existe
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
+      throw error;
+    }
+  };
+  
+
 // Obtener todas las tareas
 export const getTareas = async () => {
 
@@ -2384,7 +2414,6 @@ try {
 
     docs.push(tareaActividadDatos);
     }
-
     return docs;
   } catch (error) {
     console.log(error);
@@ -2394,7 +2423,7 @@ try {
 export const getPasos = async (idActividad) => {
 try {
 
-  const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
+  const q = query(collection(db,"PasosActividad"),where("idTarea","==",idActividad));
   const querySnapshot = await getDocs(q);
   const docs=[];
 
@@ -2509,6 +2538,25 @@ try {
     console.log(error);
 }
 }
+
+export const getTareasComandaId = async (idTarea) => {
+    try {
+      const q = query(collection(db, 'Tarea-Comanda'), where('idTarea', '==', idTarea));
+      const querySnapshot = await getDocs(q);
+  
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const tareaComandaDatos = docu.data();
+        docs.push(tareaComandaDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
 
 // PRUEBA REALIZADA. FUNCIONA
@@ -2793,3 +2841,40 @@ try {
     console.log(error);
   }
 }
+
+export const getTareasInventarioId = async (idTarea) => {
+    try {
+      const q = query(collection(db, 'Tarea-Inventario'), where('idTarea', '==', idTarea));
+      const querySnapshot = await getDocs(q);
+      
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const tareaInventarioDatos = docu.data();
+        docs.push(tareaInventarioDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  export const getProfesorAula = async (aula) => {
+    try {
+      const q = query(collection(db, 'profesores'), where('aula', '==', aula));
+      const querySnapshot = await getDocs(q);
+      
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const ProfesoroDatos = docu.data();
+        docs.push(ProfesoroDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
