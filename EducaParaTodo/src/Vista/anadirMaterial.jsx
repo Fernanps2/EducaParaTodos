@@ -13,8 +13,7 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMateriales } from "../Modelo/firebase";
-import VerTodosMateriales from './verTodosMateriales';
+import { buscarMateriales } from "../Controlador/tareas";
 
 //import { DataContextMateriales } from "./DataContextMateriales";
 
@@ -28,7 +27,7 @@ export default function AnadirMaterial({ navigation }) {
     // Función para llamar a getMateriales y almacenar la respuesta
     const cargarMateriales = async () => {
       try {
-        const datosMateriales = await getMateriales();
+        const datosMateriales = await buscarMateriales();
         setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
         setInitialMaterials(datosMateriales);
         setCargando(false);
