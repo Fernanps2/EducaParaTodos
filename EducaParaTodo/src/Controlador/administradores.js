@@ -53,7 +53,7 @@ export async function buscaAdministradorId (id) {
     let instancia = null;
 
     if (id != null)
-        instancia = getAdministradorID(id);
+        instancia = await getAdministradorID(id);
 
     return instancia;
 }

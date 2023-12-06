@@ -50,7 +50,7 @@ export async function buscaProfesorId (id) {
     let instancia = null;
 
     if (id != null)
-        instancia = getProfesorID(id);
+        instancia = await getProfesorID(id);
 
     return instancia;
 }

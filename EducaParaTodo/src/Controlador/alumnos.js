@@ -59,7 +59,7 @@ export async function buscaAlumnoId (id) {
     let instancia = null;
 
     if (id != null)
-        instancia = getAlumnoID(id);
+        instancia = await getAlumnoID(id);
 
     return instancia;
 }
