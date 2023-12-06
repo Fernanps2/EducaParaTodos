@@ -8,7 +8,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { setVideo } from "../Modelo/firebase";
+import { anadeVideo } from "../Controlador/tareas";
 
 export default function GestionItemActividad() {
   const [urlVideo, setUrlVideo] = useState("");
@@ -36,7 +36,7 @@ export default function GestionItemActividad() {
   const handleAñadir = () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {
-        setVideo(nombreVideo, urlVideo);
+        anadeVideo(nombreVideo, urlVideo);
       } else {
         if (Platform.OS === "web"){
           Swal.fire({

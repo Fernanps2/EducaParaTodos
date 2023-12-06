@@ -13,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMenus, setMenu } from "../Modelo/firebase";
+import { buscarMenus } from "../Controlador/tareas";
 import * as global from "./VarGlobal";
 
 export default function TiposMenusComanda({ navigation }) {
@@ -26,7 +26,7 @@ export default function TiposMenusComanda({ navigation }) {
   useEffect(() => {
     const cargarMenus = async () => {
       try {
-        const datos = await getMenus();
+        const datos = await buscarMenus();
         const menusConNinguno = [...datos.map((item) => item)];
         setMenuTypes(menusConNinguno); // Guardamos los datos en la variable de estado
         setCargando(false);

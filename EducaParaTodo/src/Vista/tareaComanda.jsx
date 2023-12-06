@@ -19,7 +19,11 @@ import {
   getObjMenusSeleccionados,
   isVaciaListaMenus,
 } from "./VarGlobal";
-import { setTarea, setTareaComanda, setMenu } from "../Modelo/firebase";
+import {
+  aniadeTarea,
+  aniadeTareaComanda,
+  aniadeMenu,
+} from "../Controlador/tareas";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
@@ -149,7 +153,7 @@ export default function TareaActividad({ navigation }) {
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
-        const idTarea = await setTarea(
+        const idTarea = await aniadeTarea(
           nombreTarea,
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
@@ -158,14 +162,14 @@ export default function TareaActividad({ navigation }) {
         );
         // Obtenemos todos los id de los menus de la tarea
         const menus = getIdMenusSeleccionados();
-        await setTareaComanda(idTarea, menus);
+        await aniadeTareaComanda(idTarea, menus);
 
         // Obtenemos todos los objetos de los menus de la tarea
         const menusObjetos = getObjMenusSeleccionados();
         for (const item of menusObjetos) {
           const idAlimentos = filtroID(item.Nombre);
           console.log(idAlimentos);
-          await setMenu(idTarea, item.id, idAlimentos);
+          await aniadeMenu(idTarea, item.id, idAlimentos);
         }
 
         // Inicializar menus

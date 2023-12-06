@@ -13,10 +13,10 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import {
-  setTarea,
-  setTareaActividad,
-  setPasoActividad,
-} from "../Modelo/firebase";
+  aniadeTarea,
+  aniadeTareaActividad,
+  aniadePasoActividad,
+} from "../Controlador/tareas"
 import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
@@ -146,7 +146,7 @@ export default function TareaActividad({ navigation }) {
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
-        const idTarea = await setTarea(
+        const idTarea = await aniadeTarea(
           nombreTarea,
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
@@ -156,7 +156,7 @@ export default function TareaActividad({ navigation }) {
         const pasos = getPasos();
         const idPaso = [];
         for (const item of pasos) {
-          const pasoId = await setPasoActividad(
+          const pasoId = await aniadePasoActividad(
             item.audio.id,
             item.imagen.id,
             item.pictograma.id,
@@ -167,7 +167,7 @@ export default function TareaActividad({ navigation }) {
           );
           idPaso.push(pasoId);
         }
-        await setTareaActividad(lugar, idPaso, idTarea);
+        await aniadeTareaActividad(lugar, idPaso, idTarea);
 
         // Borrar lista de pasos
         inicializarPasos();

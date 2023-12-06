@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { setTarea, setTareaInventario } from "../Modelo/firebase";
+import { aniadeTarea, aniadeTareaInventario } from "../Controlador/tareas";
 import {
   get,
   inicializarmateriales,
@@ -151,7 +151,7 @@ export default function TareaActividad({ navigation }) {
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
-        const idTarea = await setTarea(
+        const idTarea = await aniadeTarea(
           nombreTarea,
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
@@ -161,7 +161,7 @@ export default function TareaActividad({ navigation }) {
         // Obtenemos todos los objetos de materiales de la tarea
         const materiales = get();
         materiales.forEach((item) =>
-          setTareaInventario(
+          aniadeTareaInventario(
             item.id,
             item.cantidad,
             item.origen,
@@ -230,14 +230,14 @@ export default function TareaActividad({ navigation }) {
               confirmButtonText: "De acuerdo",
             });
           } else {
-            if (nombreTarea === ''){
+            if (nombreTarea === "") {
               Swal.fire({
                 title: "Campo incompleto.",
                 text: "Pon nombre a la tarea.",
                 icon: "warning",
                 confirmButtonText: "De acuerdo",
               });
-            }else{
+            } else {
               guardarDatos();
             }
           }
@@ -259,13 +259,13 @@ export default function TareaActividad({ navigation }) {
                   [{ text: "De acuerdo" }]
                 );
               } else {
-                if (nombreTarea === '' ){
+                if (nombreTarea === "") {
                   Alert.alert(
                     "Campo incompletos", // Título
                     "Pon nombre a la tarea y su lugar.", // Mensaje
                     [{ text: "De acuerdo" }]
                   );
-                }else{
+                } else {
                   guardarDatos();
                 }
               }

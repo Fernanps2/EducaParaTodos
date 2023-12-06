@@ -1,7 +1,7 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
-export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
+export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
 
