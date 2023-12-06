@@ -40,8 +40,7 @@ export async function loginAdministrador (nombre, password) {
     try {
         if (nombre != '' && password != '') {
             let admin = await getAdministradoresLogin(nombre, password);
-            id = admin[0].id;
-            console.log("id:",id);
+            if (admin.length>0) id = admin[0].id;
         }
     } catch (error) {
         console.log(error);
