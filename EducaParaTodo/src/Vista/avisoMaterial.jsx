@@ -14,10 +14,10 @@ export default function AvisoMaterial ({ navigation }) {
 
   const {jwt} = useUser();
   const profesor = buscaProfesorId(jwt);
-  const nombreUsuario = profesor.nombre;
+  const nombreUsuario = "Carlos"; //profesor.nombre;
 
   const [datosMensaje, setDatosMensaje] = useState({
-    idProfesor: profesor.id, //profesor[0].id,
+    idProfesor: "YAfvRkMFpFBI9A2Cxzmf", //profesor.id,
     mensaje: "",
     aula: "",
     fecha: new Date(),
@@ -70,7 +70,7 @@ export default function AvisoMaterial ({ navigation }) {
             console.log(datosMensaje.idProfesor);
             console.log(datosMensaje.mensaje);
             aniadeMensaje(datosMensaje.idProfesor, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
-            navigation.navigate('HomeEducador', { nombreUsuario });
+            navigation.navigate('HomeEducador', nombreUsuario );
           }
         }
       ],

@@ -27,7 +27,7 @@ export default function GestionMateriales ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('')}>
+        onPress={() => navigation.navigate('verAvisosMaterial')}>
         <Text style={styles.buttonText}>Avisos de Material</Text>
       </TouchableOpacity>
       </View>

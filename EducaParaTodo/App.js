@@ -31,6 +31,7 @@ import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
 import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
 import AvisoMaterial from './src/Vista/avisoMaterial.jsx';
+import VerAvisosMaterial from './src/Vista/verAvisosMaterial.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
@@ -72,6 +73,7 @@ export default function App() {
           <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
           <Stack.Screen name="avisarMaterial" component={AvisoMaterial} />
+          <Stack.Screen name="verAvisosMaterial" component={VerAvisosMaterial} />
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />

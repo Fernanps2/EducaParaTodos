@@ -4,7 +4,7 @@ import { CerrarSesion } from './cerrarSesion';
 
 export default function HomeEducador ({ route, navigation }) {
 
-    const {nombreUsuario} = route.params;
+    const nombreUsuario = route.params;
 
     return (
       <View style={styles.container}>
