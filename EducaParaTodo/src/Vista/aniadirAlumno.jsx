@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
-import {openGallery} from '../Controlador/multimedia' 
+import {almacenaImagen, openGallery, descargaImagen, descargaImagenes} from '../Controlador/multimedia' 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
@@ -26,7 +26,7 @@ export default function AniadirAlumno ({ navigation }) {
       [name]: value
     }));
   }
-  const [imageUri, setImageUri] = useState("");
+  const [imageUri, setImageUri] = useState(null);
 
   const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
 
@@ -53,6 +53,12 @@ export default function AniadirAlumno ({ navigation }) {
       { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
     );
   };
+
+  const handleImage = async() => {
+    //setImageUri(await openGallery());
+    setImageUri(await descargaImagen('Microondas.jpg'));
+    //setImageUri(await descargaImagenes());
+  }
 
     return (
       <View style={styles.container}>
@@ -104,14 +110,16 @@ export default function AniadirAlumno ({ navigation }) {
       <View style={styles.photoSection}>
         <Text>Añadir foto del usuario:</Text>
         <TouchableOpacity>
-          {imageUri ? (
+          {imageUri!=null ? (
             <Image source={{ uri: imageUri }} style={styles.userIcon} />
           ) : (
-            <View style={styles.userIconPlaceholder} />
+            <View style={styles.userIconPlaceholder} > 
+              <Text> No hay foto </Text>
+            </View>
           )}
         </TouchableOpacity>
         <Button
-          onPress={() => setImageUri(openGallery())}
+          onPress={() =>handleImage()}
           title="Seleccionar una imagen"
         />
     

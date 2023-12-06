@@ -6,15 +6,17 @@
  const LoginScreenAlumno = ({ route, navigation }) => {
    const { alumno } = route.params;
    const [password, setPassword] = useState('');
-   const username = route.params.nombreAlumno;
-   const {login, isLogged} = useUser();
-   const handleLogin = () => {
-     console.log(username);
-     login(username, password, 'alumno');
-    if (isLogged)
-       alert('Eres alumno');
+   //const username = route.params.nombreAlumno;
+   const {login} = useUser();
+   let logueado = false;
+
+   async function handleLogin(username, password) {
+     //console.log(username);
+     logueado = await login(username, password, 'alumno');
+    if (logueado)
+      navigation.navigate('Tareas', {usuario:alumno})
      else
-       alert('Quién sos?');
+       alert('No está identificado');
    };
    return (
      <View style={styles.container}>
@@ -31,8 +33,8 @@
            onChangeText={text => setPassword(text)}
          />
          <Button title="Entrar" onPress={() =>{
-             // handleLogin();
-             navigation.navigate('Tareas', {usuario:alumno})
+             handleLogin(alumno.nombre, password);
+             //navigation.navigate('Tareas', {usuario:alumno})
          }} />
        </View>
      </View>

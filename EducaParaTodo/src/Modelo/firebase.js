@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadFile} from 'firebase/storage'
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll} from 'firebase/storage';
+
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
@@ -37,6 +38,14 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
+
+//valores para las carpetas de archivos
+const IMAGENES = 'Imagenes/';
+const PICTOGRAMAS = 'Pictogramas/';
+const VIDEOS = 'Videos/';
+const EMOTICONOS = 'Emoticonos/';
+const PERSONAS = 'Personas/';
+const LOGIN = 'ImagenesLogin/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -305,7 +314,7 @@ export async function getProfesoresNombre(nombre) {
     let docs = [];
     try {
         const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter);
+        const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
@@ -315,10 +324,7 @@ export async function getProfesoresNombre(nombre) {
               apellidos,
               foto,
             });
-        } 
-
-        console.log('los documentos son: ' + JSON.stringify(docs));
-        return docs;       
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -395,8 +401,8 @@ export async function getProfesoresLogin(nombre, contrasenia) {
 export async function getProfesorID(id) {
     let instancia = null;
     try {
-        const docRef = doc(db, COL_PROFESORES, id);
-        const docSnapshot = await getDoc(docRef);
+        const doc = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(doc);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -435,14 +441,12 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
 }
 
 export async function updateProfesor(id, nombre, apellidos, password, foto) {
-  console.log('id prof: ' + id);
     let editaProfesor = {
-        nombre,
-        apellidos: apellidos,
-        password,
-        foto
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        foto: foto
     };
-
     let profesor = null;
 
     try {
@@ -451,26 +455,18 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
         
         if (docSnapshot.exists()) {
             profesor = docSnapshot.data();
-            console.log('datos bd: ' + profesor.apellidos);
-            console.log('edita apellidos: ' + editaProfesor.apellidos);
 
-          
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
-
-            console.log('nombre editado: ' + editaProfesor.nombre);
-            console.log('apellidos editado: ' + editaProfesor.apellidos);
-            console.log('password editado: ' + editaProfesor.password);
-            console.log('foto editado: ' + editaProfesor.foto);
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
             });
         }
     } catch (error) {
-        console.log("Problema al actualizar datos de profesor" + error);
+        console.log("Problema al actualizar datos de profesor");
     }
 }
 
@@ -1567,86 +1563,459 @@ export async function deleteMensaje(id) {
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-const contarArchivos = async(nombreCarpeta) => {
-
-}
-
-// uploadImage= async(uri) => {
-//     return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//         if (xhr.readyState === 4) {
-//             resolve(xhr.response);
-//         }
-//     };
-
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//    });
-// };
-
-export async function almacenarImagen(imagen) {
-
-    //let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_1';
-
-  /*await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`images/${nombre_imagen}`);
-      ref.put(resolve);
-    })
-    .catch(error => {
-      console.log(error);
-    });*/
-
+export async function almacenarImagen(imagen, nombreImagen) {
+    
     try {
-        const referenciaStorage = ref(storage, `images/${nombre_imagen}`);
-        await uploadFile(referenciaStorage, imagen);
-
-        console.log("Imagen subida");
-    } catch (error) {
-        console.log("Error al subir la imagen", error);
+        //Comprobamos si existe la imagen
+        if (descargarImagen(nombreImagen) != null) {
+            const refImagenes = ref(storage, IMAGENES+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
     }
 }
 
-export async function almacenarPictograma(imagen) {
-  await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`Pictogramas/${nombre}`);
-      ref.put(resolve).then(resolve => {
-        console.log("Imagen subida correctamente");
-      }). catch(error => {
-        console.log("Error al subir la imagen");
-      });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+export async function almacenarPictograma(imagen, nombreImagen) {
+
+    try {
+        //Comprobamos si existe el pictograma
+        if (descargarPictograma(nombreImagen) != null) {
+            const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el pictograma');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
 }
 
-export function cargarImagen(imagen) {
-  let imagenCargada = null;
+export async function almacenarVideo(video, nombreVideo) {
 
-  storage
-    .ref(`images/${imagen}`)
-    .getDownloadURL()
-    .then(resolve => {
-      imagenCargada = resolve;
-    })
-    .catch(error => {
-      console.log(error);
-    })
-
-    return imagenCargada;
+    try {
+        if (descargarVideo(nombreVideo) != null ) {
+            const refImagenes = ref(storage, VIDEOS+nombreVideo)
+            const file = await(await fetch(video)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el video');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
 }
 
-/********** FINAL FUNCIONES PARA MULTIMEDIA ********/
+export async function almacenarFotoPersona(foto, nombreFoto) {
+    //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
+    if (nombreFoto == null || nombreFoto.equals('')) nombreFoto = video.split('/')[video.split('/').length-1];
+
+    try {
+        if (descargarFotoPersona(nombreFoto) != null) {
+            const refFoto = ref(storage, PERSONAS+nombreFoto)
+            const file = await(await fetch(foto)).blob();
+            uploadBytes(refFoto, file).then((snapshot) => {
+                console.log('Se ha subido la foto');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarImagenLogin(imagen, nombreImagen) {
+    
+    try {
+        if (descargarImagenLogin(nombreImagen) != null) {
+            const refImagenes = ref(storage, LOGIN+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen para login');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function descargarImagen(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, IMAGENES+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarImagenes() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, IMAGENES);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarPictograma(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PICTOGRAMAS+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarPictogramas() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, PICTOGRAMAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarVideo(nombreVideo) {
+    let videoUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refVideo = ref(storage, VIDEOS+nombreVideo);
+
+    await getDownloadURL(refVideo)
+        .then((url) => {
+            videoUri = {
+                uri: url,
+                nombre: refVideo.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+
+    return videoUri;
+}
+
+export async function descargarVideos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, VIDEOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarEmoticono(nombreEmoticono) {
+    let emoticUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refEmotic = ref(storage, EMOTICONOS+nombreEmoticono);
+
+    await getDownloadURL(refEmotic)
+        .then((url) => {
+            emoticUri = {
+                uri: url,
+                nombre: refEmotic.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+
+    return emoticUri;
+}
+
+export async function descargarEmoticonos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, EMOTICONOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarFotoPersona(nombreFoto) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PERSONAS+nombreFoto);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarFotosPersonas() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, PERSONAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarImagenLogin(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, LOGIN+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarImagenesLogin() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, LOGIN);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+    }
+
+    return entidad;
+}
+
+/******** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
 export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>{
 
@@ -1773,79 +2142,35 @@ export const asignarFeedback = async (idTarea,feedBack) => {
 // PROBADA Y FUNCIONA. 
 
 export const getTareaId = async (idAlumno) => {
+
+    console.log(idAlumno);
     
     try {
-      if(idTarea != ''){
-        if (Platform.OS === "web"){
-          Swal.fire({
-            title: "Mensaje Importante",
-            text: "Debes rellenar los campos requeridos",
-            icon: "warning",
-            confirmButtonText: "De acuerdo",
-          })
-        }else{
-          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-        }
-      }else
-      {
-        const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
-        const querySnapshot = await getDocs(q);
+      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+      const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     
-        const docs = [];
+      const docs = [];
     
-        for (const tareaDoc of querySnapshot.docs) {
-          const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+      for (const tareaDoc of querySnapshot.docs) {
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
     
-          docs.push({
-            id: tareaDoc.id,
-            titulo,
-            completado,
-            fechaInicio,
-            fechaFin,
-            tipo,
-            idAlumno,
+        docs.push({
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
         });
-        }
-    
-        return docs;
       }
+    
+      return docs;
     } catch (error) {
       console.log(error);
       Alert.alert(error);
     }
-};
-
-export const getTareaIdCompletada = async (idAlumno) => {
-
-  console.log(idAlumno);
-  
-  try {
-    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
-    const querySnapshot = await getDocs(q);
-    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-  
-    const docs = [];
-  
-    for (const tareaDoc of querySnapshot.docs) {
-      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
-  
-      docs.push({
-        id: tareaDoc.id,
-        titulo,
-        completado,
-        fechaInicio,
-        fechaFin,
-        tipo,
-        idAlumno,
-      });
-    }
-  
-    return docs;
-  } catch (error) {
-    console.log(error);
-    Alert.alert(error);
-  }
 };
 
 // Obtener todas las tareas
@@ -1943,18 +2268,6 @@ try {
 // tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
 export const deleteTareaId = async (idTarea) => {
     try {
-      if(idTarea != ''){
-        if (Platform.OS === "web"){
-          Swal.fire({
-            title: "Mensaje Importante",
-            text: "Debes rellenar los campos requeridos",
-            icon: "warning",
-            confirmButtonText: "De acuerdo",
-          })
-        }else{
-          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-        }
-      }else{
         await deleteDoc(doc(db,"Tarea",idTarea));
         const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
         const Snapshot2 = await getDocs(q2);
@@ -1981,7 +2294,6 @@ export const deleteTareaId = async (idTarea) => {
         Snapshot4.forEach(async(doc) =>{
             await deleteDoc(doc.ref);
         })
-      }
 
     } catch(error) {
         console.log("Error al borrar la tarea", error);
@@ -2062,18 +2374,6 @@ try {
 
 export const getTareasActividadId = async (idTarea) => {
 try {
-  if(idTarea != ''){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Mensaje Importante",
-        text: "Debes rellenar los campos requeridos",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-    }
-  }else{
 
   const q = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
   const querySnapshot = await getDocs(q);
@@ -2086,7 +2386,6 @@ try {
     }
 
     return docs;
-  }
   } catch (error) {
     console.log(error);
 }
@@ -2094,18 +2393,7 @@ try {
 
 export const getPasos = async (idActividad) => {
 try {
-  if(idActividad != ''){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Mensaje Importante",
-        text: "Debes rellenar los campos requeridos",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-    }
-  }else{
+
   const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
   const querySnapshot = await getDocs(q);
   const docs=[];
@@ -2117,7 +2405,6 @@ try {
     }
 
     return docs;
-  }
   } catch (error) {
     console.log(error);
 }
@@ -2126,6 +2413,11 @@ try {
   // PRUEBA REALIZADA. FUNCIONA
   export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
     try{
+  
+      console.log('AudioID:', idAudioRef)
+      console.log('ImaID:', idImagenRef)
+      console.log('PictoID:', idPictogramaRef)
+      console.log('VieoID:', idVideoRef)
 
       if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
         if (Platform.OS === "web"){
@@ -2142,10 +2434,10 @@ try {
       else{
 
         const objeto = {
-          Audio,
-          imagen,
-          pictograma,
-          video,
+          idAudio,
+          idImagen,
+          idPictograma,
+          idVideo,
           texto,
           nombre,
           idTarea
@@ -2319,18 +2611,6 @@ export const setAlimento = async (nombreAlimento,imagen) => {
 // PRUEBA REALIZADA. FUNCIONA
 export const getAlimento = async (nombre) => {
 try {
-  if(nombre != ''){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Mensaje Importante",
-        text: "Debes rellenar los campos requeridos",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-    }
-  }else{
   const alimentosQuery = query(collection(db, 'Alimentos'), where('Nombre', '==', nombre));
   const querySnapshot = await getDocs(alimentosQuery);
 
@@ -2344,33 +2624,12 @@ try {
   });
 
   return docs;
-}
 } catch (error) {
   console.log(error);
   throw error; // Lanza el error para que pueda ser manejado por el llamador
 }
 };
 
-// FUNCION QUE DEVUELVE TODOS LOS MATERIALES QUE TENEMOS EN LA BASE DE DATOS
-// PRUEBA REALIZADA. FUNCIONA
-export const getAlimentos = async() => {
-  try {
-    const materialQuery = query(collection(db, 'Alimentos'));
-    const querySnapshot = await getDocs(materialQuery);
-  
-    const docs = [];
-  
-    querySnapshot.forEach((docu) => {
-      const alimentosDatos = docu.data();  
-      docs.push(alimentosDatos);
-    });
-  
-    return docs;
-  } catch (error) {
-    console.log(error);
-    throw error; // Lanza el error para que pueda ser manejado por el llamador
-  }
-  }
 
 
 
@@ -2448,19 +2707,6 @@ export const setMaterial = async (foto,nombre,stock)=> {
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
 export const getMaterial = async(nombre) => {
 try {
-  if(nombre != ''){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Mensaje Importante",
-        text: "Debes rellenar los campos requeridos",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-    }
-  }else{
-
   const materialQuery = query(collection(db, 'Material'), where('nombre', '==', nombre));
   const querySnapshot = await getDocs(materialQuery);
 
@@ -2473,7 +2719,6 @@ try {
   });
 
   return docs;
-}
 } catch (error) {
   console.log(error);
   throw error; // Lanza el error para que pueda ser manejado por el llamador
@@ -2485,18 +2730,6 @@ try {
 // PRUEBA REALIZADA. FUNCIONA
 export const getMaterialId = async(id) => {
   try {
-    if(id != ''){
-      if (Platform.OS === "web"){
-        Swal.fire({
-          title: "Mensaje Importante",
-          text: "Debes rellenar los campos requeridos",
-          icon: "warning",
-          confirmButtonText: "De acuerdo",
-        })
-      }else{
-        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-      }
-    }else{
     const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
     const querySnapshot = await getDocs(materialQuery);
 
@@ -2510,7 +2743,6 @@ export const getMaterialId = async(id) => {
     });
 
     return docs;
-  }
   } catch (error) {
     console.log(error);
     throw error; // Lanza el error para que pueda ser manejado por el llamador
@@ -2561,149 +2793,3 @@ try {
     console.log(error);
   }
 }
-
-// PRUEBA REALIZADA. FUNCIONA
-export const setVideo = async (nombreVideo, urlVideo)=> {
-  try{
-
-    if(nombreVideo === '' || urlVideo === ''){
-      if (Platform.OS === "web"){
-        Swal.fire({
-          title: "Mensaje Importante",
-          text: "Debes rellenar los campos requeridos",
-          icon: "warning",
-          confirmButtonText: "De acuerdo",
-        })
-      }else{
-        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-      }
-    }
-    else{
-
-      const objeto = {
-        nombreVideo,
-        urlVideo,
-      }
-      
-      // Necesitamos poner setDoc para especificar el ID del documento
-      await addDoc(collection(db,'Videos'),{
-        ...objeto
-      });
-    }
-  }catch(error){
-    console.log(error);
-  }  
-}
-
-  // Funcion para mostrar los pictogramas de la base de datos
-  export const cargarPictogramas = async () => {
-
-    try {
-    const pictogramaQuery = collection(db, "Pictogramas");
-    const querySnapshot = await getDocs(pictogramaQuery);
-    const datos = [];
-    querySnapshot.forEach((docu) => {
-      const pictogramaDatos = docu.data(); 
-      const id = pictogramaDatos.id; // Extraemos el ID del documento
-      datos.push({id, ...pictogramaDatos});
-    });
-
-    return datos;
-  }catch(error){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Fallo de carga",
-        text: "Intentelo de nuevo.",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
-    }
-  }  
-  }
-
-  // Funcion para mostrar los videos de la base de datos
-  export const cargarVideos = async () => {
-
-    try {
-    const videoQuery = collection(db, "Videos");
-    const querySnapshot = await getDocs(videoQuery);
-    const datos = [];
-    querySnapshot.forEach((docu) => {
-      const videoDatos = docu.data(); 
-      const id = videoDatos.id; // Extraemos el ID del documento
-      datos.push({id, ...videoDatos});
-    });
-
-    return datos;
-  }catch(error){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Fallo de carga",
-        text: "Intentelo de nuevo.",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
-    }
-  }  
-  }
-
-  // Funcion para mostrar los pictogramas de la base de datos
-  export const cargarImagenes = async () => {
-
-    try {
-    const imagenQuery = collection(db, "Imagen");
-    const querySnapshot = await getDocs(imagenQuery);
-    const datos = [];
-    querySnapshot.forEach((docu) => {
-      const imagenDatos = docu.data(); 
-      const id = imagenDatos.id; // Extraemos el ID del documento
-      datos.push({id, ...imagenDatos});
-    });
-
-    return datos;
-  }catch(error){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Fallo de carga",
-        text: "Intentelo de nuevo.",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
-    }
-  }  
-  }
-
-  
-  // Funcion para mostrar los pictogramas de la base de datos
-  export const cargarAudios = async () => {
-
-    try {
-    const AudioQuery = collection(db, "Audio");
-    const querySnapshot = await getDocs(AudioQuery);
-    const datos = [];
-    querySnapshot.forEach((docu) => {
-      const audioDatos = docu.data(); 
-      const id = audioDatos.id; // Extraemos el ID del documento
-      datos.push({id, ...audioDatos});
-    });
-
-    return datos;
-  }catch(error){
-    if (Platform.OS === "web"){
-      Swal.fire({
-        title: "Fallo de carga",
-        text: "Intentelo de nuevo.",
-        icon: "warning",
-        confirmButtonText: "De acuerdo",
-      })
-    }else{
-      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
-    }
-  }  
-  }
