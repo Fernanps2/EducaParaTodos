@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import { getMateriales } from "../Modelo/firebase";
-import VerTodosMateriales from './verTodosMateriales';
 
 //import { DataContextMateriales } from "./DataContextMateriales";
 

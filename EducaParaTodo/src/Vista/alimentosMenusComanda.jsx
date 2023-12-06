@@ -15,12 +15,6 @@ import {
 import Swal from "sweetalert2";
 import * as global from "./VarGlobal";
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-import {} from "../Modelo/firebase";
-const db = getFirestore(appFirebase);
-
 export default function TiposMenusComanda({ navigation }) {
   // Variables para los alimentos del menu
   const [selectedMenu, setSelectedMenu] = useState("");
