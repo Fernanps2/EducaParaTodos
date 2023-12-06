@@ -11,11 +11,6 @@ import {
 import * as global from './VarGlobal';
 import { useRoute } from "@react-navigation/native";
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
-
 export default function VerPasosActividad({ navigation }) {
   // Variables para los alimentos del menu
   const [data, setData] = useState([]);

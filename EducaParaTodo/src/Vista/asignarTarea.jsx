@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
 import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { getTarea , getAlumnos, addAlumnoTarea } from '../Modelo/firebase';
+import { getTareas , getAlumnos, addAlumnoTarea } from '../Modelo/firebase';
 
 export function AsignarTarea ({props, navigation}){
 
@@ -14,7 +14,7 @@ export function AsignarTarea ({props, navigation}){
    useEffect(() => {
      const cargarTareas = async () => {
        try {
-         const tareas = await getTarea();
+         const tareas = await getTareas();
          setTareas(tareas);
        } catch (error) {
          console.log(error);

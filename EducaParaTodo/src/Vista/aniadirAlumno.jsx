@@ -7,10 +7,7 @@ import {openGallery} from '../Controlador/multimedia'
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
 
-import appFirebase from '../Modelo/firebase';
-import {getFirestore,collection,addDoc} from 'firebase/firestore'
 import { aniadeAlumno } from '../Controlador/alumnos';
-const db = getFirestore(appFirebase);
 
 export default function AniadirAlumno ({ navigation }) {
 

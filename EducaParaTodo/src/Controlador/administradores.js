@@ -1,4 +1,4 @@
-import {getAdministradoresLogin, getAdministradores, getAdministradoresApellidos, getAdministradoresNombre, addAdministrador, updateAdministrador, deleteAdministrador, getAdministradorID} from '../Modelo/firebase'
+import {getAdministradoresLogin, getAdministradores, getAdministadoresApellidos, getAdministradoresNombre, addAdministrador, updateAdministrador, deleteAdministrador, getAdministradorID} from '../Modelo/firebase'
 
 export async function aniadeAdministrador(nombre, apellidos, password, foto) {
     if (nombre != '' && apellidos != '' && password != '') {
@@ -29,7 +29,7 @@ export async function buscaAdministradorApellidos(apellidos) {
     let administradores = null;
 
     if (apellidos != null)
-        administradores = await getAdministradoresApellidos(apellidos);
+        administradores = await getAdministadoresApellidos(apellidos);
 
     return administradores;
 } 

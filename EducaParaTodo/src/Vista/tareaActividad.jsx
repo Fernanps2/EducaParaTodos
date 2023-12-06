@@ -19,11 +19,6 @@ import {
 } from "../Modelo/firebase";
 import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
 
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
-
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
   const [nombreTarea, setNombreTarea] = useState("");

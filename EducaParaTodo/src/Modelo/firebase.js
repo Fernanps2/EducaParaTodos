@@ -1773,31 +1773,43 @@ export const asignarFeedback = async (idTarea,feedBack) => {
 // PROBADA Y FUNCIONA. 
 
 export const getTareaId = async (idAlumno) => {
-
-    console.log(idAlumno);
     
     try {
-      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
-      const querySnapshot = await getDocs(q);
+      if(idTarea != ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }else
+      {
+        const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+        const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     
-      const docs = [];
+        const docs = [];
     
-      for (const tareaDoc of querySnapshot.docs) {
-        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+        for (const tareaDoc of querySnapshot.docs) {
+          const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
     
-        docs.push({
-          id: tareaDoc.id,
-          titulo,
-          completado,
-          fechaInicio,
-          fechaFin,
-          tipo,
-          idAlumno,
+          docs.push({
+            id: tareaDoc.id,
+            titulo,
+            completado,
+            fechaInicio,
+            fechaFin,
+            tipo,
+            idAlumno,
         });
-      }
+        }
     
-      return docs;
+        return docs;
+      }
     } catch (error) {
       console.log(error);
       Alert.alert(error);
@@ -1931,6 +1943,18 @@ try {
 // tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
 export const deleteTareaId = async (idTarea) => {
     try {
+      if(idTarea != ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }else{
         await deleteDoc(doc(db,"Tarea",idTarea));
         const q2 = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
         const Snapshot2 = await getDocs(q2);
@@ -1957,6 +1981,7 @@ export const deleteTareaId = async (idTarea) => {
         Snapshot4.forEach(async(doc) =>{
             await deleteDoc(doc.ref);
         })
+      }
 
     } catch(error) {
         console.log("Error al borrar la tarea", error);
@@ -2037,6 +2062,18 @@ try {
 
 export const getTareasActividadId = async (idTarea) => {
 try {
+  if(idTarea != ''){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Mensaje Importante",
+        text: "Debes rellenar los campos requeridos",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+    }
+  }else{
 
   const q = query(collection(db,"Tarea-Actividad"),where("idTarea","==",idTarea));
   const querySnapshot = await getDocs(q);
@@ -2049,6 +2086,7 @@ try {
     }
 
     return docs;
+  }
   } catch (error) {
     console.log(error);
 }
@@ -2056,7 +2094,18 @@ try {
 
 export const getPasos = async (idActividad) => {
 try {
-
+  if(idActividad != ''){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Mensaje Importante",
+        text: "Debes rellenar los campos requeridos",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+    }
+  }else{
   const q = query(collection(db,"PasosActividad"),where("idActividad","==",idActividad));
   const querySnapshot = await getDocs(q);
   const docs=[];
@@ -2068,6 +2117,7 @@ try {
     }
 
     return docs;
+  }
   } catch (error) {
     console.log(error);
 }
@@ -2076,11 +2126,6 @@ try {
   // PRUEBA REALIZADA. FUNCIONA
   export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
     try{
-  
-      console.log('AudioID:', idAudioRef)
-      console.log('ImaID:', idImagenRef)
-      console.log('PictoID:', idPictogramaRef)
-      console.log('VieoID:', idVideoRef)
 
       if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
         if (Platform.OS === "web"){
@@ -2097,10 +2142,10 @@ try {
       else{
 
         const objeto = {
-          idAudio,
-          idImagen,
-          idPictograma,
-          idVideo,
+          Audio,
+          imagen,
+          pictograma,
+          video,
           texto,
           nombre,
           idTarea
@@ -2274,6 +2319,18 @@ export const setAlimento = async (nombreAlimento,imagen) => {
 // PRUEBA REALIZADA. FUNCIONA
 export const getAlimento = async (nombre) => {
 try {
+  if(nombre != ''){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Mensaje Importante",
+        text: "Debes rellenar los campos requeridos",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+    }
+  }else{
   const alimentosQuery = query(collection(db, 'Alimentos'), where('Nombre', '==', nombre));
   const querySnapshot = await getDocs(alimentosQuery);
 
@@ -2287,12 +2344,33 @@ try {
   });
 
   return docs;
+}
 } catch (error) {
   console.log(error);
   throw error; // Lanza el error para que pueda ser manejado por el llamador
 }
 };
 
+// FUNCION QUE DEVUELVE TODOS LOS MATERIALES QUE TENEMOS EN LA BASE DE DATOS
+// PRUEBA REALIZADA. FUNCIONA
+export const getAlimentos = async() => {
+  try {
+    const materialQuery = query(collection(db, 'Alimentos'));
+    const querySnapshot = await getDocs(materialQuery);
+  
+    const docs = [];
+  
+    querySnapshot.forEach((docu) => {
+      const alimentosDatos = docu.data();  
+      docs.push(alimentosDatos);
+    });
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+  }
 
 
 
@@ -2370,6 +2448,19 @@ export const setMaterial = async (foto,nombre,stock)=> {
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
 export const getMaterial = async(nombre) => {
 try {
+  if(nombre != ''){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Mensaje Importante",
+        text: "Debes rellenar los campos requeridos",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+    }
+  }else{
+
   const materialQuery = query(collection(db, 'Material'), where('nombre', '==', nombre));
   const querySnapshot = await getDocs(materialQuery);
 
@@ -2382,6 +2473,7 @@ try {
   });
 
   return docs;
+}
 } catch (error) {
   console.log(error);
   throw error; // Lanza el error para que pueda ser manejado por el llamador
@@ -2393,6 +2485,18 @@ try {
 // PRUEBA REALIZADA. FUNCIONA
 export const getMaterialId = async(id) => {
   try {
+    if(id != ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }else{
     const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
     const querySnapshot = await getDocs(materialQuery);
 
@@ -2406,6 +2510,7 @@ export const getMaterialId = async(id) => {
     });
 
     return docs;
+  }
   } catch (error) {
     console.log(error);
     throw error; // Lanza el error para que pueda ser manejado por el llamador
@@ -2456,3 +2561,149 @@ try {
     console.log(error);
   }
 }
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setVideo = async (nombreVideo, urlVideo)=> {
+  try{
+
+    if(nombreVideo === '' || urlVideo === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }
+    else{
+
+      const objeto = {
+        nombreVideo,
+        urlVideo,
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Videos'),{
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
+}
+
+  // Funcion para mostrar los pictogramas de la base de datos
+  export const cargarPictogramas = async () => {
+
+    try {
+    const pictogramaQuery = collection(db, "Pictogramas");
+    const querySnapshot = await getDocs(pictogramaQuery);
+    const datos = [];
+    querySnapshot.forEach((docu) => {
+      const pictogramaDatos = docu.data(); 
+      const id = pictogramaDatos.id; // Extraemos el ID del documento
+      datos.push({id, ...pictogramaDatos});
+    });
+
+    return datos;
+  }catch(error){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Fallo de carga",
+        text: "Intentelo de nuevo.",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
+    }
+  }  
+  }
+
+  // Funcion para mostrar los videos de la base de datos
+  export const cargarVideos = async () => {
+
+    try {
+    const videoQuery = collection(db, "Videos");
+    const querySnapshot = await getDocs(videoQuery);
+    const datos = [];
+    querySnapshot.forEach((docu) => {
+      const videoDatos = docu.data(); 
+      const id = videoDatos.id; // Extraemos el ID del documento
+      datos.push({id, ...videoDatos});
+    });
+
+    return datos;
+  }catch(error){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Fallo de carga",
+        text: "Intentelo de nuevo.",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
+    }
+  }  
+  }
+
+  // Funcion para mostrar los pictogramas de la base de datos
+  export const cargarImagenes = async () => {
+
+    try {
+    const imagenQuery = collection(db, "Imagen");
+    const querySnapshot = await getDocs(imagenQuery);
+    const datos = [];
+    querySnapshot.forEach((docu) => {
+      const imagenDatos = docu.data(); 
+      const id = imagenDatos.id; // Extraemos el ID del documento
+      datos.push({id, ...imagenDatos});
+    });
+
+    return datos;
+  }catch(error){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Fallo de carga",
+        text: "Intentelo de nuevo.",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
+    }
+  }  
+  }
+
+  
+  // Funcion para mostrar los pictogramas de la base de datos
+  export const cargarAudios = async () => {
+
+    try {
+    const AudioQuery = collection(db, "Audio");
+    const querySnapshot = await getDocs(AudioQuery);
+    const datos = [];
+    querySnapshot.forEach((docu) => {
+      const audioDatos = docu.data(); 
+      const id = audioDatos.id; // Extraemos el ID del documento
+      datos.push({id, ...audioDatos});
+    });
+
+    return datos;
+  }catch(error){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Fallo de carga",
+        text: "Intentelo de nuevo.",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
+    }
+  }  
+  }
