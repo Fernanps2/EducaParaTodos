@@ -2,8 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage'
-import {encode as atob, decode as btoa} from 'base-64';
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll} from 'firebase/storage';
 
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
@@ -39,6 +38,14 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
+
+//valores para las carpetas de archivos
+const IMAGENES = 'Imagenes/';
+const PICTOGRAMAS = 'Pictogramas/';
+const VIDEOS = 'Videos/';
+const EMOTICONOS = 'Emoticonos/';
+const PERSONAS = 'Personas/';
+const LOGIN = 'ImagenesLogin/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -1556,56 +1563,154 @@ export async function deleteMensaje(id) {
 
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-export async function almacenarImagen(imagen) {
-    const nombreImagen = imagen.split('/')[imagen.split('/').length-1];
+export async function almacenarImagen(imagen, nombreImagen) {
     
     try {
-        const refImagenes = ref(storage, 'Imagenes/'+nombreImagen)
-        const file = await(await fetch(imagen)).blob();
-        uploadBytes(refImagenes, file).then((snapshot) => {
-            console.log('Se ha subido la imagen');
-        });
+        //Comprobamos si existe la imagen
+        if (descargarImagen(nombreImagen) != null) {
+            const refImagenes = ref(storage, IMAGENES+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
     } catch(error) {
         console.log(error);
     }
 }
 
-export async function almacenarPictograma(imagen) {
-    const nombreImagen = imagen.split('/')[imagen.split('/').length-1];
+export async function almacenarPictograma(imagen, nombreImagen) {
 
     try {
-        const refImagenes = ref(storage, 'Pictogramas/'+nombreImagen)
-        const file = await(await fetch(imagen)).blob();
-        uploadBytes(refImagenes, file).then((snapshot) => {
-            console.log('Se ha subido el pictograma');
-        });
+        //Comprobamos si existe el pictograma
+        if (descargarPictograma(nombreImagen) != null) {
+            const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el pictograma');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
     } catch(error) {
         console.log(error);
     }
 }
 
-export async function almacenarVideo(video) {
-    const nombreVideo = video.split('/')[video.split('/').length-1];
+export async function almacenarVideo(video, nombreVideo) {
 
     try {
-        const refImagenes = ref(storage, 'Videos/'+nombreVideo)
-        const file = await(await fetch(video)).blob();
-        uploadBytes(refImagenes, file).then((snapshot) => {
-            console.log('Se ha subido el video');
-        });
+        if (descargarVideo(nombreVideo) != null ) {
+            const refImagenes = ref(storage, VIDEOS+nombreVideo)
+            const file = await(await fetch(video)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el video');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarFotoPersona(foto, nombreFoto) {
+    //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
+    if (nombreFoto == null || nombreFoto.equals('')) nombreFoto = video.split('/')[video.split('/').length-1];
+
+    try {
+        if (descargarFotoPersona(nombreFoto) != null) {
+            const refFoto = ref(storage, PERSONAS+nombreFoto)
+            const file = await(await fetch(foto)).blob();
+            uploadBytes(refFoto, file).then((snapshot) => {
+                console.log('Se ha subido la foto');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarImagenLogin(imagen, nombreImagen) {
+    
+    try {
+        if (descargarImagenLogin(nombreImagen) != null) {
+            const refImagenes = ref(storage, LOGIN+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen para login');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
     } catch(error) {
         console.log(error);
     }
 }
 
 export async function descargarImagen(nombreImagen) {
-    let imagenUri = null;
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
 
-    const refImagen = ref(storage, 'Imagenes/'+nombreImagen);
+    const refImagen = ref(storage, IMAGENES+nombreImagen);
 
     await getDownloadURL(refImagen)
         .then((url) => {
-            imagenUri = url;
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
         })
         .catch((error) => {
             console.log("No se ha podido descargar la imagen");
@@ -1614,14 +1719,51 @@ export async function descargarImagen(nombreImagen) {
     return imagenUri;
 }
 
-export async function descargarPictograma(nombreImagen) {
-    let imagenUri = null;
+export async function descargarImagenes() {
+    let entidad = [];
+    let resultado;
 
-    const refImagen = ref(storage, 'Pictogramas/'+nombreImagen);
+    const listRef = ref(storage, IMAGENES);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarPictograma(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PICTOGRAMAS+nombreImagen);
 
     await getDownloadURL(refImagen)
         .then((url) => {
-            imagenUri = url;
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
         })
         .catch((error) => {
             console.log("No se ha podido descargar el pictograma");
@@ -1630,20 +1772,247 @@ export async function descargarPictograma(nombreImagen) {
     return imagenUri;
 }
 
-export async function descargarVideo(nombreVideo) {
-    let videoUri = null;
+export async function descargarPictogramas() {
+    let entidad = [];
+    let resultado;
 
-    const refVideo = ref(storage, 'Videos/'+nombreVideo);
+    const listRef = ref(storage, PICTOGRAMAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarVideo(nombreVideo) {
+    let videoUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refVideo = ref(storage, VIDEOS+nombreVideo);
 
     await getDownloadURL(refVideo)
         .then((url) => {
-            videoUri = url;
+            videoUri = {
+                uri: url,
+                nombre: refVideo.name
+            };
         })
         .catch((error) => {
             console.log("No se ha podido descargar el video");
         });
 
     return videoUri;
+}
+
+export async function descargarVideos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, VIDEOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarEmoticono(nombreEmoticono) {
+    let emoticUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refEmotic = ref(storage, EMOTICONOS+nombreEmoticono);
+
+    await getDownloadURL(refEmotic)
+        .then((url) => {
+            emoticUri = {
+                uri: url,
+                nombre: refEmotic.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+
+    return emoticUri;
+}
+
+export async function descargarEmoticonos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, EMOTICONOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarFotoPersona(nombreFoto) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PERSONAS+nombreFoto);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarFotosPersonas() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, PERSONAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarImagenLogin(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, LOGIN+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarImagenesLogin() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, LOGIN);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+    }
+
+    return entidad;
 }
 
 /******** FINAL FUNCIONES PARA MULTIMEDIA ********/
