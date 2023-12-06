@@ -13,11 +13,12 @@ import {
   ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
-
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
+import {
+  cargarPictogramasBD,
+  cargarVideosBD,
+  cargarImagenesBD,
+  cargarAudiosBD,
+} from "../Controlador/tareas";
 
 export default function PasoActividad({ navigation }) {
   // Variables para añadir items
@@ -63,95 +64,32 @@ export default function PasoActividad({ navigation }) {
   const [isStoreTexto, setIsStoreTexto] = useState(false);
   const [selectedTexto, setSelectedTexto] = useState("");
 
-  // Funcion para mostrar los pictogramas de la base de datos
-  const cargarPictogramas = () => {
+  //Cargamos pictogramas
+  const cargarPictogramas = async () => {
     setIsLoadindPicto(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Pictogramas");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataPicto(
-            res.docs.map((picto) => ({ id: picto.id, ...picto.data() }))
-          );
-          setIsLoadindPicto(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindPicto(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindPicto(false);
-      });
+    setDataPicto(await cargarPictogramasBD());
+    setIsLoadindPicto(false);
   };
 
-  // Funcion para mostrar los pictogramas de la base de datos
-  const cargarVideos = () => {
+  //Cargamos videos
+  const cargarVideos = async () => {
     setIsLoadindVideo(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Videos");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataVideo(
-            res.docs.map((video) => ({ id: video.id, ...video.data() }))
-          );
-          setIsLoadindVideo(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindVideo(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindVideo(false);
-      });
+    setDataVideo(await cargarVideosBD());
+    setIsLoadindVideo(false);
   };
 
-  const cargarImagenes = () => {
+  //Cargamos imagenes
+  const cargarImagenes = async () => {
     setIsLoadindIma(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Imagen");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataImagen(
-            res.docs.map((imagen) => ({ id: imagen.id, ...imagen.data() }))
-          );
-          setIsLoadindIma(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindIma(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindIma(false);
-      });
+    setDataImagen(await cargarImagenesBD());
+    setIsLoadindIma(false);
   };
 
-  // Funcion para mostrar los pictogramas de la base de datos
-  const cargarAudios = () => {
+  //Cargamos audios
+  const cargarAudios = async () => {
     setIsLoadindAudio(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Audio");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataAudio(
-            res.docs.map((audio) => ({ id: audio.id, ...audio.data() }))
-          );
-          setIsLoadindAudio(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindAudio(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindAudio(false);
-      });
+    setDataAudio(await cargarAudiosBD());
+    setIsLoadindAudio(false);
   };
 
   // Pulsamos boton añadir texto en añadir paso

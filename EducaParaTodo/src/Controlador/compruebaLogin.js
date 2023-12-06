@@ -3,46 +3,21 @@ import { loginAdministrador } from './administradores';
 import { loginAlumno } from './alumnos';
 import { loginProfesor } from './profesores';
 
-export default async function compruebaLogin ({username, password, tipo}) {
-    //function esLogin() {
-        //let encontrado = false;
+export default async function compruebaLogin (username, password, tipo) {
+    //console.log("username:", username);
+    //console.log("password:", password);
         let token = null;
         if (tipo == 'alumno') {
-            /*for (let i = 0; i < alumno.length && !encontrado; i++) {
-                if (username == alumno[i].username && password == alumno[i].password) {
-                    encontrado = true;
-
-                    token = alumno[i].jwt;
-                }
-            }*/
-
             token = await loginAlumno(username, password);
         } else if (tipo == 'profesor') {
-            /*for (let i = 0; i < profesor.length && !encontrado; i++) {
-                if (username == profesor[i].username && password == profesor[i].password) {
-                    encontrado = true;
-
-                    token = profesor[i].jwt;
-                }
-            }*/
-
             token = await loginProfesor(username, password);
         } else if (tipo == 'administrador') {
-            /*for (let i = 0; i < administrador.length && !encontrado; i++) {
-                if (username == administrador[i].username && password == administrador[i].password) {
-                    encontrado = true;
-
-                    token = administrador[i].jwt;
-                }
-            }*/
-
             token = await loginAdministrador(username, password);
         }
 
-        return token;
-    //}
+        //console.log("token:", token);
 
-    //return (esLogin());
+        return token;
 }
 
 

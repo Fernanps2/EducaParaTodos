@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
+import useUser from '../Controlador/useUser';
 
 export default function HomeAdmin ({ navigation }) {
+    const {jwt} = useUser();
+
     return (
       <ScrollView>
 

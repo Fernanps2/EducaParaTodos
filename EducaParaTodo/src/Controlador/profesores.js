@@ -39,7 +39,8 @@ export async function loginProfesor (nombre, password) {
     let id = null;
 
     if (nombre != '' && password != '') {
-        id = await getProfesoresLogin(nombre, password).id;
+        const profesor = await getProfesoresLogin(nombre, password);
+        if (profesor.length>0) id = profesor[0].id;
     }
 
     return id;
@@ -49,7 +50,7 @@ export async function buscaProfesorId (id) {
     let instancia = null;
 
     if (id != null)
-        instancia = getProfesorID(id);
+        instancia = await getProfesorID(id);
 
     return instancia;
 }

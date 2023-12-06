@@ -33,6 +33,7 @@ import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
+import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
@@ -45,11 +46,6 @@ import seleccionCantidad from './src/Vista/seleccionCantidad.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
-
-import appFirebase from './src/Modelo/firebase.js';
-import {getFirestore,collection,addDoc} from 'firebase/firestore'
-import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
-const db = getFirestore(appFirebase);
 
 // Creamos una instancia del stack
 const Stack = createStackNavigator();

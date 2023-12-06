@@ -2,23 +2,18 @@ import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaAc
 import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario } from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
-    if(titulo != '' && fechaInicio != '' && fechaFin != '' && tipo != '' && periodicidad != '' )
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
 
-export async function aniadirFeedback (idTarea, feedBack){
-    if(idTarea != '' && feedBack != ''){
+export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
-    }
 }
 
 // Esta función busca la tarea con ese ID
 export async function buscarTarea(idTarea){
     let tarea = null;
 
-    if(idTarea != ''){
-        tarea = await getTareaId(idTarea);
-    }
+    tarea = await getTareaId(idTarea);
 
     return tarea;
 }
@@ -33,15 +28,11 @@ export async function buscarTareas(){
 }
 
 export async function borrarTarea (idTarea){
-    if(idTarea != ''){
         await deleteTareaId(idTarea);
-    }
 }
 
 export async function aniadeTareaActividad (aula,pasos,idTarea){
-    if(aula != '' && pasos != '' && idTarea != ''){
-        await aniadeTareaActividad(aula,pasos,idTarea);
-    }
+        await setTareaActividad(aula,pasos,idTarea);
 }
 
 // Esta función devuelve todas las tareas de tipo actividad
@@ -57,9 +48,7 @@ export async function buscarTareasActividad(){
 export async function buscarTareaActividad(idTarea){
     let tarea = null;
 
-    if(idTarea != ''){
-        tarea = await getTareasActividadId(idTarea);
-    }
+    tarea = await getTareasActividadId(idTarea);
 
     return tarea;
 }
@@ -68,21 +57,17 @@ export async function buscarTareaActividad(idTarea){
 export async function buscarPasos(idActividad){
     let pasos = null;
 
-    if(idActividad != ''){
-        pasos = await getPasos(idActividad);
-    }
+    pasos = await getPasos(idActividad);
+
+    return pasos;
 }
 
 export async function aniadePasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea){
-    if(audio != '' && imagen != '' && pictograma != '' && video != '' && texto != '' && nombre != '' && idTarea != ''){
-        await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
-    }
+    await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
 }
 
 export async function aniadeTareaComanda(idTarea,menus){
-    if(idTarea != '' && menus != ''){
-        await setTareaComanda(idTarea, menus);
-    }
+    await setTareaComanda(idTarea, menus);
 }
 
 // Esta función muestra todas las tareas de tipo comanda
@@ -95,9 +80,7 @@ export async function buscarTareasComandas(){
 }
 
 export async function aniadeMenu(idTarea,idMenu, idAlimentos){
-    if(idTarea != '' && idMenu != '' && idAlimentos != ''){
-        await setMenu(idTarea,idMenu,idAlimentos);
-    }
+    await setMenu(idTarea,idMenu,idAlimentos);
 }
 
 // Esta función muestra todos los menús
@@ -120,18 +103,22 @@ export async function buscarMenu(idMenu){
 
 
 export async function aniadeAlimento(nombreAlimento,imagen){
-    if(nombreAlimento != '' && imagen != ''){
-        await setAlimento(nombreAlimento, imagen);
-    }
+    await setAlimento(nombreAlimento, imagen);
 }
 
 // Devuelve el alimento con ese nombre
 export async function buscarAlimento(nombre){
     let alimento = null;
 
-    if(nombre != ''){
-        alimento = await getAlimento(nombre);
-    }
+    alimento = await getAlimento(nombre);
+
+    return alimento;
+}
+
+export async function buscarAlimentos(){
+    let alimento = null;
+
+    alimento = await getAlimentos();
 
     return alimento;
 }
@@ -147,35 +134,27 @@ export async function buscarAlimentos(){
 
 
 export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
-    if(idMaterial != '' && cantidad != '' && lugarOrigen != '' && lugarDestino != '' && idTarea != ''){
-        await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
-    }
+    await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
 }
 
 export async function aniadeMaterial(foto,nombre,stock){
-    if(foto != '' && nombre != '' && stock != ''){
-        await setMaterial(foto,nombre,stock);
-    }
+    await setMaterial(foto,nombre,stock);
 }
 
 // Esta función devuelve el material con ese nombre
 export async function buscarMaterial(nombre){
     let material = null;
 
-    if(nombre != ''){
-        getMaterial(nombre);
-    }
+    material = getMaterial(nombre);
 
-    return nombre;
+    return material;
 }
 
 // Esta función devuelve el material con ese id
 export async function buscarMaterialId(id){
     let material = null;
 
-    if(id != ''){
-        await getMaterialId(id);
-    }
+    material = await getMaterialId(id);
 
     return material;
 }
@@ -196,4 +175,32 @@ export async function buscarTareasInventario(){
     tareasInventario = await getTareasInventario();
 
     return tareasInventario;
+}
+
+export async function anadeVideo (nombreVideo, urlVideo){
+    await setVideo(nombreVideo, urlVideo);
+}
+
+export async function cargarPictogramasBD (){
+    let pictogramas = null;
+    pictogramas = await cargarPictogramas();
+    return pictogramas;
+}
+
+export async function cargarVideosBD (){
+    let videos = null;
+    videos = await cargarVideos();
+    return videos;
+}
+
+export async function cargarImagenesBD (){
+    let imagenes = null;
+    imagenes = await cargarImagenes();
+    return imagenes;
+}
+
+export async function cargarAudiosBD (){
+    let audios = null;
+    audios = await cargarAudios();
+    return audios;
 }

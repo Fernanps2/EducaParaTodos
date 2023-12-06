@@ -14,13 +14,7 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import * as global from "./VarGlobal";
-import { buscarAlimentos } from "../Controlador/tareas";
-
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-import {} from "../Modelo/firebase";
-const db = getFirestore(appFirebase);
+import {buscarAlimentos} from "../Controlador/tareas"
 
 export default function TiposMenusComanda({ navigation }) {
   // Variables para los alimentos del menu
