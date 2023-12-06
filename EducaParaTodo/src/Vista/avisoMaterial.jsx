@@ -3,19 +3,21 @@ import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button } fr
 import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
-import { buscaProfesorNombre } from '../Controlador/profesores';
+import { buscaProfesorId } from '../Controlador/profesores';
 import { aniadeMensaje } from '../Controlador/mensajes';
+import useUser from '../Controlador/useUser';
 
 
 
 
-export default function AvisoMaterial ({ route, navigation }) {
+export default function AvisoMaterial ({ navigation }) {
 
-  const nombreUsuario = route.params.nombreProf;
-  const profesor = buscaProfesorNombre(nombreUsuario);
+  const {jwt} = useUser();
+  const profesor = buscaProfesorId(jwt);
+  const nombreUsuario = profesor.nombre;
 
   const [datosMensaje, setDatosMensaje] = useState({
-    idProfesor: profesor.id,
+    idProfesor: profesor.id, //profesor[0].id,
     mensaje: "",
     aula: "",
     fecha: new Date(),
@@ -61,7 +63,13 @@ export default function AvisoMaterial ({ route, navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            aniadeMensaje(datosMensaje.idProfesor, datosMensaje.mensaje, datosMensaje.aula, datosMensaje.fecha, datosMensaje.hora);
+            //Prueba de funcionamiento
+            console.log(datosMensaje.aula);
+            console.log(format(datosMensaje.fecha, 'dd/MM/yyyy'));
+            console.log(format(datosMensaje.hora, 'HH:mm'));
+            console.log(datosMensaje.idProfesor);
+            console.log(datosMensaje.mensaje);
+            aniadeMensaje(datosMensaje.idProfesor, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
             navigation.navigate('HomeEducador', { nombreUsuario });
           }
         }

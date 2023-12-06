@@ -39,7 +39,7 @@ export default function HomeAdmin ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('avisarMaterial', { nombreUsuario })}>
+        onPress={() => navigation.navigate('avisarMaterial')}>
         <Text style={styles.buttonText}>Mandar Aviso Material</Text>
       </TouchableOpacity>
 
