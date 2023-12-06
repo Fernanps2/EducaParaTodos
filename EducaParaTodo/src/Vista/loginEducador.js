@@ -7,14 +7,15 @@ const LoginScreen = ({ route, navigation} ) => {
   const [password, setPassword] = useState('');
   const tipo = route.params.tipo;
   const {login} = useUser();
+  let logueado = false;
 
   const handleLogin = async () => {
-    const logueado = await login(username, password, tipo);
+    logueado = (await login(username, password, tipo));
 
-    console.log(logueado);
+    //console.log("logueado:",logueado);
 
     if (logueado && tipo == 'profesor')
-      navigation.navigate('HomeEducador', {nombreProf: username} )
+      navigation.navigate('HomeEducador', {nombreProf: username} );
     else if (logueado && tipo == 'administrador')
       navigation.navigate('HomeAdmin', {nombreAdm: username});
     else

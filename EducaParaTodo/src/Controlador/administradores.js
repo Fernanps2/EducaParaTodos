@@ -41,6 +41,7 @@ export async function loginAdministrador (nombre, password) {
         if (nombre != '' && password != '') {
             let admin = await getAdministradoresLogin(nombre, password);
             id = admin[0].id;
+            console.log("id:",id);
         }
     } catch (error) {
         console.log(error);
