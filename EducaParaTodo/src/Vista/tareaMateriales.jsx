@@ -160,14 +160,16 @@ export default function TareaActividad({ navigation }) {
         );
         // Obtenemos todos los objetos de materiales de la tarea
         const materiales = get();
-        materiales.forEach((item) =>
-          aniadeTareaInventario(
-            item.id,
-            item.cantidad,
-            item.origen,
-            item.destino,
-            idTarea
-          )
+        materiales.forEach(
+          async (item) =>
+            await aniadeTareaInventario(
+              item.id,
+              item.caracteristica,
+              item.cantidad,
+              item.origen,
+              item.destino,
+              idTarea
+            )
         );
 
         // Reiniciamos los materiales

@@ -2,7 +2,7 @@ import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaAc
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
-        await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
+        return await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
 
 export async function asignarFeedbackBD (idTarea, feedBack){
@@ -112,8 +112,8 @@ export async function buscarAlimentos(){
     return alimento;
 }
 
-export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
-    await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
+export async function aniadeTareaInventario(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea){
+    await setTareaInventario(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea);
 }
 
 export async function aniadeMaterial(nombre, foto, stock, caracteristicas){

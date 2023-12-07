@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import Swal from "sweetalert2";
 import { useRoute } from "@react-navigation/native";
 import * as lista from "./VarGlobal";
 
-
 export default function VerTodosMateriales({ navigation }) {
   const route = useRoute();
   const [materialesTarea, setMaterialesTarea] = useState([]);
@@ -29,7 +28,7 @@ export default function VerTodosMateriales({ navigation }) {
 
   useEffect(() => {
     setMaterialesTarea(lista.get);
-  }, );
+  });
 
   const deleteItem = (id) => {
     if (Platform.OS === "web") {
@@ -45,7 +44,7 @@ export default function VerTodosMateriales({ navigation }) {
       }).then((result) => {
         if (result.isConfirmed) {
           lista.filtrar(id);
-          setMaterialesTarea(lista.get)
+          setMaterialesTarea(lista.get);
         }
       });
     } else {
@@ -58,7 +57,7 @@ export default function VerTodosMateriales({ navigation }) {
             text: "Confirmar",
             onPress: () => {
               lista.filtrar(id);
-              setMaterialesTarea(lista.get)
+              setMaterialesTarea(lista.get);
             },
           },
         ],
@@ -75,6 +74,9 @@ export default function VerTodosMateriales({ navigation }) {
         <View style={styles.separador} />
         <Text style={styles.label}>Cantidad</Text>
         <Text style={styles.itemText}>{item.cantidad}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Característica</Text>
+        <Text style={styles.itemText}>{item.caracteristica}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Lugar destino</Text>
@@ -164,7 +166,6 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16, // Tamaño de fuente mediano para buena legibilidad
     color: "#333", // Color oscuro para el texto para alto contraste
-    fontWeight: "bold", // Peso de la fuente normal; puede ser 'bold' si es necesario
     marginVertical: 8,
   },
   deleteButton: {

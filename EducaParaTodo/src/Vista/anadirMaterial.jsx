@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import { buscarMateriales } from "../Controlador/tareas";
+import { Picker } from '@react-native-picker/picker';
 
 //import { DataContextMateriales } from "./DataContextMateriales";
 
@@ -45,6 +46,8 @@ export default function AnadirMaterial({ navigation }) {
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [labelQty, setLabelQty] = useState("");
+  const [caracteristica, setCaracteristica] = useState("Ninguna");
+  const [caracDef, setCaracDef] = useState('Ninguna');
   const [selectedMaterialId, setSelectedMaterialId] = useState(null);
   const [nombreMaterial, setNombreMaterial] = useState("");
   const [material, setMaterial] = useState([]);
@@ -64,15 +67,17 @@ export default function AnadirMaterial({ navigation }) {
     setSearchQuery("");
   };
 
-  const selectMaterial = (item) => {
+  const selectMaterial = (item,caract) => {
     if (selectedMaterialId === item.id) {
       setSelectedMaterialId(null);
       setNombreMaterial("");
       setMaterial([]);
+      setCaracDef("Ninguno");
     } else {
       setSelectedMaterialId(item.id);
       setNombreMaterial(item.nombre);
       setMaterial(item);
+      setCaracDef(caract);
     }
   };
 
@@ -84,6 +89,16 @@ export default function AnadirMaterial({ navigation }) {
           style={styles.materialTotal}
         >{`Cantidad total: ${item.stock} `}</Text>
       </View>
+      <Picker
+        selectedValue={caracteristica}
+        style={styles.picker}
+        onValueChange={(itemValue) => setCaracteristica(itemValue)}
+      >
+        <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
+        {item.caracteristicas.map((caracteristica, index) => (
+          <Picker.Item key={index} label={caracteristica} value={caracteristica} />
+        ))}
+      </Picker>
       <TouchableOpacity
         style={[
           styles.checkbox,
@@ -91,7 +106,7 @@ export default function AnadirMaterial({ navigation }) {
             ? styles.checkboxChecked
             : styles.checkboxUnchecked,
         ]}
-        onPress={() => selectMaterial(item)}
+        onPress={() => selectMaterial(item, caracteristica)}
       >
         {selectedMaterialId === item.id && (
           <Text style={styles.checkboxLabel}>✓</Text>
@@ -103,6 +118,7 @@ export default function AnadirMaterial({ navigation }) {
   const guardarDatos = () => {
     navigation.navigate("verTodosMateriales", {
       id: selectedMaterialId,
+      caracteristica: caracDef,
       origen: pickupLocation,
       destino: dropoffLocation,
       cantidad: labelQty,
@@ -392,5 +408,10 @@ const styles = StyleSheet.create({
   Image: {
     width: 20,
     height: 20,
+  },
+  picker: {
+    height: 20,
+    width: 150,
+    marginHorizontal: 10,
   },
 });

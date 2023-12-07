@@ -2380,10 +2380,10 @@ export const getAlimentos = async() => {
 
 
 
-export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea) => {
+export const setTareaInventario = async(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea) => {
     try{
   
-      if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === ''){
+      if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === '' || caracteristica === ''){
         if (Platform.OS === "web"){
           Swal.fire({
             title: "Mensaje Importante",
@@ -2400,11 +2400,14 @@ export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDes
   
         const objeto = {
           idMaterial,
+          caracteristica,
           cantidad,
           lugarOrigen,
           lugarDestino,
           idTarea
         }
+
+        console.log(objeto);
         
         await addDoc(collection(db,'Tarea-Inventario'),{
           ...objeto
