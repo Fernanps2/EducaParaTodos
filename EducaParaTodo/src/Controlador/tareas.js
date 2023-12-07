@@ -1,5 +1,5 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -116,8 +116,8 @@ export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,luga
     await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
 }
 
-export async function aniadeMaterial(foto,nombre,stock){
-    await setMaterial(foto,nombre,stock);
+export async function aniadeMaterial(nombre, foto, stock, caracteristicas){
+    await setMaterial(nombre, foto, stock, caracteristicas);
 }
 
 // Esta función devuelve el material con ese nombre
@@ -145,6 +145,10 @@ export async function buscarMateriales(){
     materiales = await getMateriales();
 
     return materiales;
+}
+
+export async function eliminarMaterial(id){
+    await deleteMaterial(id);
 }
 
 //Esta función devuelve todas las tareas Inventario almacenadas en la base de datos

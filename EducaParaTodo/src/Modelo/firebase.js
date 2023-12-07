@@ -1,4 +1,9 @@
 import React, {useEffect, useState} from 'react';
+import {
+  Platform,
+  Alert,
+} from "react-native";
+import Swal from "sweetalert2";
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
@@ -2412,10 +2417,10 @@ export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDes
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMaterial = async (foto,nombre,stock)=> {
+export const setMaterial = async (nombreMaterial, fotoMaterial, stockMaterial, caracteristicasMaterial)=> {
     try{
   
-      if(nombre === '' || foto === '' || stock === ''){
+      if(nombreMaterial === '' || fotoMaterial === '' || stockMaterial === ''){
         if (Platform.OS === "web"){
           Swal.fire({
             title: "Mensaje Importante",
@@ -2430,9 +2435,10 @@ export const setMaterial = async (foto,nombre,stock)=> {
       else{
   
         const objeto = {
-          nombre,
-          foto,
-          stock
+          nombre: nombreMaterial,
+          foto: fotoMaterial,
+          stock: stockMaterial,
+          caracteristicas: caracteristicasMaterial,
         }
         
         // Necesitamos poner setDoc para especificar el ID del documento
@@ -2540,6 +2546,46 @@ try {
   console.log(error);
   throw error; // Lanza el error para que pueda ser manejado por el llamador
 }
+}
+
+export async function deleteMaterial(id) {
+  try {
+      const docu = doc(db, "Material", id);
+      const docSnapshot = await getDoc(docu);
+
+      if (docSnapshot.exists()) {
+          await deleteDoc(docSnapshot.ref);
+          console.log("Se ha borrado el material correctamente");
+      }
+      else {
+          console.log("No existe el material");
+      }
+  } catch(error) {
+      console.log("Error al borrar material", error);
+  }
+}
+
+export async function updateMaterial(id, nombreMaterial, fotoMaterial, stockMaterial, caracteristicasMaterial) {
+  
+  let editaAlumno = {
+      caracteristicas:  caracteristicasMaterial,
+      foto: fotoMaterial,
+      nombre: nombreMaterial, 
+      stock: stockMaterial, 
+  };
+
+  try {
+      let docMaterial = doc(db, "Material", id);
+      const docSnapshot = await getDoc(docMaterial);
+      
+      if (docSnapshot.exists()) {
+          await updateDoc(docMaterial, {
+              ...editaAlumno
+          })
+      }
+  } catch (error) {
+      console.log("Hubo un error al actualizar datos del material ", error);
+  }
 }
 
 
