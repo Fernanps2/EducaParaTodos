@@ -4,16 +4,18 @@ import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-n
 import tareas from '../Modelo/tareas';
 import { buscarPasos, buscarTareaId, buscarTareaActividad, buscarTareasInventarioId, buscarTareasComandasId } from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
+import {buscaAlumnoId} from '../Controlador/alumnos';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 export function VerTarea ({route, navigation}){
-    const {id} = route.params;
-
+    const {id, idAlumno} = route.params;
+    
     const [tareaAct, setTareaAct] = useState([]);
     const [pasos, setPasos] = useState([]);
     const [tarea, setTarea] = useState([]);
     const [profesor, setProfesor] = useState([]);
+    const [alumno, setAlumno] = useState([]);
     /*const [tareaInv, setTareaInv] = useState([]);
     const [tareaCom, setTareaCom] = useState([]);*/
 
@@ -71,6 +73,20 @@ export function VerTarea ({route, navigation}){
             }
         };
         listaProf();
+    }, []);
+
+    useEffect(() => {
+        const listaAlum = async () => {
+            try {
+                const Alumn = await buscaAlumnoId(idAlumno);
+                setAlumno(Alumn);
+
+                console.log("Alumno: " + JSON.stringify(Alumn)); 
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaAlum();
     }, []);
 
     /*useEffect(() => {

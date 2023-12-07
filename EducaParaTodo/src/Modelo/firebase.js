@@ -188,12 +188,41 @@ export async function getAlumnosLogin(nombre, contrasenia) {
     return docs;
 }
 
+export const getAlumnoId = async (id) => {
+    try {
+      const q = query(collection(db, 'alumnos'), where('__name__', '==', id));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const alumnoDoc = querySnapshot.docs[0];
+        const { nombre, apellidos, foto, password, visualizacionPreferente } = alumnoDoc.data();
+  
+        return {
+          id: alumnoDoc.id,
+          nombre,
+          apellidos,
+          foto,
+          password,
+          visualizacionPreferente,
+        };
+      } else {
+        // Si el documento no existe
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
+      throw error;
+    }
+  };
+
 export async function getAlumnoID(id) {
+    
     let instancia = null;
     try {
         const doc = doc(db, COL_ALUMNOS, id);
         const docSnapshot = await getDoc(doc);
-
+        
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
             console.log("Se ha recibido la información");

@@ -7,10 +7,10 @@ import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
 
 
 // Componente que muestra los datos de las tareas
-const DatosTareas = ({ tarea, navigation }) => {
+const DatosTareas = ({ tarea, usuario, navigation }) => {
     return (
         <View>
-            <TouchableOpacity onPress={() => navigation.navigate('verTarea',  {id:tarea.id})}>
+            <TouchableOpacity onPress={() =>  navigation.navigate('verTarea',  {id:tarea.id, idAlumno:usuario.id})}>
                 {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
                 <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
@@ -23,7 +23,7 @@ const DatosTareas = ({ tarea, navigation }) => {
 const Tareas = ({ route, navigation }) => {
 
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
-
+    
     const [tareas, setTareas] = useState([]);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const Tareas = ({ route, navigation }) => {
             <ScrollView contentContainerStyle={styles.datos}>
                 {tareas.map((tarea, index) => (
                     <View key={index} style={styles.contenedor_tareas}>
-                        <DatosTareas tarea={tarea} navigation={navigation} />
+                        <DatosTareas tarea={tarea} usuario={usuario} navigation={navigation} />
                     </View>
                 ))}
 
