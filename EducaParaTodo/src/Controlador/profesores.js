@@ -51,7 +51,7 @@ export async function buscaProfesorId (id) {
 
     if (id != null){
         instancia = await getProfesorID(id);
-        console.log(instancia);
+        //console.log(instancia);
     }
     return instancia;
 }
