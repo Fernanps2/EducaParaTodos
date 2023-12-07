@@ -191,8 +191,8 @@ export async function getAlumnosLogin(nombre, contrasenia) {
 export async function getAlumnoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -401,8 +401,8 @@ export async function getProfesoresLogin(nombre, contrasenia) {
 export async function getProfesorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -411,7 +411,7 @@ export async function getProfesorID(id) {
             console.log("No existe la instancia");
         }
     } catch (error) {
-        console.log(error);
+        console.log("Error en profesorID", error);
     }
 
     return instancia;
@@ -632,8 +632,8 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
 export async function getAdministradorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ADMINISTRADORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docAdmin = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdmin);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -764,8 +764,8 @@ export async function getForosNombre(nombre) {
 export async function getForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -912,8 +912,8 @@ export async function getProfesorTarea_Tarea(id_tarea) {
 export async function getProfesorTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1061,8 +1061,8 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
 export async function getAlumnoTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1210,8 +1210,8 @@ export async function getProfesoresForo_Profesores(id_profesores) {
 export async function getProfesorForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1359,8 +1359,8 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
 export async function getAlumnoForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1469,8 +1469,8 @@ export async function getMensajes() {
 export async function getMensajeID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_MENSAJES, id);
-        const docSnapshot = await getDoc(doc);
+        const docMensaje = doc(db, COL_MENSAJES, id);
+        const docSnapshot = await getDoc(docMensaje);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
