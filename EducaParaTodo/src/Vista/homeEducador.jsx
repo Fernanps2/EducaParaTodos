@@ -8,13 +8,13 @@ export default function HomeEducador ({ route, navigation }) {
 
     const {nombreUsuario} = route.params;
     const {jwt} = useUser();
-    const [profesor, setProfesor] = useState(null);
+    const [profesor, setProfesor] = useState('');
 
     useEffect(() => {
       const loadData = async() => {
         try {
           const profesorEntidad = await buscaProfesorId(jwt);
-          setProfesor(profesorEntidad);
+          setProfesor(profesorEntidad); 
         } catch(error) {
           console.log(error);
         }
