@@ -1,5 +1,5 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -149,6 +149,10 @@ export async function buscarMateriales(){
 
 export async function eliminarMaterial(id){
     await deleteMaterial(id);
+}
+
+export async function modificarMaterial(id, nombre, foto, stock, caracteristicas){
+    await updateMaterial (id, nombre, foto, stock, caracteristicas);
 }
 
 //Esta función devuelve todas las tareas Inventario almacenadas en la base de datos

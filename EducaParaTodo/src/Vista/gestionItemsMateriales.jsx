@@ -14,6 +14,7 @@ import {
   aniadeMaterial,
   buscarMateriales,
   eliminarMaterial,
+  modificarMaterial,
 } from "../Controlador/tareas";
 import Swal from "sweetalert2";
 
@@ -36,6 +37,7 @@ export default function gestionItemMaterial() {
   const [filtrar, setFiltrar] = useState([]);
   const [seleccionado, setSeleccionado] = useState([]);
   const [isSeleccionado, setIsSeleccionado] = useState(false);
+  const [idMaterial, setIdMaterial] = useState(0);
 
   // Variable para modificar un material
   const [nuevoNombre, setNuevoNombre] = useState("");
@@ -89,22 +91,62 @@ export default function gestionItemMaterial() {
     setBuscar("");
   };
 
-  const handleAñadirTipo = () => {
-    if (tipo) {
-      setCaracteristicas([
-        ...caracteristicas,
-        { id: Date.now().toString(), tipo },
-      ]);
-      setTipo("");
+  const handleAnadirTipo = () => {
+    if (tipo.trim() !== "") {
+      if (!isSeleccionado) {
+        setCaracteristicas([...caracteristicas, { id: idMaterial, tipo }]);
+        setIdMaterial(idMaterial + 1);
+        setTipo("");
+      } else {
+        setNuevasCaracteristicas([
+          ...nuevasCaracteristicas,
+          { id: nuevasCaracteristicas.length + 2, tipo },
+        ]);
+        setTipo("");
+      }
     }
   };
 
   const handleCancelar = () => {
-    setNombre("");
-    setFoto("");
-    setStock("");
-    setTipo("");
-    setCaracteristicas([]);
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres borrar?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setNombre("");
+          setFoto("");
+          setStock("");
+          setTipo("");
+          setCaracteristicas([]);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              setNombre("");
+              setFoto("");
+              setStock("");
+              setTipo("");
+              setCaracteristicas([]);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   const handleEliminar = async () => {
@@ -129,7 +171,7 @@ export default function gestionItemMaterial() {
       });
     } else {
       Alert.alert(
-        "¿Quiere borrar?", // Título
+        "¿Quiere eliminarlo?", // Título
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
@@ -158,14 +200,124 @@ export default function gestionItemMaterial() {
     setViewCrearMaterial(false);
   };
 
-  const handleAñadirMaterial = () => {
-    if (!isSeleccionado) {
-      const soloTipos = caracteristicas.map(
-        (caracteristica) => caracteristica.tipo
-      );
-      aniadeMaterial(nombre, foto, stock, soloTipos);
-      borrarTodo();
+  const handleAnadirMaterial = async () => {
+    if (nombre.trim() === "" || foto.trim() === "" || stock.trim() === "") {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Campos incorrectos",
+          text: "Rellena todos los campos antes de añadir el material.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "De acuerdo",
+        });
+      } else {
+        Alert.alert(
+          "Campos incorrectos", // Título
+          "Rellena todos los campos antes de añadir el material.", // Mensaje
+          [{ text: "De acuerdo" }],
+          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+        );
+      }
     } else {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Añadir materal",
+          text: "¿Quieres añadir este material?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Añadir",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const soloTipos = caracteristicas.map(
+              (caracteristica) => caracteristica.tipo
+            );
+            await aniadeMaterial(nombre, foto, stock, soloTipos);
+            borrarTodo();
+          }
+        });
+      } else {
+        Alert.alert(
+          "¿Quieres añadir este material?", // Título
+          "Pulsa una opción", // Mensaje
+          [
+            { text: "Cancelar" },
+            {
+              text: "Añadir",
+              onPress: async () => {
+                const soloTipos = caracteristicas.map(
+                  (caracteristica) => caracteristica.tipo
+                );
+                await aniadeMaterial(nombre, foto, stock, soloTipos);
+                borrarTodo();
+              },
+            },
+          ],
+          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+        );
+      }
+    }
+  };
+
+  const handleModificar = async () => {
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "Modificar materal",
+        text: "¿Quieres modificar el material?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Modificar",
+        cancelButtonText: "Cancelar",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const soloTipos = nuevasCaracteristicas.map(
+            (caracteristica) => caracteristica.tipo
+          );
+          await modificarMaterial(
+            seleccionado.id,
+            nuevoNombre,
+            nuevaFoto,
+            nuevoStock,
+            soloTipos
+          );
+          borrarTodo();
+          setViewCrearMaterial(false);
+          setViewModificarMaterial(true);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quieres modificar el material?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Modificar",
+            onPress: async () => {
+              const soloTipos = nuevasCaracteristicas.map(
+                (caracteristica) => caracteristica.tipo
+              );
+              await modificarMaterial(
+                seleccionado.id,
+                nuevoNombre,
+                nuevaFoto,
+                nuevoStock,
+                soloTipos
+              );
+              borrarTodo();
+              setViewCrearMaterial(false);
+              setViewModificarMaterial(true);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
     }
   };
 
@@ -198,7 +350,16 @@ export default function gestionItemMaterial() {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          setCaracteristicas(caracteristicas.filter((item) => item.id !== id));
+          console.log(nuevasCaracteristicas);
+          if (isSeleccionado) {
+            setNuevasCaracteristicas(
+              nuevasCaracteristicas.filter((item) => item.id !== id)
+            );
+          } else {
+            setCaracteristicas(
+              caracteristicas.filter((item) => item.id !== id)
+            );
+          }
         }
       });
     } else {
@@ -210,9 +371,15 @@ export default function gestionItemMaterial() {
           {
             text: "Confirmar",
             onPress: () => {
-              setCaracteristicas(
-                caracteristicas.filter((item) => item.id !== id)
-              );
+              if (isSeleccionado) {
+                setNuevasCaracteristicas(
+                  nuevasCaracteristicas.filter((item) => item.id !== id)
+                );
+              } else {
+                setCaracteristicas(
+                  caracteristicas.filter((item) => item.id !== id)
+                );
+              }
             },
           },
         ],
@@ -294,8 +461,8 @@ export default function gestionItemMaterial() {
       setNuevaFoto(seleccionado.foto);
       setNuevoStock(seleccionado.stock);
       const caracteristicasTransformadas = seleccionado.caracteristicas.map(
-        (tipo) => ({
-          id: Date.now().toString(), // Genera un ID único
+        (tipo, index) => ({
+          id: index, // Genera un ID único
           tipo: tipo,
         })
       );
@@ -307,6 +474,13 @@ export default function gestionItemMaterial() {
     <View style={styles.container}>
       <Text style={styles.header}>Items Materiales</Text>
       <View>
+        <Text style={styles.text}>
+          ¿Qué opción desea realizar? Pulse sobre el botón que desee.
+        </Text>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+
         <View style={styles.row}>
           <TouchableOpacity style={styles.button} onPress={handleCrearMaterial}>
             <Text style={styles.buttonText}>Crear Material</Text>
@@ -405,7 +579,7 @@ export default function gestionItemMaterial() {
 
           <TouchableOpacity
             style={styles.addButtonTipo}
-            onPress={handleAñadirTipo}
+            onPress={handleAnadirTipo}
           >
             <Text style={styles.addButtonText}>Añadir tipo</Text>
           </TouchableOpacity>
@@ -446,13 +620,25 @@ export default function gestionItemMaterial() {
                 </TouchableOpacity>
               </>
             )}
-
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleAñadirMaterial}
-            >
-              <Text style={styles.addButtonText}>Añadir</Text>
-            </TouchableOpacity>
+            {isSeleccionado ? (
+              <>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleModificar}
+                >
+                  <Text style={styles.addButtonText}>Modificar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleAnadirMaterial}
+                >
+                  <Text style={styles.addButtonText}>Añadir</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       )}
