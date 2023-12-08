@@ -2570,7 +2570,7 @@ export async function deleteMaterial(id) {
 
 export async function updateMaterial(id, nombreMaterial, fotoMaterial, stockMaterial, caracteristicasMaterial) {
   
-  let editaAlumno = {
+  let editaMaterial = {
       caracteristicas:  caracteristicasMaterial,
       foto: fotoMaterial,
       nombre: nombreMaterial, 
@@ -2583,7 +2583,7 @@ export async function updateMaterial(id, nombreMaterial, fotoMaterial, stockMate
       
       if (docSnapshot.exists()) {
           await updateDoc(docMaterial, {
-              ...editaAlumno
+              ...editaMaterial
           })
       }
   } catch (error) {

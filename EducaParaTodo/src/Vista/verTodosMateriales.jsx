@@ -13,6 +13,7 @@ import {
 import Swal from "sweetalert2";
 import { useRoute } from "@react-navigation/native";
 import * as lista from "./VarGlobal";
+import {modificarReduciendoStock_materialesBD} from "./VarGlobal";
 
 export default function VerTodosMateriales({ navigation }) {
   const route = useRoute();
@@ -30,7 +31,7 @@ export default function VerTodosMateriales({ navigation }) {
     setMaterialesTarea(lista.get);
   });
 
-  const deleteItem = (id) => {
+  const deleteItem = (item) => {
     if (Platform.OS === "web") {
       Swal.fire({
         title: "¿Estás seguro que quieres eliminarlo?",
@@ -43,8 +44,9 @@ export default function VerTodosMateriales({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          lista.filtrar(id);
+          lista.filtrar(item.id);
           setMaterialesTarea(lista.get);
+          modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
         }
       });
     } else {
@@ -56,8 +58,9 @@ export default function VerTodosMateriales({ navigation }) {
           {
             text: "Confirmar",
             onPress: () => {
-              lista.filtrar(id);
+              lista.filtrar(item.id);
               setMaterialesTarea(lista.get);
+              modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
             },
           },
         ],
@@ -86,7 +89,7 @@ export default function VerTodosMateriales({ navigation }) {
         <Text style={styles.itemText}>{item.origen}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => deleteItem(item.id)}
+        onPress={() => deleteItem(item)}
         style={styles.deleteButton}
       >
         <Image

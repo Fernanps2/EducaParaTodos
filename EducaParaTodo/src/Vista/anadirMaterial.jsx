@@ -14,7 +14,15 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import { buscarMateriales } from "../Controlador/tareas";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
+import {
+  existeLista,
+  set_materialesBD,
+  get_materialesBD,
+  modificarStock_materialesBD,
+  isLargeItemMaterialesBD,
+  isHasTiposItemMaterialesBD,
+} from "./VarGlobal";
 
 //import { DataContextMateriales } from "./DataContextMateriales";
 
@@ -29,9 +37,17 @@ export default function AnadirMaterial({ navigation }) {
     const cargarMateriales = async () => {
       try {
         const datosMateriales = await buscarMateriales();
-        setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
-        setInitialMaterials(datosMateriales);
-        setCargando(false);
+        const datosMaterialesActuales = get_materialesBD();
+        if (datosMaterialesActuales.length === 0) {
+          set_materialesBD(datosMateriales);
+          setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
+          setInitialMaterials(datosMateriales);
+          setCargando(false);
+        } else {
+          setMaterials(get_materialesBD); // Guardamos los datos en la variable de estado
+          setInitialMaterials(get_materialesBD);
+          setCargando(false);
+        }
       } catch (error) {
         console.error("Error al obtener materiales:", error);
         setCargando(false);
@@ -46,11 +62,12 @@ export default function AnadirMaterial({ navigation }) {
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [labelQty, setLabelQty] = useState("");
-  const [caracteristica, setCaracteristica] = useState("Ninguna");
-  const [caracDef, setCaracDef] = useState('Ninguna');
+  const [caracteristica, setCaracteristica] = useState("Ninguno");
+  const [caracDef, setCaracDef] = useState("Ninguno");
   const [selectedMaterialId, setSelectedMaterialId] = useState(null);
   const [nombreMaterial, setNombreMaterial] = useState("");
   const [material, setMaterial] = useState([]);
+  const [stockComparar, setStockComparar] = useState("");
 
   const searchMaterials = () => {
     if (searchQuery) {
@@ -67,17 +84,47 @@ export default function AnadirMaterial({ navigation }) {
     setSearchQuery("");
   };
 
-  const selectMaterial = (item,caract) => {
-    if (selectedMaterialId === item.id) {
-      setSelectedMaterialId(null);
-      setNombreMaterial("");
-      setMaterial([]);
-      setCaracDef("Ninguno");
+  const selectMaterial = (item) => {
+    setSelectedMaterialId(item.id);
+    setNombreMaterial(item.nombre);
+    setMaterial(item);
+
+    // escogemos el valor del picker que tiene esa celda
+    const valorActualPicker = item.caracteristicas.find(
+      (carac) => carac.tipo === caracteristica
+    );
+    if (valorActualPicker) {
+      setCaracDef(valorActualPicker.tipo);
+      setStockComparar(valorActualPicker.cantidad);
     } else {
-      setSelectedMaterialId(item.id);
-      setNombreMaterial(item.nombre);
-      setMaterial(item);
-      setCaracDef(caract);
+      // Sino tiene elección será Ninguno.
+      setCaracDef("Ninguno");
+      setStockComparar(item.stock);
+    }
+  };
+
+  // Con esta función se muestra el stock del material en la lista, tanto del total si no se selecciona ningún tipo,
+  // Como de cada tipo de material.
+  const getCantidadForCaracteristica = (
+    stock,
+    caracteristicas,
+    tipoSeleccionado
+  ) => {
+    const caracteristica = caracteristicas.find(
+      (caracteristica) => caracteristica.tipo === tipoSeleccionado
+    );
+    return caracteristica ? caracteristica.cantidad : stock;
+  };
+
+  const seleccionTipo = (tipo, item) => {
+    setCaracteristica(tipo);
+    if (selectedMaterialId === item.id) {
+      setCaracDef(tipo);
+      const valor = item.caracteristicas.find(
+        (carac) => carac.tipo === tipo
+      );
+      setStockComparar(valor.cantidad);
+      console.log(valor)
     }
   };
 
@@ -87,16 +134,24 @@ export default function AnadirMaterial({ navigation }) {
         <Text style={styles.materialName}>{item.nombre}</Text>
         <Text
           style={styles.materialTotal}
-        >{`Cantidad total: ${item.stock} `}</Text>
+        >{`Cantidad total: ${getCantidadForCaracteristica(
+          item.stock,
+          item.caracteristicas,
+          caracteristica
+        )} `}</Text>
       </View>
       <Picker
         selectedValue={caracteristica}
         style={styles.picker}
-        onValueChange={(itemValue) => setCaracteristica(itemValue)}
+        onValueChange={(itemValue) => seleccionTipo(itemValue, item)}
       >
         <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
         {item.caracteristicas.map((caracteristica, index) => (
-          <Picker.Item key={index} label={caracteristica} value={caracteristica} />
+          <Picker.Item
+            key={index}
+            label={caracteristica.tipo}
+            value={caracteristica.tipo}
+          />
         ))}
       </Picker>
       <TouchableOpacity
@@ -106,7 +161,7 @@ export default function AnadirMaterial({ navigation }) {
             ? styles.checkboxChecked
             : styles.checkboxUnchecked,
         ]}
-        onPress={() => selectMaterial(item, caracteristica)}
+        onPress={() => selectMaterial(item)}
       >
         {selectedMaterialId === item.id && (
           <Text style={styles.checkboxLabel}>✓</Text>
@@ -116,14 +171,33 @@ export default function AnadirMaterial({ navigation }) {
   );
 
   const guardarDatos = () => {
-    navigation.navigate("verTodosMateriales", {
-      id: selectedMaterialId,
-      caracteristica: caracDef,
-      origen: pickupLocation,
-      destino: dropoffLocation,
-      cantidad: labelQty,
-      nombre: nombreMaterial,
-    });
+    // que no pueda introducir un material con la misma característica dos veces.
+    if (existeLista(selectedMaterialId, caracDef)) {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Material ya introducido",
+          text: "Este material ya lo haz añadido a la tarea",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        });
+      } else {
+        Alert.alert(
+          "Material ya introducido",
+          "Este material ya lo haz añadido a la tarea"
+        );
+      }
+    } else {
+      // Actualizamos la cantidad de stock total.
+      modificarStock_materialesBD(selectedMaterialId, labelQty, caracDef);
+      navigation.navigate("verTodosMateriales", {
+        id: selectedMaterialId,
+        caracteristica: caracDef,
+        origen: pickupLocation,
+        destino: dropoffLocation,
+        cantidad: labelQty,
+        nombre: nombreMaterial,
+      });
+    }
   };
 
   const showAlertStore = () => {
@@ -144,7 +218,7 @@ export default function AnadirMaterial({ navigation }) {
             dropoffLocation == "" ||
             isNaN(labelQty) ||
             labelQty.trim() === "" ||
-            labelQty == 0 ||
+            labelQty <= 0 ||
             selectedMaterialId === null
           ) {
             Swal.fire({
@@ -154,15 +228,41 @@ export default function AnadirMaterial({ navigation }) {
               confirmButtonText: "De acuerdo",
             });
           } else {
-            if (labelQty > material.stock) {
-              Swal.fire({
-                title: "Cantidad incorrecta",
-                text: "La cantidad a recoger no debe ser superior al stock total.",
-                icon: "warning",
-                confirmButtonText: "De acuerdo",
-              });
+            if (isHasTiposItemMaterialesBD) {
+              if (caracDef === "Ninguno") {
+                Swal.fire({
+                  title: "Campo incorrecto",
+                  text: "Debe elegir una característica del objeto elegido",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+              } else {
+                // Si tiene tipo entonces se escoge por el stock final.
+                console.log(stockComparar)
+                console.log(labelQty)
+                if (labelQty > stockComparar) {
+                  Swal.fire({
+                    title: "Cantidad incorrecta",
+                    text: "La cantidad a recoger no debe ser superior al stock que hay.",
+                    icon: "warning",
+                    confirmButtonText: "De acuerdo",
+                  });
+                } else {
+                  guardarDatos();
+                }
+              }
             } else {
-              guardarDatos();
+              // Si no tiene tipo entonces se escoge por el stock final.
+              if (labelQty > material.stock) {
+                Swal.fire({
+                  title: "Cantidad incorrecta",
+                  text: "La cantidad a recoger no debe ser superior al stock total.",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+              } else {
+                guardarDatos();
+              }
             }
           }
         }
@@ -181,27 +281,51 @@ export default function AnadirMaterial({ navigation }) {
                 dropoffLocation == "" ||
                 isNaN(labelQty) ||
                 labelQty.trim() === "" ||
-                labelQty == 0 ||
+                labelQty <= 0 ||
                 selectedMaterialId === null
               ) {
                 Alert.alert(
                   "Campos rellenados incorrectamente", // Título
                   "Comprueba que todos los campos estan rellanados correctamente.", // Mensaje
-                  [
-                    { text: "De acuerdo" },
-                  ],
+                  [{ text: "De acuerdo" }]
                 );
               } else {
-                if (labelQty > material.stock) {
-                  Alert.alert(
-                    "Cantidad incorrecta", // Título
-                    "La cantidad a recoger no debe ser superior al stock total.", // Mensaje
-                    [
-                      { text: "De acuerdo" },
-                    ],
-                  );
+                if (isHasTiposItemMaterialesBD) {
+                  if (caracDef === "Ninguno") {
+                    Alert.alert(
+                      "Campo incorrecto", // Título
+                      "Debe elegir una característica del objeto elegido", // Mensaje
+                      [{ text: "De acuerdo" }]
+                    );
+                  } else {
+                    // Si tiene tipo entonces se escoge por el stock final.
+                    if (
+                      isLargeItemMaterialesBD(
+                        selectedMaterialId,
+                        caracDef,
+                        labelQty
+                      )
+                    ) {
+                      Alert.alert(
+                        "Cantidad incorrecta", // Título
+                        "La cantidad a recoger no debe ser superior al stock que hay.", // Mensaje
+                        [{ text: "De acuerdo" }]
+                      );
+                    } else {
+                      guardarDatos();
+                    }
+                  }
                 } else {
-                  guardarDatos();
+                  // Si no tiene tipo entonces se escoge por el stock final.
+                  if (labelQty > material.stock) {
+                    Alert.alert(
+                      "Cantidad incorrecta", // Título
+                      "La cantidad a recoger no debe ser superior al stock total.", // Mensaje
+                      [{ text: "De acuerdo" }]
+                    );
+                  } else {
+                    guardarDatos();
+                  }
                 }
               }
             },
@@ -298,11 +422,13 @@ export default function AnadirMaterial({ navigation }) {
           <Text>Cargando...</Text>
         </View>
       )}
-      <FlatList
-        data={materials}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <View style={styles.Flatlist}>
+        <FlatList
+          data={materials}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
       <View style={styles.separador} />
       <View style={styles.separador} />
       <View style={[styles.buttonContainer]}>
@@ -413,5 +539,9 @@ const styles = StyleSheet.create({
     height: 20,
     width: 150,
     marginHorizontal: 10,
+  },
+  Flatlist: {
+    height: 400,
+    maxHeight: 400,
   },
 });

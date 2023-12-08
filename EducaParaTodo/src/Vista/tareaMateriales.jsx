@@ -12,11 +12,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Swal from "sweetalert2";
-import { aniadeTarea, aniadeTareaInventario } from "../Controlador/tareas";
+import {
+  aniadeTarea,
+  aniadeTareaInventario,
+  modificarMaterial,
+} from "../Controlador/tareas";
 import {
   get,
   inicializarmateriales,
   isVaciaListaMateriales,
+  get_materialesBD,
 } from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
@@ -171,6 +176,18 @@ export default function TareaActividad({ navigation }) {
               idTarea
             )
         );
+        //Actuliazmos el la base de datos con el material de stock restante.
+        const datos = get_materialesBD();
+        for (const item of datos) {
+          await modificarMaterial(
+            item.id,
+            item.nombre,
+            item.foto,
+            item.stock,
+            item.caracteristicas
+          );
+        }
+        //await modificarMaterial();
 
         // Reiniciamos los materiales
         inicializarmateriales();
