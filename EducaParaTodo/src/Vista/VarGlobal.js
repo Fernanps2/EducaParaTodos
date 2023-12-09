@@ -29,33 +29,29 @@ export function get_materialesBD () {
 }
 export function modificarStock_materialesBD (id, cant, tipo){
     const material = materialesBD.find(item => item.id === id);
-    if (material) {
-        material.stock -= cant;
-        const caract = material.caracteristicas.find(item => item.tipo === tipo);
-        caract.cantidad -= cant;
-    } else {
-        console.log('Material no encontrado');
+    material.stock -= Number(cant);
+    const caract = material.caracteristicas.find(item => item.tipo === tipo);
+    // Si tiene tipo lo encontrará, sino no hace nada, ya que no tiene tipos.
+    if(caract){
+        caract.cantidad -= Number(cant);
     }
 }
 
 export function modificarReduciendoStock_materialesBD (id, cant, tipo){
     const material = materialesBD.find(item => item.id === id);
-    if (material) {
         material.stock = Number(material.stock) + Number(cant);
-        const caract = material.caracteristicas.find(item => item.tipo === tipo);
-        caract.cantidad = Number(caract.cantidad) + Number(cant);
-    } else {
-        console.log('Material no encontrado');
-    }
+        const caract = material.caracteristicas.find(item => item.tipo === tipo); 
+        // Si tiene tipo se le suma, sino no.
+        if(caract){
+            caract.cantidad = Number(caract.cantidad) + Number(cant);
+        }
 }
 
 // Comparamos el stock para que no supere el mmáximo permitido
 export function isLargeItemMaterialesBD (id, tipo, cantidadElegida){
     const material = materialesBD.find(item => item.id === id);
-    if (material){
     const caract = material.caracteristicas.find(item => item.tipo === tipo);
-    return cantidadElegida > caract.cantidad;
-    } else console.log('fallo no lo encuentra');
+    return Number(cantidadElegida) > Number(caract.cantidad);
 }
 
 // 

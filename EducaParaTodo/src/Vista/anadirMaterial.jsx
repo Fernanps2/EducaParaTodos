@@ -120,11 +120,8 @@ export default function AnadirMaterial({ navigation }) {
     setCaracteristica(tipo);
     if (selectedMaterialId === item.id) {
       setCaracDef(tipo);
-      const valor = item.caracteristicas.find(
-        (carac) => carac.tipo === tipo
-      );
+      const valor = item.caracteristicas.find((carac) => carac.tipo === tipo);
       setStockComparar(valor.cantidad);
-      console.log(valor)
     }
   };
 
@@ -228,7 +225,7 @@ export default function AnadirMaterial({ navigation }) {
               confirmButtonText: "De acuerdo",
             });
           } else {
-            if (isHasTiposItemMaterialesBD) {
+            if (isHasTiposItemMaterialesBD(selectedMaterialId)) {
               if (caracDef === "Ninguno") {
                 Swal.fire({
                   title: "Campo incorrecto",
@@ -237,10 +234,14 @@ export default function AnadirMaterial({ navigation }) {
                   confirmButtonText: "De acuerdo",
                 });
               } else {
-                // Si tiene tipo entonces se escoge por el stock final.
-                console.log(stockComparar)
-                console.log(labelQty)
-                if (labelQty > stockComparar) {
+                // Si tiene tipo entonces se escoge por el stock del tipo.
+                if (
+                  isLargeItemMaterialesBD(
+                    selectedMaterialId,
+                    caracDef,
+                    labelQty
+                  )
+                ) {
                   Swal.fire({
                     title: "Cantidad incorrecta",
                     text: "La cantidad a recoger no debe ser superior al stock que hay.",
@@ -253,7 +254,7 @@ export default function AnadirMaterial({ navigation }) {
               }
             } else {
               // Si no tiene tipo entonces se escoge por el stock final.
-              if (labelQty > material.stock) {
+              if (Number(labelQty) > Number(stockComparar)) {
                 Swal.fire({
                   title: "Cantidad incorrecta",
                   text: "La cantidad a recoger no debe ser superior al stock total.",
@@ -290,7 +291,7 @@ export default function AnadirMaterial({ navigation }) {
                   [{ text: "De acuerdo" }]
                 );
               } else {
-                if (isHasTiposItemMaterialesBD) {
+                if (isHasTiposItemMaterialesBD(selectedMaterialId)) {
                   if (caracDef === "Ninguno") {
                     Alert.alert(
                       "Campo incorrecto", // Título
@@ -298,7 +299,7 @@ export default function AnadirMaterial({ navigation }) {
                       [{ text: "De acuerdo" }]
                     );
                   } else {
-                    // Si tiene tipo entonces se escoge por el stock final.
+                    // Si tiene tipo entonces se escoge por el stock del tipo.
                     if (
                       isLargeItemMaterialesBD(
                         selectedMaterialId,
@@ -317,7 +318,7 @@ export default function AnadirMaterial({ navigation }) {
                   }
                 } else {
                   // Si no tiene tipo entonces se escoge por el stock final.
-                  if (labelQty > material.stock) {
+                  if (Number(labelQty) > Number(material.stock)) {
                     Alert.alert(
                       "Cantidad incorrecta", // Título
                       "La cantidad a recoger no debe ser superior al stock total.", // Mensaje

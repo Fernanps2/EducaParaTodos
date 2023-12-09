@@ -48,7 +48,7 @@ export default function gestionItemMaterial() {
   // Variable para modificar un material
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [nuevaFoto, setNuevaFoto] = useState("");
-  const [nuevoStock, setNuevoStock] = useState(0);
+  const [nuevoStock, setNuevoStock] = useState("");
   const [nuevasCaracteristicas, setNuevasCaracteristicas] = useState([]);
 
   // Se actualizará el valor de materiales cuando tengamos que modificar uno y estemos en la interfaz de elegir material.
@@ -99,11 +99,11 @@ export default function gestionItemMaterial() {
     setFoto("");
     setNuevaFoto("");
     setStock("");
-    setNuevoStock(0);
+    setNuevoStock("");
     setCaracteristicas([]);
     setNuevasCaracteristicas([]);
     setBuscar("");
-    setStockTipo(0);
+    setStockTipo("");
     setFotoTipo("");
   };
 
@@ -177,7 +177,7 @@ export default function gestionItemMaterial() {
           setStock("");
           setTipo("");
           setCaracteristicas([]);
-          setStockTipo(0);
+          setStockTipo("");
           setFotoTipo("");
           setViewTipos(false);
           setViewStock(false);
@@ -200,7 +200,7 @@ export default function gestionItemMaterial() {
               setStock("");
               setTipo("");
               setCaracteristicas([]);
-              setStockTipo(0);
+              setStockTipo("");
               setFotoTipo("");
               setViewTipos(false);
               setViewStock(false);
@@ -230,7 +230,7 @@ export default function gestionItemMaterial() {
         if (result.isConfirmed) {
           setNuevoNombre("");
           setNuevaFoto("");
-          setNuevoStock(0);
+          setNuevoStock("");
           setNuevasCaracteristicas([]);
           borrarMaterial();
         }
@@ -246,7 +246,7 @@ export default function gestionItemMaterial() {
             onPress: () => {
               setNuevoNombre("");
               setNuevaFoto("");
-              setNuevoStock(0);
+              setNuevoStock("");
               setNuevasCaracteristicas([]);
               borrarMaterial();
             },
@@ -382,10 +382,13 @@ export default function gestionItemMaterial() {
             );
           } else {
             // Obtenemos el stock de todos las caracteristicas y los sumamos.
-            console.log('Mira esto pa:',nuevasCaracteristicas)
-            let stockTotal = nuevasCaracteristicas.reduce((acumulador, item) => {
-              return acumulador + Number(item.cantidad);
-            }, 0);
+            console.log("Mira esto pa:", nuevasCaracteristicas);
+            let stockTotal = nuevasCaracteristicas.reduce(
+              (acumulador, item) => {
+                return acumulador + Number(item.cantidad);
+              },
+              0
+            );
 
             if (stockTotal !== nuevoStock) {
               // Enviar mensajes de error y modificar el stock, y guardamos los datos.
@@ -772,7 +775,7 @@ export default function gestionItemMaterial() {
                   <TextInput
                     style={[styles.input]}
                     placeholder="Elija stock"
-                    value={""}
+                    value={stock}
                     onChangeText={handleStockInput}
                     keyboardType="numeric"
                   />
