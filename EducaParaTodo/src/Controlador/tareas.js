@@ -10,10 +10,10 @@ export async function asignarFeedbackBD (idTarea, feedBack){
 }
 
 // Esta función busca la tarea con ese ID
-export async function buscarTarea(idTarea){
+export async function buscarTarea(usuarioId){
     let tarea = null;
 
-    tarea = await getTareaId(idTarea);
+    tarea = await getTareaId(usuarioId);
 
     return tarea;
 }

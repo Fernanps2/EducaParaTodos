@@ -1697,6 +1697,29 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
 // }
 
 
+// Obtener todas las tareas
+export const getUrlTipoTarea = async (tipo) => {
+
+  try {
+    const q = query(collection(db,"FotoTipoTarea"),where("tipo", "==", tipo));
+    const querySnapshot = await getDocs(q);
+
+    const docs = [];
+  
+    for (const tareaDoc of querySnapshot.docs) {
+      const datos = tareaDoc.data();
+  
+      docs.push(datos.url);
+    }
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    Alert.alert(error);
+  }
+  };
+
+
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
 export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
     try{
@@ -1715,6 +1738,8 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
         else{
           var idAlumno = '';
           var completado = 'false';
+          var fotoURL = await getUrlTipoTarea (tipo);
+
           const objeto = {
             titulo,
             completado,
@@ -1722,7 +1747,8 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
             fechaInicio,
             idAlumno,
             tipo,
-            periocidad
+            periocidad,
+            fotoURL,
           }
           
           // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.
@@ -1780,7 +1806,7 @@ export const asignarFeedback = async (idTarea,feedBack) => {
 export const getTareaId = async (idAlumno) => {
     
     try {
-      if(idTarea != ''){
+      if(idAlumno === ''){
         if (Platform.OS === "web"){
           Swal.fire({
             title: "Mensaje Importante",
@@ -1800,7 +1826,7 @@ export const getTareaId = async (idAlumno) => {
         const docs = [];
     
         for (const tareaDoc of querySnapshot.docs) {
-          const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+          const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, fotoURL } = tareaDoc.data();
     
           docs.push({
             id: tareaDoc.id,
@@ -1810,6 +1836,7 @@ export const getTareaId = async (idAlumno) => {
             fechaFin,
             tipo,
             idAlumno,
+            fotoURL,
         });
         }
     
@@ -1843,6 +1870,7 @@ export const getTareaIdCompletada = async (idAlumno) => {
         fechaFin,
         tipo,
         idAlumno,
+        fotoURL,
       });
     }
   
@@ -1874,6 +1902,7 @@ try {
       fechaFin,
       tipo,
       idAlumno,
+      fotoURL,
     });
   }
 
