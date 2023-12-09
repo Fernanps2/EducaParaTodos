@@ -58,8 +58,8 @@ export default function AnadirMaterial({ navigation }) {
   }, []); // El array vacío asegura que el efecto se ejecute solo una vez al montar
 
   // Variables para guardar los datos
-  const [pickupLocation, setPickupLocation] = useState("");
-  const [dropoffLocation, setDropoffLocation] = useState("");
+  const [pickupLocation, setPickupLocation] = useState("Ninguno");
+  const [dropoffLocation, setDropoffLocation] = useState("Ninguno");
   const [searchQuery, setSearchQuery] = useState("");
   const [labelQty, setLabelQty] = useState("");
   const [caracteristica, setCaracteristica] = useState("Ninguno");
@@ -211,8 +211,9 @@ export default function AnadirMaterial({ navigation }) {
       }).then((result) => {
         if (result.isConfirmed) {
           if (
-            pickupLocation == "" ||
-            dropoffLocation == "" ||
+            pickupLocation == "Ninguno" ||
+            dropoffLocation == "Ninguno" ||
+            pickupLocation == dropoffLocation || 
             isNaN(labelQty) ||
             labelQty.trim() === "" ||
             labelQty <= 0 ||
@@ -278,8 +279,9 @@ export default function AnadirMaterial({ navigation }) {
             text: "Confirmar",
             onPress: () => {
               if (
-                pickupLocation == "" ||
-                dropoffLocation == "" ||
+                pickupLocation == "Ninguno" ||
+                dropoffLocation == "Ninguno" ||
+                pickupLocation == dropoffLocation || 
                 isNaN(labelQty) ||
                 labelQty.trim() === "" ||
                 labelQty <= 0 ||
@@ -356,25 +358,48 @@ export default function AnadirMaterial({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.row}>
         <Text style={styles.text}>Recoger en: </Text>
-
-        <TextInput
-          placeholder="Elija lugar"
-          value={pickupLocation}
-          onChangeText={setPickupLocation}
-          style={styles.input}
-        />
+        <Picker
+          selectedValue={pickupLocation}
+          style={styles.picker}
+          onValueChange={(itemValue) => setPickupLocation(itemValue)}
+        >
+          <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
+          <Picker.Item key="0" label="Almacén" value="Almacen" />,
+          <Picker.Item key="1" label="Aula A" value="A" />,
+          <Picker.Item key="2" label="Aula B" value="B" />,
+          <Picker.Item key="3" label="Aula C" value="C" />,
+          <Picker.Item key="4" label="Aula D" value="D" />,
+          <Picker.Item key="5" label="Aula E" value="E" />,
+          <Picker.Item key="6" label="Aula F" value="F" />,
+          <Picker.Item key="7" label="Aula G" value="G" />,
+          <Picker.Item key="8" label="Aula H" value="H" />,
+          <Picker.Item key="9" label="Aula I" value="I" />,
+          <Picker.Item key="10" label="Aula J" value="J" />,
+        </Picker>
       </View>
       <View style={styles.separador} />
       <View style={styles.separador} />
       <View style={styles.row}>
         <Text style={styles.text}>Llevar a: </Text>
 
-        <TextInput
-          placeholder="Elija lugar"
-          value={dropoffLocation}
-          onChangeText={setDropoffLocation}
-          style={styles.input}
-        />
+        <Picker
+          selectedValue={dropoffLocation}
+          style={styles.picker}
+          onValueChange={(itemValue) => setDropoffLocation(itemValue)}
+        >
+          <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
+          <Picker.Item key="0" label="Almacén" value="Almacen" />,
+          <Picker.Item key="1" label="Aula A" value="A" />,
+          <Picker.Item key="2" label="Aula B" value="B" />,
+          <Picker.Item key="3" label="Aula C" value="C" />,
+          <Picker.Item key="4" label="Aula D" value="D" />,
+          <Picker.Item key="5" label="Aula E" value="E" />,
+          <Picker.Item key="6" label="Aula F" value="F" />,
+          <Picker.Item key="7" label="Aula G" value="G" />,
+          <Picker.Item key="8" label="Aula H" value="H" />,
+          <Picker.Item key="9" label="Aula I" value="I" />,
+          <Picker.Item key="10" label="Aula J" value="J" />,
+        </Picker>
       </View>
       <View style={styles.separador} />
       <View style={styles.separador} />

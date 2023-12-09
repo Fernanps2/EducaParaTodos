@@ -291,12 +291,13 @@ export async function getProfesores() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula,
             });
         }        
     } catch (error) {
@@ -2639,6 +2640,28 @@ try {
     console.log(error);
   }
 }
+
+// FUNCION QUE DEVULEVE LAS TAREAS DEL INVENTARIO CON UN ID DE TAREA ESPECIFICO
+// PRUEBA REALIZADA. FUNCIONA
+export const getTareaIdTareasInventario = async(id) => {
+  try {
+    
+    const InventarioQuery = query(collection(db, 'Tarea-Inventario'), where('idTarea', '==', id));
+    const querySnapshot = await getDocs(InventarioQuery);
+
+    const docs=[];
+  
+    for (const docu of querySnapshot.docs) {
+      const tareaActividadDatos = docu.data();
+      const id = docu.id;
+      docs.push({id, ...tareaActividadDatos});
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setVideo = async (nombreVideo, urlVideo)=> {

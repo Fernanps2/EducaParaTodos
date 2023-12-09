@@ -1,5 +1,9 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores } from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+
+export async function obtenerProfesores (){
+    return await getProfesores();
+}
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
         return await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -160,6 +164,15 @@ export async function buscarTareasInventario(){
     let tareasInventario = null;
 
     tareasInventario = await getTareasInventario();
+
+    return tareasInventario;
+}
+
+//Esta función devuelve una tarea inventario específica.
+export async function buscarTareaIdTareasInventario(id){
+    let tareasInventario = null;
+
+    tareasInventario = await getTareaIdTareasInventario(id);
 
     return tareasInventario;
 }
