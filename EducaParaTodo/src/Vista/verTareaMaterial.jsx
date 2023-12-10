@@ -36,6 +36,7 @@ export default function VerTareaMaterial({ route, navigation }) {
   const [stock, setStock] = useState("");
   const [nombreMaterial, setNombreMaterial] = useState("");
   const [fotoMaterial, setFotoMaterial] = useState("");
+  const [caract, setCaract] = useState([]);
 
   // se cargan las aulas, tareas, profesores, y lugares de origen
   useEffect(() => {
@@ -129,22 +130,22 @@ export default function VerTareaMaterial({ route, navigation }) {
 
   const handleActualizaEstado = () => {
     // Actualizar tickMateriales
-  const nuevosTickMateriales = tickMateriales.map(material => {
-    if (material.nombre === nombreMaterial) {
-      return { ...material, tick: true };
-    }
-    return material;
-  });
+    const nuevosTickMateriales = tickMateriales.map((material) => {
+      if (material.nombre === nombreMaterial) {
+        return { ...material, tick: true };
+      }
+      return material;
+    });
 
-  // Actualizar el estado con los nuevos tickMateriales
-  setTickMateriales(nuevosTickMateriales);
-  setViewCadaObjetoRecoger(false);
-  }
+    // Actualizar el estado con los nuevos tickMateriales
+    setTickMateriales(nuevosTickMateriales);
+    setViewCadaObjetoRecoger(false);
+  };
 
   const renderObjetosARecoger = (lugar, tareas, fotoLugarOrigen) => {
     // Aplanar el array de materiales antes de renderizar
     const materialesAplanados = [].concat(...materiales);
-    console.log(tareas);
+    const tareasAplanados = [].concat(...tareas);
 
     return (
       <View style={{ flex: 1 }}>
@@ -183,17 +184,27 @@ export default function VerTareaMaterial({ route, navigation }) {
                 style={styles.imagenYTextoPulsar}
                 onPress={() => {
                   setViewCadaObjetoRecoger(true);
-                  setStock(item.stock);
+                  const stock = tareasAplanados
+                    .filter((tarea) => tarea.idMaterial === item.id)
+                    .map((tarea) => tarea.cantidad);
+                  setStock(stock[0]);
                   setNombreMaterial(item.nombre);
                   setFotoMaterial(item.foto);
+                  const objetosFiltrados = tareasAplanados
+                    .filter((tarea) => tarea.idMaterial === item.id)
+                    .map((tarea) => tarea.caracteristica);
+                  setCaract(objetosFiltrados); // obtenemos las caracteristicas del objeto a recoger.
                 }}
               >
                 <Image source={{ uri: item.foto }} style={imagenStyle} />
-                <Text style={styles.textBoton}>{item.nombre}</Text>
+                <Text style={styles.textBoton}>
+                  {item.nombre}{" "}
+                  {item.caracteristica !== "Ninguno" ? item.caracteristica : ""}
+                </Text>
               </TouchableOpacity>
             );
           }}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id + item.caracteristica}
           numColumns={2}
           columnWrapperStyle={styles.columnStyle}
         />
@@ -262,6 +273,51 @@ export default function VerTareaMaterial({ route, navigation }) {
 
   // Pnatalla que muestra la cantidad de objetos a recoger.
   const renderMaterialARecoger = () => {
+    const materialesAplanados = [].concat(...materiales);
+    const tareasAplanados = [].concat(...tareas[lugarOrigenNow]);
+
+    console.log("materiales: ", materiales);
+    console.log("tareas: ", tareas);
+    let tipos = [];
+
+    // Primero, se verifica si el primer elemento de 'caract' es diferente de "Ninguno".
+    if (caract[0] !== "Ninguno") {
+      // Aquí, se filtran los materiales que coinciden con el nombre del material deseado.
+      // Luego, se usan 'flatMap' y 'map' para transformar cada material en sus características,
+      // agregando el 'id' del material a cada característica.
+      const arrayCaracteristica = materialesAplanados
+        .filter((material) => material.nombre === nombreMaterial)
+        .flatMap((material) =>
+          material.caracteristicas.map((caracteristica) => ({
+            ...caracteristica,
+            idMaterial: material.id,
+          }))
+        )
+        .filter((caracteristica) => caract.includes(caracteristica.tipo));
+
+      // Aquí, se mapean las características filtradas para crear un nuevo array de objetos.
+      // Para cada característica, se busca en 'tareasAplanados' la primera tarea que coincida con el 'idMaterial' y el 'tipo'.
+      let resultados = arrayCaracteristica.map((caracteristica) => {
+        const tareaFiltrada = tareasAplanados.find(
+          (tarea) =>
+            tarea.idMaterial === caracteristica.idMaterial &&
+            tarea.caracteristica === caracteristica.tipo
+        );
+
+        // Se crea un objeto con la 'foto', la 'cantidad' (obtenida de la tarea filtrada, si existe, o 0 en caso contrario),
+        // y el 'nombre' (que es el tipo de la característica).
+        return {
+          foto: caracteristica.foto,
+          cantidad: tareaFiltrada ? parseInt(tareaFiltrada.cantidad, 10) : 0,
+          nombre: caracteristica.tipo,
+        };
+      });
+
+      // Los resultados se asignan a 'tipos', que ahora contiene un array de objetos con la información deseada.
+      tipos = resultados;
+      console.log(tipos); // Se muestra en consola el array de objetos.
+    }
+
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.row}>
@@ -279,6 +335,73 @@ export default function VerTareaMaterial({ route, navigation }) {
             ? `Estoy en el ${lugarOrigenNow} cogiendo ${nombreMaterial}s`
             : `Estoy en el aula ${lugarOrigenNow} cogiendo ${nombreMaterial}s`}
         </Text>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+
+        <>
+          {caract[0] === "Ninguno" ? (
+            <>
+              <View style={styles.row}>
+                {stock >= 1 && stock <= 10 ? (
+                  <Image
+                    source={require(`../../Imagenes/Numeros/${stock}.png`)}
+                    style={styles.image}
+                  />
+                ) : (
+                  <Text style={{ fontSize: 30 }}>{stock}</Text>
+                )}
+              </View>
+
+              <Text style={styles.text}>
+                {stock} {nombreMaterial}
+                {stock > 1 ? "s" : ""}
+              </Text>
+            </>
+          ) : (
+            <View style={{height: 200}}>
+              <FlatList
+                data={tipos}
+                renderItem={({ item }) => (
+                  <View>
+                    <View style={{ flexDirection: "row" }}>
+                      <Image
+                        source={{ uri: item.foto }}
+                        style={styles.imageSmall}
+                      />
+                      {item.cantidad >= 1 && item.cantidad <= 10 ? (
+                        <Image
+                          source={require(`../../Imagenes/Numeros/${item.cantidad}.png`)}
+                          style={styles.imageSmall}
+                        />
+                      ) : (
+                        <Text style={{ fontSize: 50 }}>{item.cantidad}</Text>
+                      )}
+                    </View>
+                    <Text style={styles.text}>
+                      {`${item.cantidad} ${nombreMaterial} ${item.nombre}`}
+                    </Text>
+                  </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={2}
+              />
+            </View>
+          )}
+        </>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
@@ -288,31 +411,12 @@ export default function VerTareaMaterial({ route, navigation }) {
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
 
-        {stock >= 1 && stock <= 10 ? (
-          <Image
-            source={require(`../../Imagenes/Numeros/${stock}.png`)}
-            style={styles.image}
-          />
-        ) : (
-          <Text style={{ fontSize: 30 }}>{stock}</Text>
-        )}
-        <Text style={styles.text}>
-          <Text style={styles.text}>
-            {stock} {nombreMaterial}
-            {stock > 1 ? "s" : ""}
-          </Text>
-        </Text>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
-        <TouchableOpacity style={styles.imagePulsar} onPress={() => {handleActualizaEstado()}}>
+        <TouchableOpacity
+          style={styles.imagePulsar}
+          onPress={() => {
+            handleActualizaEstado();
+          }}
+        >
           <Image
             source={require("../../Imagenes/bien.png")}
             style={styles.image}
@@ -376,6 +480,10 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 150,
+  },
+  imageSmall: {
+    width: 120,
+    height: 120,
   },
   imagenDentroBoton: {
     width: 180,
