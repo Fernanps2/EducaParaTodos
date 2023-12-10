@@ -47,7 +47,6 @@ const Tareas = ({ route, navigation }) => {
     const listaTareas = async () => {
       try {
         const Tareas = await buscarTarea(usuario.id);
-        console.log(Tareas);
         setTareas(Tareas);
         setCargando(false);
         if (Tareas.length === 0) {
@@ -76,7 +75,6 @@ const Tareas = ({ route, navigation }) => {
           <>
             {hayTarea ? (
               <ScrollView contentContainerStyle={styles.datos}>
-                {console.log('Si hay tarea')}
                 {tareas.map((tarea, index) => (
                   <View key={index} style={styles.contenedor_tareas}>
                     <DatosTareas tarea={tarea} navigation={navigation} />

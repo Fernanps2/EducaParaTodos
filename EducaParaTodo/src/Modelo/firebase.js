@@ -2525,7 +2525,7 @@ try {
 // PRUEBA REALIZADA. FUNCIONA
 export const getMaterialId = async(id) => {
   try {
-    if(id != ''){
+    if(id == ''){
       if (Platform.OS === "web"){
         Swal.fire({
           title: "Mensaje Importante",
@@ -2537,19 +2537,19 @@ export const getMaterialId = async(id) => {
         Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
       }
     }else{
-    const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
-    const querySnapshot = await getDocs(materialQuery);
+      const docRef = doc(db, 'Material', id);
+      const docSnapshot = await getDoc(docRef);
+      
+      if (docSnapshot.exists()) {
+        const materialDatos = docSnapshot.data();
 
-    const docs = [];
-
-    querySnapshot.forEach((docu) => {
-      const materialDatos = docu.data();
-      console.log(materialDatos);
-
-      docs.push(materialDatos);
-    });
-
-    return docs;
+        // Agrega el ID del documento al objeto
+        return [{id:docSnapshot.id, ...materialDatos}];
+      } else {
+        // Manejar el caso en que el documento no existe
+        console.log("No se encontró ningún documento con ese ID");
+        return []; // Retorna un array vacío o lo que consideres apropiado
+      }
   }
   } catch (error) {
     console.log(error);
