@@ -42,6 +42,8 @@ import DatosProfesor from './src/Vista/datosProfesor.jsx';
 import seleccionAula from './src/Vista/seleccionAula.jsx';
 import seleccionMenus from './src/Vista/seleccionMenu.jsx';
 import seleccionCantidad from './src/Vista/seleccionCantidad.jsx';
+import ComandasCreadas from './src/Vista/comandasCreadas.jsx';
+import DatosComandas from './src/Vista/datosComanda.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -99,6 +101,9 @@ export default function App() {
           <Stack.Screen name="seleccionAula" component={seleccionAula} />
           <Stack.Screen name="seleccionMenu" component={seleccionMenus} />
           <Stack.Screen name="seleccionCantidad" component={seleccionCantidad} />
+          <Stack.Screen name="comandasCreadas" component={ComandasCreadas} />
+          <Stack.Screen name="datosComandas" component={DatosComandas} />
+
 
         </Stack.Navigator>
       </NavigationContainer>

@@ -1,36 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform} from 'react-native';
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
-import { buscarMenus } from '../Controlador/tareas';
+import { aniadirPedido, buscarMenu, buscarPictogramasNumero } from '../Controlador/tareas';
+import { RFValue } from 'react-native-responsive-fontsize';
+import Swal from "sweetalert2";
+import seleccionAula from './seleccionAula';
+
+const showAlertGuardar = (id, idMenu, idProf, aula, pedidos,navigation) => {
+  if (Platform.OS === "web") {
+    Swal.fire({
+      title: "¿Guardar menus?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        aniadirPedido(id,idMenu,idProf, aula,pedidos);
+        navigation.navigate('seleccionAula',{id}); // Navegar a la página SeleccionAula
+      }
+    });
+  } else {
+    Alert.alert(
+      "¿Quiere guardar?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar" },
+        { text: "Confirmar",
+        onPress: () => {
+          aniadirPedido(id,idMenu,idProf, aula, pedidos);
+          navigation.navigate('seleccionAula',{id}); // Navegar a la página SeleccionAula
+        }
+      },
+      ],
+      { cancelable: false } // Si se puede cancelar tocando fuera de la alerta
+    );
+  }
+};
 
 
-const DatosMenu= ({menu, id, navigation}) => {
-  console.log("Seleccion menu id: " + id);
-  return (
-    <View>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('seleccionCantidad', {id, menu,navigation})}>
-            <Image style={styles.foto} source={{ uri: menu.foto }} />
-            <Text style={styles.texto}> Menú {menu.Nombre} </Text>
-        </TouchableOpacity> */}
-      <Text style={styles.texto}>Seleccion de cantidad del menú </Text>
-    </View>
-)
-}
-
-
-const seleccionCantidad = ({route, navigation}) => {
+const SeleccionCantidad = ({route, navigation}) => {
 
   const {prof, menu, id} = route.params;
   const idMenu = menu.id
+  console.log("id prof: " + prof.id);
+  console.log("aula prof: " + prof.aula);
+  console.log("idTarea: " + id);
+  console.log("idMenu:" + idMenu);
 
   const [Menu, setMenu] = useState([]);
+  const [pictogramasNumero, setPictogramasNumero] = useState([]);
+
 
   useEffect(() => {
     const getMenu = async() => {
       try{
-        const menus = await buscarMenu(idMenu);
+        const menu = await buscarMenu(idMenu);
         setMenu(menu);
-        console.log(menu);
+        console.log("nombre menu: " + JSON.stringify(menu.Nombre));
       } catch(error){
         console.log("error: " + error);
       }
@@ -38,30 +67,55 @@ const seleccionCantidad = ({route, navigation}) => {
     getMenu();
   }, []);
 
+  useEffect(() => {
+    const getPictogramasNumero = async() => {
+      try{
+        const pitctogramas = await buscarPictogramasNumero();
+        setPictogramasNumero(pitctogramas);
+        console.log(pictogramasNumero);
+      } catch(error){
+        console.log("error: " + error);
+      }
+    }
+    getPictogramasNumero();
+  }, []);
+
+  console.log("id tarea al final: " + id);
+
+
     return(
+      <ScrollView contentContainerStyle={styles.datos}>
+
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Estoy en el aula: {prof.aula}</Text>
-          <Image style={styles.foto} source={{ uri: prof.foto }} />
+          <View style={styles.header}>
+          <View style={styles.centro}>
+            <Text style={styles.titleDerecha}>Estoy en el aula: {prof.aula},   Seleccionando el menu: {menu.Nombre}</Text>
+          </View>
+            <View style={styles.fotos}>
+              <Image style={styles.fotoIzquierda} source={{ uri: prof.foto }} />
+              <Image style={styles.foto} source={{ uri: menu.Imagen }} />
+            </View>
         </View>
-        <View>
-          <Text style={styles.title}>Estoy seleccionando el menu: {menu.Nombre}</Text>
-          <Image style={styles.foto} source={{ uri: menu.foto }} />
-        </View>
-{/* 
-        <ScrollView contentContainerStyle={styles.datos}>
-                {menuArray.map((menu, index) => (
+
+        <View style={styles.datos}>
+                {pictogramasNumero.map((pictograma, index) => (
                     <View key={index} style={styles.contenedor_tareas}>
-                        <DatosMenu menu={menu} id={id} navigation={navigation} />
+                      <TouchableOpacity onPress={ () => {
+                        showAlertGuardar(id,idMenu,prof.id,prof.aula,pictograma.Numero,navigation);
+                        }}>
+                        <Text> Cantidad: {pictograma.Numero}</Text>
+                        <Image style={styles.foto} source={{ uri: pictograma.Url }} />
+                      </TouchableOpacity>
                     </View>
                 ))}
-            </ScrollView> */}
-
+            </View>
       </View>
+      </ScrollView>
+
     )
 }
 
-export default seleccionCantidad;
+export default SeleccionCantidad;
 
 const styles = StyleSheet.create({
     container: {
@@ -69,10 +123,20 @@ const styles = StyleSheet.create({
       padding: 20,
     },
     header: {
-        flexDirection: 'row', // Alinea los elementos en fila (horizontal)
-        alignItems: 'center', // Alinea los elementos verticalmente en el centro
-        justifyContent: 'center'
+      flex:1,
+      flexWrap: 'wrap',  
     },
+    centro:{
+      alignContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    izquierda:{
+      alignContent: 'flex-start',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+    },
+
     datos: {
       flexDirection: 'row',
       flexWrap: 'wrap',    
@@ -83,6 +147,17 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       marginBottom:20,
       marginRight: 50,
+      fontSize: RFValue(16),
+
+    },
+    titleDerecha:{
+      fontSize: 50,
+      fontWeight: 'bold',
+      marginBottom:20,
+      marginRight: 50,
+      textAlign: 'right',
+      fontSize: RFValue(16),
+
     },
   texto: {
       fontWeight: 'bold',
@@ -90,6 +165,12 @@ const styles = StyleSheet.create({
       marginTop: 5,
       flexWrap: 'wrap',  
       fontSize: 50,
+      fontSize: RFValue(16),
+
+  },
+  fotos:{
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   foto: {
       width: 200,
@@ -98,9 +179,21 @@ const styles = StyleSheet.create({
       overflow: 'hidden',
       borderWidth: 2,
       borderColor: 'black',
-
+      width: RFValue(100),
+      height: RFValue(100),
+  },
+  fotoIzquierda: {
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'black',
+    width: RFValue(100),
+    height: RFValue(100),
 
   },
+
   contenedor_tareas: {
       flexDirection: 'column',
       width:'33%',

@@ -1,5 +1,5 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario } from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda } from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -49,6 +49,7 @@ export async function buscarTareaActividad(idTarea){
     let tarea = null;
 
     tarea = await getTareasActividadId(idTarea);
+    console.log("COntorlaodr: " + JSON.stringify(tarea));
 
     return tarea;
 }
@@ -70,7 +71,7 @@ export async function aniadeTareaComanda(idTarea,menus){
     await setTareaComanda(idTarea, menus);
 }
 
-// Esta función muestra todas las tareas de tipo comanda
+// Esta función muestra todas las tareas de tipo comanda en la colección tarea-comanda
 export async function buscarTareasComandas(){
     let tareas = null;
 
@@ -78,6 +79,16 @@ export async function buscarTareasComandas(){
 
     return tareas;
 }
+
+// Esta función muestra todas las tareas de tipo comanda en la colección tarea
+export async function buscarTComandas(){
+    let tareas = null;
+
+    tareas = await getTComanda();
+
+    return tareas;
+}
+
 
 export async function aniadeMenu(idTarea,idMenu, idAlimentos){
     await setMenu(idTarea,idMenu,idAlimentos);
@@ -93,10 +104,11 @@ export async function buscarMenus(){
 }
 
 // Esta función muestra el menú con ese id
+// PROBADO FUNCIONA
 export async function buscarMenu(idMenu){
     let menu = null;
 
-    menus = await getMenu(idMenu);
+    menu = await getMenu(idMenu);
 
     return menu;
 }
@@ -115,14 +127,6 @@ export async function buscarAlimento(nombre){
     return alimento;
 }
 
-export async function buscarAlimentos(){
-    let alimento = null;
-
-    alimento = await getAlimentos();
-
-    return alimento;
-}
-
 // Devuelve todos los alimentos
 export async function buscarAlimentos(){
     let alimentos = null;
@@ -131,7 +135,6 @@ export async function buscarAlimentos(){
 
     return alimentos;
 }
-
 
 export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
     await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
@@ -204,3 +207,24 @@ export async function cargarAudiosBD (){
     audios = await cargarAudios();
     return audios;
 }
+
+export async function buscarPictogramasNumero(){
+    let pictogramas = null;
+
+    pictogramas = await getPictogramasNumero();
+
+    return pictogramas;
+}
+
+export async function aniadirPedido(idTarea,idMenu,idProf,aula,nPedidos){
+    await setPedido(idTarea,idMenu,idProf,aula,nPedidos);
+}
+
+export async function buscarPedido (idMenu, idProf){
+    let pedidos = null;
+
+    pedidos = await getPedido(idMenu,idProf);
+    
+    return pedidos;
+}
+

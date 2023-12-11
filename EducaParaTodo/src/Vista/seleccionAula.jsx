@@ -20,7 +20,7 @@ const DatosProfesor = ({prof, id, navigation}) => {
 }
 
 
-const seleccionAula = ({route, navigation}) => {
+const SeleccionAula = ({route, navigation}) => {
 
   const {id} = route.params;
 
@@ -57,7 +57,7 @@ const seleccionAula = ({route, navigation}) => {
     )
 }
 
-export default seleccionAula;
+export default SeleccionAula;
 
 const styles = StyleSheet.create({
     container: {

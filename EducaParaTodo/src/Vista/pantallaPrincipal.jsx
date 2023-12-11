@@ -28,6 +28,7 @@ export default function PantallaPrincipal({ navigation }) {
       try {
         const Tareas = await buscarTareaActividad("MttUYl3E3CWL4TgdM0xd");
         setTareasL(Tareas);
+        console.log("tarea: " + (tareasL));
         console.log("tarea: " + JSON.stringify(Tareas));
       } catch(error) {
         console.log(error);
