@@ -837,7 +837,7 @@ export default function gestionItemMaterial() {
                   <Text style={styles.addButtonText}>Añadir tipo</Text>
                 </TouchableOpacity>
 
-                <View style={styles.FlatListCaracteristicas}>
+                <ScrollView horizontal={true} style={styles.FlatListCaracteristicas}>
                   {isSeleccionado ? (
                     <FlatList
                       data={nuevasCaracteristicas}
@@ -851,7 +851,7 @@ export default function gestionItemMaterial() {
                       renderItem={renderItem}
                     />
                   )}
-                </View>
+                </ScrollView>
               </>
             )}
 
@@ -1102,6 +1102,8 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     height: 100,
     maxHeight: 500,
+    width: 200,
+    maxWidth: 200,
   },
   FlatListMateriales: {
     height: 500,
@@ -1114,6 +1116,6 @@ const styles = StyleSheet.create({
   },
   rightColumn: {
     flexDirection: "column",
-    justifyContent: "center",
+    alignItems: 'flex-start'
   },
 });

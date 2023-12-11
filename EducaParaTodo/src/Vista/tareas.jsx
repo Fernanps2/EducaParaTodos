@@ -17,7 +17,7 @@ const manejoPresionarBoton = (tarea, navigation) => {
     navigation.navigate("paginaAulas", { id });
   } else if (tarea.tipo === "actividad") {
     navigation.navigate("verTarea", { id });
-  }else if (tarea.tipo === "material"){
+  } else if (tarea.tipo === "material") {
     navigation.navigate("verTareaMaterial", { id });
   }
 };
@@ -55,7 +55,6 @@ const Tareas = ({ route, navigation }) => {
       } catch (error) {
         console.log(error);
       }
-      
     };
     listaTareas();
   }, []);
@@ -76,14 +75,22 @@ const Tareas = ({ route, navigation }) => {
             {hayTarea ? (
               <ScrollView contentContainerStyle={styles.datos}>
                 {tareas.map((tarea, index) => (
-                  <View key={index} style={styles.contenedor_tareas}>
+                  <View
+                    key={index}
+                    // Cambia el estilo dependiendo de si solo hay una tarea o más
+                    style={
+                      tareas.length === 1
+                        ? styles.contenedor_tarea_unica
+                        : styles.contenedor_tareas
+                    }
+                  >
                     <DatosTareas tarea={tarea} navigation={navigation} />
                   </View>
                 ))}
               </ScrollView>
             ) : (
               <View>
-                {console.log('No hay tarea')}
+                {console.log("No hay tarea")}
                 <Image
                   source={require("../../Imagenes/TareasAlumnos/muyBien.png")}
                   style={styles.image}
@@ -146,6 +153,11 @@ const styles = StyleSheet.create({
   contenedor_tareas: {
     flexDirection: "column",
     width: "50%",
+    alignItems: "center",
+  },
+  contenedor_tarea_unica: {
+    flexDirection: "column",
+    width: "100%", // Ocupa todo el ancho para una sola tarea
     alignItems: "center",
   },
   image: {

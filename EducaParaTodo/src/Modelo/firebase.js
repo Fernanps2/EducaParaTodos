@@ -1705,12 +1705,12 @@ export const getUrlTipoTarea = async (tipo) => {
     const q = query(collection(db,"FotoTipoTarea"),where("tipo", "==", tipo));
     const querySnapshot = await getDocs(q);
 
-    const docs = [];
+    const docs = '';
   
     for (const tareaDoc of querySnapshot.docs) {
       const datos = tareaDoc.data();
   
-      docs.push(datos.url);
+      docs = datos.url;
     }
   
     return docs;
