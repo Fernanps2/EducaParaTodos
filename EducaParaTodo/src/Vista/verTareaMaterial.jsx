@@ -31,7 +31,6 @@ export default function VerTareaMaterial({ route, navigation }) {
   const [viewObjetosRecoger, setViewObjetosRecoger] = useState(false);
   const [viewCadaObjetoRecoger, setViewCadaObjetoRecoger] = useState(false);
   const [lugarDestinoNow, setLugarDestinoNow] = useState(""); // Saber a que lugar vamos a repartir
-  const [imagenLugarDestiNow, setImagenLugarDestiNow] = useState(""); // Saber la imagen del lugar destino actual
   const [lugaresOrigen, setLugaresOrigen] = useState([]); // Todos lugares para recoger materiales
   const [lugarDestinos, setLugaresDestinos] = useState([]); // Todos los lugares para llevar los materiales.
   const [destinoActualIndex, setDestinoActualIndex] = useState(0);
@@ -56,12 +55,20 @@ export default function VerTareaMaterial({ route, navigation }) {
   const [nombreMaterialLlevar, setNombreMaterialLlevar] = useState(""); // Guardamos nombre Material a llevar.
   const [stockMaterialLlevar, setStockMaterialllevar] = useState(""); // Guardamos stock del material a llevar
   const [fotoMaterialLlevar, setFotoMaterialLlevar] = useState(""); // Guardaremos la foto del material a llevar
-  const [fotoCaracteristicaMaterialLlevar, setFotoCaracteristicaMaterialLlevar] = useState(""); // Guardaremos la foto del tipo de material a llevar
-  const [caractersiticaMaterialLlevar, setCaracteristicaMaterialLlevar] = useState("");
+  const [
+    fotoCaracteristicaMaterialLlevar,
+    setFotoCaracteristicaMaterialLlevar,
+  ] = useState(""); // Guardaremos la foto del tipo de material a llevar
+  const [caractersiticaMaterialLlevar, setCaracteristicaMaterialLlevar] =
+    useState("");
   const [materialLlevarIndex, setMaterialLlevarIndex] = useState(0); // Indice para llevar cuenta de los materiales a llevar
   const [viewMaterialLlevarClase, setViewMaterialLlevarClase] = useState(false); // muestra el material llevado a la clase
 
-  // se cargan las aulas, tareas, profesores, y lugares de origen
+  // variable para controlar el renderizado de lugares destino
+  const [cambioOrigen, setCambioOrigen] = useState("");
+  const [materialesCargados, setMaterialesCargados] = useState("");
+
+  // se cargan las aulas, tareas, profesores, y lugares de origen y destino
   useEffect(() => {
     async function cargarDatos() {
       // Obtenemos las tareas
@@ -133,7 +140,7 @@ export default function VerTareaMaterial({ route, navigation }) {
 
   // se cargan materiales,
   useEffect(() => {
-    if (lugarOrigenNow !== "" && viewObjetosRecoger) {
+    if (lugarOrigenNow !== "") {
       const obtenerMateriales = async () => {
         const ids = tareas[lugarOrigenNow].map((item) => item.idMaterial);
 
@@ -158,77 +165,131 @@ export default function VerTareaMaterial({ route, navigation }) {
           // Manejo de errores
           console.error("Error al obtener materiales:", error);
         }
+        setMaterialesCargados("materiales");
       };
-     
+
       obtenerMateriales();
+      console.log("actualiza materiales");
     }
-  }, [lugarOrigenNow, viewObjetosRecoger]);
+  }, [lugarOrigenNow]);
 
   // se actualiza el lugar destino actual
   useEffect(() => {
     const actualizaLugarDestino = () => {
-      if (
-        lugarDestinos &&
-        lugarDestinos.length > 0 &&
-        lugarDestinos.length > destinoActualIndex
-      ) {
-        let aulaNow = lugarDestinos[destinoActualIndex].id.slice(-1);
-        setLugarDestinoNow(aulaNow);
+      let aulaNow;
+      if (lugarDestinos.length > 0 && Object.keys(tareas).length > 0) {
+        if (cambioOrigen !== lugarOrigenNow) {
+          setDestinoActualIndex(0);
+          setCambioOrigen(lugarOrigenNow);
+        }
+        const tareasFiltradas = tareas[lugarOrigenNow];
+        const idsDestino = lugarDestinos.map((destino) => destino.id);
+        const tareasConDestinoCorrecto = tareasFiltradas.filter((tarea) =>
+          idsDestino.includes(tarea.lugarDestino)
+        );
+        if (tareasConDestinoCorrecto.length > destinoActualIndex) {
+          aulaNow = tareasConDestinoCorrecto[destinoActualIndex].lugarDestino;
+          setLugarDestinoNow(aulaNow);
+        }
+
+        if (materialesCargados === "siguiente clase") {
+          const tareasAplanados = [].concat(...agrupadosDestiTareas[aulaNow]);
+
+          const materialesAplanados = [].concat(...materiales);
+
+          if (tareasAplanados.length > materialLlevarIndex) {
+            const tareaActual = tareasAplanados[materialLlevarIndex];
+            setStockMaterialllevar(tareaActual.cantidad);
+            console.log(tareaActual.cantidad);
+            setCaracteristicaMaterialLlevar(tareaActual.caracteristica);
+            console.log(tareaActual.caracteristica);
+            // Obtenemos el material correspondiente.
+            const material = materialesAplanados.find(
+              (material) => material.id === tareaActual.idMaterial
+            );
+            // Nos quitamo estorbos.
+            if (material !== undefined) {
+              console.log(material.nombre);
+              setNombreMaterialLlevar(material.nombre);
+              setFotoMaterialLlevar(material.foto);
+
+              // sino tiene caracteristicas obtenemos su foto directamente
+              if (tareaActual.caracteristica !== "Ninguno") {
+                // Buscar la foto de la característica específica
+                const fotoCaracteristica = material.caracteristicas.find(
+                  (carac) => carac.tipo === tareaActual.caracteristica
+                )?.foto;
+                setFotoCaracteristicaMaterialLlevar(fotoCaracteristica);
+              }
+            }
+          }
+        }
       }
     };
+
     actualizaLugarDestino();
-  }, [destinoActualIndex, lugarDestinos]);
+  }, [destinoActualIndex, lugarOrigenNow]); // Se actualiza cuando va al siguiente lugar de dejada(index) y cuando se almacena los lugares destino.
 
   // se actualiza variables del lugar origen
   useEffect(() => {
     if (lugaresOrigen.length > 0 && aulas.length > 0) {
       const lugar = lugaresOrigen[indexLugarOrigen].id;
       setLugarOrigenNow(lugar);
-  
+
       const aula = aulas.find((a) => a.aula === lugar);
       if (aula) {
         setImagenLugarOrigenNow(aula.foto);
       }
     }
-  }, [indexLugarOrigen, lugaresOrigen, aulas]);
-  
+  }, [indexLugarOrigen, lugaresOrigen]); // Se actualiza cuando va al siguiente lugar de recogida(index) y cuando se almacena los lugares origen.
+
   // se actualiza variables de los materiales del lugar destino
   useEffect(() => {
     const actualizaMaterialLlevar = () => {
-      if (!agrupadosDestiTareas || !materiales || materiales.length === 0 || !viewMaterialLlevarClase) {
+      if (materialesCargados === "" || materialesCargados === 'siguiente clase') {
+        console.log(materialesCargados);
+        console.log("nos quedamos aqui");
         return; // No hacer nada si no están inicializados o están vacíos
       }
+      console.log(materialesCargados)
+      console.log("nos out");
+      console.log(lugarDestinoNow);
+      const tareasAplanados = [].concat(
+        ...agrupadosDestiTareas[lugarDestinoNow]
+      );
 
-      const tareasAplanados = [].concat(...agrupadosDestiTareas[lugarDestinoNow]);
       const materialesAplanados = [].concat(...materiales);
-
-      console.log(materialesAplanados)
 
       if (tareasAplanados.length > materialLlevarIndex) {
         const tareaActual = tareasAplanados[materialLlevarIndex];
         setStockMaterialllevar(tareaActual.cantidad);
+        console.log(tareaActual.cantidad);
         setCaracteristicaMaterialLlevar(tareaActual.caracteristica);
-
+        console.log(tareaActual.caracteristica);
         // Obtenemos el material correspondiente.
         const material = materialesAplanados.find(
           (material) => material.id === tareaActual.idMaterial
         );
+        // Nos quitamo estorbos.
+        if (material !== undefined) {
+          console.log(material.nombre);
+          setNombreMaterialLlevar(material.nombre);
+          setFotoMaterialLlevar(material.foto);
 
-        setNombreMaterialLlevar(material.nombre);
-        setFotoMaterialLlevar(material.foto);
-
-        // sino tiene caracteristicas obtenemos su foto directamente
-        if (tareaActual.caracteristica !== "Ninguno") {
-          // Buscar la foto de la característica específica
-          const fotoCaracteristica = material.caracteristicas.find(
-            (carac) => carac.tipo === tareaActual.caracteristica
-          )?.foto;
-          setFotoCaracteristicaMaterialLlevar(fotoCaracteristica);
+          // sino tiene caracteristicas obtenemos su foto directamente
+          if (tareaActual.caracteristica !== "Ninguno") {
+            // Buscar la foto de la característica específica
+            const fotoCaracteristica = material.caracteristicas.find(
+              (carac) => carac.tipo === tareaActual.caracteristica
+            )?.foto;
+            setFotoCaracteristicaMaterialLlevar(fotoCaracteristica);
+          }
         }
       }
     };
     actualizaMaterialLlevar();
-  }, [materialLlevarIndex, agrupadosDestiTareas, lugarDestinoNow, viewMaterialLlevarClase]);
+    setMaterialesCargados("");
+  }, [materialLlevarIndex, materialesCargados]);
 
   // Nos verifica si todos los materiales han sido recogidos.
   const isTodosRecogidos = (ticks) => {
@@ -254,25 +315,124 @@ export default function VerTareaMaterial({ route, navigation }) {
     setViewCadaObjetoRecoger(false);
   };
 
+  // Pasamos a la siguiente sala para hacer recogida de materiales.
+  const handleNextRecogida = () => {
+    // Pasamos a la siguiente aula
+    if (indexLugarOrigen < lugaresOrigen.length - 1) {
+      setIndexLugarOrigen(indexLugarOrigen + 1);
+    } else {
+      // Sino hay mas terminamos mostrando el mensaje de bien hecho.
+    }
+  };
+
+  // Para pasar a la siguiente aula a llevar los materiales
+  const handleNextLugarDestino = () => {
+    const tareasFiltradas = tareas[lugarOrigenNow];
+    const idsDestino = lugarDestinos.map((destino) => destino.id);
+    const tareasConDestinoCorrecto = tareasFiltradas.filter((tarea) =>
+      idsDestino.includes(tarea.lugarDestino)
+    );
+    if (destinoActualIndex < tareasConDestinoCorrecto.length - 1) {
+      console.log("¿siguiente clase?");
+      setMaterialesCargados("siguiente clase");
+      setDestinoActualIndex(destinoActualIndex + 1);
+    } else {
+      // Sino hay mas vamos a la siguiente recogida
+      handleNextRecogida();
+      setCargandoMaterialesRecogidosOrigen(true);
+      setViewObjetosRecoger(false);
+    }
+  };
+
+  // Para pasar al siguiente material para llevar al aula.
+  const handleNextMaterialLlevar = () => {
+    if (
+      materialLlevarIndex <
+      agrupadosDestiTareas[lugarDestinoNow].length - 1
+    ) {
+      setMaterialLlevarIndex(materialLlevarIndex + 1);
+      setMaterialesCargados("siguiente material al aula");
+    } else {
+      console.log("¿siguiente material?");
+      // si ya ha termiando con los materiales, pasa a la siguiente clase
+      handleNextLugarDestino();
+      setViewMaterialLlevarClase(false);
+    }
+  };
+
   // Quitamos los duplicados de los materiales, ya que puede haber dos materiales con distintos tipos.
   const quitamosDuplicados = (datos) => {
-
     const materialesUnicos = datos.reduce((acumulador, materialActual) => {
       if (!acumulador[materialActual.id]) {
         acumulador[materialActual.id] = materialActual;
       }
       return acumulador;
     }, {});
-    
+
     // Convertir el objeto de vuelta a un array
     return Object.values(materialesUnicos);
-  }
+  };
 
+  // Pantalla primera de ir al lugar de origen a recoger los materiales.
+  const renderLugarOrigen = () => {
+    return (
+      <View>
+        <View style={styles.row}>
+          <Image
+            source={require("../../Imagenes/ninoAndando.png")}
+            style={styles.image}
+          />
+          <Image source={imagenLugarOrigenNow} style={styles.image} />
+        </View>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+
+        <Text style={styles.text}>
+          {lugarOrigenNow === "Almacén"
+            ? `Voy al ${lugarOrigenNow}`
+            : `Voy a la ${lugarOrigenNow}`}
+        </Text>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+
+        <TouchableOpacity
+          style={styles.imagePulsar}
+          onPress={() => {
+            setViewObjetosRecoger(true);
+            setViewCadaObjetoRecoger(false);
+          }}
+        >
+          <Image
+            source={require("../../Imagenes/bien.png")}
+            style={styles.image}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+
+        <Text style={styles.text}>
+          {lugarOrigenNow === "Almacén"
+            ? `Estoy en el ${lugarOrigenNow}`
+            : `Estoy en la ${lugarOrigenNow}`}
+        </Text>
+      </View>
+    );
+  };
+
+  // Objetos a recoger en el lugar origen
   const renderObjetosARecoger = (lugar, tareas, fotoLugarOrigen) => {
     // Aplanar el array de materiales antes de renderizar
-    const materialesAplanados = quitamosDuplicados ([].concat(...materiales));
+    const materialesAplanados = quitamosDuplicados([].concat(...materiales));
     const tareasAplanados = [].concat(...tareas);
-
     return (
       <View style={{ flex: 1 }}>
         {viewBotonEmpezarLlevar ? (
@@ -371,233 +531,9 @@ export default function VerTareaMaterial({ route, navigation }) {
     );
   };
 
-  // Pantalla primera de ir al lugar de origen.
-  const renderLugarOrigen = () => {
-
-    return (
-      <View>
-        <View style={styles.row}>
-          <Image
-            source={require("../../Imagenes/ninoAndando.png")}
-            style={styles.image}
-          />
-          <Image source={imagenLugarOrigenNow} style={styles.image} />
-        </View>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
-        <Text style={styles.text}>
-          {lugarOrigenNow === "Almacén"
-            ? `Voy al ${lugarOrigenNow}`
-            : `Voy a la ${lugarOrigenNow}`}
-        </Text>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
-        <TouchableOpacity
-          style={styles.imagePulsar}
-          onPress={() => {
-            setViewObjetosRecoger(true);
-          }}
-        >
-          <Image
-            source={require("../../Imagenes/bien.png")}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
-        <Text style={styles.text}>
-          {lugarOrigenNow === "Almacén"
-            ? `Estoy en el ${lugarOrigenNow}`
-            : `Estoy en la ${lugarOrigenNow}`}
-        </Text>
-      </View>
-    );
-  };
-
-  // Pasamos a la siguiente sala para hacer recogida de materiales.
-  const handleNextRecogida = () => {
-    // Pasamos a la siguiente aula
-    if (indexLugarOrigen < lugaresOrigen.length -1){
-      setIndexLugarOrigen (indexLugarOrigen + 1);
-    }else{ // Sino hay mas terminamos mostrando el mensaje de bien hecho.
-
-    }
-  }
-
-  // Para pasar a la siguiente aula a llevar los materiales
-  const handleNextLugarDestino = () => {
-    if (destinoActualIndex < lugarDestinos.length - 1) {
-      setDestinoActualIndex(destinoActualIndex + 1);
-    }else{ // Sino hay mas vamos a la siguiente recogida
-      handleNextRecogida();
-      setViewObjetosRecoger(false)
-    }
-  };
-
-  // Para pasar al siguiente material para llevar al aula.
-  const handleNextMaterialLlevar = () => {
-    if (
-      materialLlevarIndex <
-      agrupadosDestiTareas[lugarDestinoNow].length - 1
-    ) {
-      setMaterialLlevarIndex(materialLlevarIndex + 1);
-    } else {
-      // si ya ha termiando con los materiales, pasa a la siguiente clase
-      handleNextLugarDestino();
-      setViewMaterialLlevarClase(false);
-    }
-  };
-
-  // Pantalla donde muestra la clase a llevar y su material
-  const renderLugarDestino = () => {
-
-    // Buscar en aulas la foto correspondiente al lugar de origen
-    const aula = aulas.find((a) => a.aula === lugarDestinoNow);
-
-    return (
-      <View>
-        {viewMaterialLlevarClase ? (
-          <>
-            <Image source={aula.foto} style={styles.image} />
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
-                ? `Estoy en el ${lugarDestinoNow}`
-                : `Estoy en el aula ${lugarDestinoNow}`}
-            </Text>
-
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-
-            <View style={styles.row}>
-            {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
-                <Image
-                  source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
-                  style={styles.image}
-                />
-              ) : (
-                <Text style={styles.numeroImagen}>{stockMaterialLlevar}</Text>
-              )}
-              <Image
-                source={{ uri: fotoMaterialLlevar }}
-                style={styles.image}
-              />
-              {fotoCaracteristicaMaterialLlevar !== "" && (
-                <Image
-                  source={{ uri: fotoCaracteristicaMaterialLlevar }}
-                  style={styles.image}
-                />
-              )}
-            </View>
-            {caractersiticaMaterialLlevar !== "Ninguno" ? (
-              <>
-                <Text style={styles.text}>
-                  {stockMaterialLlevar} {nombreMaterialLlevar} 
-                  {stockMaterialLlevar > 1 ? "s" : ""} {caractersiticaMaterialLlevar}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.text}>
-                  {stockMaterialLlevar} {nombreMaterialLlevar}
-                  {stockMaterialLlevar > 1 ? "s" : ""}
-                </Text>
-              </>
-            )}
-
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-
-            <TouchableOpacity
-              style={styles.imagePulsar}
-              onPress={() => {
-                handleNextMaterialLlevar(); // Pasamos al siguiente material,
-              }}
-            >
-              <Image
-                source={require("../../Imagenes/bien.png")}
-                style={styles.image}
-              />
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            <View style={styles.row}>
-              <Image
-                source={require("../../Imagenes/ninoAndando.png")}
-                style={styles.image}
-              />
-              <Image source={aula.foto} style={styles.image} />
-            </View>
-
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-
-            <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
-                ? `Voy al ${lugarDestinoNow}`
-                : `Voy a la aula ${lugarDestinoNow}`}
-            </Text>
-
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-
-            <TouchableOpacity
-              style={styles.imagePulsar}
-              onPress={() => {
-                setViewMaterialLlevarClase(true);
-              }}
-            >
-              <Image
-                source={require("../../Imagenes/bien.png")}
-                style={styles.image}
-              />
-            </TouchableOpacity>
-
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
-
-            <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
-                ? `Estoy en el ${lugarDestinoNow}`
-                : `Estoy en la aula ${lugarDestinoNow}`}
-            </Text>
-          </>
-        )}
-      </View>
-    );
-  };
-
-  // Pnatalla que muestra la cantidad de objetos a recoger.
+  // Pantalla que muestra la cantidad de objetos a recoger en el lugar origen.
   const renderMaterialARecoger = () => {
-    const materialesAplanados = quitamosDuplicados ([].concat(...materiales));
+    const materialesAplanados = quitamosDuplicados([].concat(...materiales));
     const tareasAplanados = [].concat(...tareas[lugarOrigenNow]);
     let tipos = [];
 
@@ -739,19 +675,155 @@ export default function VerTareaMaterial({ route, navigation }) {
     );
   };
 
+  // Pantalla donde muestra el lugar destino a llevar y sus materiales
+  const renderLugarDestino = () => {
+    // Buscar en aulas la foto correspondiente al lugar de origen
+    const aula = aulas.find((a) => a.aula === lugarDestinoNow);
+
+    return (
+      <View>
+        {viewMaterialLlevarClase ? (
+          <>
+            <Image source={aula.foto} style={styles.image} />
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacén"
+                ? `Estoy en el ${lugarDestinoNow}`
+                : `Estoy en el aula ${lugarDestinoNow}`}
+            </Text>
+
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+
+            <View style={styles.row}>
+              {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
+                <Image
+                  source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
+                  style={styles.image}
+                />
+              ) : (
+                <Text style={styles.numeroImagen}>{stockMaterialLlevar}</Text>
+              )}
+              <Image
+                source={{ uri: fotoMaterialLlevar }}
+                style={styles.image}
+              />
+              {fotoCaracteristicaMaterialLlevar !== "" && (
+                <Image
+                  source={{ uri: fotoCaracteristicaMaterialLlevar }}
+                  style={styles.image}
+                />
+              )}
+            </View>
+            {caractersiticaMaterialLlevar !== "Ninguno" ? (
+              <>
+                <Text style={styles.text}>
+                  {stockMaterialLlevar} {nombreMaterialLlevar}
+                  {stockMaterialLlevar > 1 ? "s" : ""}{" "}
+                  {caractersiticaMaterialLlevar}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.text}>
+                  {stockMaterialLlevar} {nombreMaterialLlevar}
+                  {stockMaterialLlevar > 1 ? "s" : ""}
+                </Text>
+              </>
+            )}
+
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+
+            <TouchableOpacity
+              style={styles.imagePulsar}
+              onPress={() => {
+                handleNextMaterialLlevar(); // Pasamos al siguiente material,
+              }}
+            >
+              <Image
+                source={require("../../Imagenes/bien.png")}
+                style={styles.image}
+              />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <View style={styles.row}>
+              <Image
+                source={require("../../Imagenes/ninoAndando.png")}
+                style={styles.image}
+              />
+              <Image source={aula.foto} style={styles.image} />
+            </View>
+
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacén"
+                ? `Voy al ${lugarDestinoNow}`
+                : `Voy a la aula ${lugarDestinoNow}`}
+            </Text>
+
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+
+            <TouchableOpacity
+              style={styles.imagePulsar}
+              onPress={() => {
+                setViewMaterialLlevarClase(true);
+              }}
+            >
+              <Image
+                source={require("../../Imagenes/bien.png")}
+                style={styles.image}
+              />
+            </TouchableOpacity>
+
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacén"
+                ? `Estoy en el ${lugarDestinoNow}`
+                : `Estoy en la aula ${lugarDestinoNow}`}
+            </Text>
+          </>
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {!cargando ? (
         !cargandoMaterialesRecogidosOrigen ? ( // Vemos cuando empieza a repartir los objetos
-          <>{renderLugarDestino()}</>
+          <>{renderLugarDestino()}</> // Pantalla donde muestra el lugar destino a llevar y sus materiales
         ) : viewObjetosRecoger ? ( // cuando vemos los objetos a recoger en un lugar
           !cargandoMateriales ? ( // esperando a que cargen los materiales.
             <>
-              {viewCadaObjetoRecoger ? ( // cuando recogemos la cantidad de un material
+              {viewCadaObjetoRecoger ? ( // Pantalla que muestra la cantidad de objetos a recoger en el lugar origen.
                 <>{renderMaterialARecoger()}</>
               ) : (
                 <>
                   {renderObjetosARecoger(
+                    // Objetos a recoger en el lugar origen
                     lugarOrigenNow,
                     tareas[lugarOrigenNow],
                     imagenLugarOrigenNow
@@ -763,7 +835,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             <Text style={styles.cargandoTexto}>Cargando...</Text>
           )
         ) : (
-          <>{renderLugarOrigen()}</>
+          <>{renderLugarOrigen()}</> // Pantalla primera de ir al lugar de origen a recoger los materiales.
         )
       ) : (
         <Text style={styles.cargandoTexto}>Cargando...</Text>
@@ -829,5 +901,5 @@ const styles = StyleSheet.create({
   },
   numeroImagen: {
     fontSize: 70,
-  }
+  },
 });
