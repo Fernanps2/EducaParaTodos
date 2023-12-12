@@ -380,6 +380,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               // Cargamos la pantalla anteiror de recoger materiales en un lugar origen.
               setCargandoMaterialesRecogidosOrigen(true);
               setViewCadaObjetoRecoger(false);
+              setViewBotonEmpezarLlevar(true);
             }else{
               navigation.navigate("Tareas", { usuario });
             }
@@ -402,9 +403,9 @@ export default function VerTareaMaterial({ route, navigation }) {
         <View style={styles.separador}></View>
 
         <Text style={styles.text}>
-          {lugarOrigenNow === "Almacén"
-            ? `Voy al ${lugarOrigenNow}`
-            : `Voy a la ${lugarOrigenNow}`}
+          {lugarOrigenNow === "Almacen"
+            ? `Voy al ${lugarOrigenNow} a coger materiales`
+            : `Voy a la ${lugarOrigenNow} a coger materiales`}
         </Text>
 
         <View style={styles.separador}></View>
@@ -433,7 +434,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         <View style={styles.separador}></View>
 
         <Text style={styles.text}>
-          {lugarOrigenNow === "Almacén"
+          {lugarOrigenNow === "Almacen"
             ? `Estoy en el ${lugarOrigenNow}`
             : `Estoy en la ${lugarOrigenNow}`}
         </Text>
@@ -481,12 +482,12 @@ export default function VerTareaMaterial({ route, navigation }) {
             </View>
             <View style={styles.row}>
               <Text style={[styles.text, { marginHorizontal: 30 }]}>
-                {lugar === "Almacén"
+                {lugar === "Almacen"
                   ? `Estoy en el ${lugar}`
                   : `Estoy en el aula ${lugar}`}
               </Text>
               <Text style={[styles.text, { marginHorizontal: 20 }]}>
-                Nos vamos a repartir
+                Reparto los materiales
               </Text>
             </View>
           </>
@@ -494,7 +495,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           <>
             <Image source={{ uri: fotoLugarOrigen }} style={styles.image} />
             <Text style={styles.text}>
-              {lugar === "Almacén"
+              {lugar === "Almacen"
                 ? `Estoy en el ${lugar}`
                 : `Estoy en el aula ${lugar}`}
             </Text>
@@ -519,7 +520,7 @@ export default function VerTareaMaterial({ route, navigation }) {
 
             // Determinar el estilo de la imagen
             const imagenStyle =
-              tickMaterial && tickMaterial.tick
+              (tickMaterial && tickMaterial.tick) || viewBotonEmpezarLlevar
                 ? [styles.imagenDentroBoton, { backgroundColor: "green" }] // Estilo cuando tick es true
                 : styles.imagenDentroBoton; // Estilo por defecto
 
@@ -616,9 +617,9 @@ export default function VerTareaMaterial({ route, navigation }) {
           />
         </View>
         <Text style={styles.text}>
-          {lugarOrigenNow === "Almacén"
-            ? `Estoy en el ${lugarOrigenNow} cogiendo ${nombreMaterial}s`
-            : `Estoy en el aula ${lugarOrigenNow} cogiendo ${nombreMaterial}s`}
+          {lugarOrigenNow === "Almacen"
+            ? `Estoy en el ${lugarOrigenNow}. Cojo ${nombreMaterial}`
+            : `Estoy en el aula ${lugarOrigenNow}. Cojo ${nombreMaterial}`}
         </Text>
 
         <View style={styles.separador}></View>
@@ -644,7 +645,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               </View>
 
               <Text style={styles.text}>
-                Cogemos {stock} {nombreMaterial}
+                Cojo {stock} {nombreMaterial}
                 {stock > 1 ? "s" : ""}
               </Text>
             </>
@@ -669,7 +670,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                       )}
                     </View>
                     <Text style={styles.text}>
-                      {`Cogemos ${item.cantidad} ${nombreMaterial} ${item.nombre}`}
+                      {`Cojo ${item.cantidad} ${nombreMaterial} ${item.nombre}`}
                     </Text>
                   </View>
                 )}
@@ -702,7 +703,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           <View style={styles.separador}></View>
           <View style={styles.separador}></View>
           <View style={styles.separador}></View>
-          <Text style={styles.text}>Cogido</Text>
+          <Text style={styles.text}>Todo cogido</Text>
         </TouchableOpacity>
       </View>
     );
@@ -732,7 +733,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             <View style={styles.separador}></View>
             <View style={styles.separador}></View>
             <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
+              {lugarDestinoNow === "Almacen"
                 ? `Estoy en el ${lugarDestinoNow}`
                 : `Estoy en el aula ${lugarDestinoNow}`}
             </Text>
@@ -767,7 +768,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             {caractersiticaMaterialLlevar !== "Ninguno" ? (
               <>
                 <Text style={styles.text}>
-                  Dejamos {stockMaterialLlevar} {nombreMaterialLlevar}
+                  Dejo {stockMaterialLlevar} {nombreMaterialLlevar}
                   {stockMaterialLlevar > 1 ? "s" : ""}{" "}
                   {caractersiticaMaterialLlevar}
                 </Text>
@@ -801,7 +802,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               <View style={styles.separador}></View>
               <View style={styles.separador}></View>
               <View style={styles.separador}></View>
-              <Text style={styles.text}>Lo hemos dejado</Text>
+              <Text style={styles.text}>Dejo {nombreMaterialLlevar}</Text>
             </TouchableOpacity>
           </>
         ) : (
@@ -819,6 +820,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                   // si es el primer lugar para llevar los maeriales, entonces nos vamos para el lugar de origen
                   setCargandoMaterialesRecogidosOrigen(true);
                   setViewObjetosRecoger(false);
+                  setViewBotonEmpezarLlevar(true);
                 }
               }}
             >
@@ -839,9 +841,9 @@ export default function VerTareaMaterial({ route, navigation }) {
             <View style={styles.separador}></View>
 
             <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
-                ? `Voy al ${lugarDestinoNow}`
-                : `Voy a la aula ${lugarDestinoNow}`}
+              {lugarDestinoNow === "Almacen"
+                ? `Voy al ${lugarDestinoNow} a dejar materiales`
+                : `Voy a la Aula ${lugarDestinoNow} a dejar materiales`}
             </Text>
 
             <View style={styles.separador}></View>
@@ -869,9 +871,9 @@ export default function VerTareaMaterial({ route, navigation }) {
             <View style={styles.separador}></View>
 
             <Text style={styles.text}>
-              {lugarDestinoNow === "Almacén"
+              {lugarDestinoNow === "Almacen"
                 ? `Estoy en el ${lugarDestinoNow}`
-                : `Estoy en la aula ${lugarDestinoNow}`}
+                : `Estoy en la Aula ${lugarDestinoNow}`}
             </Text>
           </>
         )}
@@ -955,7 +957,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   imagenYTextoPulsar: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     margin: 10,
