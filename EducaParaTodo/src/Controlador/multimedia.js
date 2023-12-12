@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
  */
 export async function almacenaImagen(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagen(imagen);
+        almacenarImagen(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -42,7 +42,7 @@ export async function almacenaImagen(imagen, nombre) {
  */
 export async function almacenaPictograma(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarPictograma(imagen);
+        almacenarPictograma(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -68,7 +68,7 @@ export async function almacenaPictograma(imagen, nombre) {
  */
 export async function almacenaVideo(video, nombre) {
     if (video != '' && nombre != '')
-        almacenarVideo(video);
+        almacenarVideo(video, nombre);
     else
         if (Platform.OS === "web") {
             Swal.fire({
@@ -94,7 +94,7 @@ export async function almacenaVideo(video, nombre) {
  */
 export async function almacenaFotoPersona(foto, nombre) {
     if (foto != '')
-        almacenarFotoPersona(foto);
+        almacenarFotoPersona(foto, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -121,7 +121,7 @@ export async function almacenaFotoPersona(foto, nombre) {
  */
 export async function almacenaImagenLogin(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagenLogin(imagen);
+        almacenarImagenLogin(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
