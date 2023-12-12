@@ -1,10 +1,11 @@
 import React, { useState, useEffect} from 'react';
 import Constants from 'expo-constants';
-import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import tareas from '../Modelo/tareas';
-import { buscarPasos, buscarTareaId, buscarTareaActividad, buscarTareasInventarioId, buscarTareasComandasId } from '../Controlador/tareas';
+import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion, buscarTareasInventarioId, buscarTareasComandasId } from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
+import {buscaImagen} from '../Controlador/asignadosTarea';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 
@@ -16,6 +17,9 @@ export function VerTarea ({route, navigation}){
     const [tarea, setTarea] = useState([]);
     const [profesor, setProfesor] = useState([]);
     const [alumno, setAlumno] = useState([]);
+    const [visualizacion, setVisualizacion] = useState();
+    const [imagen, setImagen] = useState([]);
+    const [imagenCargada, setImagenCargada] = useState(false);
     /*const [tareaInv, setTareaInv] = useState([]);
     const [tareaCom, setTareaCom] = useState([]);*/
 
@@ -58,7 +62,21 @@ export function VerTarea ({route, navigation}){
                 console.log(error);
             }
         };
-        listaPasos();
+        listaPasos(); 
+    }, []); 
+
+    useEffect(() => {
+        const listaImagen = async () => {
+            try {
+                const Imagen = await buscaImagen(pasoActualData.idImagen);
+                setImagen(Imagen);
+                setImagenCargada(true);
+                console.log("Imagen: " + JSON.stringify(Imagen)); 
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaImagen();  
     }, []);
 
     useEffect(() => {
@@ -87,6 +105,20 @@ export function VerTarea ({route, navigation}){
             }
         };
         listaAlum();
+    }, []);
+
+    useEffect(() => {
+        const listaVis = async () => {
+            try {
+                const Visuali = await buscaVisualizacion(id);
+                setVisualizacion(Visuali);
+
+                console.log("Visualizacion: " + JSON.stringify(Visuali)); 
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaVis();
     }, []);
 
     /*useEffect(() => {
@@ -148,17 +180,21 @@ export function VerTarea ({route, navigation}){
     const pasosTarea = pasos;
     const pasoActualData = pasosTarea[pasoActual];
 
+    
+    
     return (
        /*} <View>
     {tarea && tarea.tipo == "actividad" ? (*/
-                <View style={styles.container}>
+                <View style={styles.container}> 
                     <Text style={styles.tarea}>{tarea.titulo}</Text>
-                    <Text style={styles.aula}>{tareaActvidad && tareaActvidad.aula}</Text>
-                    <Image style={styles.foto} source={profesor.foto}/>
-        
+                    <Text style={styles.aula}>{tareaActvidad && tareaActvidad.aula}</Text> 
+                    <Image style={styles.fotoProfe} source={profesor.foto}/>
+         
                     <View style={styles.pasos}>
-                        {pasoActualData && pasoActualData.idImagen && pasoActualData.idImagen !== "Ninguno" && (
-                        <Image source={pasoActualData.idImagen} style={{ width: 300, height: 300 }} />)}
+                        {pasoActualData && pasoActualData.idImagen && pasoActualData.idImagen !== "Ninguno" && 
+                        visualizacion == "imagen" && ( imagenCargada ? (
+                        <Image source={{uri: imagen.URL}} style={styles.foto} />) : (<ActivityIndicator size="large" color="#0000ff" />)
+                        )}  
         
                         {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
         
@@ -173,7 +209,7 @@ export function VerTarea ({route, navigation}){
                                     <Entypo name="arrow-long-right" size={65} color="black" />
                                     <Text style={styles.botonTexto}>Siguiente</Text>
                                 </TouchableOpacity>
-                        </View>
+                        </View> 
                     </View>
         
                     <View style={{margin: 20}}>
@@ -311,9 +347,18 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'green'
     },
-    foto: {
+    fotoProfe: {
         width: RFValue(100),
         height: RFValue(100),
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 2,
+        borderColor: 'black',
+    },
+    foto: {
+        marginTop: 25,
+        width: RFValue(160),
+        height: RFValue(160),
         borderRadius: 20,
         overflow: 'hidden',
         borderWidth: 2,

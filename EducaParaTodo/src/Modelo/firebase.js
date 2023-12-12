@@ -1169,6 +1169,9 @@ export async function deleteAlumnoTarea(id) {
     }
 }
 
+
+
+
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/
 
 /**********  INICIO FUNCIONES PROFESOR-FORO ********/
@@ -2889,6 +2892,8 @@ export const getTareasInventarioId = async (idTarea) => {
     }
   };
 
+  // Funciones offtopic
+
   export const getProfesorAula = async (aula) => {
     try {
       const q = query(collection(db, 'profesores'), where('aula', '==', aula));
@@ -2906,4 +2911,44 @@ export const getTareasInventarioId = async (idTarea) => {
       console.log(error);
     }
   };
+
+  export const getVisualizacion = async (idTarea) => {
+    try {
+        const q = query(collection(db, 'alumnosTareas'), where('tarea', '==', idTarea));
+        const querySnapshot = await getDocs(q);
+
+        const visualizaciones = [];
+
+        for (const docu of querySnapshot.docs) {
+            const alumnoTareaDatos = docu.data();
+            const visualizacion = alumnoTareaDatos.visualizacion;
+
+            if (visualizacion) {
+                visualizaciones.push(visualizacion);
+            }
+        }
+
+        return visualizaciones;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getImagenId = async (idImagen) => {
+    try {
+        const q = query(collection(db, 'Imagen'), where('__name__', '==', idImagen));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const imagenDatos = doc.data();
+            return imagenDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idImagen);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
   

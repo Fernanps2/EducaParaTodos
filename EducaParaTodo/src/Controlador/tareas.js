@@ -1,4 +1,4 @@
-import { getTareaById, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
+import { getTareaById, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -7,6 +7,14 @@ export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodici
 
 export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
+}
+
+export async function buscaVisualizacion(idTarea){
+    let visualizacion = null;
+
+    visualizacion = getVisualizacion(idTarea);
+
+    return visualizacion;
 }
 
 // Esta función busca la tarea con ese ID de alumno

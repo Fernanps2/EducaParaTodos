@@ -1,5 +1,5 @@
 import { getProfesorTarea, getProfesorTarea_Profesor, getProfesorTarea_Tarea, addProfesorTarea, updateProfesorTarea, updateAlumno, deleteProfesorTarea, getProfesorTareaID} from '../Modelo/firebase'
-import { getAlumnoTarea, getAlumnoTarea_Alumno, getAlumnoTarea_Tarea, addAlumnoTarea, updateAlumnoTarea, deleteAlumnoTarea, getAlumnoTareaID } from '../Modelo/firebase';
+import { getAlumnoTarea, getImagenId, getAlumnoTarea_Alumno, getAlumnoTarea_Tarea, addAlumnoTarea, updateAlumnoTarea, deleteAlumnoTarea, getAlumnoTareaID } from '../Modelo/firebase';
 
 //FUNCIONES PARA PROFESOR TAREA
 export async function aniadeProfesorTarea(id_profesor, id_tareas) {
@@ -131,4 +131,12 @@ export async function aniadeTareaAAlumno(id_alumno, id_tarea) {
 
 export async function borraAlumnoTarea(id) {
     await deleteAlumnoTarea(id);
+}
+
+export async function buscaImagen(idImagen){
+    let imagen = null;
+
+    imagen = getImagenId(idImagen);
+
+    return imagen;
 }
