@@ -11,22 +11,22 @@ import {
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
 
-const manejoPresionarBoton = (tarea, navigation) => {
+const manejoPresionarBoton = (tarea, navigation, usuario) => {
   const id = tarea.id;
   if (tarea.tipo == "comanda") {
-    navigation.navigate("paginaAulas", { id });
+    navigation.navigate("paginaAulas", { id, usuario });
   } else if (tarea.tipo === "actividad") {
-    navigation.navigate("verTarea", { id });
+    navigation.navigate("verTarea", { id, usuario });
   } else if (tarea.tipo === "material") {
-    navigation.navigate("verTareaMaterial", { id });
+    navigation.navigate("verTareaMaterial", { id, usuario });
   }
 };
 
 // Componente que muestra los datos de las tareas
-const DatosTareas = ({ tarea, navigation }) => {
+const DatosTareas = ({ tarea, navigation, usuario }) => {
   return (
     <View>
-      <TouchableOpacity onPress={() => manejoPresionarBoton(tarea, navigation)}>
+      <TouchableOpacity onPress={() => manejoPresionarBoton(tarea, navigation, usuario)}>
         {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
         <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
@@ -84,7 +84,7 @@ const Tareas = ({ route, navigation }) => {
                         : styles.contenedor_tareas
                     }
                   >
-                    <DatosTareas tarea={tarea} navigation={navigation} />
+                    <DatosTareas tarea={tarea} navigation={navigation} usuario={usuario} />
                   </View>
                 ))}
               </ScrollView>
