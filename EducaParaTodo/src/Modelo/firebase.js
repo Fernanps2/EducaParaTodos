@@ -1645,7 +1645,7 @@ export async function almacenarVideo(video, nombreVideo) {
 
 export async function almacenarFotoPersona(foto, nombreFoto) {
     //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
-    if (nombreFoto == null || nombreFoto.equals('')) nombreFoto = foto.split('/')[foto.split('/').length-1];
+    if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
 
     try {
         if (descargarFotoPersona(nombreFoto) != null) {
