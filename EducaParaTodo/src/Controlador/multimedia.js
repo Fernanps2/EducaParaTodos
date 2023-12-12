@@ -1,6 +1,7 @@
 import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin} from "../Modelo/firebase";
 import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin } from "../Modelo/firebase";
 import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -345,6 +346,71 @@ export async function descargaImagenesLogin() {
     const array = await descargarImagenesLogin();
 
     return array;
+}
+
+/**
+ * @name eliminaImagen
+ * 
+ * @description Borra la imagen con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagen(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagen(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaVideo  
+ * 
+ * @description Borra el video con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaVideo(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarVideo(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaPictograma
+ * 
+ * @description Borra el pictograma con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaPictograma(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarPictograma(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaFotoPersona
+ * 
+ * @description Borra la foto con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaFotoPersona(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarFotoPersona(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaImagenLogin
+ * 
+ * @description Borra la imagen para el login con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagenLogin(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagenLogin(nombreArchivo);
+    }
 }
 
 /**

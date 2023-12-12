@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadBytes, getDownloadURL, listAll} from 'firebase/storage';
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
 
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
@@ -2013,6 +2013,56 @@ export async function descargarImagenesLogin() {
     }
 
     return entidad;
+}
+
+export async function eliminarImagen(nombreArchivo) {
+    const refArchivo = ref(storage, IMAGENES+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarPictograma(nombreArchivo) {
+    const refArchivo = ref(storage, PICTOGRAMAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarVideo(nombreArchivo) {
+    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarFotoPersona(nombreArchivo) {
+    const refArchivo = ref(storage, PERSONAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarImagenLogin(nombreArchivo) {
+    const refArchivo = ref(storage, LOGIN+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
 }
 
 /******** FINAL FUNCIONES PARA MULTIMEDIA ********/
