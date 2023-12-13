@@ -35,7 +35,7 @@ export const mostrarNumeroRecogidas = (
 
       <Text style={estilos.felicitacionText}>
         {quedan === 1
-          ? `Solo te quedan ${quedan} lugar. ¡Ánimo!`
+          ? `Solo tienes que coger objetos en ${quedan} lugar. ¡Ánimo!`
           : esPrimeraVez
           ? `Tienes que coger objetos en ${quedan} lugares.`
           : `Te falta coger objetos en ${quedan} lugares.`}
