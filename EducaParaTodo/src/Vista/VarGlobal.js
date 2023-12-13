@@ -15,8 +15,8 @@ export function filtrar (id){
 export function get (){
     return listaTareaMateriales;
 }
-export function existeLista (id, tipo) {
-    return listaTareaMateriales.some(material => material.id === id && material.caracteristica === tipo);
+export function existeLista (id, tipo, origen, destino) {
+    return listaTareaMateriales.some(material => material.origen === origen && material.destino === destino && material.id === id && material.caracteristica === tipo);
 }
 
 //Variable y funciones para ver los materiales disponibles para la tarea material

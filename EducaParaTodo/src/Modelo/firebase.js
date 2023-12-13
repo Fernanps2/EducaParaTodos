@@ -1705,7 +1705,7 @@ export const getUrlTipoTarea = async (tipo) => {
     const q = query(collection(db,"FotoTipoTarea"),where("tipo", "==", tipo));
     const querySnapshot = await getDocs(q);
 
-    const docs = '';
+    let docs = '';
   
     for (const tareaDoc of querySnapshot.docs) {
       const datos = tareaDoc.data();
@@ -1715,7 +1715,6 @@ export const getUrlTipoTarea = async (tipo) => {
   
     return docs;
   } catch (error) {
-    console.log(error);
     Alert.alert(error);
   }
   };
@@ -1820,7 +1819,7 @@ export const getTareaId = async (idAlumno) => {
         }
       }else
       {
-        const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+        const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where('completado','==','false'));
         const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     

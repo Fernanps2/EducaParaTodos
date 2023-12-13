@@ -122,7 +122,7 @@ export default function VerTodosMateriales({ navigation }) {
 
       <FlatList
         data={materialesTarea}
-        keyExtractor={(item, index) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
       />
     </SafeAreaView>

@@ -37,6 +37,7 @@ export default function AnadirMaterial({ navigation }) {
     const cargarMateriales = async () => {
       try {
         const datosMateriales = await buscarMateriales();
+        console.log(datosMateriales)
         const datosMaterialesActuales = get_materialesBD();
         if (datosMaterialesActuales.length === 0) {
           set_materialesBD(datosMateriales);
@@ -169,7 +170,7 @@ export default function AnadirMaterial({ navigation }) {
 
   const guardarDatos = () => {
     // que no pueda introducir un material con la misma característica dos veces.
-    if (existeLista(selectedMaterialId, caracDef)) {
+    if (existeLista(selectedMaterialId, caracDef, pickupLocation, dropoffLocation)) {
       if (Platform.OS === "web") {
         Swal.fire({
           title: "Material ya introducido",
