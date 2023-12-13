@@ -2,19 +2,27 @@ import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
 import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { getTarea , getAlumnos, addAlumnoTarea } from '../Modelo/firebase';
+import { getTareas , getAlumnos, addAlumnoTarea, getVisualizacionesPreferentesAlumno, asignarTarea } from '../Modelo/firebase';
+
 
 export function AsignarTarea ({props, navigation}){
 
     const [selectedValue, setSelectedValue] = useState('');
+    const [visualizaciones, setVisualizaciones] = useState([]);
+    const [selectedVisualization, setSelectedVisualization] = useState('');
+    const [visualizacionesPreferentes, setVisualizacionesPreferentes] = useState([]);
+    const [selectedVisualizationType, setSelectedVisualizationType] = useState('');
     const [alumnos, setAlumnos] = useState([]);
     const [tareas, setTareas] = useState([]);
 
+    const handleVisualizationSelection = (id) => {
+      setSelectedVisualization(id);
+    };
 
    useEffect(() => {
      const cargarTareas = async () => {
        try {
-         const tareas = await getTarea();
+         const tareas = await getTareas();
          setTareas(tareas);
        } catch (error) {
          console.log(error);
@@ -42,17 +50,28 @@ export function AsignarTarea ({props, navigation}){
       setItemValue(itemValue);
     };
 
-  const handleAlumnoSelection = (id) => {
-    const updatedAlumnos = alumnos.map((alumno) =>
-      alumno.id === id ? { ...alumno, asignado: !alumno.asignado } : alumno
-    );
-    setAlumnos(updatedAlumnos);
-  };
+    const handleAlumnoSelection = async (id) => {
+      const updateAlumnos = async (alumnoId) => {
+        const updatedAlumnos = alumnos.map((alumno) => ({
+          ...alumno,
+          asignado: alumno.id === alumnoId,
+        }));
+        setAlumnos(updatedAlumnos);
+
+        // Obtener las visualizaciones preferentes del alumno seleccionado
+        const fetchedVisualizaciones = await getVisualizacionesPreferentesAlumno(alumnoId);
+        setVisualizacionesPreferentes(fetchedVisualizaciones);
+      };
+
+      updateAlumnos(id);
+    };
+
+
     const handleGuardar = async () => {
         try {
             const alumnosAsignados = alumnos.filter((alumno) => alumno.asignado);
             const promises = alumnosAsignados.map((alumno) =>
-                alumno.asignado ? addAlumnoTarea(alumno.id, selectedValue) : null
+                alumno.asignado ? asignarTarea(selectedValue, alumno.id, selectedVisualization) : null
             );
             await Promise.all(promises); // Espera a que todas las asignaciones se completen
             Alert.alert('Tareas asignadas con éxito');
@@ -80,6 +99,25 @@ export function AsignarTarea ({props, navigation}){
         </View>
     );
 
+    const renderVisualizacionItem = ({ item }) => (
+      <View style={styles.visualizacionItem} key={item}>
+        <View style={styles.checkboxContainer}>
+          <CheckBox
+            value={selectedVisualizationType === item}
+            onValueChange={() => {
+              setSelectedVisualizationType(item === selectedVisualizationType ? '' : item);
+              handleVisualizationSelection(item);
+            }}
+          />
+        </View>
+        <View style={styles.textContainer}>
+          <Text>{item}</Text>
+        </View>
+      </View>
+    );
+
+
+
     return(
 
         <View style={styles.container}>
@@ -106,12 +144,22 @@ export function AsignarTarea ({props, navigation}){
                 keyExtractor={(item) => item.id}
             />
 
+            <Text style={styles.titulo}> Visualización preferente: </Text>
+
+            <FlatList
+              data={visualizacionesPreferentes}
+              renderItem={renderVisualizacionItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+
+
             <View style={styles.boton}>
                 <Button
-                    title="Guardar"
-                    onPress={handleGuardar}
+                   title="Guardar"
+                   onPress={handleGuardar}
                 />
             </View>
+
         </View>
     )
 
@@ -154,6 +202,11 @@ const styles = StyleSheet.create({
         padding: 75,
     },
     alumnoItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    visualizacionItem: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 10,

@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
+import useUser from '../Controlador/useUser';
+import { buscaProfesorId } from '../Controlador/profesores';
 
-export default function HomeAdmin ({ route, navigation }) {
+export default function HomeEducador ({ route, navigation }) {
 
-    const nombreUsuario = route.params.nombreProf;
+    const { nombreProf } = route.params;
+    const {jwt} = useUser();
+    const [profesor, setProfesor] = useState('');
+
+    useEffect(() => {
+      const loadData = async() => {
+        try {
+          const profesorEntidad = await buscaProfesorId(jwt);
+          setProfesor(profesorEntidad); 
+        } catch(error) {
+          console.log(error);
+        }
+      }
+      loadData();
+    }, []);
+
 
     return (
       <View style={styles.container}>
@@ -13,10 +30,10 @@ export default function HomeAdmin ({ route, navigation }) {
 
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: profesor.foto }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
-        <Text style={styles.roleText}>{nombreUsuario}</Text>
+        <Text style={styles.roleText}>{nombreProf}</Text>
       </View>
 
       <TouchableOpacity
@@ -27,13 +44,13 @@ export default function HomeAdmin ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaAlumnos')}>
+        onPress={() => navigation.navigate('pantallaDatosAlumnos')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('datosProfesor', { nombreUsuario })}>
+        onPress={() => navigation.navigate('modDatosProfesor', { nombreProf, navigation })}>
         <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 

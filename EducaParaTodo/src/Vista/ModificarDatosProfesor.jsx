@@ -1,36 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 //import profesores from '../Modelo/profesor';
-import { getProfesorPorId, updateProfesor } from '../Modelo/firebase';
-import { buscaProfesorId } from '../Controlador/profesores';
+import { buscaProfesorNombre, actualizaProfesor } from '../Controlador/profesores';
 
-export default function DatosProfesor ({ profesor, navigation }) {
+// Se usa para cambiar los datos del propio profesor
+// HomeEducador > modificar mis datos
 
-    const idProf = profesor.id;
-    const nombreProf = profesor.nombre
-    console.log(' id profesor ' + idProf);
+export default function ModificarDatosProfesor ({ route, navigation }) {
+      //const { nombreUsuario } = route.params;
+      const {nombreProf} = route.params;
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+      const [profesorId, setProfesorId] = useState('');
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
-      const [email, setEmail] = useState('');
-      const [info, setInfo] = useState('');
+      {/*const [email, setEmail] = useState('');*/}
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
         const obtenerDatosProfesor = async () => {
-          const datosProfesor = await buscaProfesorId(idProf);
-          console.log('datosProf: ' + datosProfesor);
+
+          {/*const datosProfesor = await buscaProfesorNombre(nombreProf);
+          setProfesorData(datosProfesor);
+          setProfesorId(datosProfesor[0].id);*/}
+
+          const datosProfesor = await buscaProfesorNombre(nombreProf);
           setProfesorData(datosProfesor);
           // Asignar los valores iniciales para la edición
-        //   if (datosProfesor) {
-        //     setNombre(datosProfesor.nombre);
-        //     setApellidos(datosProfesor.apellidos);
-        //     setContrasenia(datosProfesor.password);
-        //     setEmail(datosProfesor.email);
-        //     setInfo(datosProfesor.info);
-        //   }
+          if (datosProfesor) {
+            setProfesorId(datosProfesor.id);
+            setNombre(datosProfesor.nombre);
+            setApellidos(datosProfesor.apellidos);
+            setContrasenia(datosProfesor.password);
+          }
+
         };
         obtenerDatosProfesor();
       }, []);
@@ -39,8 +43,10 @@ export default function DatosProfesor ({ profesor, navigation }) {
       // Función para actualizar los datos del profesor
       const guardarCambios = async () => {
         // Lógica para guardar los cambios en la base de datos usando updateProfesor
-        await updateProfesor(idProf, nombre, apellidos, contrasenia, email, info);
+
+        await actualizaProfesor(profesorId,nombre, apellidos, contrasenia /*,foto*/ );
         // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
+        navigation.navigate('pantallaPrincipal');
       };
 
     const showAlertStore = () => {
@@ -65,6 +71,7 @@ export default function DatosProfesor ({ profesor, navigation }) {
 
           <Text style={styles.title}> Modificar mis datos </Text>
 
+        <ScrollView>
           <View style={styles.profileContainer}>
             <Image
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
@@ -72,41 +79,39 @@ export default function DatosProfesor ({ profesor, navigation }) {
             />
             <Text style={styles.roleText}>{nombreProf}</Text>
           </View>
-
                 <TextInput
                   style={styles.input}
                   placeholder="Nombre"
-                  value={nombre}
+                  value={nombre || ''}
                   onChangeText={(text) => setNombre(text)}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Apellidos"
-                  value={apellidos}
+                  value={apellidos || ''}
                   onChangeText={(text) => setApellidos(text)}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Contraseña"
-                  value={contrasenia}
+                  value={contrasenia || ''}
                   onChangeText={(text) => setContrasenia(text)}
                   secureTextEntry // Esto oculta los caracteres ingresados para la contraseña
                 />
 
-                <TextInput
+                {/*<TextInput
                   style={styles.input}
                   placeholder="Correo electrónico"
-                  value={email}
+                  value={email || ''}
                   onChangeText={(text) => setEmail(text)}
-                />
-{/* 
-                <TextInput
+                />*/}
+
+                {/* <TextInput
                   style={styles.input}
                   placeholder="Información adicional"
                   value={info}
                   onChangeText={(text) => setInfo(text)}
                 /> */}
-
 
           <Text style={styles.roleText}>Foto</Text>
           <Image
@@ -123,6 +128,7 @@ export default function DatosProfesor ({ profesor, navigation }) {
           <TouchableOpacity style={styles.addButton} onPress={guardarCambios}>
             <Text style={styles.addButtonText}>Modificar</Text>
           </TouchableOpacity>
+        </ScrollView>
 
         </View>
       );
