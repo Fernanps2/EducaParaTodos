@@ -362,30 +362,30 @@ export default function VerTareaMaterial({ route, navigation }) {
     }
   };
 
-  // handleNextMaterialLlevar se encarga de manejar la transición al siguiente material que debe ser llevado a un aula.
-  const handleNextMaterialLlevar = () => {
-    // Filtra las tareas por el lugar de origen actual,
-    // para obtener solo aquellas tareas que deben ser llevadas desde el lugar de origen actual al destino actual.
-    const tareasFiltradas = agrupadosDestiTareas[lugarDestinoNow].filter(
-      (tarea) => tarea.lugarOrigen === lugarOrigenNow
-    );
+// handleNextMaterialLlevar se encarga de manejar la transición al siguiente material que debe ser llevado a un aula.
+const handleNextMaterialLlevar = () => {
+  // Filtra las tareas por el lugar de origen actual, 
+  // para obtener solo aquellas tareas que deben ser llevadas desde el lugar de origen actual al destino actual.
+  const tareasFiltradas = agrupadosDestiTareas[lugarDestinoNow].filter(
+    (tarea) => tarea.lugarOrigen === lugarOrigenNow
+  );
 
-    // Verifica si el índice del material actual es menor que la longitud de las tareas filtradas menos uno.
-    // Esto determina si hay más materiales para llevar al aula actual.
-    if (materialLlevarIndex < tareasFiltradas.length - 1) {
-      // Incrementa el índice del material a llevar, para pasar al siguiente material.
-      setMaterialLlevarIndex(materialLlevarIndex + 1);
-      // Actualiza el estado para indicar que hay un siguiente material para llevar al aula.
-      setMaterialesCargados("siguiente material al aula");
-    } else {
-      // En caso de que no haya más materiales para llevar en el aula actual,
-      // se procede a la siguiente clase.
-      handleNextLugarDestino();
-      // Oculta la vista del material a llevar a la clase,
-      // ya que se ha terminado de distribuir todos los materiales para esa clase.
-      setViewMaterialLlevarClase(false);
-    }
-  };
+  // Verifica si el índice del material actual es menor que la longitud de las tareas filtradas menos uno.
+  // Esto determina si hay más materiales para llevar al aula actual.
+  if (materialLlevarIndex < tareasFiltradas.length - 1) {
+    // Incrementa el índice del material a llevar, para pasar al siguiente material.
+    setMaterialLlevarIndex(materialLlevarIndex + 1);
+    // Actualiza el estado para indicar que hay un siguiente material para llevar al aula.
+    setMaterialesCargados("siguiente material al aula");
+  } else {
+    // En caso de que no haya más materiales para llevar en el aula actual,
+    // se procede a la siguiente clase.
+    handleNextLugarDestino();
+    // Oculta la vista del material a llevar a la clase, 
+    // ya que se ha terminado de distribuir todos los materiales para esa clase.
+    setViewMaterialLlevarClase(false);
+  }
+};
 
   // Quitamos los duplicados de los materiales, ya que puede haber dos materiales con distintos tipos.
   const quitamosDuplicados = (datos) => {
