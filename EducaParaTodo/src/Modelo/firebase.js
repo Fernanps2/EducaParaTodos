@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from 'react';
 
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc, limit } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref} from 'firebase/storage'
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
+
 //import {v4} from 'uuid';
+// import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
+
 
 //import * as firebase from 'firebase';
 
@@ -33,7 +36,17 @@ const COL_FOROS = 'foros';
 const COL_PROFESORES_FOROS = 'profesoresForos';
 const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
+const COL_TAREAS = 'Tarea';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
+const COL_MENSAJES = 'mensajes';
+
+//valores para las carpetas de archivos
+const IMAGENES = 'Imagenes/';
+const PICTOGRAMAS = 'Pictogramas/';
+const VIDEOS = 'Videos/';
+const EMOTICONOS = 'Emoticonos/';
+const PERSONAS = 'Personas/';
+const LOGIN = 'ImagenesLogin/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -43,7 +56,7 @@ export async function getAlumnos() {
     try {
         const queryFilter = (collection(db, COL_ALUMNOS));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -53,7 +66,7 @@ export async function getAlumnos() {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -61,21 +74,23 @@ export async function getAlumnos() {
     return docs;
 }
 
-export async function getAlumnoIdPorNombre(nombre) {
-    let alumnoId = null;
-    try {
-        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
-        const querySnapshot = await getDocs(queryFilter)
+export async function getVisualizacionesPreferentesAlumno(alumnoId) {
+  let visualizacionesPreferentes = null;
+  try {
+    const docRef = doc(db, COL_ALUMNOS, alumnoId);
+    const docSnap = await getDoc(docRef);
 
-        if (!querySnapshot.empty) {
-            // Obtener el ID del primer alumno que coincide con el nombre
-            alumnoId = querySnapshot.docs[0].id;
-        }
-    } catch (error) {
-        console.log("Ha habido un error al recoger los datos del alumno", error);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      visualizacionesPreferentes = data.visualizacionPreferente || [];
+    } else {
+      console.log("No se encontró el alumno con el ID proporcionado");
     }
+  } catch (error) {
+    console.log("Ha habido un error al obtener las visualizaciones preferentes del alumno", error);
+  }
 
-    return alumnoId;
+  return visualizacionesPreferentes;
 }
 
 export async function getAlumnosNombre(nombre) {
@@ -83,7 +98,7 @@ export async function getAlumnosNombre(nombre) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -93,7 +108,7 @@ export async function getAlumnosNombre(nombre) {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -106,7 +121,7 @@ export async function getAlumnosApellidos(apellidos) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS), where('apellidos', '==', apellidos));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -116,7 +131,7 @@ export async function getAlumnosApellidos(apellidos) {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -129,7 +144,7 @@ export async function getAlumnosContrasenia(contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -139,7 +154,7 @@ export async function getAlumnosContrasenia(contrasenia) {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -152,7 +167,7 @@ export async function getAlumnosVisualizacionPredefinida(visualizacion) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS), where('visualizacionPredefinida', '==', visualizacion));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -162,7 +177,7 @@ export async function getAlumnosVisualizacionPredefinida(visualizacion) {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -175,7 +190,7 @@ export async function getAlumnosLogin(nombre, contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
             docs.push({
@@ -185,7 +200,7 @@ export async function getAlumnosLogin(nombre, contrasenia) {
               visualizacionPreferente,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumno", error);
     }
@@ -196,8 +211,8 @@ export async function getAlumnosLogin(nombre, contrasenia) {
 export async function getAlumnoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -238,12 +253,11 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-export async function updateAlumno(id, nombre, apellidos, password, foto, visualizacionPreferente) {
+export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
     let editaAlumno = {
-        nombre: nombre,
-        apellidos: apellidos,
-        visualizacionPreferente: visualizacionPreferente,
-        password: password,
+        nombre: nombre, 
+        apellidos: apellidos, 
+        visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
         foto: foto
     };
     let alumno = null;
@@ -251,17 +265,16 @@ export async function updateAlumno(id, nombre, apellidos, password, foto, visual
     try {
         let docAlumno = doc(db, COL_ALUMNOS, id);
         const docSnapshot = await getDoc(docAlumno);
-
+        
         if (docSnapshot.exists()) {
             alumno = docSnapshot.data();
             console.log(editaAlumno);
             //console.log(alumno.visualizacionPreferente);
             //console.log(editaAlumno.visualizacionPreferente);
-
+            
             editaAlumno.nombre = editaAlumno.nombre == '' ? alumno.nombre : editaAlumno.nombre;
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
-            editaAlumno.password = editaAlumno.password == '' ? alumno.password : editaAlumno.password;
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
 
 
@@ -300,7 +313,7 @@ export async function getProfesores() {
     try {
         const queryFilter = collection(db, COL_PROFESORES);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -309,7 +322,7 @@ export async function getProfesores() {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -317,31 +330,27 @@ export async function getProfesores() {
     return docs;
 }
 
-export async function getProfesoresNombre(nombreProfesor) {
+export async function getProfesoresNombre(nombre) {
+    let docs = [];
     try {
-        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombreProfesor), limit(1));
-        const querySnapshot = await getDocs(queryFilter);
-
-        let profesorEncontrado = null;
-
-        querySnapshot.forEach(doc => {
-            const { nombre, apellidos, password, email, info, foto} = doc.data();
-            profesorEncontrado = {
-                id: doc.id,
-                nombre,
-                apellidos,
-                password,
-                email,
-                info,
-                foto,
-            };
-        });
-
-        return profesorEncontrado;
+        const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { nombre, apellidos, password, foto} = doc.data();
+            docs.push({
+              id:doc.id,
+              nombre,
+              apellidos,
+              password,
+              foto,
+            });
+        }        
     } catch (error) {
-        console.log("Ha habido un error al recoger los datos del profesor", error);
-        return null;
+        console.log("Ha habido un error al recoger los datos del profesores", error);
     }
+
+    return docs;
 }
 
 export async function getProfesoresApellidos(apellidos) {
@@ -349,7 +358,7 @@ export async function getProfesoresApellidos(apellidos) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES), where('apellidos', '==', apellidos));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -358,7 +367,7 @@ export async function getProfesoresApellidos(apellidos) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -371,7 +380,7 @@ export async function getProfesoresContrasenia(contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -380,7 +389,7 @@ export async function getProfesoresContrasenia(contrasenia) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -393,7 +402,7 @@ export async function getProfesoresLogin(nombre, contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -402,7 +411,7 @@ export async function getProfesoresLogin(nombre, contrasenia) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesores", error);
     }
@@ -410,37 +419,11 @@ export async function getProfesoresLogin(nombre, contrasenia) {
     return docs;
 }
 
-export async function getProfesorPorId(idProfesor) {
-    try {
-        const profesorRef = doc(collection(getFirestore(), COL_PROFESORES), idProfesor);
-        const profesorSnapshot = await getDoc(profesorRef);
-
-        if (profesorSnapshot.exists()) {
-            const data = profesorSnapshot.data();
-            return {
-                id: profesorSnapshot.id,
-                nombre: data.nombre,
-                apellidos: data.apellidos,
-                password: data.password,
-                email: data.email,
-                info: data.info,
-                foto: data.foto
-            };
-        } else {
-            console.log("No se encontró ningún profesor con ese ID");
-            return null;
-        }
-    } catch (error) {
-        console.error("Error al obtener el profesor por ID:", error);
-        return null;
-    }
-}
-
 export async function getProfesorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -449,7 +432,7 @@ export async function getProfesorID(id) {
             console.log("No existe la instancia");
         }
     } catch (error) {
-        console.log(error);
+        console.log("Error en profesorID", error);
     }
 
     return instancia;
@@ -478,30 +461,26 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, nombre, apellidos, password, email, info, foto) {
+export async function updateProfesor(id, nombre, apellidos, password/*, foto*/) {
     let editaProfesor = {
-        nombre: nombre,
-        apellidos: apellidos,
-        password: password,
-        email: email,
-        info: info,
-        foto: foto
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        /*foto: foto*/
     };
     let profesor = null;
 
     try {
         let docProfesor = doc(db, COL_PROFESORES, id);
         const docSnapshot = await getDoc(docProfesor);
-
+        
         if (docSnapshot.exists()) {
             profesor = docSnapshot.data();
 
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
-            editaProfesor.email = editaProfesor.email == '' ? profesor.email : editaProfesor.email;
-            editaProfesor.info = editaProfesor.info == '' ? profesor.info : editaProfesor.info;
-            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            /*editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;*/
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
@@ -512,19 +491,31 @@ export async function updateProfesor(id, nombre, apellidos, password, email, inf
     }
 }
 
-export async function updateProfesorv2(id, {nombre='', apellidos='', password='', email='', info='', foto=''}) {
+export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+    let editaProfesor = {
+        nombre: nombre, 
+        apellidos: apellidos, 
+        foto: foto
+    };
+    let profesor = null;
+
     try {
-        const docProfesor = doc(collection(getFirestore(), COL_PROFESORES), id);
-        await updateDoc(docProfesor, {
-            nombre: nombre,
-            apellidos: apellidos,
-            password: password,
-            email: email,
-            info: info,
-            foto: foto
-        });
+        let docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
+        
+        if (docSnapshot.exists()) {
+            profesor = docSnapshot.data();
+
+            editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
+            editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
+            editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+
+            await updateDoc(docProfesor, {
+                ...editaProfesor
+            });
+        }
     } catch (error) {
-        console.log("Problema al actualizar datos de profesor", error);
+        console.log("Problema al actualizar datos de profesor");
     }
 }
 
@@ -554,7 +545,7 @@ export async function getAdministradores() {
     try {
         const queryFilter = collection(db, COL_ADMINISTRADORES);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -563,7 +554,7 @@ export async function getAdministradores() {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del administrador", error);
     }
@@ -576,16 +567,17 @@ export async function getAdministradoresNombre(nombre) {
     try {
         const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, password, foto} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
+              password,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del administrador", error);
     }
@@ -598,7 +590,7 @@ export async function getAdministadoresApellidos(apellidos) {
     try {
         const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('apellidos', '==', apellidos));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -607,7 +599,7 @@ export async function getAdministadoresApellidos(apellidos) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del administrador", error);
     }
@@ -620,7 +612,7 @@ export async function getAdministradoresContrasenia(contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -629,7 +621,7 @@ export async function getAdministradoresContrasenia(contrasenia) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del administrador", error);
     }
@@ -642,7 +634,7 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
     try {
         const queryFilter = query(collection(db, COL_ADMINISTRADORES), where('nombre', '==', nombre), where('password', '==', contrasenia));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre, apellidos, foto} = doc.data();
             docs.push({
@@ -651,7 +643,7 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
               apellidos,
               foto,
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del administrador", error);
     }
@@ -662,8 +654,8 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
 export async function getAdministradorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ADMINISTRADORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docAdmin = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdmin);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -701,25 +693,25 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateAdministrador(id, nombre, apellidos, password, foto) {
+export async function updateAdministrador(id, nombre, apellidos, password/*, foto*/) {
     let editaAdministrador = {
-        nombre: nombre,
-        apellidos: apellidos,
-        password: password,
-        foto: foto
+        nombre: nombre, 
+        apellidos: apellidos, 
+        password: password, 
+        /*foto: foto*/
     };
     let Administrador = null;
 
     try {
         let docAdministrador = doc(db, COL_ADMINISTRADORES, id);
         const docSnapshot = await getDoc(docAdministrador);
-
+        
         if (docSnapshot.exists()) {
             Administrador = docSnapshot.data();
             editaAdministrador.nombre = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
             editaAdministrador.apellidos = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
             editaAdministrador.password = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
-            editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
+            /*editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;*/
 
             await updateDoc(docAdministrador, {
                 ...editaAdministrador
@@ -756,14 +748,14 @@ export async function getForos() {
     try {
         const queryFilter = collection(db, COL_FOROS);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre } = doc.data();
             docs.push({
               id:doc.id,
               nombre
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del foro", error);
     }
@@ -776,14 +768,14 @@ export async function getForosNombre(nombre) {
     try {
         const queryFilter = query(collection(db, COL_FOROS), where('nombre', '==', nombre));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { nombre } = doc.data();
             docs.push({
               id:doc.id,
               nombre
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del foro", error);
     }
@@ -794,8 +786,8 @@ export async function getForosNombre(nombre) {
 export async function getForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -840,7 +832,7 @@ export async function updateForo(id, nombre) {
     try {
         let docForo = doc(db, COL_FOROS, id);
         const docSnapshot = await getDoc(docForo);
-
+        
         if (docSnapshot.exists()) {
             foro = docSnapshot.data();
 
@@ -881,7 +873,7 @@ export async function getProfesorTarea() {
     try {
         const queryFilter = collection(db, COL_PROFESORES_TAREAS);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { profesor, tarea } = doc.data();
             docs.push({
@@ -889,7 +881,7 @@ export async function getProfesorTarea() {
               profesor,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
@@ -902,7 +894,7 @@ export async function getProfesorTarea_Profesor(id_profesor) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('profesor', '==', id_profesor));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { profesor, tarea } = doc.data();
             docs.push({
@@ -910,7 +902,7 @@ export async function getProfesorTarea_Profesor(id_profesor) {
               profesor,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
@@ -923,7 +915,7 @@ export async function getProfesorTarea_Tarea(id_tarea) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES_TAREAS), where('tarea', 'in', id_tarea));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { profesor, tarea } = doc.data();
             docs.push({
@@ -931,7 +923,7 @@ export async function getProfesorTarea_Tarea(id_tarea) {
               profesor,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorTarea", error);
     }
@@ -942,8 +934,8 @@ export async function getProfesorTarea_Tarea(id_tarea) {
 export async function getProfesorTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -981,7 +973,7 @@ export async function addProfesorTarea(id_profesor, id_tarea) {
 
 export async function updateProfesorTarea(id, profesor, tarea) {
     let editaInstancia = {
-        profesor: profesor,
+        profesor: profesor, 
         tarea: tarea
     };
     let instancia = null;
@@ -989,7 +981,7 @@ export async function updateProfesorTarea(id, profesor, tarea) {
     try {
         let docInstancia = doc(db, COL_PROFESORES_TAREAS, id);
         const docSnapshot = await getDoc(docInstancia);
-
+        
         if (docSnapshot.exists()) {
             instancia = docSnapshot.exists();
             editaInstancia.profesor = editaInstancia.profesor == '' ? instancia.profesor : editaInstancia.profesor;
@@ -1030,7 +1022,7 @@ export async function getAlumnoTarea() {
     try {
         const queryFilter = collection(db, COL_ALUMNOS_TAREAS);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { alumno, tarea } = doc.data();
             docs.push({
@@ -1038,7 +1030,7 @@ export async function getAlumnoTarea() {
               alumno,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnosTarea", error);
     }
@@ -1051,7 +1043,7 @@ export async function getAlumnoTarea_Alumno(id_alumno) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('alumno', '==', id_alumno));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { alumno, tarea } = doc.data();
             docs.push({
@@ -1059,7 +1051,7 @@ export async function getAlumnoTarea_Alumno(id_alumno) {
               alumno,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
     }
@@ -1072,7 +1064,7 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS_TAREAS), where('tarea', 'in', id_tarea));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { alumno, tarea } = doc.data();
             docs.push({
@@ -1080,7 +1072,7 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
               alumno,
               tarea
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnoTarea", error);
     }
@@ -1091,8 +1083,8 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
 export async function getAlumnoTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1107,10 +1099,11 @@ export async function getAlumnoTareaID(id) {
     return instancia;
 }
 
-export async function addAlumnoTarea(id_alumno, id_tarea) {
+export async function addAlumnoTarea(id_alumno, id_tarea, id_visualizacion) {
     let instancia = {
         alumno: id_alumno,
-        tarea: id_tarea
+        tarea: id_tarea,
+        visualizacion: id_visualizacion
     }
 
     let identificacion = null;
@@ -1128,9 +1121,28 @@ export async function addAlumnoTarea(id_alumno, id_tarea) {
     return identificacion;
 }
 
+export async function asignarTarea(idTarea, idAlumno, visualizacion) {
+    const tareaRef = doc(db, 'Tarea', idTarea);
+
+    try {
+        const docSnapshot = await getDoc(tareaRef);
+        if (docSnapshot.exists()) {
+            await updateDoc(tareaRef, {
+                idAlumno: idAlumno,
+                visualizacion: visualizacion
+            });
+            console.log('ID de alumno y visualización actualizados con éxito');
+        } else {
+            console.log('La tarea con el ID proporcionado no existe');
+        }
+    } catch (error) {
+        console.error('Error al actualizar ID de alumno y visualización:', error);
+    }
+}
+
 export async function updateAlumnoTarea(id, alumno, tarea) {
     let editaInstancia = {
-        alumno: alumno,
+        alumno: alumno, 
         tarea: tarea
     };
     let instancia = null;
@@ -1138,7 +1150,7 @@ export async function updateAlumnoTarea(id, alumno, tarea) {
     try {
         let docInstancia = doc(db, COL_ALUMNOS_TAREAS, id);
         const docSnapshot = await getDoc(docInstancia);
-
+        
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
             editaInstancia.alumno = editaInstancia.alumno == '' ? instancia.alumno : editaInstancia.alumno;
@@ -1179,7 +1191,7 @@ export async function getProfesoresForo() {
     try {
         const queryFilter = collection(db, COL_PROFESORES_FOROS);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, profesor } = doc.data();
             docs.push({
@@ -1187,7 +1199,7 @@ export async function getProfesoresForo() {
               foro,
               profesor
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
@@ -1200,7 +1212,7 @@ export async function getProfesoresForo_Foro(id_foro) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('foro', '==', id_foro));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, profesor } = doc.data();
             docs.push({
@@ -1208,7 +1220,7 @@ export async function getProfesoresForo_Foro(id_foro) {
               foro,
               profesor
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
@@ -1221,7 +1233,7 @@ export async function getProfesoresForo_Profesores(id_profesores) {
     try {
         const queryFilter = query(collection(db, COL_PROFESORES_FOROS), where('profesor', 'in', id_profesores));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, profesor } = doc.data();
             docs.push({
@@ -1229,7 +1241,7 @@ export async function getProfesoresForo_Profesores(id_profesores) {
               foro,
               profesor
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del profesorForo", error);
     }
@@ -1240,8 +1252,8 @@ export async function getProfesoresForo_Profesores(id_profesores) {
 export async function getProfesorForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1287,7 +1299,7 @@ export async function updateProfesoresForo(id, profesores, foro) {
     try {
         let docForo = doc(db, COL_PROFESORES_FOROS, id);
         const docSnapshot = await getDoc(docForo);
-
+        
         if (docSnapshot.exists()) {
             foroDoc = docSnapshot.data();
             editaForo.foro = editaForo.foro == '' ? foroDoc.foro : editaForo.foro;
@@ -1328,7 +1340,7 @@ export async function getAlumnosForo() {
     try {
         const queryFilter = collection(db, COL_ALUMNOS_FOROS);
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, alumno } = doc.data();
             docs.push({
@@ -1336,7 +1348,7 @@ export async function getAlumnosForo() {
               foro,
               alumno
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnoForo", error);
     }
@@ -1349,7 +1361,7 @@ export async function getAlumnosForo_Foro(id_foro) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('foro', '==', id_foro));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, alumno } = doc.data();
             docs.push({
@@ -1357,7 +1369,7 @@ export async function getAlumnosForo_Foro(id_foro) {
               foro,
               alumno
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnoForo", error);
     }
@@ -1370,7 +1382,7 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
     try {
         const queryFilter = query(collection(db, COL_ALUMNOS_FOROS), where('alumno', 'in', id_alumnos));
         const querySnapshot = await getDocs(queryFilter)
-
+        
         for (const doc of querySnapshot.docs) {
             const { foro, alumno } = doc.data();
             docs.push({
@@ -1378,7 +1390,7 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
               foro,
               alumno
             });
-        }
+        }        
     } catch (error) {
         console.log("Ha habido un error al recoger los datos del alumnoForo", error);
     }
@@ -1389,8 +1401,8 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
 export async function getAlumnoForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1428,7 +1440,7 @@ export async function addAlumnosForo(id_foro, id_alumnos) {
 
 export async function updateAlumnosForo(id, alumno, foro) {
     let editaForo = {
-        foro: foro,
+        foro: foro, 
         alumno: alumno
     };
     let foroDoc = null;
@@ -1436,7 +1448,7 @@ export async function updateAlumnosForo(id, alumno, foro) {
     try {
         let docForo = doc(db, COL_ALUMNOS_FOROS, id);
         const docSnapshot = await getDoc(docForo);
-
+        
         if (docSnapshot.exists()) {
             docForo = docSnapshot.data();
             editaForo.foro = editaForo.foro == '' ? foro.foro : editaForo.foro;
@@ -1464,85 +1476,638 @@ export async function deleteAlumnoForo(id) {
             console.log("No existe el alumnoForo");
         }
     } catch(error) {
-        console.log("Error al borrar allumnoForo", error);
+        console.log("Error al borrar alumnoForo", error);
     }
 }
 
 /********** FINAL FUNCIONES ALUMNO-FORO **********/
 
+/**********  INICIO FUNCIONES MENSAJES ********/
+
+export async function getMensajes() {
+    let docs = [];
+    try {
+        const queryFilter = collection(db, COL_MENSAJES);
+        const querySnapshot = await getDocs(queryFilter)
+        
+        for (const doc of querySnapshot.docs) {
+            const { profesor, mensaje, aula, fecha, hora } = doc.data();
+            docs.push({
+              id:doc.id,
+              profesor,
+              mensaje,
+              aula,
+              fecha,
+              hora
+            });
+        }        
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos de mensajes", error);
+    }
+
+    return docs;
+}
+
+export async function getMensajeID(id) {
+    let instancia = null;
+    try {
+        const docMensaje = doc(db, COL_MENSAJES, id);
+        const docSnapshot = await getDoc(docMensaje);
+
+        if (docSnapshot.exists()) {
+            instancia = docSnapshot.data();
+            console.log("Se ha recibido la información");
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return instancia;
+}
+
+export async function addMensaje(id_profesor, mensaje, aula, fecha, hora) {
+    let mensajeDoc = {
+        profesor: id_profesor,
+        mensaje: mensaje,
+        aula: aula,
+        fecha: fecha,
+        hora: hora
+    }
+
+    let identificacion = null;
+
+    try {
+        addDoc(collection(db, COL_MENSAJES), {
+            ...mensajeDoc
+        })
+            .then(({id}) => identificacion = id);
+    }
+    catch (error) {
+        console.log("Ha habido un error al subir los datos de mensaje");
+    }
+
+    return identificacion;
+}
+
+export async function updateMensaje(id, id_profe, mensajeA, aula, fecha, hora) {
+    let editaMensaje = {
+        profesor: id_profe,
+        mensaje: mensajeA,
+        aula: aula,
+        fecha: fecha,
+        hora: hora
+    };
+
+    let mensaje = null;
+
+    try {
+        let docMensaje = doc(db, COL_MENSAJES, id);
+        const docSnapshot = await getDoc(docMensaje);
+        
+        if (docSnapshot.exists()) {
+            mensaje = docSnapshot.data();
+
+            editaMensaje.profesor = editaMensaje.profesor == '' ? mensaje.profesor : editaMensaje.profesor;
+            editaMensaje.mensaje = editaMensaje.mensaje == '' ? mensaje.mensaje : editaMensaje.mensaje;
+            editaMensaje.aula = editaMensaje.aula == '' ? mensaje.aula : editaMensaje.aula;
+            editaMensaje.fecha = editaMensaje.fecha == '' ? mensaje.fecha : editaMensaje.fecha;
+            editaMensaje.hora = editaMensaje.hora == '' ? mensaje.hora : editaMensaje.hora;
+
+            updateDoc(docMensaje, {
+                ...editaMensaje
+            });
+        }
+    } catch (error) {
+        console.log("Problema al actualizar datos de mensaje");
+    }
+}
+
+export async function deleteMensaje(id) {
+    try {
+        const docMensaje = doc(db, COL_MENSAJES, id);
+        const docSnapshot = await getDoc(docMensaje);
+
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el mensaje correctamente");
+        }
+        else {
+            console.log("No existe el mensaje");
+        }
+    } catch(error) {
+        console.log("Error al borrar mensaje", error);
+    }
+}
+
+/**********  FINAL FUNCIONES MENSAJES ********/
+
 /********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-const contarArchivos = async(nombreCarpeta) => {
-
+export async function almacenarImagen(imagen, nombreImagen) {
+    
+    try {
+        //Comprobamos si existe la imagen
+        if (descargarImagen(nombreImagen) != null) {
+            const refImagenes = ref(storage, IMAGENES+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
 }
 
-// uploadImage= async(uri) => {
-//   return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//       if (xhr.readyState === 4) {
-//         resolve(xhr.response);
-//       }
-//     };
+export async function almacenarPictograma(imagen, nombreImagen) {
 
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//   });
-// };
+    try {
+        //Comprobamos si existe el pictograma
+        if (descargarPictograma(nombreImagen) != null) {
+            const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el pictograma');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
 
-export async function almacenarImagen(imagen) {
+export async function almacenarVideo(video, nombreVideo) {
 
-    //let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_1';
+    try {
+        if (descargarVideo(nombreVideo) != null ) {
+            const refImagenes = ref(storage, VIDEOS+nombreVideo)
+            const file = await(await fetch(video)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el video');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
 
-  await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`images/${nombre_imagen}`);
-      ref.put(resolve);
-    })
-    .catch(error => {
-      console.log(error);
+export async function almacenarFotoPersona(foto, nombreFoto) {
+    //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
+    if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
+
+    try {
+        if (descargarFotoPersona(nombreFoto) != null) {
+            const refFoto = ref(storage, PERSONAS+nombreFoto)
+            const file = await(await fetch(foto)).blob();
+            uploadBytes(refFoto, file).then((snapshot) => {
+                console.log('Se ha subido la foto');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                  title: "ERROR",
+                  text: "El nombre del archivo ya existe, elija uno diferente",
+                  icon: "warning",
+                  confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarImagenLogin(imagen, nombreImagen) {
+    
+    try {
+        if (descargarImagenLogin(nombreImagen) != null) {
+            const refImagenes = ref(storage, LOGIN+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido la imagen para login');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function descargarImagen(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, IMAGENES+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarImagenes() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, IMAGENES);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarPictograma(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PICTOGRAMAS+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarPictogramas() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, PICTOGRAMAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el pictograma");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarVideo(nombreVideo) {
+    let videoUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refVideo = ref(storage, VIDEOS+nombreVideo);
+
+    await getDownloadURL(refVideo)
+        .then((url) => {
+            videoUri = {
+                uri: url,
+                nombre: refVideo.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+
+    return videoUri;
+}
+
+export async function descargarVideos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, VIDEOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el video");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarEmoticono(nombreEmoticono) {
+    let emoticUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refEmotic = ref(storage, EMOTICONOS+nombreEmoticono);
+
+    await getDownloadURL(refEmotic)
+        .then((url) => {
+            emoticUri = {
+                uri: url,
+                nombre: refEmotic.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+
+    return emoticUri;
+}
+
+export async function descargarEmoticonos() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, EMOTICONOS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el emoticono");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarFotoPersona(nombreFoto) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, PERSONAS+nombreFoto);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarFotosPersonas() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, PERSONAS);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+    }
+
+    return entidad;
+}
+
+export async function descargarImagenLogin(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, LOGIN+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarImagenesLogin() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, LOGIN);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+    }
+
+    return entidad;
+}
+
+export async function eliminarImagen(nombreArchivo) {
+    const refArchivo = ref(storage, IMAGENES+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
     });
 }
 
-export async function almacenarPictograma(imagen) {
-  await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`Pictogramas/${nombre}`);
-      ref.put(resolve).then(resolve => {
-        console.log("Imagen subida correctamente");
-      }). catch(error => {
-        console.log("Error al subir la imagen");
-      });
-    })
-    .catch(error => {
-      console.log(error);
+export async function eliminarPictograma(nombreArchivo) {
+    const refArchivo = ref(storage, PICTOGRAMAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
     });
 }
 
-export function cargarImagen(imagen) {
-  let imagenCargada = null;
+export async function eliminarVideo(nombreArchivo) {
+    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
 
-  storage
-    .ref(`images/${imagen}`)
-    .getDownloadURL()
-    .then(resolve => {
-      imagenCargada = resolve;
-    })
-    .catch(error => {
-      console.log(error);
-    })
-
-    return imagenCargada;
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
 }
 
-/********** FINAL FUNCIONES PARA MULTIMEDIA ********/
+export async function eliminarFotoPersona(nombreArchivo) {
+    const refArchivo = ref(storage, PERSONAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarImagenLogin(nombreArchivo) {
+    const refArchivo = ref(storage, LOGIN+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+/******** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
 export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>{
 
@@ -1589,33 +2154,44 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
 
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFin,tipo,idAlumno) => {
-  try{
-      if(titulo === '' || completado === '' || descripcion === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || idAlumno === ''){
-        Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-        console.log('te faltan campos');
-      }
-      else{
-        console.log('se crea el objeto');
-        const objeto = {
-          titulo,
-          completado,
-          descripcion,
-          fechaFin,
-          fechaInicio,
-          idAlumno,
-          tipo
+export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
+    try{
+        if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == ''){
+          if (Platform.OS === "web"){
+            Swal.fire({
+              title: "Mensaje Importante",
+              text: "Debes rellenar los campos requeridos",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            })
+          }else{
+            Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+          }
         }
-
-        await addDoc(collection(db,'Tarea'),{
-          ...objeto
-        })
-      }
-    }catch(error){
-      console.log('error' + error);
-    }
+        else{
+          var idAlumno = '';
+          var completado = 'false';
+          const objeto = {
+            titulo,
+            completado,
+            fechaFin,
+            fechaInicio,
+            idAlumno,
+            tipo,
+            periocidad
+          }
+          
+          // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.
+          const docRef = await addDoc(collection(db,'Tarea'),{
+            ...objeto
+          })
+          console.log('Buscamos el id',docRef.id);
+          return docRef.id;
+        }
+      }catch(error){
+        console.log('error' + error);
+      }  
 }
-
 
 
 // export const asignarTareaAlumno = async (idTarea,idAlumno) => {
@@ -1629,52 +2205,87 @@ export const setTarea = async (titulo,completado,descripcion,fechaInicio,fechaFi
 
 // PRUEBA REALIZADA. FUNCIONA
 export const asignarFeedback = async (idTarea,feedBack) => {
-try{
-  if(idTarea === '' || feedBack === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+    try{
+      if(idTarea === '' || feedBack === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+        // Creamos las referencias 
+        const tareaRef = doc(db, 'Tarea', String(idTarea));
+        
+        await updateDoc(tareaRef,{
+          Feedback: feedBack,
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
 
-    // Creamos las referencias
-    const tareaRef = doc(db, 'Tarea', String(idTarea));
-
-    await updateDoc(tareaRef,{
-      Feedback: feedBack,
-    })
-  }
-}catch(error){
-  console.log(error);
-}
-}
-
-
-// PROBADA Y FUNCIONA.
+// PROBADA Y FUNCIONA. 
 
 export const getTareaId = async (idAlumno) => {
 
-console.log(idAlumno);
+    console.log(idAlumno);
+    
+    try {
+      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+      const querySnapshot = await getDocs(q);
+      // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+    
+      const docs = [];
+    
+      for (const tareaDoc of querySnapshot.docs) {
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+    
+        docs.push({
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
+        });
+      }
+    
+      return docs;
+    } catch (error) {
+      console.log(error);
+      Alert.alert(error);
+    }
+};
+
+// Obtener todas las tareas
+export const getTareas = async () => {
 
 try {
-  const q = query(collection(db,"Tarea"),where("IdAlumno", "==", idAlumno));
+  const q = query(collection(db,"Tarea"));
   const querySnapshot = await getDocs(q);
   // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
 
   const docs = [];
 
   for (const tareaDoc of querySnapshot.docs) {
-    const { Nombre, Completado, Descripción, FechaInicio, FechaFin, Tipo, IdAlumno, fotoURL } = tareaDoc.data();
+    const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
 
     docs.push({
       id: tareaDoc.id,
-      Nombre,
-      Completado,
-      Descripción,
-      FechaInicio,
-      FechaFin,
-      Tipo,
-      IdAlumno,
-      fotoURL,
+      titulo,
+      completado,
+      fechaInicio,
+      fechaFin,
+      tipo,
+      idAlumno,
     });
   }
 
@@ -1684,72 +2295,6 @@ try {
   Alert.alert(error);
 }
 };
-
-// Obtener todas las tareas
-export const getTarea = async () => {
-
-    try {
-      const q = query(collection(db,"Tarea"));
-      const querySnapshot = await getDocs(q);
-      // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
-
-      const docs = [];
-
-      for (const tareaDoc of querySnapshot.docs) {
-        const { titulo, tipo, completado, Feedback, periodicidad, fechaInicio, fechaFin, idAlumno } = tareaDoc.data();
-
-        docs.push({
-          id: tareaDoc.id,
-          titulo,
-          tipo,
-          completado,
-          Feedback,
-          periodicidad,
-          fechaInicio,
-          fechaFin,
-          idAlumno,
-        });
-      }
-
-      return docs;
-    } catch (error) {
-      console.log(error);
-      Alert.alert(error);
-    }
-};
-
-
-// función para obtener las 4 imágenes del login del alumno
-
-export const getAlumnoImagenesLogin = async (idAlumno) => {
-  try {
-    const q = query(collection(db, 'loginAlumnoImagenes'), where('idAlumno', '==', idAlumno));
-    const querySnapshot = await getDocs(q);
-
-    const docs = [];
-
-    for (const doc of querySnapshot.docs) {
-      const { img1, img2, img3, img4 } = doc.data();
-
-      console.log('Datos de imágenes obtenidos:', { img1, img2, img3, img4 });
-
-      docs.push({
-        id: doc.id,
-        img1,
-        img2,
-        img3,
-        img4,
-      });
-    }
-
-    return docs;
-  } catch (error) {
-    console.error('Error al obtener imágenes:', error);
-    throw error;
-  }
-};
-
-
 
 // export const deleteTareaId = async (idTarea) => {
 //     try {
@@ -1811,7 +2356,7 @@ export const getAlumnoImagenesLogin = async (idAlumno) => {
 
 
 // Funcion que borra la tarea con ese id
-// Borra tanto la tarea, como el documento de la colección del
+// Borra tanto la tarea, como el documento de la colección del 
 // tipo de tarea que sea y los pasos de esa tarea en caso de que sea tarea-actividad
 export const deleteTareaId = async (idTarea) => {
     try {
@@ -1868,37 +2413,38 @@ export const deleteTareaId = async (idTarea) => {
 
 
 
-// PRUEBA REALIZADA. FUNCIONA
-export const setTareaActividad = async(nombre,aula,pasos,idTarea) => {
-try{
-
-  if(nombre === '' || aula === '' || pasos === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+  // PRUEBA REALIZADA. FUNCIONA
+  export const setTareaActividad = async(aula,pasos,idTarea) => {
+    try{
+  
+      if( aula === '' || pasos === null || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          aula,
+          pasos,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Actividad'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    // Creamos las referencias
-    const pasosRef = doc(db, 'PasosActividad', String(pasos));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      pasos,
-      idTarea
-    }
-
-    await addDoc(collection(db,'Tarea-Actividad'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}
-}
-
 
 
 export const getTareasActividad = async () => {
@@ -1956,40 +2502,86 @@ try {
 }
 };
 
+  // PRUEBA REALIZADA. FUNCIONA
+  export const setPasoActividad = async(audio, imagen, pictograma, video, texto, nombre, idTarea) => {
+    try{
+  
+      console.log('AudioID:', idAudioRef)
+      console.log('ImaID:', idImagenRef)
+      console.log('PictoID:', idPictogramaRef)
+      console.log('VieoID:', idVideoRef)
+
+      if( audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+
+        const objeto = {
+          idAudio,
+          idImagen,
+          idPictograma,
+          idVideo,
+          texto,
+          nombre,
+          idTarea
+        }
+        
+        const idPaso = await addDoc(collection(db,'PasosActividad'),{
+          ...objeto
+        })
+        return idPaso.id;
+      }
+    }catch(error){
+      console.log(error);
+    }  
+  }
 
 
 // Esta función se usa para cuando el alumno vaya añadiendo los pedidos de cada
 // menú se cree una fila/documento por menú
 
 // PRUEBA REALIZADA.FUNCIONA
-export const setTareaComanda = async(idTarea,idMenu,pedidos) => {
-try{
-
-  if(menu === '' || pedidos === '' || idMenu === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+export const setTareaComanda = async(idTarea,menus) => {
+    try{
+  
+      if( menus === null || idTarea === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+        var pedidos = '';
+  
+        const objeto = {
+          pedidos,
+          menus,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Comanda'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    // Creamos las referencias
-    const idMenuRef = doc(db, 'Menu', String(idMenu));
-    const idTareaRef = doc(db, 'Tarea', String(idTarea));
-
-
-    const objeto = {
-      nombre,
-      aula,
-      idMenu,
-      idTarea
-    }
-    await addDoc(collection(db,'Tarea-Comanda'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}
-}
 
 // ESTA FUNCIÓN SIRVE PARA OBTENER TODAS LAS TAREAS DE COMANDA
 // PRUEBA REALIZADA. FUNCIONA
@@ -2012,60 +2604,100 @@ try {
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMenu = async(nombreMenu,idAlimentos) => {
-try{
+export const setMenu = async(idTarea, idMenu, idAlimentos) => {
+  try{
 
-  if(nombreMenu === '' || idAlimentos === null){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-  }
-  else{
-    const objeto = {
-      idAlimentos
+    if(idTarea === '' || idMenu === '' || idAlimentos === null){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
     }
+    else{
 
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Menu', nombreMenu);
+      const objeto = {
+        idTarea,
+        idMenu,
+        idAlimentos,
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Menus-Comanda'), {
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
+}
 
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
+
+// Devolvemos todos los menus.
+export const getMenus = async() => {
+    try {
+      const menuQuery = query(collection(db, 'Menu'));
+      const querySnapshot = await getDocs(menuQuery);
+  
+      const docs = [];
+  
+      querySnapshot.forEach((docu) => {
+        const menu = docu.data(); // Extraemos nombre
+        const id = docu.id; // Extraemos el ID del documento
+        docs.push({id, ...menu});
+      });
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+      throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
   }
-}catch(error){
-  console.log(error);
-}
-}
+
 
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setAlimento = async (nombreAlimento,imagen) => {
-try{
-
-  if(nombreAlimento === '' || imagen === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    try{
+  
+      if(nombreAlimento === '' || imagen === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          nombreAlimento,
+          imagen
+        }
+        
+  
+        // Lo hacemos así para establecer el nombreMenú como el id del documento
+        const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
+  
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await setDoc(menuDocRef, {
+          ...objeto
+        });
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      nombreAlimento,
-      imagen
-    }
-
-
-    // Lo hacemos así para establecer el nombreMenú como el id del documento
-    const menuDocRef = doc(db, 'Alimentos', nombreAlimento);
-
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await setDoc(menuDocRef, {
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}
-}
-
 
 // ESTA FUNCION SIRVE PARA OBTENER UN ALIMENTO A TRAVÉS DE SU NOMBRE
 // PRUEBA REALIZADA. FUNCIONA
@@ -2092,57 +2724,76 @@ try {
 
 
 
-export const setTareaInventario = async(idMaterial,lugarLlevar,recogida,idTarea) => {
-try{
 
-  if(idMaterial === '' || lugarLlevar === '' || recogida === null || idTarea === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
-    console.log('te faltan campos');
+export const setTareaInventario = async(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea) => {
+    try{
+  
+      if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+  
+        const objeto = {
+          idMaterial,
+          cantidad,
+          lugarOrigen,
+          lugarDestino,
+          idTarea
+        }
+        
+        await addDoc(collection(db,'Tarea-Inventario'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      idMaterial,
-      lugarLlevar,
-      recogida,
-      idTarea
-    }
-
-    await addDoc(collection(db,'Tarea-Inventario'),{
-      ...objeto
-    })
-  }
-}catch(error){
-  console.log(error);
-}
-}
 
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setMaterial = async (foto,nombre,stock)=> {
-try{
-
-  if(nombre === '' || foto === '' || stock === ''){
-    Alert.alert('Mensaje importante,', 'Debes rellenar el campo requerido');
+    try{
+  
+      if(nombre === '' || foto === '' || stock === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          nombre,
+          foto,
+          stock
+        }
+        
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await addDoc(collection(db,'Material'),{
+          ...objeto
+        });
+      }
+    }catch(error){
+      console.log(error);
+    }  
   }
-  else{
-
-    const objeto = {
-      nombre,
-      foto,
-      stock
-    }
-
-    // Necesitamos poner setDoc para especificar el ID del documento
-    await addDoc(collection(db,'Material'),{
-      ...objeto
-    });
-  }
-}catch(error){
-  console.log(error);
-}
-}
-
 
 
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
@@ -2232,5 +2883,5 @@ try {
     return docs;
   } catch (error) {
     console.log(error);
-}
+  }
 }
