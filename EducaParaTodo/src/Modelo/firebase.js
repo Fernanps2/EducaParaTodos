@@ -2155,10 +2155,9 @@ export const asignarFeedback = async (idTarea, feedBack) => {
 
 export const getTareaId = async (idAlumno) => {
 
-    console.log(idAlumno);
 
     try {
-        const q = query(collection(db, "Tarea"), where("idAlumno", "==", idAlumno));
+        const q = query(collection(db, "Tarea"), where("idAlumno", "==", idAlumno),where('completado','==','false'));
         const querySnapshot = await getDocs(q);
         // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
 
@@ -2311,26 +2310,6 @@ export const deleteTareaId = async (idTarea) => {
         console.log("Error al borrar la tarea", error);
     }
 }
-
-
-
-// EN LA VISTA CON ESTE CÓDIGO SE SACA LA LISTA DE TAREAS
-
-// const [tareas,setTareas] =useState([]);
-
-// useEffect(() => {
-//   const listaTareas = async () => {
-//     try{
-//       const Tareas = await getTarea(2);
-//       setTareas(Tareas);
-//       // console.log(Tareas);
-//     } catch(error){
-//       console.log(error);
-//     }
-//   };
-//   listaTareas();
-// }, []);
-
 
 
 // PRUEBA REALIZADA. FUNCIONA
@@ -2996,24 +2975,51 @@ export async function updatePedido(id,idMenu, idProf,aula, pedidos) {
           nPedidos: pedidos,
           // Otros campos que deseas actualizar
         });
-        // let docPedido = doc(db, 'Pedidos', id);
-        // const docSnapshot = await getDoc(docPedido);
-
-        // if (docSnapshot.exists()) {
-        //     pedido = docSnapshot.data();
-
-        //     editaPedido.idProf = editaPedido.idProf == '' ? pedido.idProf : editaPedido.idProf;
-        //     editaPedido.aula = editaPedido.aula == '' ? pedido.aula : editaPedido.aula;
-        //     editaPedido.idTarea = editaPedido.idTarea == '' ? pedido.idTarea : editaPedido.idTarea;
-        //     editaPedido.nPedidos = editaPedido.nPedidos == '' ? pedido.nPedidos : editaPedido.nPedidos;
-        //     editaPedido.idMenu = editaPedido.idMenu == '' ? pedido.idMenu : editaPedido.idMenu;
-
-        //     updateDoc(docPedido, {
-        //         ...editaPedido
-        //     });
     
     } catch (error) {
         console.log("Problema al actualizar datos de mensaje");
+    }
+}
+
+// Esta función sirve para obtener todos los pedidos asociados a una tarea concreta
+export async function getPedidosTarea(idTarea) {
+    try {
+        const q = query(collection(db,'Pedidos'),where('idTarea','==',idTarea));
+        const querySnapshot = await getDocs(q);
+        const docs = [];
+
+        for(const pedido of querySnapshot.docs){
+            const datosPedido = pedido.data();
+
+            docs.push(datosPedido);
+
+        }
+
+        console.log("los pedidos de la tarea son: " + JSON.stringify(docs));
+        return docs;
+
+    } catch (error) {
+        console.log("Problema al actualizar datos de mensaje");
+    }
+}
+
+export async function terminarTarea(idTarea){
+
+    try {
+        const docRef = doc(collection(db,'Tarea'),idTarea);
+        const docSnapshot = await getDoc(docRef);
+        
+        if(docSnapshot.exists()){
+            console.log("docSnapShot existe");
+            // Actualizar el documento existente
+            await updateDoc(docRef, {
+            completado: "true",
+            // Otros campos que deseas actualizar
+            });
+        }
+    
+    } catch (error) {
+        console.log("Problema al actualizar datos de mensaje " + error);
     }
 }
 

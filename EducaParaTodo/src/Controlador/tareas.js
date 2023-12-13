@@ -1,4 +1,4 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido} from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea} from "../Modelo/firebase";
 import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -239,5 +239,19 @@ export async function buscarPedidoProfesor (idProf, idTarea){
 export async function actualizarPedido(id,idMenu,idProf,aula,pedidos){
     await updatePedido(id,idMenu,idProf,aula,pedidos);
 }
+
+export async function buscarPedidosTarea (idTarea){
+    let pedidos = null;
+
+    pedidos = await getPedidosTarea(idTarea);
+    
+    return pedidos;
+}
+
+export async function completarTarea(idTarea){
+    console.log("completando tarea 1");
+    await terminarTarea(idTarea);
+}
+
 
 
