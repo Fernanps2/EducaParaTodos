@@ -10,6 +10,9 @@ import { buscaProfesor } from '../Controlador/profesores';
 
 // A esta pagina se llega desde el homeAdmin > comandasCreadas > esta página.
 // Aquí se muestran los datos recogidos en una tarea comanda en concreto
+// Primero obtenemos todos los menús, luego por menú sacamos todos los aulas y por último
+// se muestran los pedidos por menú y aula. Realmente solo se muestran los pedidos que se han hecho
+// ya que si no se mostraría una línea por cada combinación posible de menú y aula
 
 const DatosComandaDetalle = ({menu, id, prof}) => {
 
@@ -19,7 +22,7 @@ const DatosComandaDetalle = ({menu, id, prof}) => {
     useEffect(() => {
         const obtenerPedidos = async() => {
             try{
-                const datosPedido = await buscarPedido(menu.id, prof.id);
+                const datosPedido = await buscarPedido(menu.id, prof.id, id);
                 if(datosPedido && datosPedido.length > 0){
                     const primerPedido = datosPedido[0];
 

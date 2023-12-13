@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform} from 'react-native';
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
-import { aniadirPedido, buscarMenu, buscarPictogramasNumero } from '../Controlador/tareas';
+import { aniadirPedido, buscarMenu, buscarPictogramasNumero,buscarPedido, actualizarPedido } from '../Controlador/tareas';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swal from "sweetalert2";
 import seleccionAula from './seleccionAula';
 
-const showAlertGuardar = (id, idMenu, idProf, aula, pedidos,navigation) => {
+const showAlertGuardar = (id, idMenu, prof, pedidos,existePedido,navigation) => {
+  if(navigation)
+  console.log("la navegacion es correcta231");
   if (Platform.OS === "web") {
     Swal.fire({
       title: "¿Guardar menus?",
@@ -18,10 +20,19 @@ const showAlertGuardar = (id, idMenu, idProf, aula, pedidos,navigation) => {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        aniadirPedido(id,idMenu,idProf, aula,pedidos);
+        if(existePedido){
+          console.log("actualizamos pedido");
+          actualizarPedido(id,idMenu,prof.id,prof.aula,pedidos);
+
+        } else{
+          console.log("añadimos pedido");
+          aniadirPedido(id,idMenu,prof.id, prof.aula,pedidos);
+        }
         navigation.navigate('seleccionAula',{id}); // Navegar a la página SeleccionAula
+
       }
     });
+
   } else {
     Alert.alert(
       "¿Quiere guardar?", // Título
@@ -30,7 +41,12 @@ const showAlertGuardar = (id, idMenu, idProf, aula, pedidos,navigation) => {
         { text: "Cancelar" },
         { text: "Confirmar",
         onPress: () => {
-          aniadirPedido(id,idMenu,idProf, aula, pedidos);
+          if(existePedido){
+            actualizarPedido(id,idMenu,prof.id,prof.aula,pedidos);
+          } else{
+            aniadirPedido(id,idMenu,prof.id, prof.aula, pedidos);
+          }
+          if(navigation)
           navigation.navigate('seleccionAula',{id}); // Navegar a la página SeleccionAula
         }
       },
@@ -42,46 +58,40 @@ const showAlertGuardar = (id, idMenu, idProf, aula, pedidos,navigation) => {
 
 
 const SeleccionCantidad = ({route, navigation}) => {
+  if(navigation)
+  console.log("la navegacion es correcta");
 
   const {prof, menu, id} = route.params;
   const idMenu = menu.id
-  console.log("id prof: " + prof.id);
-  console.log("aula prof: " + prof.aula);
-  console.log("idTarea: " + id);
-  console.log("idMenu:" + idMenu);
-
   const [Menu, setMenu] = useState([]);
   const [pictogramasNumero, setPictogramasNumero] = useState([]);
+  const [existePedido, setExistePedido] = useState(false);
+  let idPedido;
 
+useEffect(() => {
+  const cargarDatos = async () => {
+    try {
+      const menuData = await buscarMenu(idMenu);
+      setMenu(menuData);
 
-  useEffect(() => {
-    const getMenu = async() => {
-      try{
-        const menu = await buscarMenu(idMenu);
-        setMenu(menu);
-        console.log("nombre menu: " + JSON.stringify(menu.Nombre));
-      } catch(error){
-        console.log("error: " + error);
-      }
+      const pictogramasData = await buscarPictogramasNumero();
+      setPictogramasNumero(pictogramasData);
+
+      const datosPedido = await buscarPedido(menu.id, prof.id, id);
+      setExistePedido(datosPedido && datosPedido.length > 0);
+      idPedido = datosPedido.id;
+
+    } catch (error) {
+      console.log("error: " + error);
     }
-    getMenu();
-  }, []);
+  };
 
-  useEffect(() => {
-    const getPictogramasNumero = async() => {
-      try{
-        const pitctogramas = await buscarPictogramasNumero();
-        setPictogramasNumero(pitctogramas);
-        console.log(pictogramasNumero);
-      } catch(error){
-        console.log("error: " + error);
-      }
-    }
-    getPictogramasNumero();
-  }, []);
+  cargarDatos();
+}, [menu.id, prof.id]);
+console.log("existe pedido fuera useEFFECT: " + existePedido);
 
-  console.log("id tarea al final: " + id);
-
+if(navigation)
+console.log("la navegaciondos es correcata");
 
     return(
       <ScrollView contentContainerStyle={styles.datos}>
@@ -101,7 +111,7 @@ const SeleccionCantidad = ({route, navigation}) => {
                 {pictogramasNumero.map((pictograma, index) => (
                     <View key={index} style={styles.contenedor_tareas}>
                       <TouchableOpacity onPress={ () => {
-                        showAlertGuardar(id,idMenu,prof.id,prof.aula,pictograma.Numero,navigation);
+                        showAlertGuardar(id,idMenu,prof,pictograma.Numero,existePedido,navigation);
                         }}>
                         <Text> Cantidad: {pictograma.Numero}</Text>
                         <Image style={styles.foto} source={{ uri: pictograma.Url }} />
@@ -166,7 +176,6 @@ const styles = StyleSheet.create({
       flexWrap: 'wrap',  
       fontSize: 50,
       fontSize: RFValue(16),
-
   },
   fotos:{
     flexDirection: 'row',

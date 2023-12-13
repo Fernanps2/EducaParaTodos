@@ -2614,7 +2614,6 @@ export const getMenu = async (idMenu) => {
 
         if (querySnapshot.exists()) {
             const datosMenu = querySnapshot.data();
-            console.log("menu firebase: " + JSON.stringify(datosMenu));
             return datosMenu;
         } else {
             console.log("Documento no encontrado");
@@ -2932,9 +2931,14 @@ export const setPedido = async (idTarea, idMenu, idProf, aula, nPedidos) => {
     }
 }
 
-export const getPedido = async (idMenu, idProfesor) => {
+// Esta función sirve para obtener un pedido en concreto
+// Se usa en datosComanda ya que aquí vamos mostrado los pedidos por menú y aula
+// Se usa para saber cuando un alumno ya ha recogido la cantidad
+// de un menú concreto en una clase concreto. Se usa en seleccionAula.jsx
+
+export const getPedido = async (idMenu, idProfesor, idTarea) => {
     try {
-        const pedidoQuery = query(collection(db, 'Pedidos'), where('idMenu', '==', idMenu), where('idProf', '==', idProfesor));
+        const pedidoQuery = query(collection(db, 'Pedidos'), where('idMenu', '==', idMenu), where('idProf', '==', idProfesor), where('idTarea','==',idTarea));
         const querySnapshot = await getDocs(pedidoQuery);
 
         const docs = [];
@@ -2942,7 +2946,6 @@ export const getPedido = async (idMenu, idProfesor) => {
         if (!querySnapshot.empty) {
             querySnapshot.forEach((docu) => {
                 const pedidoDatos = docu.data();
-                console.log(pedidoDatos);
 
                 docs.push(pedidoDatos);
             });
@@ -2955,3 +2958,65 @@ export const getPedido = async (idMenu, idProfesor) => {
         throw error; // Lanza el error para que pueda ser manejado por el llamador
     }
 }
+
+// Esta función sirve para obtener todos los pedidos de un profesor y tarea en concretos
+export const getPedidoProfesor = async (idProfesor, idTarea) => {
+    try {
+        const pedidoQuery = query(collection(db, 'Pedidos'), where('idProf', '==', idProfesor), where('idTarea','==',idTarea));
+        const querySnapshot = await getDocs(pedidoQuery);
+
+        const docs = [];
+
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach((docu) => {
+                const pedidoDatos = docu.data();
+
+                docs.push(pedidoDatos);
+            });
+            return docs;    
+        }
+
+    } catch (error) {
+        console.log(error);
+        throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
+export async function updatePedido(id,idMenu, idProf,aula, pedidos) {
+    let editaPedido = {
+        nPedidos: pedidos,
+    };
+
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'Pedidos'), where('idMenu', '==', idMenu), where('idProf', '==', idProf),where('idTarea','==', id)));
+        const docPedido = querySnapshot.docs[0];
+
+        // Actualizar el documento existente
+        await updateDoc(docPedido.ref, {
+          nPedidos: pedidos,
+          // Otros campos que deseas actualizar
+        });
+        // let docPedido = doc(db, 'Pedidos', id);
+        // const docSnapshot = await getDoc(docPedido);
+
+        // if (docSnapshot.exists()) {
+        //     pedido = docSnapshot.data();
+
+        //     editaPedido.idProf = editaPedido.idProf == '' ? pedido.idProf : editaPedido.idProf;
+        //     editaPedido.aula = editaPedido.aula == '' ? pedido.aula : editaPedido.aula;
+        //     editaPedido.idTarea = editaPedido.idTarea == '' ? pedido.idTarea : editaPedido.idTarea;
+        //     editaPedido.nPedidos = editaPedido.nPedidos == '' ? pedido.nPedidos : editaPedido.nPedidos;
+        //     editaPedido.idMenu = editaPedido.idMenu == '' ? pedido.idMenu : editaPedido.idMenu;
+
+        //     updateDoc(docPedido, {
+        //         ...editaPedido
+        //     });
+    
+    } catch (error) {
+        console.log("Problema al actualizar datos de mensaje");
+    }
+}
+
+
+
+

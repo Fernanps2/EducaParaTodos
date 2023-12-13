@@ -1,5 +1,5 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda } from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido} from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido} from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -220,11 +220,24 @@ export async function aniadirPedido(idTarea,idMenu,idProf,aula,nPedidos){
     await setPedido(idTarea,idMenu,idProf,aula,nPedidos);
 }
 
-export async function buscarPedido (idMenu, idProf){
+export async function buscarPedido (idMenu, idProf, idTarea){
     let pedidos = null;
 
-    pedidos = await getPedido(idMenu,idProf);
+    pedidos = await getPedido(idMenu,idProf, idTarea);
     
     return pedidos;
 }
+
+export async function buscarPedidoProfesor (idProf, idTarea){
+    let pedidos = null;
+
+    pedidos = await getPedidoProfesor(idProf, idTarea);
+    
+    return pedidos;
+}
+
+export async function actualizarPedido(id,idMenu,idProf,aula,pedidos){
+    await updatePedido(id,idMenu,idProf,aula,pedidos);
+}
+
 

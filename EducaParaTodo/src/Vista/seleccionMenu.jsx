@@ -3,21 +3,41 @@ import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } fr
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
 import { buscarMenus } from '../Controlador/tareas';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { buscarPedido } from '../Controlador/tareas';
 
 
 // El id es el de la tarea
 const DatosMenu = ({ prof, menu, id, navigation }) => {
-  console.log("Pagina seleccion menu idTarea: " + id);
-  console.log("nombre menu: " + menu.Nombre);
-  console.log("id menu: " + menu.id);
+  console.log("menu: " + menu.Nombre);
+  
+  const [seleccionado, setSeleccionado] = useState(false);
+  
+  useEffect(() => {
+      const obtenerPedidos = async() => {
+          try{
+              const datosPedido = await buscarPedido(menu.id, prof.id,id);
+              if(datosPedido && datosPedido.length > 0){
+                setSeleccionado(true);
+              }
+          } catch(error){
+              console.log("error: " + error);
+          }
+          console.log("otro menú");
+      }
+      obtenerPedidos();
+      // Esto hace que la función se ejecute cada vez que se cambie la combinación de 
+      // id menu e id profesor, ya que si no pusiéramos esto solo se ejecutaría la primera vez
+  },[menu.id, prof.id]);
 
   return (
     <View>
-      <TouchableOpacity onPress={() => navigation.navigate('seleccionCantidad', { prof, menu, id, navigation })}>
+      <TouchableOpacity onPress={() => {
+         navigation.navigate('seleccionCantidad', { prof, menu, id, navigation })
+         }}>
         {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
              para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-        <Image style={styles.foto} source={{ uri: menu.Imagen }} />
-        <Text style={styles.texto}> Menú {menu.Nombre} </Text>
+        <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{ uri: menu.Imagen }} />
+        <Text style={[styles.texto, seleccionado && styles.textoSelected]}> Menú {menu.Nombre} </Text>
       </TouchableOpacity>
     </View>
   )
@@ -28,7 +48,6 @@ const SeleccionMenus = ({ route, navigation }) => {
 
   // El id es de la tarea
   const { id, prof } = route.params;
-  console.log("profesor: " + JSON.stringify(prof.nombre));
   const aula = prof.aula;
 
   const [menuArray, setMenuArray] = useState([]);
@@ -38,13 +57,13 @@ const SeleccionMenus = ({ route, navigation }) => {
       try {
         const menus = await buscarMenus();
         setMenuArray(menus);
-        console.log(menuArray);
       } catch (error) {
         console.log("error: " + error);
       }
     }
     getMenus();
   }, []);
+
 
   return (
     <View style={styles.container}>
@@ -96,6 +115,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontSize: RFValue(16),
   },
+  textoSelected:{
+    backgroundColor: 'green',
+  },
   foto: {
     width: RFValue(100),
     height: RFValue(100),
@@ -103,8 +125,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'black',
-
-
+  },
+  selectedFoto:{
+    borderWidth:8,
+    borderColor: 'green', 
   },
   contenedor_tareas: {
     flexDirection: 'column',
