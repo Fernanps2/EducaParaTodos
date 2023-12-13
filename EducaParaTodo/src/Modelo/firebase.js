@@ -42,7 +42,7 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
-
+const COL_TAREAS = 'Tarea';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -1148,6 +1148,25 @@ export async function deleteAlumnoTarea(id) {
     } catch(error) {
         console.log("Error al borrar alumnoTarea", error);
     }
+}
+
+export async function getAlumnoVisualizacionTarea (id){
+    let dato = '';
+    try {
+        const docu = doc(db, COL_TAREAS, id);
+        const docSnapshot = await getDoc(docu);
+
+        if (docSnapshot.exists()) {
+            const {visualizacion} = docSnapshot.data();
+            dato = visualizacion;            
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return dato;
 }
 
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/

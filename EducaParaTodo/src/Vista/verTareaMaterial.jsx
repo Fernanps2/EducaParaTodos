@@ -1,17 +1,11 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import {
   buscarTareaIdTareasInventario,
   obtenerProfesores,
   getMaterialIdBD,
+  getvisualizacion,
 } from "../Controlador/tareas";
 import {
   mostrarNumeroRecogidas,
@@ -22,12 +16,14 @@ export default function VerTareaMaterial({ route, navigation }) {
   const id = route.params.id; // obtenemos el id Tarea.
   const usuario = route.params.usuario;
 
+  // Variable para saber la visualizacion del alumno.
+  const [visualizacion, setVisualizacion] = useState("");
+
   // Variable para obtener todos los pasos de la tarea inventario.
   const [tareas, setTareas] = useState([]);
   const [agrupadosDestiTareas, setAgrupadosDestiTareas] = useState("");
   const [materiales, setMateriales] = useState([]);
   const [tickMateriales, setTickMateriales] = useState([]); // garantizar que objeto se ha cogido.
-  const [profesores, setProfesores] = useState([]);
   const [aulas, setAulas] = useState([]);
   const [lugarDestinoNow, setLugarDestinoNow] = useState(""); // Saber a que lugar vamos a repartir
   const [lugaresOrigen, setLugaresOrigen] = useState([]); // Todos lugares para recoger materiales
@@ -83,11 +79,14 @@ export default function VerTareaMaterial({ route, navigation }) {
   // se cargan las aulas, tareas, profesores, y lugares de origen y destino
   useEffect(() => {
     async function cargarDatos() {
+      // Obtenemos visualización
+      const visu = await getvisualizacion(id);
+      setVisualizacion(visu);
+      console.log("visualización: ", visu);
       // Obtenemos las tareas
       const datos = await buscarTareaIdTareasInventario(id);
       // Obtenemos a los profesores
       const datosProfesores = await obtenerProfesores();
-      setProfesores(datosProfesores);
       // Obtenemos la información para las aulas.
       const aulas = datosProfesores
         .map(({ nombre, aula, foto }) => {
@@ -430,7 +429,6 @@ export default function VerTareaMaterial({ route, navigation }) {
 
   const actualizarPantallaInfo = () => {
     setViewRecogidasQuedan(false);
-
     if (esPrimeraVezRecogida) {
       setEsPrimeraVezRecogida(false);
     }
@@ -443,7 +441,8 @@ export default function VerTareaMaterial({ route, navigation }) {
         {mostrarNumeroRecogidas(
           lugaresOrigen.length - indexLugarOrigen,
           styles,
-          esPrimeraVezRecogida
+          esPrimeraVezRecogida,
+          visualizacion
         )}
 
         <View style={styles.separador} />
@@ -463,6 +462,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             style={styles.image}
           />
         </TouchableOpacity>
+        <Text style={styles.felicitacionText}>¡Vamos!</Text>
       </View>
     ) : (
       <View>
@@ -742,16 +742,19 @@ export default function VerTareaMaterial({ route, navigation }) {
         <>
           {caract[0] === "Ninguno" ? (
             <>
-              <View style={styles.row}>
-                {stock >= 1 && stock <= 10 ? (
-                  <Image
-                    source={require(`../../Imagenes/Numeros/${stock}.png`)}
-                    style={styles.image}
-                  />
-                ) : (
-                  <Text style={styles.numeroImagen}>{stock}</Text>
-                )}
-              </View>
+              {(visualizacion === "imagenes" ||
+                visualizacion === "pictogramas") && (
+                <View style={styles.row}>
+                  {stock >= 1 && stock <= 10 ? (
+                    <Image
+                      source={require(`../../Imagenes/Numeros/${stock}.png`)}
+                      style={styles.image}
+                    />
+                  ) : (
+                    <Text style={styles.numeroImagen}>{stock}</Text>
+                  )}
+                </View>
+              )}
 
               <Text style={styles.text}>
                 Cojo {stock} {nombreMaterial}
@@ -760,20 +763,26 @@ export default function VerTareaMaterial({ route, navigation }) {
             </>
           ) : (
             <View>
-              <View style={[styles.row]}>
-                <Image
-                  source={{ uri: tipoActual.foto }}
-                  style={styles.imageSmall}
-                />
-                {tipoActual.cantidad >= 1 && tipoActual.cantidad <= 10 ? (
+              {(visualizacion === "imagenes" ||
+                visualizacion === "pictogramas") && (
+                <View style={[styles.row]}>
                   <Image
-                    source={require(`../../Imagenes/Numeros/${tipoActual.cantidad}.png`)}
+                    source={{ uri: tipoActual.foto }}
                     style={styles.imageSmall}
                   />
-                ) : (
-                  <Text style={styles.numeroImagen}>{tipoActual.cantidad}</Text>
-                )}
-              </View>
+                  {tipoActual.cantidad >= 1 && tipoActual.cantidad <= 10 ? (
+                    <Image
+                      source={require(`../../Imagenes/Numeros/${tipoActual.cantidad}.png`)}
+                      style={styles.imageSmall}
+                    />
+                  ) : (
+                    <Text style={styles.numeroImagen}>
+                      {tipoActual.cantidad}
+                    </Text>
+                  )}
+                </View>
+              )}
+
               <Text style={styles.text}>
                 {`Cojo ${tipoActual.cantidad} ${nombreMaterial} ${tipoActual.nombre}`}
               </Text>
@@ -822,7 +831,8 @@ export default function VerTareaMaterial({ route, navigation }) {
       <View>
         {mostrarNumeroLugaresDestino(
           filtrarDestinoPorOrigen().length - destinoActualIndex,
-          styles
+          styles,
+          visualizacion
         )}
 
         <View style={styles.separador} />
@@ -842,6 +852,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             style={styles.image}
           />
         </TouchableOpacity>
+        <Text style={styles.felicitacionText}>¡Seguimos!</Text>
       </View>
     ) : (
       <>
@@ -875,26 +886,31 @@ export default function VerTareaMaterial({ route, navigation }) {
               <View style={styles.separador}></View>
               <View style={styles.separador}></View>
 
-              <View style={styles.row}>
-                {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
+              {(visualizacion === "imagenes" ||
+                visualizacion === "pictogramas") && (
+                <View style={styles.row}>
+                  {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
+                    <Image
+                      source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
+                      style={styles.image}
+                    />
+                  ) : (
+                    <Text style={styles.numeroImagen}>
+                      {stockMaterialLlevar}
+                    </Text>
+                  )}
                   <Image
-                    source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
+                    source={{ uri: fotoMaterialLlevar }}
                     style={styles.image}
                   />
-                ) : (
-                  <Text style={styles.numeroImagen}>{stockMaterialLlevar}</Text>
-                )}
-                <Image
-                  source={{ uri: fotoMaterialLlevar }}
-                  style={styles.image}
-                />
-                {fotoCaracteristicaMaterialLlevar !== "" && (
-                  <Image
-                    source={{ uri: fotoCaracteristicaMaterialLlevar }}
-                    style={styles.image}
-                  />
-                )}
-              </View>
+                  {fotoCaracteristicaMaterialLlevar !== "" && (
+                    <Image
+                      source={{ uri: fotoCaracteristicaMaterialLlevar }}
+                      style={styles.image}
+                    />
+                  )}
+                </View>
+              )}
               {caractersiticaMaterialLlevar !== "Ninguno" ? (
                 <>
                   <Text style={styles.text}>

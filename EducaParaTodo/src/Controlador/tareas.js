@@ -1,5 +1,5 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
     return await getProfesores();
@@ -203,4 +203,10 @@ export async function cargarAudiosBD (){
     let audios = null;
     audios = await cargarAudios();
     return audios;
+}
+
+export async function getvisualizacion (id){
+    let visu = null;
+    visu = await getAlumnoVisualizacionTarea (id)
+    return visu;
 }
