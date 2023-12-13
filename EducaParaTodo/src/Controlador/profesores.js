@@ -1,27 +1,89 @@
-import {getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor} from '../Modelo/firebase'
+import {getProfesoresLogin, getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, updateProfesorAdmin, deleteProfesor, getProfesorID} from '../Modelo/firebase'
 
-export function aniadeProfesor(nombre, apellidos, password, foto) {
-    if (nombre != '' || apellidos != '' || password != '' || foto != '')
-        addProfesor(nombre, apellidos, password, foto)
+export async function aniadeProfesor(nombre, apellidos, password, foto) {
+    if (nombre != '' && apellidos != '' && password != '')
+        await addProfesor(nombre, apellidos, password, foto)
 }
-/*
-export function buscaProfesor({nombre='', apellidos=''}) {
-    let {nombre, apellidos} = {nombre, apellidos};
+
+export async function buscaProfesor() {
     let profesores = null;
 
-    if (nombre != '')
-        profesores = getProfesoresNombre(nombre);
-    else if (apellidos != '')
-        profesores = getProfesoresApellidos(apellidos);
-    else
-        profesores = getProfesores();
+    profesores = await getProfesores();
 
     return profesores;
 }
-*/
 
-export function actualizaProfesor(id, {nombre='', apellidos='', password='', foto=''}) {
-    let datos = {nombre, apellidos, password, foto};
+/*export async function buscaProfesorNombre (nombre) {
+    let profesores = null;
 
-    updateProfesor(id, datos);
+    if (nombre != null) {
+        console.log('buscando profesores con nombre: ' + nombre);
+        profesores = await getProfesoresNombre(nombre);
+        console.log('se han encontrado: ' + JSON.stringify(profesores));
+    }
+
+    return profesores;
+}*/
+
+export async function buscaProfesorNombre(nombre) {
+    let profesor = null;
+
+    if (nombre != null) {
+        console.log('buscando profesores con nombre: ' + nombre);
+        const profesores = await getProfesoresNombre(nombre);
+        console.log('se han encontrado: ' + JSON.stringify(profesores));
+
+        if (profesores.length > 0) {
+            // Si se encontró al menos un profesor, devolvemos el primer elemento
+            profesor = profesores[0];
+        }
+    }
+
+    return profesor;
+}
+
+export async function buscaProfesorApellidos (apellidos) {
+    let profesores = null;
+
+    if (apellidos != null) {
+        profesores = await getProfesoresApellidos(apellidos);
+    }
+
+    return profesores;
+}
+
+export async function loginProfesor (nombre, password) {
+    let id = null;
+
+    if (nombre != '' && password != '') {
+        const profesor = await getProfesoresLogin(nombre, password);
+        if (profesor.length>0) id = profesor[0].id;
+    }
+
+    return id;
+}
+
+export async function buscaProfesorId (id) {
+    let instancia = null;
+
+    if (id != null){
+        instancia = await getProfesorID(id);
+        //console.log(instancia);
+    }
+    return instancia;
+}
+
+export async function actualizaProfesorAdmin(id, nombre, apellidos, foto) {
+    if (nombre != '' && apellidos != '' && password != '')
+        await updateProfesor(id, nombre, apellidos, password, foto);
+}
+
+export async function actualizaProfesor(id, nombre, apellidos, password/*, foto*/) {
+    if (nombre != '' && apellidos != '' && password != ''){
+        await updateProfesor(id, nombre, apellidos, password/*, foto*/);
+    }
+}
+
+export async function borraProfesor(id) {
+    await deleteProfesor(id);
 }
