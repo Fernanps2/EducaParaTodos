@@ -1,6 +1,7 @@
 import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin} from "../Modelo/firebase";
 import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin } from "../Modelo/firebase";
 import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -16,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
  */
 export async function almacenaImagen(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagen(imagen);
+        almacenarImagen(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -42,7 +43,7 @@ export async function almacenaImagen(imagen, nombre) {
  */
 export async function almacenaPictograma(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarPictograma(imagen);
+        almacenarPictograma(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -68,7 +69,7 @@ export async function almacenaPictograma(imagen, nombre) {
  */
 export async function almacenaVideo(video, nombre) {
     if (video != '' && nombre != '')
-        almacenarVideo(video);
+        almacenarVideo(video, nombre);
     else
         if (Platform.OS === "web") {
             Swal.fire({
@@ -94,7 +95,7 @@ export async function almacenaVideo(video, nombre) {
  */
 export async function almacenaFotoPersona(foto, nombre) {
     if (foto != '')
-        almacenarFotoPersona(foto);
+        almacenarFotoPersona(foto, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -121,7 +122,7 @@ export async function almacenaFotoPersona(foto, nombre) {
  */
 export async function almacenaImagenLogin(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagenLogin(imagen);
+        almacenarImagenLogin(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -295,7 +296,7 @@ export async function descargaFotoPersona(foto) {
     if (foto != '')
         fotoCargada = await descargarFotoPersona(foto);
 
-    return emoticCargada;
+    return fotoCargada;
 }
 
 /**
@@ -345,6 +346,71 @@ export async function descargaImagenesLogin() {
     const array = await descargarImagenesLogin();
 
     return array;
+}
+
+/**
+ * @name eliminaImagen
+ * 
+ * @description Borra la imagen con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagen(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagen(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaVideo  
+ * 
+ * @description Borra el video con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaVideo(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarVideo(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaPictograma
+ * 
+ * @description Borra el pictograma con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaPictograma(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarPictograma(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaFotoPersona
+ * 
+ * @description Borra la foto con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaFotoPersona(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarFotoPersona(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaImagenLogin
+ * 
+ * @description Borra la imagen para el login con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagenLogin(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagenLogin(nombreArchivo);
+    }
 }
 
 /**

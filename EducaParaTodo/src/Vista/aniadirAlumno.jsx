@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
-import {almacenaImagen, openGallery, descargaImagen, descargaImagenes} from '../Controlador/multimedia' 
+import {almacenaImagen, openGallery, descargaImagen, descargaImagenes, eliminaImagen} from '../Controlador/multimedia' 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
@@ -56,8 +56,9 @@ export default function AniadirAlumno ({ navigation }) {
 
   const handleImage = async() => {
     //setImageUri(await openGallery());
-    setImageUri(await descargaImagen('Microondas.jpg'));
+    //setImageUri(await descargaImagen('Microondas.jpg'));
     //setImageUri(await descargaImagenes());
+    await eliminaImagen('imagen.jpg');
   }
 
     return (
