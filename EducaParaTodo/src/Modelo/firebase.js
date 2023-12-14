@@ -227,6 +227,53 @@ export async function getAlumnoID(id) {
     return instancia;
 }
 
+// función para obtener las 4 imágenes del login del alumno
+
+export const getAlumnoImagenesLogin = async (idAlumno) => {
+  try {
+    const q = query(collection(db, 'loginAlumnoImagenes'), where('idAlumno', '==', idAlumno));
+    const querySnapshot = await getDocs(q);
+
+    const docs = [];
+
+    for (const doc of querySnapshot.docs) {
+      const { img1, img2, img3, img4 } = doc.data();
+
+      console.log('Datos de imágenes obtenidos:', { img1, img2, img3, img4 });
+
+      docs.push({
+        id: doc.id,
+        img1,
+        img2,
+        img3,
+        img4,
+      });
+    }
+
+    return docs;
+  } catch (error) {
+    console.error('Error al obtener imágenes:', error);
+    throw error;
+  }
+};
+
+export async function getAlumnoIdPorNombre(nombre) {
+    let alumnoId = null;
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+
+        if (!querySnapshot.empty) {
+            // Obtener el ID del primer alumno que coincide con el nombre
+            alumnoId = querySnapshot.docs[0].id;
+        }
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumno", error);
+    }
+
+    return alumnoId;
+}
+
 export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
     let alumno = {
         nombre: nombre,
