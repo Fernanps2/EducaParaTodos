@@ -433,7 +433,7 @@ export const openGallery = async () => {
     if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         //console.log(imageUri);
-        //almacenaImagen(imageUri);
+        //almacenaPictograma(imageUri, "imagenDePrueba");
         return imageUri;
     }
 

@@ -55,10 +55,11 @@ export default function AniadirAlumno ({ navigation }) {
   };
 
   const handleImage = async() => {
-    //setImageUri(await openGallery());
+    setImageUri(await openGallery());
+    //console.log(imageUri);
     //setImageUri(await descargaImagen('Microondas.jpg'));
     //setImageUri(await descargaImagenes());
-    await eliminaImagen('imagen.jpg');
+    //await eliminaImagen('imagen.jpg');
   }
 
     return (
