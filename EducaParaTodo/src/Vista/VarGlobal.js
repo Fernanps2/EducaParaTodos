@@ -59,6 +59,15 @@ export function  isHasTiposItemMaterialesBD (id){
     const material = materialesBD.find(item => item.id === id);
     return material.caracteristicas.length > 0;
 }
+
+// Variable para saber cuando entramos a la pantalla de la interfaz de crear Materiales.
+export var inicioPantalla = false;
+export function setInicioPantalla (valor){
+  inicioPantalla = valor;
+}
+export function getInicioPantalla (){
+    return inicioPantalla;
+}
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Variables y funciones para la tarea comanda
 // Tiene la relación entre menus y alimentos.

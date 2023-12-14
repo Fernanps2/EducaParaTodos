@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
   Platform,
@@ -22,6 +22,7 @@ import {
   inicializarmateriales,
   isVaciaListaMateriales,
   get_materialesBD,
+  setInicioPantalla,  
 } from "./VarGlobal";
 
 export default function TareaActividad({ navigation }) {
@@ -34,6 +35,11 @@ export default function TareaActividad({ navigation }) {
   const [finHora, setFinHora] = useState("");
   //Variables para switch
   const [periocidad, setPeriocidad] = useState("Diario");
+
+  // Actualizamos la variable que indica que hemos entrado a la pantalla de crear tarea materiales
+  useEffect(() => {
+    setInicioPantalla(true);
+  }, []);
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -192,6 +198,7 @@ export default function TareaActividad({ navigation }) {
         // Reiniciamos los materiales
         inicializarmateriales();
 
+        setInicioPantalla(false);
         navigation.navigate("gestionTareas");
       }
     } catch (error) {
@@ -306,7 +313,9 @@ export default function TareaActividad({ navigation }) {
           <>
             <Text style={[styles.title]}>Materiales</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate("gestionTareas")}
+              onPress={() => 
+                {setInicioPantalla(false)
+                navigation.navigate("gestionTareas")}}
             >
               <Image
                 source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
@@ -323,7 +332,9 @@ export default function TareaActividad({ navigation }) {
             <>
               <Text style={[styles.title]}>Materiales</Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("gestionTareas")}
+                onPress={() => {
+                  setInicioPantalla(false)
+                  navigation.navigate("gestionTareas")}}
               >
                 <Image
                   source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}

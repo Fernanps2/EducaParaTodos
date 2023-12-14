@@ -22,6 +22,7 @@ import {
   modificarStock_materialesBD,
   isLargeItemMaterialesBD,
   isHasTiposItemMaterialesBD,
+  getInicioPantalla,
 } from "./VarGlobal";
 
 //import { DataContextMateriales } from "./DataContextMateriales";
@@ -39,7 +40,7 @@ export default function AnadirMaterial({ navigation }) {
         const datosMateriales = await buscarMateriales();
         console.log(datosMateriales)
         const datosMaterialesActuales = get_materialesBD();
-        if (datosMaterialesActuales.length === 0) {
+        if (datosMaterialesActuales.length === 0 || getInicioPantalla()) {
           set_materialesBD(datosMateriales);
           setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
           setInitialMaterials(datosMateriales);
