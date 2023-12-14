@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import {
   buscarTareaIdTareasInventario,
   obtenerProfesores,
@@ -170,7 +171,6 @@ export default function VerTareaMaterial({ route, navigation }) {
       }
 
       setTickMateriales(resultado);
-      console.log("tickMateriales: ", resultado);
 
       setCargando(false);
     }
@@ -470,19 +470,16 @@ export default function VerTareaMaterial({ route, navigation }) {
   // Pantalla primera de ir al lugar de origen a recoger los materiales.
   const renderLugarOrigen = () => {
     return viewRecogidasQuedan ? (
-      <View>
+      <View style={styles.container}>
         {mostrarNumeroRecogidas(
           lugaresOrigen.length - indexLugarOrigen,
           styles,
           esPrimeraVezRecogida,
-          visualizacion
+          visualizacion,
+          lugaresOrigen,
+          aulas,
+          indexLugarOrigen
         )}
-
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
 
         <TouchableOpacity
           style={styles.imagePulsar}
@@ -491,14 +488,14 @@ export default function VerTareaMaterial({ route, navigation }) {
           }}
         >
           <Image
-            source={require("../../Imagenes/bien.png")}
-            style={styles.image}
+            source={require("../../Imagenes/siguiente.png")}
+            style={styles.imageSiguiente}
           />
         </TouchableOpacity>
         <Text style={styles.felicitacionText}>¡Vamos!</Text>
       </View>
     ) : (
-      <View>
+      <View style={styles.container}>
         <TouchableOpacity
           style={styles.retrocederPulsar}
           onPress={() => {
@@ -514,7 +511,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           }}
         >
           <Image
-            style={styles.imageVerySmall}
+            style={styles.imageRetroceder}
             source={require("../../Imagenes/retroceder.png")}
           />
         </TouchableOpacity>
@@ -526,21 +523,12 @@ export default function VerTareaMaterial({ route, navigation }) {
           <Image source={imagenLugarOrigenNow} style={styles.image} />
         </View>
 
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
         <Text style={styles.text}>
           {lugarOrigenNow === "Almacen"
             ? `Voy al ${lugarOrigenNow} a coger materiales`
-            : `Voy a la ${lugarOrigenNow} a coger materiales`}
+            : `Voy a la aula ${lugarOrigenNow} a coger materiales`}
         </Text>
 
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
 
@@ -552,18 +540,15 @@ export default function VerTareaMaterial({ route, navigation }) {
           }}
         >
           <Image
-            source={require("../../Imagenes/bien.png")}
-            style={styles.image}
+            source={require("../../Imagenes/siguiente.png")}
+            style={styles.imageSiguiente}
           />
         </TouchableOpacity>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
 
         <Text style={styles.text}>
           {lugarOrigenNow === "Almacen"
             ? `Estoy en el ${lugarOrigenNow}`
-            : `Estoy en la ${lugarOrigenNow}`}
+            : `Estoy en la aula ${lugarOrigenNow}`}
         </Text>
       </View>
     );
@@ -605,7 +590,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         : styles.imagenDentroBoton; // Estilo por defecto
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
         <TouchableOpacity
           style={styles.retrocederPulsar}
           onPress={() => {
@@ -613,7 +598,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           }}
         >
           <Image
-            style={styles.imageVerySmall}
+            style={styles.imageRetroceder}
             source={require("../../Imagenes/retroceder.png")}
           />
         </TouchableOpacity>
@@ -627,15 +612,6 @@ export default function VerTareaMaterial({ route, navigation }) {
             ? `Estoy en el ${lugar}`
             : `Estoy en el aula ${lugar}`}
         </Text>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
 
         <TouchableOpacity
           style={styles.imagenYTextoPulsar}
@@ -661,9 +637,10 @@ export default function VerTareaMaterial({ route, navigation }) {
               : ""}
           </Text>
         </TouchableOpacity>
+
         {materialesAplanados.length - 1 !== indiceActual &&
           (materialRecogido || tickMaterial.tick) && (
-            <>
+            <View style={styles.container}>
               <TouchableOpacity
                 style={[styles.imagePulsar, { marginHorizontal: 20 }]}
                 onPress={() => {
@@ -672,19 +649,19 @@ export default function VerTareaMaterial({ route, navigation }) {
                 }}
               >
                 <Image
-                  source={require("../../Imagenes/bien.png")}
-                  style={styles.image}
+                  source={require("../../Imagenes/siguiente.png")}
+                  style={styles.imageSiguiente}
                 />
               </TouchableOpacity>
 
               <Text style={[styles.text, { marginHorizontal: 20 }]}>
                 Siguiente material
               </Text>
-            </>
+            </View>
           )}
         {materialesAplanados.length - 1 === indiceActual &&
           tickMaterial.tick && (
-            <>
+            <View style={styles.container}>
               <TouchableOpacity
                 style={[styles.imagePulsar, { marginHorizontal: 20 }]}
                 onPress={() => {
@@ -693,15 +670,15 @@ export default function VerTareaMaterial({ route, navigation }) {
                 }}
               >
                 <Image
-                  source={require("../../Imagenes/bien.png")}
-                  style={styles.image}
+                  source={require("../../Imagenes/tick.png")}
+                  style={styles.imageSiguiente}
                 />
               </TouchableOpacity>
 
               <Text style={[styles.text, { marginHorizontal: 20 }]}>
                 Reparto los materiales
               </Text>
-            </>
+            </View>
           )}
       </View>
     );
@@ -762,7 +739,7 @@ export default function VerTareaMaterial({ route, navigation }) {
     };
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
         <View style={styles.row}>
           <Image
             source={{ uri: imagenLugarOrigenNow }}
@@ -781,15 +758,10 @@ export default function VerTareaMaterial({ route, navigation }) {
 
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
 
-        <>
+        <View style={styles.container}>
           {caract[0] === "Ninguno" ? (
-            <>
+            <View style={styles.container}>
               {(visualizacion === "imagenes" ||
                 visualizacion === "pictogramas") && (
                 <View style={styles.row}>
@@ -808,16 +780,12 @@ export default function VerTareaMaterial({ route, navigation }) {
                 Cojo {stock} {nombreMaterial}
                 {stock > 1 ? "s" : ""}
               </Text>
-            </>
+            </View>
           ) : (
             <View>
               {(visualizacion === "imagenes" ||
                 visualizacion === "pictogramas") && (
                 <View style={[styles.row]}>
-                  <Image
-                    source={{ uri: tipoActual.foto }}
-                    style={styles.imageSmall}
-                  />
                   {tipoActual.cantidad >= 1 && tipoActual.cantidad <= 10 ? (
                     <Image
                       source={require(`../../Imagenes/Numeros/${tipoActual.cantidad}.png`)}
@@ -828,6 +796,10 @@ export default function VerTareaMaterial({ route, navigation }) {
                       {tipoActual.cantidad}
                     </Text>
                   )}
+                  <Image
+                    source={{ uri: tipoActual.foto }}
+                    style={styles.imageSmall}
+                  />
                 </View>
               )}
 
@@ -836,36 +808,42 @@ export default function VerTareaMaterial({ route, navigation }) {
               </Text>
             </View>
           )}
-        </>
+        </View>
 
         <View style={styles.separador}></View>
         <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
 
-        <TouchableOpacity
-          style={styles.imagePulsar}
-          onPress={() => {
-            if (indiceActualTipo < tipos.length - 1) {
-              avanzarAlSiguienteTipo();
-            } else {
-              handleActualizaEstado();
-            }
-          }}
-        >
-          <Image
-            source={require("../../Imagenes/bien.png")}
-            style={styles.image}
-          />
-          <View style={styles.separador}></View>
-          <View style={styles.separador}></View>
-          <View style={styles.separador}></View>
-          <Text style={styles.text}>Todo cogido</Text>
-        </TouchableOpacity>
+        {indiceActualTipo == tipos.length - 1 ? (
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.imagePulsar}
+              onPress={() => {
+                handleActualizaEstado();
+              }}
+            >
+              <Image
+                source={require("../../Imagenes/tick.png")}
+                style={styles.imageSiguiente}
+              />
+            </TouchableOpacity>
+            <Text style={styles.text}>Todo Recogido</Text>
+          </View>
+        ) : (
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.imagePulsar}
+              onPress={() => {
+                avanzarAlSiguienteTipo();
+              }}
+            >
+              <Image
+                source={require("../../Imagenes/siguiente.png")}
+                style={styles.imageSiguiente}
+              />
+            </TouchableOpacity>
+            <Text style={styles.text}>Cogido</Text>
+          </View>
+        )}
       </View>
     );
   };
@@ -876,18 +854,15 @@ export default function VerTareaMaterial({ route, navigation }) {
     const aula = aulas.find((a) => a.aula === lugarDestinoNow);
 
     return viewDestinoQuedan ? (
-      <View>
+      <View style={styles.container}>
         {mostrarNumeroLugaresDestino(
           filtrarDestinoPorOrigen().length - destinoActualIndex,
           styles,
-          visualizacion
+          visualizacion,
+          aulas,
+          tareas[lugarOrigenNow],
+          destinoActualIndex
         )}
-
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
 
         <TouchableOpacity
           style={styles.imagePulsar}
@@ -896,194 +871,187 @@ export default function VerTareaMaterial({ route, navigation }) {
           }}
         >
           <Image
-            source={require("../../Imagenes/bien.png")}
-            style={styles.image}
+            source={require("../../Imagenes/siguiente.png")}
+            style={styles.imageSiguiente}
           />
         </TouchableOpacity>
         <Text style={styles.felicitacionText}>¡Seguimos!</Text>
       </View>
     ) : (
-      <>
-        <View>
-          {viewMaterialLlevarClase ? (
-            <>
-              <TouchableOpacity
-                style={styles.retrocederPulsar}
-                onPress={() => {
-                  if (materialLlevarIndex > 0) {
-                    setMaterialesCargados("retroceder");
-                  } else {
-                    setViewMaterialLlevarClase(false);
-                  }
-                }}
-              >
-                <Image
-                  style={styles.imageVerySmall}
-                  source={require("../../Imagenes/retroceder.png")}
-                />
-              </TouchableOpacity>
-              <Image source={aula.foto} style={styles.image} />
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <Text style={styles.text}>
-                {lugarDestinoNow === "Almacen"
-                  ? `Estoy en el ${lugarDestinoNow}`
-                  : `Estoy en el aula ${lugarDestinoNow}`}
-              </Text>
+      <View style={styles.container}>
+        {viewMaterialLlevarClase ? (
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.retrocederPulsar}
+              onPress={() => {
+                if (materialLlevarIndex > 0) {
+                  setMaterialesCargados("retroceder");
+                } else {
+                  setViewMaterialLlevarClase(false);
+                }
+              }}
+            >
+              <Image
+                style={styles.imageRetroceder}
+                source={require("../../Imagenes/retroceder.png")}
+              />
+            </TouchableOpacity>
+            <Image source={aula.foto} style={styles.image} />
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacen"
+                ? `Estoy en el ${lugarDestinoNow}`
+                : `Estoy en el aula ${lugarDestinoNow}`}
+            </Text>
 
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
 
-              {(visualizacion === "imagenes" ||
-                visualizacion === "pictogramas") && (
-                <View style={styles.row}>
-                  {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
-                    <Image
-                      source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
-                      style={styles.image}
-                    />
-                  ) : (
-                    <Text style={styles.numeroImagen}>
-                      {stockMaterialLlevar}
-                    </Text>
-                  )}
-                  <Image
-                    source={{ uri: fotoMaterialLlevar }}
-                    style={styles.image}
-                  />
-                  {fotoCaracteristicaMaterialLlevar !== "" && (
-                    <Image
-                      source={{ uri: fotoCaracteristicaMaterialLlevar }}
-                      style={styles.image}
-                    />
-                  )}
-                </View>
-              )}
-              {caractersiticaMaterialLlevar !== "Ninguno" ? (
-                <>
-                  <Text style={styles.text}>
-                    Dejo {stockMaterialLlevar} {nombreMaterialLlevar}
-                    {stockMaterialLlevar > 1 ? "s" : ""}{" "}
-                    {caractersiticaMaterialLlevar}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.text}>
-                    Dejamos {stockMaterialLlevar} {nombreMaterialLlevar}
-                    {stockMaterialLlevar > 1 ? "s" : ""}
-                  </Text>
-                </>
-              )}
-
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-
-              <TouchableOpacity
-                style={styles.imagePulsar}
-                onPress={() => {
-                  handleNextMaterialLlevar(); // Pasamos al siguiente material,
-                }}
-              >
-                <Image
-                  source={require("../../Imagenes/bien.png")}
-                  style={styles.image}
-                />
-                <View style={styles.separador}></View>
-                <View style={styles.separador}></View>
-                <View style={styles.separador}></View>
-                <Text style={styles.text}>Dejo {nombreMaterialLlevar}</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TouchableOpacity
-                style={styles.retrocederPulsar}
-                onPress={() => {
-                  if (destinoActualIndex > 0) {
-                    // Si ya llevamos entregando en varias clases, nos vamos a la clase anterior
-                    setMaterialesCargados("siguiente clase");
-                    setMaterialLlevarIndex(0);
-
-                    setDestinoActualIndex(destinoActualIndex - 1);
-                  } else {
-                    // si es el primer lugar para llevar los maeriales, entonces nos vamos para el lugar de origen
-                    setCargandoMaterialesRecogidosOrigen(true);
-                    setViewObjetosRecoger(false);
-                    setIndiceActual(0); // para que empiece desde el material 1.
-                  }
-                }}
-              >
-                <Image
-                  style={styles.imageVerySmall}
-                  source={require("../../Imagenes/retroceder.png")}
-                />
-              </TouchableOpacity>
+            {(visualizacion === "imagenes" ||
+              visualizacion === "pictogramas") && (
               <View style={styles.row}>
+                {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
+                  <Image
+                    source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
+                    style={styles.imageSmall}
+                  />
+                ) : (
+                  <Text style={styles.numeroImagen}>{stockMaterialLlevar}</Text>
+                )}
                 <Image
-                  source={require("../../Imagenes/ninoAndando.png")}
-                  style={styles.image}
+                  source={{ uri: fotoMaterialLlevar }}
+                  style={styles.imageSmall}
                 />
-                <Image source={aula.foto} style={styles.image} />
+                {fotoCaracteristicaMaterialLlevar !== "" && (
+                  <Image
+                    source={{ uri: fotoCaracteristicaMaterialLlevar }}
+                    style={styles.imageSmall}
+                  />
+                )}
               </View>
+            )}
+            {caractersiticaMaterialLlevar !== "Ninguno" ? (
+              <View style={styles.container}>
+                <Text style={styles.text}>
+                  Dejo {stockMaterialLlevar} {nombreMaterialLlevar}
+                  {stockMaterialLlevar > 1 ? "s" : ""}{" "}
+                  {caractersiticaMaterialLlevar}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.container}>
+                <Text style={styles.text}>
+                  Dejamos {stockMaterialLlevar} {nombreMaterialLlevar}
+                  {stockMaterialLlevar > 1 ? "s" : ""}
+                </Text>
+              </View>
+            )}
 
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
 
-              <Text style={styles.text}>
-                {lugarDestinoNow === "Almacen"
-                  ? `Voy al ${lugarDestinoNow} a dejar materiales`
-                  : `Voy a la Aula ${lugarDestinoNow} a dejar materiales`}
-              </Text>
+            {materialLlevarIndex ==
+            agrupadosDestiTareas[lugarDestinoNow].filter((objeto) => {
+              return objeto.lugarOrigen === lugarOrigenNow;
+            }).length - 1 ? (
+              <View style={styles.container}>
+                <TouchableOpacity
+                  style={styles.imagePulsar}
+                  onPress={() => {
+                    handleNextMaterialLlevar(); // Pasamos al siguiente material,
+                  }}
+                >
+                  <Image
+                    source={require("../../Imagenes/tick.png")}
+                    style={styles.imageSiguiente}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.text}>Todo dejado</Text>
+              </View>
+            ) : (
+              <View style={styles.container}>
+                <TouchableOpacity
+                  style={styles.imagePulsar}
+                  onPress={() => {
+                    handleNextMaterialLlevar(); // Pasamos al siguiente material,
+                  }}
+                >
+                  <Image
+                    source={require("../../Imagenes/siguiente.png")}
+                    style={styles.imageSiguiente}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.text}>Dejo otro material</Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.retrocederPulsar}
+              onPress={() => {
+                if (destinoActualIndex > 0) {
+                  // Si ya llevamos entregando en varias clases, nos vamos a la clase anterior
+                  setMaterialesCargados("siguiente clase");
+                  setMaterialLlevarIndex(0);
 
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
+                  setDestinoActualIndex(destinoActualIndex - 1);
+                } else {
+                  // si es el primer lugar para llevar los maeriales, entonces nos vamos para el lugar de origen
+                  setCargandoMaterialesRecogidosOrigen(true);
+                  setViewObjetosRecoger(false);
+                  setIndiceActual(0); // para que empiece desde el material 1.
+                }
+              }}
+            >
+              <Image
+                style={styles.imageRetroceder}
+                source={require("../../Imagenes/retroceder.png")}
+              />
+            </TouchableOpacity>
+            <View style={styles.row}>
+              <Image
+                source={require("../../Imagenes/ninoAndando.png")}
+                style={styles.image}
+              />
+              <Image source={aula.foto} style={styles.image} />
+            </View>
 
-              <TouchableOpacity
-                style={styles.imagePulsar}
-                onPress={() => {
-                  setViewMaterialLlevarClase(true);
-                }}
-              >
-                <Image
-                  source={require("../../Imagenes/bien.png")}
-                  style={styles.image}
-                />
-              </TouchableOpacity>
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacen"
+                ? `Voy al ${lugarDestinoNow} a dejar materiales`
+                : `Voy a la Aula ${lugarDestinoNow} a dejar materiales`}
+            </Text>
 
-              <View style={styles.separador}></View>
-              <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
+            <View style={styles.separador}></View>
 
-              <Text style={styles.text}>
-                {lugarDestinoNow === "Almacen"
-                  ? `Estoy en el ${lugarDestinoNow}`
-                  : `Estoy en la Aula ${lugarDestinoNow}`}
-              </Text>
-            </>
-          )}
-        </View>
-      </>
+            <TouchableOpacity
+              style={styles.imagePulsar}
+              onPress={() => {
+                setViewMaterialLlevarClase(true);
+              }}
+            >
+              <Image
+                source={require("../../Imagenes/siguiente.png")}
+                style={styles.imageSiguiente}
+              />
+            </TouchableOpacity>
+
+            <Text style={styles.text}>
+              {lugarDestinoNow === "Almacen"
+                ? `Estoy en el ${lugarDestinoNow}`
+                : `Estoy en la aula ${lugarDestinoNow}`}
+            </Text>
+          </View>
+        )}
+      </View>
     );
   };
 
   // Pantalla para mostrar al alumno la felicitacion de haber terminado
   const renderFelicitaciones = () => {
     return (
-      <View>
+      <View style={styles.container}>
         <Image
           source={require("../../Imagenes/TareasAlumnos/muyBien.png")}
           style={styles.imageLarge}
@@ -1105,7 +1073,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         >
           <Image
             source={require("../../Imagenes/bien.png")}
-            style={styles.image}
+            style={styles.imageSiguiente}
           />
         </TouchableOpacity>
       </View>
@@ -1158,70 +1126,75 @@ const styles = StyleSheet.create({
   imagenYTextoPulsar: {
     alignItems: "center",
     justifyContent: "center",
-    margin: 10,
+    margin: RFValue(10),
     borderWidth: 5,
     borderColor: "black",
     backgroundColor: "#f2f2f2",
   },
   image: {
-    width: 150,
-    height: 150,
+    width: RFValue(60),
+    height: RFValue(60),
   },
   imageLarge: {
-    width: 300,
-    height: 300,
+    width: RFValue(100),
+    height: RFValue(100),
   },
   imageSmall: {
-    width: 120,
-    height: 120,
+    width: RFValue(50),
+    height: RFValue(50),
   },
-  imageVerySmall: {
-    width: 50,
-    height: 50,
+  imageRetroceder: {
+    width: RFValue(20),
+    height: RFValue(20),
   },
   imagenDentroBoton: {
-    width: 180,
-    height: 180,
+    width: RFValue(50),
+    height: RFValue(50),
+  },
+  imageSiguiente: {
+    width: RFValue(50),
+    height: RFValue(50),
   },
   imagePulsar: {
     borderWidth: 5,
     borderColor: "black",
     backgroundColor: "#f2f2f2",
-    width: 180,
-    height: 180,
+    width: RFValue(53),
+    height: RFValue(53),
   },
   retrocederPulsar: {
     borderWidth: 2,
     borderColor: "black",
     backgroundColor: "#f2f2f2",
-    width: 55,
-    height: 55,
+    width: RFValue(22),
+    height: RFValue(22),
+    marginLeft: RFValue(-120),
   },
   row: {
     flexDirection: "row",
   },
   text: {
-    fontSize: 20,
+    fontSize: RFValue(10),
   },
   textBoton: {
-    fontSize: 20,
+    fontSize: RFValue(10),
     fontWeight: "bold",
   },
   felicitacionText: {
     fontWeight: "bold",
-    fontSize: 30,
+    fontSize: RFValue(12),
   },
   separador: {
-    height: 10,
+    height: RFValue(10),
   },
   columnStyle: {
     justifyContent: "space-between",
   },
   cargandoTexto: {
     fontWeight: "bold",
-    fontSize: 30,
+    fontSize: RFValue(10),
   },
   numeroImagen: {
-    fontSize: 70,
+    fontSize: RFValue(30),
   },
 });

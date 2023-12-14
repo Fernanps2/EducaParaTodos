@@ -30,8 +30,8 @@ const DatosTareas = ({ tarea, navigation, usuario }) => {
         {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
         <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
-        <Text style={styles.texto}>{tarea.titulo} </Text>
       </TouchableOpacity>
+      <Text style={styles.texto}>{tarea.titulo} </Text>
     </View>
   );
 };
