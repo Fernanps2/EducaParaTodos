@@ -9,6 +9,7 @@ import { completarTarea } from '../Controlador/tareas';
 import Swal from 'sweetalert2';
 import { buscaAlumnoId } from '../Controlador/alumnos';
 import Tareas from './tareas';
+import { descargarFotoPersona } from '../Modelo/firebase';
 
 const showAlert = async (id, alumno, navigation) => {
   if (navigation)
@@ -51,6 +52,7 @@ const showAlert = async (id, alumno, navigation) => {
 const DatosProfesor = ({ prof, id, navigation }) => {
 
   const [seleccionado, setSeleccionado] = useState(false);
+  const [foto, setFoto] = useState([]);
 
   // Obtenemos todos los menús para ver los menús que tenemos en la base de datos
   // Usamos useFocusEffect con useCallback para que así se renderice cada vez que se abra la pestaña
@@ -74,13 +76,28 @@ const DatosProfesor = ({ prof, id, navigation }) => {
     }, [])
   );
 
+  useEffect(() => {
+    const getFoto = async () => {
+      try {
+        console.log("nombre profesor: " + prof.nombre);
+        const fotoDescargada = await descargarFotoPersona(prof.foto);
+        setFoto(fotoDescargada);
+      } catch (error) {
+        console.log("error: " + error);
+      }
+    }
+    getFoto();
+  }, [prof]);
+
+
+
   return (
     <View>
       <View>
         <TouchableOpacity onPress={() => navigation.navigate('seleccionMenu', { id, prof })}>
           {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
              para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-          <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{ uri: prof.foto }} />
+          <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{ uri: foto.uri }} />
           <Text style={[styles.texto, seleccionado && styles.textoSelected]}> Aula: {prof.aula} </Text>
         </TouchableOpacity>
       </View>

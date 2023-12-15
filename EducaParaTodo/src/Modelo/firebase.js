@@ -1922,6 +1922,7 @@ export async function descargarEmoticonos() {
 }
 
 export async function descargarFotoPersona(nombreFoto) {
+    console.log()
     let imagenUri = {
         uri: null,
         nombre: null

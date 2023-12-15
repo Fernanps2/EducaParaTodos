@@ -40,7 +40,6 @@ import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
-import DatosProfesor from './src/Vista/datosProfesor.jsx';
 import seleccionAula from './src/Vista/seleccionAula.jsx';
 import seleccionMenus from './src/Vista/seleccionMenu.jsx';
 import seleccionCantidad from './src/Vista/seleccionCantidad.jsx';

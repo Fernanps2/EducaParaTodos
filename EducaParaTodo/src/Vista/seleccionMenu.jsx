@@ -4,6 +4,7 @@ import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
 import { buscarMenus } from '../Controlador/tareas';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { buscarPedido } from '../Controlador/tareas';
+import { descargarFotoPersona } from '../Modelo/firebase';
 
 
 // El id es el de la tarea
@@ -51,6 +52,7 @@ const SeleccionMenus = ({ route, navigation }) => {
   const aula = prof.aula;
 
   const [menuArray, setMenuArray] = useState([]);
+  const [foto, setFoto] = useState([]);
 
   useEffect(() => {
     const getMenus = async () => {
@@ -64,13 +66,26 @@ const SeleccionMenus = ({ route, navigation }) => {
     getMenus();
   }, []);
 
+  useEffect(() => {
+    const getFoto = async () => {
+      try {
+        const fotoDescargada = await descargarFotoPersona(prof.foto);
+        setFoto(fotoDescargada);
+      } catch (error) {
+        console.log("error: " + error);
+      }
+    }
+    getFoto();
+  }, [prof]);
+
+
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Estoy en el aula: {aula}</Text>
 
-        <Image style={styles.foto} source={{ uri: prof.foto }} />
+        <Image style={styles.foto} source={{ uri: foto.uri }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
