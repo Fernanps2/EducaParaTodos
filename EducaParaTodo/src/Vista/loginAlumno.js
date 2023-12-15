@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
-import { buscaAlumnoNombre } from '../Controlador/alumnos.js';
-import { getAlumnoImagenesLogin, getAlumnoIdPorNombre } from '../Modelo/firebase';
-
+import { buscaAlumnoNombre, obtenerImagenesLoginAlumno, obtenerIdAlumnoPorNombre } from '../Controlador/alumnos.js';
 
 
 const LoginScreenAlumno = ({ route, navigation }) => {
@@ -50,8 +48,8 @@ const LoginScreenAlumno = ({ route, navigation }) => {
        useEffect(() => {
          const obtenerImagenesAlumno = async () => {
            try {
-             const alumnoId = await getAlumnoIdPorNombre(alumno.nombre);
-             const imagenes = await getAlumnoImagenesLogin(alumnoId);
+             const alumnoId = await obtenerIdAlumnoPorNombre(alumno.nombre);
+             const imagenes = await obtenerImagenesLoginAlumno(alumnoId);
              setAlumnoImagenes(imagenes);
            } catch (error) {
              console.log("Error al obtener imágenes o ID del alumno:", error);
