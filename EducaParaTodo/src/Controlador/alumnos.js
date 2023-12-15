@@ -1,10 +1,10 @@
 import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoID} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
-export async function aniadeAlumno(nombre, apellidos, password, foto, visualizacion) {
-    if (nombre != '' && apellidos != '' && password != '' && visualizacion != null) {
+export async function aniadeAlumno(nombre, apellidos, password, foto, visualizacion, tipoLogin) {
+    if (nombre != '' && apellidos != '' && password != '' && visualizacion != null && tipoLogin != '') {
         //let id_imagen = almacenaImagen(foto);
-        await addAlumno(nombre, apellidos, password, foto, visualizacion);
+        await addAlumno(nombre, apellidos, password, foto, visualizacion, tipoLogin);
     }
 }
 
@@ -64,9 +64,9 @@ export async function buscaAlumnoId (id) {
     return instancia;
 }
 
-export async function actualizaAlumno(id, nombre, apellidos, foto, visualizacion) {
+export async function actualizaAlumno(id, nombre, apellidos, foto, visualizacion, tipoLogin) {
     if (nombre != '' && apellidos != '' && visualizacion != null) 
-        await updateAlumno(id, nombre, apellidos, foto, visualizacion);
+        await updateAlumno(id, nombre, apellidos, foto, visualizacion, tipoLogin);
 }
 
 export async function borraAlumno(id) {

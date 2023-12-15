@@ -58,13 +58,14 @@ export async function getAlumnos() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -81,13 +82,14 @@ export async function getAlumnosNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -104,13 +106,14 @@ export async function getAlumnosApellidos(apellidos) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -127,13 +130,14 @@ export async function getAlumnosContrasenia(contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -150,13 +154,14 @@ export async function getAlumnosVisualizacionPredefinida(visualizacion) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -173,13 +178,14 @@ export async function getAlumnosLogin(nombre, contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -208,13 +214,14 @@ export async function getAlumnoID(id) {
     return instancia;
 }
 
-export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
+export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion, tipoLog) {
     let alumno = {
         nombre: nombre,
         apellidos: apellidos,
         password: contrasenia,
         foto: foto,
         visualizacionPreferente: visualizacion,
+        tipoLogin: tipoLog
     }
 
     let identificacion = null;
@@ -234,12 +241,13 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
+export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente, tipoLogin) {
     let editaAlumno = {
         nombre: nombre, 
         apellidos: apellidos, 
         visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
-        foto: foto
+        foto: foto,
+        tipoLogin: tipoLogin
     };
     let alumno = null;
 
@@ -257,6 +265,7 @@ export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPre
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
+            editaAlumno.tipoLogin = editaAlumno.tipoLogin == '' ? alumno.tipoLogin : editaAlumno.tipoLogin;
 
 
             await updateDoc(docAlumno, {
@@ -296,7 +305,7 @@ export async function getProfesores() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
@@ -319,7 +328,7 @@ export async function getProfesoresNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
@@ -342,7 +351,7 @@ export async function getProfesoresApellidos(apellidos) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
@@ -365,7 +374,7 @@ export async function getProfesoresContrasenia(contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
@@ -388,7 +397,7 @@ export async function getProfesoresLogin(nombre, contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
