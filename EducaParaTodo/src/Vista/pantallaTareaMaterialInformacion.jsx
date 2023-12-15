@@ -1,5 +1,4 @@
-import { useScrollToTop } from "@react-navigation/native";
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
@@ -23,8 +22,6 @@ export const mostrarNumeroRecogidas = (
     return index >= indice;
   });
 
-  console.log("aulas: ", aulas);
-
   return (
     <View style={estilos.container}>
       <Image
@@ -33,10 +30,10 @@ export const mostrarNumeroRecogidas = (
       />
       <Text style={estilos.felicitacionText}>
         {quedan === 1
-          ? `Solo tienes que coger objetos en ${quedan} lugar. ¡Ánimo!`
+          ? `Solo tienes que coger objetos en:`
           : esPrimeraVez
-          ? `Tienes que coger objetos en ${quedan} lugares:`
-          : `Te falta coger objetos en ${quedan} lugares:`}
+          ? `Tienes que coger objetos en:`
+          : `Te falta coger objetos en:`}
       </Text>
 
       <View style={estilos.separador}></View>
@@ -156,8 +153,8 @@ export const mostrarNumeroLugaresDestino = (
 
       <Text style={estilos.felicitacionText}>
         {quedan === 1
-          ? `Te falta llevar los materiales a ${quedan} clase.`
-          : `Te falta llevar los materiales a ${quedan} clases:`}
+          ? `Te falta llevar los materiales a las clases:`
+          : `Te falta llevar los materiales a las clases:`}
       </Text>
 
       <View style={estilos.separador} />
