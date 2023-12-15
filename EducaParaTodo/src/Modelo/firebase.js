@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadFile} from 'firebase/storage'
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
@@ -43,6 +43,9 @@ const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
 const COL_TAREAS = 'Tarea';
+
+
+const PERSONAS = 'Personas/';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -1669,6 +1672,28 @@ export function cargarImagen(imagen) {
     })
 
     return imagenCargada;
+}
+
+export async function descargarFotoPersona(nombreFoto) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, PERSONAS+nombreFoto);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la foto");
+      });
+
+  return imagenUri;
 }
 
 /********** FINAL FUNCIONES PARA MULTIMEDIA ********/

@@ -12,6 +12,7 @@ import {
   mostrarNumeroRecogidas,
   mostrarNumeroLugaresDestino,
 } from "./pantallaTareaMaterialInformacion";
+import { descargaFotoPersona } from "../Controlador/multimedia";
 
 export default function VerTareaMaterial({ route, navigation }) {
   const id = route.params.id; // obtenemos el id Tarea.
@@ -87,20 +88,25 @@ export default function VerTareaMaterial({ route, navigation }) {
       const datos = await buscarTareaIdTareasInventario(id);
       // Obtenemos a los profesores
       const datosProfesores = await obtenerProfesores();
-      // Obtenemos la información para las aulas.
-      const aulas = datosProfesores
-        .map(({ nombre, aula, foto }) => {
+      // Procesamos los datos de los profesores
+      const aulas = await Promise.all(
+        datosProfesores.map(async ({ nombre, aula, foto }) => {
           if (foto !== "") {
-            return { nombre, aula, foto };
+            const fotoDescargada = await descargaFotoPersona(foto);
+            return { nombre, aula, foto: fotoDescargada };
           }
+          return null; // Retornar null para los casos donde no hay foto
         })
-        .filter((aula) => aula !== undefined); // Esto removerá los valores undefined del resultado del map
+      ).then((resultados) => resultados.filter((aula) => aula !== null)); // Filtramos los nulos después de resolver todas las promesas
 
-      // Añadimos el almacen.
+      // Añadimos el almacén
       aulas.push({
         nombre: "Almacén",
         aula: "Almacen",
-        foto: require("../../Imagenes/almacen.png"), // Asegúrate de que la ruta es correcta y accesible en el contexto de tu app
+        foto: {
+          uri: require("../../Imagenes/almacen.png"),
+          nombre: "almacen.png",
+        },
       });
 
       setAulas(aulas);
@@ -515,7 +521,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             source={require("../../Imagenes/retroceder.png")}
           />
         </TouchableOpacity>
-        <View style={styles.row}>
+        <View style={[styles.row]}>
           <Image
             source={require("../../Imagenes/ninoAndando.png")}
             style={styles.image}
@@ -523,7 +529,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           <Image source={imagenLugarOrigenNow} style={styles.image} />
         </View>
 
-        <Text style={styles.text}>
+        <Text style={[styles.text, { flex: 1 }]}>
           {lugarOrigenNow === "Almacen"
             ? `Voy al ${lugarOrigenNow} a coger materiales`
             : `Voy a la aula ${lugarOrigenNow} a coger materiales`}
@@ -533,7 +539,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         <View style={styles.separador}></View>
 
         <TouchableOpacity
-          style={styles.imagePulsar}
+          style={[styles.imagePulsar]}
           onPress={() => {
             setViewObjetosRecoger(true);
             setViewCadaObjetoRecoger(false);
@@ -604,7 +610,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         </TouchableOpacity>
 
         <Image
-          source={{ uri: fotoLugarOrigen }}
+          source={{ uri: fotoLugarOrigen.uri }}
           style={[styles.image, { marginHorizontal: 45 }]}
         />
         <Text style={[styles.text, { marginHorizontal: 30 }]}>
@@ -659,6 +665,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               </Text>
             </View>
           )}
+          <View style={[{flex:1}]}/>
         {materialesAplanados.length - 1 === indiceActual &&
           tickMaterial.tick && (
             <View style={styles.container}>
@@ -735,6 +742,8 @@ export default function VerTareaMaterial({ route, navigation }) {
       } else {
         // Aquí puedes manejar qué sucede cuando se terminan los objetos
         console.log("Se han mostrado todos los objetos");
+        console.log("indice actual", indiceActualTipo);
+        console.log("esto: ", tipos.length - 1);
       }
     };
 
@@ -742,7 +751,7 @@ export default function VerTareaMaterial({ route, navigation }) {
       <View style={styles.container}>
         <View style={styles.row}>
           <Image
-            source={{ uri: imagenLugarOrigenNow }}
+            source={{ uri: imagenLugarOrigenNow.uri }}
             style={[styles.image, { marginHorizontal: 15 }]}
           />
           <Image
@@ -776,13 +785,13 @@ export default function VerTareaMaterial({ route, navigation }) {
                 </View>
               )}
 
-              <Text style={styles.text}>
+              <Text style={[styles.text, { flex: 1 }]}>
                 Cojo {stock} {nombreMaterial}
                 {stock > 1 ? "s" : ""}
               </Text>
             </View>
           ) : (
-            <View>
+            <View style={styles.container}>
               {(visualizacion === "imagenes" ||
                 visualizacion === "pictogramas") && (
                 <View style={[styles.row]}>
@@ -803,18 +812,17 @@ export default function VerTareaMaterial({ route, navigation }) {
                 </View>
               )}
 
-              <Text style={styles.text}>
+              <Text style={[styles.text, { flex: 1 }]}>
                 {`Cojo ${tipoActual.cantidad} ${nombreMaterial} ${tipoActual.nombre}`}
               </Text>
             </View>
           )}
         </View>
 
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
+        <View style={[{flex:1}]}/>
 
-        {indiceActualTipo == tipos.length - 1 ? (
-          <View style={styles.container}>
+        {indiceActualTipo >= tipos.length - 1 ? (
+          <View style={[styles.container, {flex:1}]}>
             <TouchableOpacity
               style={styles.imagePulsar}
               onPress={() => {
@@ -829,7 +837,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             <Text style={styles.text}>Todo Recogido</Text>
           </View>
         ) : (
-          <View style={styles.container}>
+          <View style={[styles.container,{flex:1}]}>
             <TouchableOpacity
               style={styles.imagePulsar}
               onPress={() => {
@@ -952,7 +960,8 @@ export default function VerTareaMaterial({ route, navigation }) {
             {materialLlevarIndex ==
             agrupadosDestiTareas[lugarDestinoNow].filter((objeto) => {
               return objeto.lugarOrigen === lugarOrigenNow;
-            }).length - 1 ? (
+            }).length -
+              1 ? (
               <View style={styles.container}>
                 <TouchableOpacity
                   style={styles.imagePulsar}
@@ -1127,7 +1136,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     margin: RFValue(10),
-    borderWidth: 5,
+    borderWidth: RFValue(1),
     borderColor: "black",
     backgroundColor: "#f2f2f2",
   },
@@ -1156,7 +1165,7 @@ const styles = StyleSheet.create({
     height: RFValue(50),
   },
   imagePulsar: {
-    borderWidth: 5,
+    borderWidth: RFValue(1),
     borderColor: "black",
     backgroundColor: "#f2f2f2",
     width: RFValue(53),

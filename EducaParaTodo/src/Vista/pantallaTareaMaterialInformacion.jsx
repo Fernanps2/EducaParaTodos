@@ -23,6 +23,8 @@ export const mostrarNumeroRecogidas = (
     return index >= indice;
   });
 
+  console.log("aulas: ", aulas);
+
   return (
     <View style={estilos.container}>
       <Image
@@ -48,16 +50,34 @@ export const mostrarNumeroRecogidas = (
                 {visualizacion === "imagenes" ||
                 visualizacion === "pictogramas" ? (
                   <>
-                    <Image
-                      source={{ uri: item.foto.uri }}
-                      style={[
-                        {
-                          width: RFValue(50),
-                          height: RFValue(50),
-                          marginHorizontal: 10,
-                        },
-                      ]}
-                    />
+                    {item.aula === "Almacen" ? (
+                      <>
+                        <Image
+                          source={item.foto.uri}
+                          style={[
+                            {
+                              width: RFValue(50),
+                              height: RFValue(50),
+                              marginHorizontal: 10,
+                            },
+                          ]}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          source={{ uri: item.foto.uri }}
+                          style={[
+                            {
+                              width: RFValue(50),
+                              height: RFValue(50),
+                              marginHorizontal: 10,
+                            },
+                          ]}
+                        />
+                      </>
+                    )}
+
                     <Text style={estilos.text}>
                       {item.aula === "Almacen"
                         ? `${item.aula}`
@@ -151,16 +171,33 @@ export const mostrarNumeroLugaresDestino = (
                 {visualizacion === "imagenes" ||
                 visualizacion === "pictogramas" ? (
                   <>
-                    <Image
-                      source={{ uri: item.foto }}
-                      style={[
-                        {
-                          width: RFValue(50),
-                          height: RFValue(50),
-                          marginHorizontal: 10,
-                        },
-                      ]}
-                    />
+                  {item.aula === "Almacen" ? (
+                      <>
+                        <Image
+                          source={item.foto.uri}
+                          style={[
+                            {
+                              width: RFValue(50),
+                              height: RFValue(50),
+                              marginHorizontal: 10,
+                            },
+                          ]}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          source={{ uri: item.foto.uri }}
+                          style={[
+                            {
+                              width: RFValue(50),
+                              height: RFValue(50),
+                              marginHorizontal: 10,
+                            },
+                          ]}
+                        />
+                      </>
+                    )}
                     <Text style={estilos.text}>
                       {item.aula === "Almacen"
                         ? `${item.aula}`
