@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import tareas from '../Modelo/tareas';
@@ -6,6 +6,7 @@ import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion, b
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
 import {buscaImagen, buscaPictograma, buscaVideo} from '../Controlador/asignadosTarea';
+import { descargaFotoPersona } from '../Controlador/multimedia';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Video from 'react-native-video';
@@ -15,7 +16,7 @@ export function VerTarea ({route, navigation}){
     
     const [tareaAct, setTareaAct] = useState([]);
     const [pasos, setPasos] = useState([]);
-    const [tarea, setTarea] = useState([]);
+    const [tarea, setTarea] = useState([]); 
     const [profesor, setProfesor] = useState([]);
     const [alumno, setAlumno] = useState([]);
     const [visualizacion, setVisualizacion] = useState();
@@ -23,6 +24,9 @@ export function VerTarea ({route, navigation}){
     const [pictograma, setPictograma] = useState([]);
     const [video, setVideo] = useState([]);
     const [imagenCargada, setImagenCargada] = useState(false);
+    const [foto, setFoto] = useState([]);
+
+    const profesorRef = useRef(profesor);
     /*const [tareaInv, setTareaInv] = useState([]);
     const [tareaCom, setTareaCom] = useState([]);*/
 
@@ -38,7 +42,7 @@ export function VerTarea ({route, navigation}){
             }
         };
         listaTarea();
-    }, []);   
+    }, []);     
 
     useEffect(() => {
         const listaTareas = async () => {
@@ -68,19 +72,53 @@ export function VerTarea ({route, navigation}){
         listaPasos(); 
     }, []); 
 
+    const tareaActvidad = tareaAct[0];
+
     useEffect(() => {
         const listaProf = async () => {
             try {
                 const Profe = await buscaProfesorAula(tareaActvidad.aula);
                 setProfesor(Profe);
-
+                profesorRef.current = Profe;
                 console.log("Profesor: " + JSON.stringify(Profe)); 
             } catch (error) {
                 console.log(error);
             }
         };
         listaProf();
-    }, []);
+    }, [tareaActvidad]);
+
+    useEffect(() => {
+        const getFoto = async () => {
+            try {
+                const currentProfesor = profesorRef.current;
+                console.log("CurrentProfesor: ", currentProfesor);
+    
+                if (Array.isArray(currentProfesor) && currentProfesor.length > 0) {
+                    const primerProfesor = currentProfesor[0];
+                    
+                    if (primerProfesor.foto && typeof primerProfesor.foto === "string" && primerProfesor.foto.trim() !== "") {
+                        console.log("foto profesor: ", primerProfesor.foto);
+                        const fotoDescargada = await descargaFotoPersona(primerProfesor.foto);
+                        setFoto(fotoDescargada);
+                        console.log("foto descargada: ", fotoDescargada);
+                    } else {
+                        console.log("La propiedad 'foto' en el primer profesor no es una cadena válida o está vacía.");
+                    }
+                } else {
+                    console.log("currentProfesor es un array vacío o no es un array.");
+                }
+            } catch (error) {
+                console.log("Error al obtener la foto: ", error);
+            }
+        };
+    
+        getFoto();
+    }, [tareaActvidad]);
+    
+    
+    
+     
 
     useEffect(() => {
         const listaAlum = async () => {
@@ -138,7 +176,7 @@ export function VerTarea ({route, navigation}){
         listaTareas();
     }, []); */ 
 
-    const tareaActvidad = tareaAct[0];
+    
     /*const tareaInventario = tareaInv[0];
     const tareaComanda = tareaCom[0];*/
 
@@ -217,19 +255,19 @@ export function VerTarea ({route, navigation}){
         }; 
         listaVideo();  
     }, [pasoActualData]);
- 
+    
     
     return (
        /*} <View>
     {tarea && tarea.tipo == "actividad" ? (*/
                 <View style={styles.container}> 
                     <Text style={styles.tarea}>{tarea.titulo}</Text>
-                    <Text style={styles.aula}>{tareaActvidad && tareaActvidad.aula}</Text> 
-                    <Image style={styles.fotoProfe} source={profesor.foto}/>
+                    <Text style={styles.aula}>Aula {tareaActvidad && tareaActvidad.aula}</Text> 
+                    <Image style={styles.fotoProfe} source={{uri: foto.uri}}/>
          
                     <View style={styles.pasos}>
                         {pasoActualData && pasoActualData.idImagen && pasoActualData.idImagen !== "Ninguno" && 
-                        visualizacion == "imagen" && (
+                        visualizacion == "imagenes" && (
                         <Image source={{uri: imagen.URL}} style={styles.foto} />
                         )} 
 
@@ -240,7 +278,7 @@ export function VerTarea ({route, navigation}){
 
                         {pasoActualData && pasoActualData.idVideo && pasoActualData.idVideo !== "Ninguno" && 
                         visualizacion == "video" && (
-                        <Video source={{uri: video.URL}} style={styles.foto} controls={true} />
+                        <Video source={{uri:"https://www.youtube.com/watch?v=-9X2obbSECU"}} style={styles.foto} controls={true} />
                         )} 
          
                         {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}

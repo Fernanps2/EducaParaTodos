@@ -2914,7 +2914,7 @@ export const getTareasInventarioId = async (idTarea) => {
 
   export const getVisualizacion = async (idTarea) => {
     try {
-        const q = query(collection(db, 'alumnosTareas'), where('tarea', '==', idTarea));
+        const q = query(collection(db, 'Tarea'), where('__name__', '==', idTarea));
         const querySnapshot = await getDocs(q);
 
         const visualizaciones = [];
