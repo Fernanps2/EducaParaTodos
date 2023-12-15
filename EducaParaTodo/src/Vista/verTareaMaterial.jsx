@@ -486,10 +486,10 @@ export default function VerTareaMaterial({ route, navigation }) {
           onPress={() => {
             if(indexLugarOrigen > 0){
               setIndexLugarOrigen(indexLugarOrigen -1);
-              setDestinoActualIndex(lugarDestinos.length -1)
+              setDestinoActualIndex(lugarDestinos.length -1);
               setMaterialLlevarIndex(agrupadosDestiTareas[setLugarDestinoNow]);
               setCargandoMaterialesRecogidosOrigen(false);
-              console.log('lugarOrign: ',lugarOrigenNow)
+              console.log('lugarOrign: ',lugarOrigenNow);
             }else{
               navigation.navigate("Tareas", { usuario });
             }
@@ -888,9 +888,12 @@ export default function VerTareaMaterial({ route, navigation }) {
           style={styles.retrocederPulsar}
           onPress={() => {
             if (destinoActualIndex > 0) {
-              setViewMaterialLlevarClase(true);
-              setMaterialesCargados('retroceder en destino informacion');
-              setDestinoActualIndex(destinoActualIndex - 1);
+              //setViewMaterialLlevarClase(true);
+              //setMaterialesCargados('retroceder en destino informacion');
+              //setDestinoActualIndex(destinoActualIndex - 1);
+              //setMaterialLlevarIndex(materialLlevarIndex-1);
+              //console.log('indice Material: ',agrupadosDestiTareas[lugarDestinoNow]);
+              console.log('vamos por aqui');
             } else {
               setViewCadaObjetoRecoger(true);
               setCargandoMateriales(false);
