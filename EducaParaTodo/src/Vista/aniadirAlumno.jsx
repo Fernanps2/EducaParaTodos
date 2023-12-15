@@ -1,8 +1,8 @@
 
 
 import React, { useState } from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, Switch } from 'react-native';
-import {almacenaFotoPersona, openGallery} from '../Controlador/multimedia' 
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, ScrollView } from 'react-native';
+import {almacenaFotoPersona, almacenaImagenLogin, openGallery} from '../Controlador/multimedia' 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
@@ -15,13 +15,24 @@ export default function AniadirAlumno ({ navigation }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [tipoContrasenia, setTipoContrasenia] = useState('texto'); // 'texto' o 'imagen'
   
-  const [imageUri, setImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState(null); //Imagen del alumno
+
+  //Vector con uris de las imagenes para la contraseña
   const [imagenesContrasenia, setImagenesContrasenia] = useState({
     imagen1: null,
     imagen2: null,
     imagen3: null,
     imagen4: null,
   });
+
+  //Vector con nombres de las imagenes de la contraseña
+  const [imagenesNombreContrasenia, setImagenesNombreContrasenia] = useState({
+    imagen1: "",
+    imagen2: "",
+    imagen3: "",
+    imagen4: "",
+  });
+
   const [datosAlumno, setDatosAlumno] = useState({
     nombre: "",
     apellidos: "",
@@ -35,8 +46,15 @@ export default function AniadirAlumno ({ navigation }) {
     }));
   }
 
-  const handeChangeImagenLogin = (value, name) => {
+  const handleChangeImagenUriLogin = (value, name) => {
     setImagenesContrasenia(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
+
+  const handleChangeImagenNombreLogin = (value, name) => {
+    setImagenesNombreContrasenia(prevState => ({
       ...prevState,
       [name]: value
     }));
@@ -60,8 +78,23 @@ export default function AniadirAlumno ({ navigation }) {
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
             almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+            if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
+              //Asociamos los nombres a las imagenes
+              handleChangeImagenNombreLogin("Imagen1"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen1');
+              handleChangeImagenNombreLogin("Imagen2"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen2');
+              handleChangeImagenNombreLogin("Imagen3"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen3');
+              handleChangeImagenNombreLogin("Imagen4"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen4');
+              //Asociamos a la contraseña el nombre de las imagenes
+              handeChangeText(imagenesNombreContrasenia, 'contrasenia');
+              //Almacenamos las imagenes
+              almacenaImagenLogin(imagenesContrasenia.imagen1, imagenesNombreContrasenia.imagen1);
+              almacenaImagenLogin(imagenesContrasenia.imagen2, imagenesNombreContrasenia.imagen2);
+              almacenaImagenLogin(imagenesContrasenia.imagen3, imagenesNombreContrasenia.imagen3);
+              almacenaImagenLogin(imagenesContrasenia.imagen4, imagenesNombreContrasenia.imagen4);
+            }
+
             aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
-              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions);
+              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
             navigation.navigate('listaAlumnos');
           }
         }
@@ -75,7 +108,7 @@ export default function AniadirAlumno ({ navigation }) {
   }
 
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>EducaParaTodos</Text>
       </View>
@@ -92,15 +125,6 @@ export default function AniadirAlumno ({ navigation }) {
         value={datosAlumno.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />
-{/*
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={datosAlumno.contrasenia}
-        onChangeText={(value)=>handeChangeText(value,'contrasenia')}
-        />
-    */}
 
        {/* Botones para seleccionar el tipo de contraseña */}
       <View style={styles.botonesContrasenia}>
@@ -129,10 +153,10 @@ export default function AniadirAlumno ({ navigation }) {
           <View style={styles.containerContrasenia}>
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() =>handleImage()}
+                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen1')}
                 title="Imagen1"
               />
-              {imageUri!=null ? (
+              {imagenesContrasenia.imagen1!=null ? (
             <Text style={styles.input2}> Foto Seleccionada</Text>
           ) : ( 
               <Text style={styles.input2}> No hay foto </Text>
@@ -141,10 +165,10 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 2 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() =>handleImage()}
+                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen2')}
                 title="Imagen2"
               />
-              {imageUri!=null ? (
+              {imagenesContrasenia.imagen2!=null ? (
             <Text style={styles.input2}> Foto Seleccionada</Text>
           ) : ( 
               <Text style={styles.input2}> No hay foto </Text>
@@ -154,10 +178,10 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 3 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() =>handleImage()}
+                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen3')}
                 title="Imagen3"
               />
-              {imageUri!=null ? (
+              {imagenesContrasenia.imagen3!=null ? (
             <Text style={styles.input2}> Foto Seleccionada</Text>
           ) : ( 
               <Text style={styles.input2}> No hay foto </Text>
@@ -167,10 +191,10 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 4 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() =>handleImage()}
+                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen4')}
                 title="Imagen4"
               />
-              {imageUri!=null ? (
+              {imagenesContrasenia.imagen4!=null ? (
             <Text style={styles.input2}> Foto Seleccionada</Text>
           ) : ( 
               <Text style={styles.input2}> No hay foto </Text>
@@ -227,7 +251,7 @@ export default function AniadirAlumno ({ navigation }) {
       </TouchableOpacity>
       </View>
 
-    </View>
+    </ScrollView>
   )
 };
 
