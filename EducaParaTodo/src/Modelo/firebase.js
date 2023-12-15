@@ -2951,4 +2951,39 @@ export const getImagenId = async (idImagen) => {
         console.log(error);
     }
 };
+
+export const getPictogramaId = async (idPictograma) => {
+    try {
+        const q = query(collection(db, 'Pictogramas'), where('__name__', '==', idPictograma));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const pictoDatos = doc.data();
+            return pictoDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idPictograma);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
   
+export const getVideoId = async (idVideo) => {
+    try {
+        const q = query(collection(db, 'Videos'), where('__name__', '==', idVideo));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const videoDatos = doc.data();
+            return videoDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idVideo);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};

@@ -5,9 +5,10 @@ import tareas from '../Modelo/tareas';
 import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion, buscarTareasInventarioId, buscarTareasComandasId } from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
-import {buscaImagen} from '../Controlador/asignadosTarea';
+import {buscaImagen, buscaPictograma, buscaVideo} from '../Controlador/asignadosTarea';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import Video from 'react-native-video';
 
 export function VerTarea ({route, navigation}){
     const {id, idAlumno} = route.params;
@@ -19,6 +20,8 @@ export function VerTarea ({route, navigation}){
     const [alumno, setAlumno] = useState([]);
     const [visualizacion, setVisualizacion] = useState();
     const [imagen, setImagen] = useState([]);
+    const [pictograma, setPictograma] = useState([]);
+    const [video, setVideo] = useState([]);
     const [imagenCargada, setImagenCargada] = useState(false);
     /*const [tareaInv, setTareaInv] = useState([]);
     const [tareaCom, setTareaCom] = useState([]);*/
@@ -64,20 +67,6 @@ export function VerTarea ({route, navigation}){
         };
         listaPasos(); 
     }, []); 
-
-    useEffect(() => {
-        const listaImagen = async () => {
-            try {
-                const Imagen = await buscaImagen(pasoActualData.idImagen);
-                setImagen(Imagen);
-                setImagenCargada(true);
-                console.log("Imagen: " + JSON.stringify(Imagen)); 
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        listaImagen();  
-    }, []);
 
     useEffect(() => {
         const listaProf = async () => {
@@ -180,7 +169,55 @@ export function VerTarea ({route, navigation}){
     const pasosTarea = pasos;
     const pasoActualData = pasosTarea[pasoActual];
 
-    
+    useEffect(() => {
+        const listaImagen = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.idImagen){
+                    const Imagen = await buscaImagen(pasoActualData.idImagen);
+                    setImagen(Imagen);
+                    setImagenCargada(true);
+                    console.log("Imagen: " + JSON.stringify(Imagen)); 
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaImagen();  
+    }, [pasoActualData]);
+
+    useEffect(() => {
+        const listaPictograma = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.idPictograma){
+                    const Pictograma = await buscaPictograma(pasoActualData.idPictograma);
+                    setPictograma(Pictograma);
+                    console.log("Pictograma: " + JSON.stringify(Pictograma)); 
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaPictograma();  
+    }, [pasoActualData]);
+
+    useEffect(() => {
+        const listaVideo = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.idVideo){
+                    const Video = await buscaVideo(pasoActualData.idVideo);
+                    setVideo(Video);
+                    console.log("Video: " + JSON.stringify(Video)); 
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaVideo();  
+    }, [pasoActualData]);
+ 
     
     return (
        /*} <View>
@@ -192,10 +229,20 @@ export function VerTarea ({route, navigation}){
          
                     <View style={styles.pasos}>
                         {pasoActualData && pasoActualData.idImagen && pasoActualData.idImagen !== "Ninguno" && 
-                        visualizacion == "imagen" && ( imagenCargada ? (
-                        <Image source={{uri: imagen.URL}} style={styles.foto} />) : (<ActivityIndicator size="large" color="#0000ff" />)
-                        )}  
-        
+                        visualizacion == "imagen" && (
+                        <Image source={{uri: imagen.URL}} style={styles.foto} />
+                        )} 
+
+                        {pasoActualData && pasoActualData.idPictograma && pasoActualData.idPictograma !== "Ninguno" && 
+                        visualizacion == "pictogramas" && (
+                        <Image source={{uri: pictograma.URL}} style={styles.foto} />
+                        )} 
+
+                        {pasoActualData && pasoActualData.idVideo && pasoActualData.idVideo !== "Ninguno" && 
+                        visualizacion == "video" && (
+                        <Video source={{uri: video.URL}} style={styles.foto} controls={true} />
+                        )} 
+         
                         {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
         
                         <View style={styles.botonesContainer}>

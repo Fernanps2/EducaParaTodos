@@ -28,6 +28,7 @@
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-responsive-fontsize": "^0.5.1",
     "react-native-vector-icons": "^10.0.2",
+    "react-native-video": "^5.2.1",
     "react-native-web": "~0.19.6",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.6.13"
