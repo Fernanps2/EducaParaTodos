@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, Switch } from 'react-native';
 import {almacenaFotoPersona, openGallery} from '../Controlador/multimedia' 
 
 
@@ -13,7 +13,15 @@ export default function AniadirAlumno ({ navigation }) {
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [tipoContrasenia, setTipoContrasenia] = useState('texto'); // 'texto' o 'imagen'
   
+  const [imageUri, setImageUri] = useState(null);
+  const [imagenesContrasenia, setImagenesContrasenia] = useState({
+    imagen1: null,
+    imagen2: null,
+    imagen3: null,
+    imagen4: null,
+  });
   const [datosAlumno, setDatosAlumno] = useState({
     nombre: "",
     apellidos: "",
@@ -26,7 +34,13 @@ export default function AniadirAlumno ({ navigation }) {
       [name]: value
     }));
   }
-  const [imageUri, setImageUri] = useState(null);
+
+  const handeChangeImagenLogin = (value, name) => {
+    setImagenesContrasenia(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
 
   const options = ['texto', 'imagenes', 'pictogramas', 'video', 'audio'];
 
@@ -47,7 +61,7 @@ export default function AniadirAlumno ({ navigation }) {
         { text: "Confirmar", onPress: () =>{
             almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
             aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
-              "Foto"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions);
+              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions);
             navigation.navigate('listaAlumnos');
           }
         }
@@ -78,7 +92,7 @@ export default function AniadirAlumno ({ navigation }) {
         value={datosAlumno.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
         />
-
+{/*
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
@@ -86,6 +100,86 @@ export default function AniadirAlumno ({ navigation }) {
         value={datosAlumno.contrasenia}
         onChangeText={(value)=>handeChangeText(value,'contrasenia')}
         />
+    */}
+
+       {/* Botones para seleccionar el tipo de contraseña */}
+      <View style={styles.botonesContrasenia}>
+        <Button
+          title="Contraseña Texto"
+          onPress={() => setTipoContrasenia('texto')}
+        />
+        <Button
+          title="Contraseña Imagen"
+          onPress={() => setTipoContrasenia('imagen')}
+        />
+      </View>
+
+      {/* Campo de contraseña según la selección */}
+      {
+        tipoContrasenia === 'texto' ? (
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña Formato Texto"
+            secureTextEntry
+            value={datosAlumno.contrasenia}
+            onChangeText={(value) => handeChangeText(value, 'contrasenia')}
+          />
+        ) : (
+          // Componente personalizado para seleccionar imágenes
+          <View style={styles.containerContrasenia}>
+            <View style={styles.botonesContrasenia}>
+              <Button
+                onPress={() =>handleImage()}
+                title="Imagen1"
+              />
+              {imageUri!=null ? (
+            <Text style={styles.input2}> Foto Seleccionada</Text>
+          ) : ( 
+              <Text style={styles.input2}> No hay foto </Text>
+          )}
+            </View>
+            {/* Imagen 2 */}
+            <View style={styles.botonesContrasenia}>
+              <Button
+                onPress={() =>handleImage()}
+                title="Imagen2"
+              />
+              {imageUri!=null ? (
+            <Text style={styles.input2}> Foto Seleccionada</Text>
+          ) : ( 
+              <Text style={styles.input2}> No hay foto </Text>
+          )}
+            </View>
+
+            {/* Imagen 3 */}
+            <View style={styles.botonesContrasenia}>
+              <Button
+                onPress={() =>handleImage()}
+                title="Imagen3"
+              />
+              {imageUri!=null ? (
+            <Text style={styles.input2}> Foto Seleccionada</Text>
+          ) : ( 
+              <Text style={styles.input2}> No hay foto </Text>
+          )}
+            </View>
+
+            {/* Imagen 4 */}
+            <View style={styles.botonesContrasenia}>
+              <Button
+                onPress={() =>handleImage()}
+                title="Imagen4"
+              />
+              {imageUri!=null ? (
+            <Text style={styles.input2}> Foto Seleccionada</Text>
+          ) : ( 
+              <Text style={styles.input2}> No hay foto </Text>
+          )}
+            </View>
+          </View>
+
+        )
+      }
 
       <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)} style={styles.input}>
         <Text>{selectedOptions.join(', ') || 'Visualización preferente'}</Text>
@@ -142,6 +236,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  containerContrasenia: {
+    borderWidth: 2,
+    borderColor: 'grey',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
   header: {
     marginBottom: 20,
     alignItems: 'center',
@@ -150,12 +251,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  botonesContrasenia: {
+    flexDirection: 'row', // Alinea los elementos horizontalmente
+    justifyContent: 'space-between', // Distribuye el espacio uniformemente
+    alignItems: 'center', // Alinea los elementos verticalmente
+    marginVertical: 5, // Añade un espacio vertical entre cada par de botón y texto
+  },
   input: {
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  input2: {
+    flex: 1, // Asegura que el texto ocupe el espacio restante en el contenedor
+    textAlign: 'center', // Centra el texto,
+    borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 5,
+    padding: 10,
   },
   photoSection: {
     alignItems: 'center',
@@ -165,12 +280,13 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 10,
-    // Otros estilos para la imagen
+    marginBottom: 10
   },
   userIconPlaceholder: {
     width: 100,
     height: 100,
     borderRadius: 10,
+    marginBottom: 10,
     backgroundColor: '#cccccc', // Un color de fondo para el placeholder
     // Otros estilos para el placeholder
   },
