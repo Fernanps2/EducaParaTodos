@@ -893,7 +893,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               //setDestinoActualIndex(destinoActualIndex - 1);
               //setMaterialLlevarIndex(materialLlevarIndex-1);
               //console.log('indice Material: ',agrupadosDestiTareas[lugarDestinoNow]);
-              console.log('vamos por aqui');
+              console.log('vamos por aqui'); // fjaslkdjfalksdjfañlksdjfñlakjsdfafldksjafñldskjfañlsdjkfañlksdjfñlksdajfd
             } else {
               setViewCadaObjetoRecoger(true);
               setCargandoMateriales(false);

@@ -32,6 +32,7 @@ export const AppFirebase = initializeApp(firebaseConfig);
 const storage = getStorage(AppFirebase);
 const db = getFirestore(AppFirebase);
 
+
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
 const COL_PROFESORES = 'profesores';
@@ -42,10 +43,16 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
-const COL_TAREAS = 'Tarea';
 
-
+//valores para las carpetas de archivos
+const IMAGENES = 'Imagenes/';
+const PICTOGRAMAS = 'Pictogramas/';
+const VIDEOS = 'Videos/';
+const EMOTICONOS = 'Emoticonos/';
 const PERSONAS = 'Personas/';
+const LOGIN = 'ImagenesLogin/';
+const MATERIALES = 'materiales/';
+const TIPOS_MATERIAL = '/Tipos_Material';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -1593,85 +1600,404 @@ export async function deleteMensaje(id) {
 
 /**********  FINAL FUNCIONES MENSAJES ********/
 
-/********** INICIO FUNCIONES PARA MULTIMEDIA ********/
+//********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
-const contarArchivos = async(nombreCarpeta) => {
-
-}
-
-// uploadImage= async(uri) => {
-//     return new Promise((resolve, reject) => {
-//     let xhr = new XMLHttpRequest();
-//     xhr.onerror = reject;
-//     xhr.onreadystatechange = () => {
-//         if (xhr.readyState === 4) {
-//             resolve(xhr.response);
-//         }
-//     };
-
-//     xhr.open("GET", uri);
-//     xhr.responseType = "blob";
-//     xhr.send();
-//    });
-// };
-
-export async function almacenarImagen(imagen) {
-
-    //let num_imagenes = storage.child('images').size();
-    let nombre_imagen = 'imagen_1';
-
-  /*await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`images/${nombre_imagen}`);
-      ref.put(resolve);
-    })
-    .catch(error => {
+export async function almacenarImagen(imagen, nombreImagen) {
+    
+  try {
+      //Comprobamos si existe la imagen
+      if (descargarImagen(nombreImagen) != null) {
+          const refImagenes = ref(storage, IMAGENES+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido la imagen');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
       console.log(error);
-    });*/
-
-    try {
-        const referenciaStorage = ref(storage, `images/${nombre_imagen}`);
-        await uploadFile(referenciaStorage, imagen);
-
-        console.log("Imagen subida");
-    } catch (error) {
-        console.log("Error al subir la imagen", error);
-    }
+  }
 }
 
-export async function almacenarPictograma(imagen) {
-  await uploadImage(imagen)
-    .then(resolve => {
-      storage
-        .ref()
-        .child(`Pictogramas/${nombre}`);
-      ref.put(resolve).then(resolve => {
-        console.log("Imagen subida correctamente");
-      }). catch(error => {
-        console.log("Error al subir la imagen");
+export async function almacenarPictograma(imagen, nombreImagen) {
+
+  try {
+      //Comprobamos si existe el pictograma
+      if (descargarPictograma(nombreImagen) != null) {
+          const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido el pictograma');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function almacenarVideo(video, nombreVideo) {
+
+  try {
+      if (descargarVideo(nombreVideo) != null ) {
+          const refImagenes = ref(storage, VIDEOS+nombreVideo)
+          const file = await(await fetch(video)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido el video');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function almacenarFotoPersona(foto, nombreFoto) {
+  //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
+  if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
+
+  try {
+      if (descargarFotoPersona(nombreFoto) != null) {
+          const refFoto = ref(storage, PERSONAS+nombreFoto)
+          const file = await(await fetch(foto)).blob();
+          uploadBytes(refFoto, file).then((snapshot) => {
+              console.log('Se ha subido la foto');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function almacenarImagenLogin(imagen, nombreImagen) {
+  
+  try {
+      if (descargarImagenLogin(nombreImagen) != null) {
+          const refImagenes = ref(storage, LOGIN+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido la imagen para login');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function almacenarMaterial(imagen, nombreImagen) {
+  
+  try {
+      if (descargarMaterial(nombreImagen) != null) {
+          const refImagenes = ref(storage, MATERIALES+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido el material');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function almacenarTipoMaterial(imagen, nombreImagen) {
+  
+  try {
+      if (descargarMaterial(nombreImagen) != null) {
+          const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+              console.log('Se ha subido el material');
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+export async function descargarImagen(nombreImagen) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, IMAGENES+nombreImagen);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la imagen");
       });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+
+  return imagenUri;
 }
 
-export function cargarImagen(imagen) {
-  let imagenCargada = null;
+export async function descargarImagenes() {
+  let entidad = [];
+  let resultado;
 
-  storage
-    .ref(`images/${imagen}`)
-    .getDownloadURL()
-    .then(resolve => {
-      imagenCargada = resolve;
-    })
-    .catch(error => {
-      console.log(error);
-    })
+  const listRef = ref(storage, IMAGENES);
 
-    return imagenCargada;
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la imagen");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarPictograma(nombreImagen) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, PICTOGRAMAS+nombreImagen);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el pictograma");
+      });
+
+  return imagenUri;
+}
+
+export async function descargarPictogramas() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, PICTOGRAMAS);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el pictograma");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarVideo(nombreVideo) {
+  let videoUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refVideo = ref(storage, VIDEOS+nombreVideo);
+
+  await getDownloadURL(refVideo)
+      .then((url) => {
+          videoUri = {
+              uri: url,
+              nombre: refVideo.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el video");
+      });
+
+  return videoUri;
+}
+
+export async function descargarVideos() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, VIDEOS);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el video");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarEmoticono(nombreEmoticono) {
+  let emoticUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refEmotic = ref(storage, EMOTICONOS+nombreEmoticono);
+
+  await getDownloadURL(refEmotic)
+      .then((url) => {
+          emoticUri = {
+              uri: url,
+              nombre: refEmotic.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el emoticono");
+      });
+
+  return emoticUri;
+}
+
+export async function descargarEmoticonos() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, EMOTICONOS);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el emoticono");
+      });
+  }
+
+  return entidad;
 }
 
 export async function descargarFotoPersona(nombreFoto) {
@@ -1695,6 +2021,268 @@ export async function descargarFotoPersona(nombreFoto) {
 
   return imagenUri;
 }
+
+export async function descargarFotosPersonas() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, PERSONAS);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la foto");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarImagenLogin(nombreImagen) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, LOGIN+nombreImagen);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la imagen para login");
+      });
+
+  return imagenUri;
+}
+
+export async function descargarImagenesLogin() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, LOGIN);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la imagen para login");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarMaterial(nombreImagen) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, MATERIALES+nombreImagen);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el material");
+      });
+
+  return imagenUri;
+}
+
+export async function descargarMateriales() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, MATERIALES);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar los materiales");
+      });
+  }
+
+  return entidad;
+}
+
+export async function descargarTipoMaterial(nombreImagen) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, TIPOS_MATERIAL+nombreImagen);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar el material");
+      });
+
+  return imagenUri;
+}
+
+export async function descargarTipoMateriales() {
+  let entidad = [];
+  let resultado;
+
+  const listRef = ref(storage, TIPOS_MATERIAL);
+
+  await listAll(listRef)
+      .then((res) => {
+          resultado = res;
+      }).catch((error) => {
+          console.log("Error en el listado de base de datos, " + error);
+      });
+  
+  for (let i = 0; i < resultado.items.length; i++) {
+      await getDownloadURL(resultado.items[i])
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: resultado.items[i].name
+          };
+
+          entidad.push(imagenUri);
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar los materiales");
+      });
+  }
+
+  return entidad;
+}
+
+export async function eliminarImagen(nombreArchivo) {
+  const refArchivo = ref(storage, IMAGENES+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarPictograma(nombreArchivo) {
+  const refArchivo = ref(storage, PICTOGRAMAS+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarVideo(nombreArchivo) {
+  const refArchivo = ref(storage, VIDEOS+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarFotoPersona(nombreArchivo) {
+  const refArchivo = ref(storage, PERSONAS+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarImagenLogin(nombreArchivo) {
+  const refArchivo = ref(storage, LOGIN+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarMaterial(nombreArchivo) {
+  const refArchivo = ref(storage, MATERIALES+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarTipoMaterial(nombreArchivo) {
+  const refArchivo = ref(storage, TIPOS_MATERIAL+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+/******** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
 /********** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
