@@ -54,6 +54,12 @@ export default function HomeEducador ({ route, navigation }) {
         <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('avisarMaterial')}>
+        <Text style={styles.buttonText}>Mandar Aviso Material</Text>
+      </TouchableOpacity>
+
       </View>
 
     )};

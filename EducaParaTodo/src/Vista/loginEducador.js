@@ -16,9 +16,9 @@ const LoginScreen = ({ route, navigation} ) => {
     //console.log("logueado:",logueado);
 
     if (logueado && tipo == 'profesor')
-      navigation.navigate('HomeEducador', {nombreProf: username} );
+      navigation.navigate('HomeEducador', username );
     else if (logueado && tipo == 'administrador')
-      navigation.navigate('HomeAdmin', {nombreAdm: username});
+      navigation.navigate('HomeAdmin', username);
     else
       alert('Usuario y contraseña inválidos');
   };
