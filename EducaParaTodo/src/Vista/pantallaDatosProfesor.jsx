@@ -1,11 +1,29 @@
 import React from 'react';
 import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import { borraProfesor } from '../Controlador/profesores';
+import { useEffect, useState } from 'react';
+import { descargaFotoPersona } from '../Controlador/multimedia';
 
 
 const PantallaDatosProfesor = ({route, navigation}) => {
 
     const {profesor} =route.params;
+
+    const [imagen, setImagen] = useState([]);
+
+  // useEffect es un Hook de React que te permite sincronizar un componente con un sistema externo.
+useEffect(() => {
+    const imagen = async () => {
+      try {
+        const imagen = await descargaFotoPersona(profesor.foto);
+        setImagen(imagen);
+        await console.log(imagen);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    imagen();
+  }, []);
 
     const showAlertStore = () => {
       Alert.alert(
@@ -30,7 +48,19 @@ const PantallaDatosProfesor = ({route, navigation}) => {
             </View>
             <Text style={styles.input}> Nombre: {profesor.nombre} </Text>
             <Text style={styles.input}> Apellidos: {profesor.apellidos} </Text>
-            <Text style={styles.input}> foto: {profesor.foto} </Text>
+            <View style={styles.photoSection}>
+              <TouchableOpacity>
+                {imagen.uri!=null ? (
+                  <Image source={{ uri: imagen.uri }} style={styles.userIcon} />
+                ) : (
+                  <View style={styles.userIconPlaceholder} > 
+                    <Text> No hay foto </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+        
+    
+            </View>
 
           
         <View style={styles.buttonContainer}>
@@ -69,6 +99,23 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       padding: 10,
       marginBottom: 10,
+    },
+    photoSection: {
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    userIcon: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      // Otros estilos para la imagen
+    },
+    userIconPlaceholder: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      backgroundColor: '#cccccc', // Un color de fondo para el placeholder
+      // Otros estilos para el placeholder
     },
     buttonContainer: {
       flexDirection: 'row', // Alinea los elementos horizontalmente

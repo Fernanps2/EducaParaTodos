@@ -49,9 +49,10 @@ export async function loginProfesor (nombre, password) {
 export async function buscaProfesorId (id) {
     let instancia = null;
 
-    if (id != null)
+    if (id != null){
         instancia = await getProfesorID(id);
-
+        //console.log(instancia);
+    }
     return instancia;
 }
 

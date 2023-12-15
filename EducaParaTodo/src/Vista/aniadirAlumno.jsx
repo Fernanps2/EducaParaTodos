@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
-import {almacenaImagen, openGallery, descargaImagen, descargaImagenes} from '../Controlador/multimedia' 
+import {almacenaFotoPersona, openGallery} from '../Controlador/multimedia' 
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
@@ -28,7 +28,7 @@ export default function AniadirAlumno ({ navigation }) {
   }
   const [imageUri, setImageUri] = useState(null);
 
-  const options = ['video', 'pictogramas', 'audio', 'texto', 'imagenes'];
+  const options = ['texto', 'imagenes', 'pictogramas', 'video', 'audio'];
 
   const handleOptionPress = (option) => {
     if (!selectedOptions.includes(option)) {
@@ -45,8 +45,10 @@ export default function AniadirAlumno ({ navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, "", selectedOptions);
-            navigation.navigate('pantallaDatosAlumnos');
+            almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+            aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+              "Foto"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions);
+            navigation.navigate('listaAlumnos');
           }
         }
       ],
@@ -55,9 +57,7 @@ export default function AniadirAlumno ({ navigation }) {
   };
 
   const handleImage = async() => {
-    //setImageUri(await openGallery());
-    setImageUri(await descargaImagen('Microondas.jpg'));
-    //setImageUri(await descargaImagenes());
+    setImageUri(await openGallery());
   }
 
     return (
@@ -82,6 +82,7 @@ export default function AniadirAlumno ({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
+        secureTextEntry
         value={datosAlumno.contrasenia}
         onChangeText={(value)=>handeChangeText(value,'contrasenia')}
         />

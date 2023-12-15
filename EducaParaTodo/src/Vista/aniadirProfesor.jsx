@@ -1,16 +1,14 @@
 import React from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import { aniadeProfesor } from '../Controlador/profesores';
-import { openGallery } from '../Controlador/multimedia';
+import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';
 
 export default function AniadirProfesor ({navigation }) {
   const [datosProfesor, setDatosProfesor] = useState({
     nombre: "",
     apellidos: "",
     contrasenia: "",
-    email: "",
-    aula: "",
   });
 
   const [imageUri, setImageUri] = useState("");
@@ -29,7 +27,9 @@ export default function AniadirProfesor ({navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,datosProfesor.aula, "");
+            almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
+              "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
             navigation.navigate('listaProfesores');
           }
         }
@@ -37,6 +37,10 @@ export default function AniadirProfesor ({navigation }) {
       { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
     );
   };
+
+  const handleImage = async() => {
+    setImageUri(await openGallery());
+  }
 
     return (
       <View style={styles.container}>
@@ -60,24 +64,10 @@ export default function AniadirProfesor ({navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
+        secureTextEntry
         value={datosProfesor.contrasenia}
         onChangeText={(value)=>handeChangeText(value,'contrasenia')}
         />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Correo"
-        value={datosProfesor.email}
-        onChangeText={(value)=>handeChangeText(value,'email')}
-        />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Aula"
-        value={datosProfesor.aula}
-        onChangeText={(value)=>handeChangeText(value,'aula')}
-        />
-
 
       <View style={styles.photoSection}>
         <Text>Añadir foto del usuario:</Text>
@@ -89,7 +79,7 @@ export default function AniadirProfesor ({navigation }) {
           )}
         </TouchableOpacity>
         <Button
-          onPress={() => setImageUri(openGallery())}
+          onPress={() =>handleImage()}
           title="Seleccionar una imagen"
         />
     

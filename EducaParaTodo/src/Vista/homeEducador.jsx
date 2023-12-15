@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
+import useUser from '../Controlador/useUser';
+import { buscaProfesorId } from '../Controlador/profesores';
 
 export default function HomeEducador ({ route, navigation }) {
 
     const {nombreUsuario} = route.params;
+    const {jwt} = useUser();
+    const [profesor, setProfesor] = useState('');
+
+    useEffect(() => {
+      const loadData = async() => {
+        try {
+          const profesorEntidad = await buscaProfesorId(jwt);
+          setProfesor(profesorEntidad); 
+        } catch(error) {
+          console.log(error);
+        }
+      }
+      loadData();
+    }, []);
+
 
     return (
       <View style={styles.container}>
@@ -13,7 +30,7 @@ export default function HomeEducador ({ route, navigation }) {
 
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: profesor.foto }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
         <Text style={styles.roleText}>{nombreUsuario}</Text>
@@ -35,6 +52,12 @@ export default function HomeEducador ({ route, navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate('modDatosProfesor', { nombreUsuario, navigation })}>
         <Text style={styles.buttonText}>Modificar mis datos</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('avisarMaterial')}>
+        <Text style={styles.buttonText}>Mandar Aviso Material</Text>
       </TouchableOpacity>
 
       </View>
