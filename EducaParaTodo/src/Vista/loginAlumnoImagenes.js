@@ -141,12 +141,12 @@ const LoginScreenAlumno = ({ route, navigation }) => {
         <Text style={styles.text}>Usuario</Text>
         <Text style={styles.usuario}>{alumno.nombre}</Text>
         <Text style={styles.text}>Contraseña</Text>
-        <TextInput
+        {/*<TextInput
           style={styles.input}
           placeholder="Introduzca aquí su contraseña"
           secureTextEntry
           onChangeText={text => setPassword(text)}
-        />
+        />*/}
 
 
 
