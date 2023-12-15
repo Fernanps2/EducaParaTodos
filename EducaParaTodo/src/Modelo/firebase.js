@@ -46,6 +46,7 @@ const VIDEOS = 'Videos/';
 const EMOTICONOS = 'Emoticonos/';
 const PERSONAS = 'Personas/';
 const LOGIN = 'ImagenesLogin/';
+const MATERIALES = 'materiales/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -1707,6 +1708,32 @@ export async function almacenarImagenLogin(imagen, nombreImagen) {
     }
 }
 
+export async function almacenarMaterial(imagen, nombreImagen) {
+    
+    try {
+        if (descargarMaterial(nombreImagen) != null) {
+            const refImagenes = ref(storage, MATERIALES+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el material');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
 export async function descargarImagen(nombreImagen) {
     let imagenUri = {
         uri: null,
@@ -2025,6 +2052,59 @@ export async function descargarImagenesLogin() {
     return entidad;
 }
 
+export async function descargarMaterial(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, MATERIALES+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el material");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarMateriales() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, MATERIALES);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar los materiales");
+        });
+    }
+
+    return entidad;
+}
+
 export async function eliminarImagen(nombreArchivo) {
     const refArchivo = ref(storage, IMAGENES+nombreArchivo);
 
@@ -2067,6 +2147,16 @@ export async function eliminarFotoPersona(nombreArchivo) {
 
 export async function eliminarImagenLogin(nombreArchivo) {
     const refArchivo = ref(storage, LOGIN+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarMaterial(nombreArchivo) {
+    const refArchivo = ref(storage, MATERIALES+nombreArchivo);
 
     await deleteObject(refArchivo).then(() => {
         console.log("Se ha borrado el archivo correctamente")
