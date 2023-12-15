@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import EliminarTareaAlumno from './EliminarTareaAlumno';
 import { getTarea } from '../Modelo/firebase';
 import { asignarFeedback } from '../Modelo/firebase';
+import { cargaImagen } from '../Controlador/multimedia';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
@@ -66,17 +67,20 @@ const showAlertStore = (id, feedback) =>{
     <View key={tareas.id} style={styles.datos} > 
       <View style={styles.cardWithImage}>
       <Text style={{ fontSize: 15,paddingRight: 10, }} >{tareas.titulo}</Text>
+      
       <TextInput
         style={{ height: 40, borderColor: 'black', borderWidth: 2 , alignSelf: 'center',}}
         onChangeText={(text) => setFeedback(text)}
         value={feedback}
         placeholder=" Escribe tu feedback aquí"
       />
-      <TouchableOpacity onPress={() => showAlertStore(tareas.id, feedback)}>
+      <View ></View>
+      <TouchableOpacity onPress={() => cargaImagen()}>
           <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10, marginLeft: 10, }}>
             <Text style={{ color: 'white', textAlign: 'center' }}>Enviar Feedback</Text>
           </View>
         </TouchableOpacity>
+        
       </View>
       <View>
     </View>
