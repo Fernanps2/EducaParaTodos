@@ -301,6 +301,7 @@ export async function getProfesores() {
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -323,6 +324,7 @@ export async function getProfesoresNombre(nombre) {
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -345,6 +347,7 @@ export async function getProfesoresApellidos(apellidos) {
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -367,6 +370,7 @@ export async function getProfesoresContrasenia(contrasenia) {
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -389,6 +393,7 @@ export async function getProfesoresLogin(nombre, contrasenia) {
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -417,12 +422,13 @@ export async function getProfesorID(id) {
     return instancia;
 }
 
-export async function addProfesor(nombre, apellidos, contrasenia, foto) {
+export async function addProfesor(nombre, apellidos, contrasenia, foto, aula) {
     let profesor = {
         nombre: nombre,
         apellidos: apellidos,
         password: contrasenia,
-        foto: foto
+        foto: foto,
+        aula: aula
     }
 
     let identificacion = null;
@@ -440,12 +446,13 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, nombre, apellidos, password, foto) {
+export async function updateProfesor(id, nombre, apellidos, password, foto, aula) {
     let editaProfesor = {
         nombre: nombre, 
         apellidos: apellidos, 
         password: password, 
-        foto: foto
+        foto: foto,
+        aula: aula
     };
     let profesor = null;
 
@@ -460,6 +467,7 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
@@ -470,11 +478,12 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
     }
 }
 
-export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+export async function updateProfesorAdmin(id, nombre, apellidos, foto, aula) {
     let editaProfesor = {
         nombre: nombre, 
         apellidos: apellidos, 
-        foto: foto
+        foto: foto,
+        aula: aula
     };
     let profesor = null;
 
@@ -488,6 +497,7 @@ export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
