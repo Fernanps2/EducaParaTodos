@@ -1,75 +1,3 @@
- /*import React, { useState } from 'react';
- import { Text, View, TextInput, Button, StyleSheet } from 'react-native';
- import useUser from '../Controlador/useUser';
-
-
- const LoginScreenAlumno = ({ route, navigation }) => {
-   const { alumno } = route.params;
-   const [password, setPassword] = useState('');
-   //const username = route.params.nombreAlumno;
-   const {login} = useUser();
-   let logueado = false;
-
-   async function handleLogin(username, password) {
-     //console.log(username);
-     logueado = await login(username, password, 'alumno');
-    if (logueado)
-      navigation.navigate('Tareas', {usuario:alumno})
-     else
-       alert('No está identificado');
-   };
-   return (
-     <View style={styles.container}>
-       <Text style={styles.title}>EducaParaTodos</Text>
-       
-       <View style={styles.container}>
-         <Text style={styles.text}>Usuario</Text>
-         <Text style={styles.usuario}>{alumno.nombre}</Text>
-         <Text style={styles.text}>Contraseña</Text>
-         <TextInput
-           style={styles.input}
-           placeholder="Introduzca aquí su contraseña"
-           secureTextEntry
-           onChangeText={text => setPassword(text)}
-         />
-         <Button title="Entrar" onPress={() =>{
-             handleLogin(alumno.nombre, password);
-             //navigation.navigate('Tareas', {usuario:alumno})
-         }} />
-       </View>
-     </View>
-   );
- };
-
- const styles = StyleSheet.create({
-   container: {
-     flex: 1,
-     justifyContent: 'center',
-     alignItems: 'center',
-   },
-   input: {
-     width: 300,
-     height: 40,
-     borderColor: 'gray',
-     borderWidth: 1,
-     marginBottom: 10,
-     paddingLeft: 10,
-   },
-   texto: {
-     alignItems: 'left',
-   },
-   usuario: {
-     fontWeight: 'bold',
-     fontSize: 26,
-   },
-   title: {
-     fontSize: 26,
-     textAlign: 'center',
-   }
- });
-
- export default LoginScreenAlumno;*/
-
 
 import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
@@ -90,6 +18,12 @@ const LoginScreenAlumno = ({ route, navigation }) => {
   const { alumno } = route.params;
   const { login } = useUser();
   const [errorState, setErrorState] = useState(false);
+  const [imageStates, setImageStates] = useState(
+    Array(4).fill({
+      selected: false,
+      status: null // tick, cross, etc.
+    })
+  );
 
 
     /*useEffect(() => {
@@ -144,12 +78,17 @@ const LoginScreenAlumno = ({ route, navigation }) => {
        setSelectedImages(Array(4).fill(false));
        setCurrentOrder([]);
        setErrorState(false);
+       setImageStates(
+         Array(4).fill({
+           selected: false,
+           status: null // tick, cross, etc.
+         })
+       );
      };
 
     // cambio de estado al pulsar sobre una imagen y orden de pulsación
     const toggleImageSelection = (index) => {
       const updatedCurrentOrder = [...currentOrder, index];
-
       let incorrectIndex = -1;
 
       for (let i = 0; i < updatedCurrentOrder.length; i++) {
@@ -162,19 +101,31 @@ const LoginScreenAlumno = ({ route, navigation }) => {
       if (incorrectIndex !== -1) {
         setErrorState(true);
 
-        const updatedSelectedImages = Array(4).fill(false);
-        updatedSelectedImages[updatedCurrentOrder[incorrectIndex]] = 'red';
+        const updatedImageStates = Array(4).fill({
+          selected: false,
+          status: null
+        });
 
-        setSelectedImages(updatedSelectedImages);
+        updatedImageStates[updatedCurrentOrder[incorrectIndex]] = {
+          ...updatedImageStates[updatedCurrentOrder[incorrectIndex]],
+          selected: true,
+          status: 'cross'
+        };
+
+        setImageStates(updatedImageStates);
 
         setTimeout(() => {
           resetSelection();
         }, 1500);
       } else {
-        const updatedSelectedImages = Array(4).fill(false);
-        updatedSelectedImages[index] = 'green';
+        const updatedImageStates = [...imageStates];
+        updatedImageStates[index] = {
+          ...updatedImageStates[index],
+          selected: true,
+          status: 'tick'
+        };
 
-        setSelectedImages(updatedSelectedImages);
+        setImageStates(updatedImageStates);
 
         setCurrentOrder(updatedCurrentOrder);
 
@@ -211,8 +162,8 @@ const LoginScreenAlumno = ({ route, navigation }) => {
                     onPress={() => toggleImageSelection(index * 2 + imgIndex)}
                     style={[
                       styles.imageWrapper,
-                      selectedImages[index * 2 + imgIndex] && styles.selectedImageContainer,
-                      errorState && selectedImages[index * 2 + imgIndex] && styles.errorImageContainer,
+                      imageStates[index * 2 + imgIndex].selected && styles.selectedImageContainer,
+                      errorState && imageStates[index * 2 + imgIndex].selected && styles.errorImageContainer,
                     ]}
                   >
                     <Image
@@ -220,18 +171,24 @@ const LoginScreenAlumno = ({ route, navigation }) => {
                       style={styles.imageStyle}
                       onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 1}:`, error)}
                     />
+                    {imageStates[index * 2 + imgIndex].status === 'tick' && (
+                      <Text style={styles.tick}>✓</Text>
+                    )}
+                    {imageStates[index * 2 + imgIndex].status === 'cross' && (
+                      <Text style={styles.cross}>✖</Text>
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>
               <View style={styles.imageRow}>
                 {[imagenData.img3, imagenData.img4].map((imgSrc, imgIndex) => (
                   <TouchableOpacity
-                    key={imgIndex + 2}
+                    key={imgIndex}
                     onPress={() => toggleImageSelection(index * 2 + imgIndex + 2)}
                     style={[
                       styles.imageWrapper,
-                      selectedImages[index * 2 + imgIndex + 2] && styles.selectedImageContainer,
-                      errorState && selectedImages[index * 2 + imgIndex + 2] && styles.errorImageContainer,
+                      imageStates[index * 2 + imgIndex + 2].selected && styles.selectedImageContainer,
+                      errorState && imageStates[index * 2 + imgIndex + 2].selected && styles.errorImageContainer,
                     ]}
                   >
                     <Image
@@ -239,6 +196,12 @@ const LoginScreenAlumno = ({ route, navigation }) => {
                       style={styles.imageStyle}
                       onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 3}:`, error)}
                     />
+                    {imageStates[index * 2 + imgIndex + 2].status === 'tick' && (
+                      <Text style={styles.tick}>✓</Text>
+                    )}
+                    {imageStates[index * 2 + imgIndex + 2].status === 'cross' && (
+                      <Text style={styles.cross}>✖</Text>
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>
@@ -327,10 +290,21 @@ const styles = StyleSheet.create({
   },
   tick: {
     position: 'absolute',
-    bottom: 5,
-    right: 5,
-    fontSize: 50,
+    bottom: 10,
+    right: 10,
+    fontSize: 90,
     color: '#77EF13',
+    textShadowColor: 'black',
+    textShadowOffset: { width: 2, height: 2 },
+  },
+  cross: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    fontSize: 70,
+    color: 'red',
+    textShadowColor: 'black',
+    textShadowOffset: { width: 2, height: 2 },
   },
   selectedImageContainer: {
     borderWidth: 3,
