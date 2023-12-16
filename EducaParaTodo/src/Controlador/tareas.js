@@ -1,5 +1,5 @@
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
     return await getProfesores();
@@ -157,6 +157,27 @@ export async function eliminarMaterial(id){
 
 export async function modificarMaterial(id, nombre, foto, stock, caracteristicas){
     await updateMaterial (id, nombre, foto, stock, caracteristicas);
+}
+
+export async function aniadeTipoMaterial(nombre){
+    await setTipoMaterial(nombre);
+}
+
+// Esta función devuelve todos los tipos de materiales almacenados en la base de datos
+export async function buscarTipoMateriales(){
+    let tipos = null;
+
+    tipos = await getTipoMateriales();
+
+    return tipos;
+}
+
+export async function eliminarTipoMaterial(id){
+    await deleteTipoMaterial(id);
+}
+
+export async function modificarTipoMaterial(id, nombre){
+    await updateTipoMaterial (id, nombre);
 }
 
 //Esta función devuelve todas las tareas Inventario almacenadas en la base de datos

@@ -83,7 +83,6 @@ export default function VerTareaMaterial({ route, navigation }) {
       // Obtenemos visualización
       const visu = await getvisualizacion(id);
       setVisualizacion(visu);
-      console.log("visualización: ", visu);
       // Obtenemos las tareas
       const datos = await buscarTareaIdTareasInventario(id);
       // Obtenemos a los profesores

@@ -16,8 +16,12 @@ import {
   buscarMateriales,
   eliminarMaterial,
   modificarMaterial,
+  buscarTipoMateriales,
+  aniadeTipoMaterial,
 } from "../Controlador/tareas";
+import { descargaTipoMateriales, openGallery, almacenaTipoMaterial } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { Picker } from "@react-native-picker/picker";
 
 export default function gestionItemMaterial() {
   //Variables para ver las distintas vistas
@@ -34,6 +38,7 @@ export default function gestionItemMaterial() {
   const [tipo, setTipo] = useState("");
   const [stockTipo, setStockTipo] = useState("");
   const [fotoTipo, setFotoTipo] = useState("");
+  const [fotoTipoUri, setFotoTipoUri] = useState("");
   const [caracteristicas, setCaracteristicas] = useState([]);
 
   // Variable para elegir que materia modificar
@@ -51,8 +56,30 @@ export default function gestionItemMaterial() {
   const [nuevoStock, setNuevoStock] = useState("");
   const [nuevasCaracteristicas, setNuevasCaracteristicas] = useState([]);
 
-  // Se actualizará el valor de materiales cuando tengamos que modificar uno y estemos en la interfaz de elegir material.
+  // Variables para tipos de base de datos
+  const [tipos, setTipos] = useState([]);
+  const [cargarTipoBD, setCargarTipoBD] = useState(true);
+  const [fotosTipos, setFotosTipos] = useState([]);
+  const [cargarFotoTipoBD, setCargarFotoTipoBD] = useState(true);
 
+  useEffect(() => {
+    const cargarTipos = async () => {
+      const datosTipos = await buscarTipoMateriales();
+      // Crear el objeto con nombre 'Ninguno' y índice 0
+      const opcionNinguno = { id: 0, nombre: "Ninguno" };
+      // Añadir el objeto al inicio del array
+      datosTipos.unshift(opcionNinguno);
+      setTipos(datosTipos);
+      const cargarFotos = await descargaTipoMateriales();
+      const opcionNingunoFoto = { uri: 0, nombre: "Ninguno" };
+      cargarFotos.unshift(opcionNingunoFoto);
+      setFotosTipos(cargarFotos);
+    };
+
+    cargarTipos();
+  }, []);
+
+  // Se actualizará el valor de materiales cuando tengamos que modificar uno y estemos en la interfaz de elegir material.
   useEffect(() => {
     if (viewModificarMaterial) {
       const cargarMateriales = async () => {
@@ -62,6 +89,8 @@ export default function gestionItemMaterial() {
           setMateriales(datosMateriales); // Guardamos los datos en la variable de estado
           setFiltrar(datosMateriales);
           setCargando(false);
+          const datosTipos = await buscarTipoMateriales();
+          setTipos(datosTipos);
         } catch (error) {
           console.error("Error al obtener materiales:", error);
           setCargando(false);
@@ -110,19 +139,30 @@ export default function gestionItemMaterial() {
   const handleAnadirTipo = () => {
     if (
       tipo.trim() !== "" &&
+      tipo !== "Ninguno" &&
       fotoTipo.trim() !== "" &&
+      fotoTipo !== "Ninguno" &&
       !isNaN(stockTipo) &&
       stockTipo > 0
     ) {
       if (!isSeleccionado) {
         setCaracteristicas([
           ...caracteristicas,
-          { id: idMaterial, tipo, cantidad: stockTipo, foto: fotoTipo },
+          {
+            id: idMaterial,
+            tipo,
+            cantidad: stockTipo,
+            foto: fotoTipo,
+            uri: fotoTipoUri,
+            nuevoTipo: !cargarTipoBD,
+            nuevaFoto: !cargarFotoTipoBD,
+          },
         ]);
         setIdMaterial(idMaterial + 1);
         setTipo("");
         setStockTipo("");
         setFotoTipo("");
+        setFotoTipoUri('');
         let total = Number(stock) + Number(stockTipo);
         setStock(total);
         console.log(stock);
@@ -267,9 +307,6 @@ export default function gestionItemMaterial() {
   };
 
   const handleAnadirMaterial = async () => {
-    console.log(nombre.trim());
-    console.log(foto.trim());
-    console.log();
     if (nombre.trim() === "" || foto.trim() === "" || stock <= 0) {
       if (Platform.OS === "web") {
         Swal.fire({
@@ -310,6 +347,16 @@ export default function gestionItemMaterial() {
               };
             });
             await aniadeMaterial(nombre, foto, stock, soloTipos);
+            for (const caracteristica of caracteristicas) {
+              if (caracteristica.nuevoTipo) {
+                await aniadeTipoMaterial(caracteristica.tipo);
+              }
+              if (caracteristica.nuevaFoto) {
+                console.log('uri:', caracteristica.uri);
+                console.log('foto:', caracteristica.foto);
+                await almacenaTipoMaterial(caracteristica.uri, caracteristica.foto);
+              }
+            }
             borrarTodo();
             setViewTipos(false);
             setViewStock(false);
@@ -651,297 +698,391 @@ export default function gestionItemMaterial() {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <Text style={styles.header}>Items Materiales</Text>
-        <View>
-          <Text style={styles.text}>
-            ¿Qué opción desea realizar? Pulse sobre el botón que desee.
-          </Text>
+      <Text style={styles.header}>Items Materiales</Text>
+      <View>
+        <Text style={styles.text}>
+          ¿Qué opción desea realizar? Pulse sobre el botón que desee.
+        </Text>
 
-          <View style={styles.separador}></View>
-          <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
+        <View style={styles.separador}></View>
 
-          <View style={styles.row}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleCrearMaterial}
-            >
-              <Text style={styles.buttonText}>Crear Material</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleModificarMaterial}
-            >
-              <Text style={styles.buttonText}>Modificar Material</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.row}>
+          <TouchableOpacity style={styles.button} onPress={handleCrearMaterial}>
+            <Text style={styles.buttonText}>Crear Material</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleModificarMaterial}
+          >
+            <Text style={styles.buttonText}>Modificar Material</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        {viewCrearMaterial && (
-          <View>
-            <Text style={[styles.text]}>Nombre</Text>
+      </View>
+      <View style={styles.separador} />
+      <View style={styles.separador} />
+      <View style={styles.separador} />
+      <View style={styles.separador} />
+      {viewCrearMaterial && (
+        <View>
+          <Text style={[styles.text]}>Nombre</Text>
 
-            <View style={styles.separador} />
-            {isSeleccionado ? (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija nombre"
-                value={nuevoNombre}
-                onChangeText={(texto) => setNuevoNombre(texto)}
-              />
-            ) : (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija nombre"
-                value={nombre}
-                onChangeText={setNombre}
-              />
-            )}
+          <View style={styles.separador} />
+          {isSeleccionado ? (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija nombre"
+              value={nuevoNombre}
+              onChangeText={(texto) => setNuevoNombre(texto)}
+            />
+          ) : (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija nombre"
+              value={nombre}
+              onChangeText={setNombre}
+            />
+          )}
 
-            <View style={styles.separador} />
-            <View style={styles.separador} />
+          <View style={styles.separador} />
+          <View style={styles.separador} />
 
-            <Text style={[styles.text]}>Foto</Text>
+          <Text style={[styles.text]}>Foto</Text>
 
-            <View style={styles.separador} />
-            {isSeleccionado ? (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija foto"
-                value={nuevaFoto}
-                onChangeText={(texto) => setNuevaFoto(texto)}
-              />
-            ) : (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija foto"
-                value={foto}
-                onChangeText={setFoto}
-              />
-            )}
+          <View style={styles.separador} />
+          {isSeleccionado ? (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija foto"
+              value={nuevaFoto}
+              onChangeText={(texto) => setNuevaFoto(texto)}
+            />
+          ) : (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija foto"
+              value={foto}
+              onChangeText={setFoto}
+            />
+          )}
 
-            <View style={styles.separador} />
-            <View style={styles.separador} />
+          <View style={styles.separador} />
+          <View style={styles.separador} />
 
-            {viewPregunta && (
-              <>
-                <Text style={[styles.text]}>
-                  ¿El objeto tiene características como grueso, fino,
-                  colores...?
-                </Text>
+          {viewPregunta && (
+            <>
+              <Text style={[styles.text]}>
+                ¿El objeto tiene características como grueso, fino, colores...?
+              </Text>
 
-                <View style={styles.separador} />
+              <View style={styles.separador} />
 
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                      setViewPregunta(false), setViewTipos(true);
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Sí</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                      setViewPregunta(false), setViewStock(true);
-                    }}
-                  >
-                    <Text style={styles.buttonText}>No</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.separador} />
-                <View style={styles.separador} />
-              </>
-            )}
+              <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    setViewPregunta(false), setViewTipos(true);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Sí</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    setViewPregunta(false), setViewStock(true);
+                  }}
+                >
+                  <Text style={styles.buttonText}>No</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.separador} />
+              <View style={styles.separador} />
+            </>
+          )}
 
-            {viewStock && (
-              <>
-                <Text style={[styles.text]}>Stock</Text>
+          {viewStock && (
+            <>
+              <Text style={[styles.text]}>Stock</Text>
 
-                <View style={styles.separador} />
-                {isSeleccionado ? (
-                  <TextInput
-                    style={[styles.input]}
-                    placeholder="Elija stock"
-                    value={nuevoStock}
-                    onChangeText={(texto) => setNuevoStock(texto)}
-                    keyboardType="numeric"
-                  />
-                ) : (
-                  <TextInput
-                    style={[styles.input]}
-                    placeholder="Elija stock"
-                    value={stock}
-                    onChangeText={handleStockInput}
-                    keyboardType="numeric"
-                  />
-                )}
-
-                <View style={styles.separador} />
-                <View style={styles.separador} />
-              </>
-            )}
-
-            {viewTipos && (
-              <>
-                <Text style={[styles.text]}>
-                  Añada una característica al material:
-                </Text>
-
-                <View style={styles.separador} />
-
-                <Text style={[styles.text]}>Tipo característica</Text>
-
-                <View style={styles.separador} />
+              <View style={styles.separador} />
+              {isSeleccionado ? (
                 <TextInput
                   style={[styles.input]}
-                  placeholder="Elija el nombre"
-                  value={tipo}
-                  onChangeText={setTipo}
-                />
-                <View style={styles.separador} />
-
-                <Text style={[styles.text]}>Cantidad</Text>
-
-                <View style={styles.separador} />
-                <TextInput
-                  style={[styles.input]}
-                  placeholder="Elija la cantidad"
-                  value={stockTipo}
-                  onChangeText={setStockTipo}
+                  placeholder="Elija stock"
+                  value={nuevoStock}
+                  onChangeText={(texto) => setNuevoStock(texto)}
                   keyboardType="numeric"
                 />
-
-                <View style={styles.separador} />
-
-                <Text style={[styles.text]}>Foto</Text>
-
-                <View style={styles.separador} />
+              ) : (
                 <TextInput
                   style={[styles.input]}
-                  placeholder="Elija la foto"
-                  value={fotoTipo}
-                  onChangeText={setFotoTipo}
+                  placeholder="Elija stock"
+                  value={stock}
+                  onChangeText={handleStockInput}
+                  keyboardType="numeric"
                 />
-
-                <View style={styles.separador} />
-
-                <TouchableOpacity
-                  style={styles.addButtonTipo}
-                  onPress={handleAnadirTipo}
-                >
-                  <Text style={styles.addButtonText}>Añadir tipo</Text>
-                </TouchableOpacity>
-
-                <ScrollView horizontal={true} style={styles.FlatListCaracteristicas}>
-                  {isSeleccionado ? (
-                    <FlatList
-                      data={nuevasCaracteristicas}
-                      keyExtractor={(item) => item.id}
-                      renderItem={renderItem}
-                    />
-                  ) : (
-                    <FlatList
-                      data={caracteristicas}
-                      keyExtractor={(item) => item.id}
-                      renderItem={renderItem}
-                    />
-                  )}
-                </ScrollView>
-              </>
-            )}
-
-            <View style={styles.rowBotones}>
-              {isSeleccionado ? (
-                <>
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={handleEliminar}
-                  >
-                    <Text style={styles.addButtonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  {!viewPregunta && (
-                    <>
-                      <TouchableOpacity
-                        style={styles.cancelButton}
-                        onPress={handleCancelar}
-                      >
-                        <Text style={styles.addButtonText}>Cancelar</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
               )}
-              {isSeleccionado ? (
-                <>
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={handleModificar}
+
+              <View style={styles.separador} />
+              <View style={styles.separador} />
+            </>
+          )}
+
+          {viewTipos && (
+            <>
+              <Text style={[styles.text]}>
+                Añada una característica al material:
+              </Text>
+
+              <View style={styles.separador} />
+
+              <Text style={[styles.text]}>Tipo característica</Text>
+
+              <View style={styles.separador} />
+
+              {cargarTipoBD ? (
+                <View>
+                  <Picker
+                    selectedValue={tipo}
+                    onValueChange={(itemValue) => setTipo(itemValue)}
+                    style={[styles.picker]}
                   >
-                    <Text style={styles.addButtonText}>Modificar</Text>
+                    {tipos.map((tipo, index) => (
+                      <Picker.Item
+                        key={index}
+                        label={tipo.nombre}
+                        value={tipo.nombre}
+                      />
+                    ))}
+                  </Picker>
+
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoBD]}
+                    onPress={() => {
+                      setCargarTipoBD(false);
+                      setTipo("");
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Añadir nuevo</Text>
                   </TouchableOpacity>
-                </>
+                </View>
               ) : (
-                <>
-                  {!viewPregunta && (
-                    <>
-                      <TouchableOpacity
-                        style={styles.addButton}
-                        onPress={handleAnadirMaterial}
-                      >
-                        <Text style={styles.addButtonText}>Añadir</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
+                <View>
+                  <TextInput
+                    style={[styles.input]}
+                    placeholder="Elija el nombre"
+                    value={tipo}
+                    onChangeText={setTipo}
+                  />
+
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoBD]}
+                    onPress={() => {
+                      setCargarTipoBD(true);
+                      setTipo("");
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Preelección</Text>
+                  </TouchableOpacity>
+                </View>
               )}
-            </View>
-          </View>
-        )}
-        {viewModificarMaterial && (
-          <View>
-            <View style={[styles.row]}>
+
+              <View style={styles.separador} />
+
+              <Text style={[styles.text]}>Cantidad</Text>
+
+              <View style={styles.separador} />
               <TextInput
                 style={[styles.input]}
-                placeholder="Elija Material"
-                value={buscar}
-                onChangeText={setBuscar}
+                placeholder="Elija la cantidad"
+                value={stockTipo}
+                onChangeText={setStockTipo}
+                keyboardType="numeric"
               />
+
+              <View style={[styles.separador]} />
+
+              <Text style={[styles.text]}>Foto</Text>
+
+              <View style={styles.separador} />
+
+              {cargarFotoTipoBD ? (
+                <View>
+                  <Picker
+                    selectedValue={fotoTipo}
+                    onValueChange={(itemValue) => setFotoTipo(itemValue)}
+                    style={[styles.picker]}
+                  >
+                    {fotosTipos.map((tipo, index) => (
+                      <Picker.Item
+                        key={index}
+                        label={tipo.nombre}
+                        value={tipo.nombre}
+                      />
+                    ))}
+                  </Picker>
+
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoBD]}
+                    onPress={() => {
+                      setCargarFotoTipoBD(false);
+                      setFotoTipo("");
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Añadir nuevo</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View>
+                  <View style={styles.rowSolo}>
+                    <TouchableOpacity
+                      style={[styles.addButtonTipoFotoBD]}
+                      onPress={async () => {
+                        const uri = openGallery();
+                        if (uri) {
+                          setFotoTipoUri(uri);
+                        }
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>
+                        Añadir Nueva Foto
+                      </Text>
+                    </TouchableOpacity>
+                    <TextInput
+                    style={[styles.inputNombreFotoNueva]}
+                    placeholder="Elija el nombre"
+                    value={fotoTipo}
+                    onChangeText={setFotoTipo}
+                  />
+                  </View>
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoBD]}
+                    onPress={() => {
+                      setCargarFotoTipoBD(true);
+                      setFotoTipo("");
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Preelección</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              <View style={styles.separador} />
+
               <TouchableOpacity
-                style={styles.searchButton}
-                onPress={handleBuscar}
+                style={styles.addButtonTipo}
+                onPress={handleAnadirTipo}
               >
-                <Text style={styles.addButtonText}>Buscar</Text>
+                <Text style={styles.addButtonText}>Añadir tipo</Text>
               </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              style={styles.showAllMaterials}
-              onPress={handleMostrarTodo}
-            >
-              <Text style={styles.addButtonText}>Mostrar Todo</Text>
-            </TouchableOpacity>
-            {cargando && (
-              <View style={styles.text}>
-                <Text>Cargando...</Text>
-              </View>
+
+              <ScrollView
+                horizontal={true}
+                style={styles.FlatListCaracteristicas}
+              >
+                {isSeleccionado ? (
+                  <FlatList
+                    data={nuevasCaracteristicas}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderItem}
+                  />
+                ) : (
+                  <FlatList
+                    data={caracteristicas}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderItem}
+                  />
+                )}
+              </ScrollView>
+            </>
+          )}
+
+          <View style={styles.rowBotones}>
+            {isSeleccionado ? (
+              <>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={handleEliminar}
+                >
+                  <Text style={styles.addButtonText}>Eliminar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {!viewPregunta && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={handleCancelar}
+                    >
+                      <Text style={styles.addButtonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
             )}
-            <View style={styles.FlatListMateriales}>
-              <FlatList
-                data={filtrar}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItemMateriales}
-              />
-            </View>
+            {isSeleccionado ? (
+              <>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleModificar}
+                >
+                  <Text style={styles.addButtonText}>Modificar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {!viewPregunta && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={handleAnadirMaterial}
+                    >
+                      <Text style={styles.addButtonText}>Añadir</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
+            )}
           </View>
-        )}
-      </ScrollView>
+        </View>
+      )}
+      {viewModificarMaterial && (
+        <View>
+          <View style={[styles.row]}>
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija Material"
+              value={buscar}
+              onChangeText={setBuscar}
+            />
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={handleBuscar}
+            >
+              <Text style={styles.addButtonText}>Buscar</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.showAllMaterials}
+            onPress={handleMostrarTodo}
+          >
+            <Text style={styles.addButtonText}>Mostrar Todo</Text>
+          </TouchableOpacity>
+          {cargando && (
+            <View style={styles.text}>
+              <Text>Cargando...</Text>
+            </View>
+          )}
+          <View style={styles.FlatListMateriales}>
+            <FlatList
+              data={filtrar}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItemMateriales}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -951,6 +1092,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center",
   },
   header: {
     fontSize: 24,
@@ -981,6 +1124,21 @@ const styles = StyleSheet.create({
     width: 120,
     borderRadius: 5,
     marginRight: 100,
+  },
+  addButtonTipoBD: {
+    backgroundColor: "grey",
+    padding: 5,
+    width: 120,
+    borderRadius: 5,
+    marginRight: 100,
+  },
+  addButtonTipoFotoBD: {
+    backgroundColor: "grey",
+    padding: 5,
+    width: 140,
+    borderRadius: 5,
+    marginRight: 10,
+    marginBottom: 10,
   },
   addButton: {
     backgroundColor: "green",
@@ -1015,6 +1173,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
+  rowSolo:{
+    flexDirection: "row",
+  },
   row: {
     marginHorizontal: 50,
     flexDirection: "row",
@@ -1034,6 +1195,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     width: 250,
+    height: 30,
+    padding: 5,
+  },
+  inputNombreFotoNueva: {
+    borderWidth: 1,
+    borderColor: "grey",
+    borderRadius: 5,
+    marginBottom: 10,
+    width: 120,
     height: 30,
     padding: 5,
   },
@@ -1116,6 +1286,11 @@ const styles = StyleSheet.create({
   },
   rightColumn: {
     flexDirection: "column",
-    alignItems: 'flex-start'
+    alignItems: "flex-start",
+  },
+  picker: {
+    height: 25,
+    width: Platform.OS === "web" ? 150 : 200,
+    marginBottom: 10,
   },
 });

@@ -52,7 +52,7 @@ const EMOTICONOS = 'Emoticonos/';
 const PERSONAS = 'Personas/';
 const LOGIN = 'ImagenesLogin/';
 const MATERIALES = 'materiales/';
-const TIPOS_MATERIAL = '/Tipos_Material';
+const TIPOS_MATERIAL = 'Tipo_Materiales/';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -1765,11 +1765,16 @@ export async function almacenarMaterial(imagen, nombreImagen) {
 export async function almacenarTipoMaterial(imagen, nombreImagen) {
   
   try {
-      if (descargarMaterial(nombreImagen) != null) {
-          const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen)
-          const file = await(await fetch(imagen)).blob();
+      if (descargarTipoMaterial(nombreImagen) != null) {
+          const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen+'.png')
+          const respuesta = await fetch(imagen);
+          const blob = await respuesta.blob();
+          const file = new Blob([blob], { type: 'image/png' });
           uploadBytes(refImagenes, file).then((snapshot) => {
-              console.log('Se ha subido el material');
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+              console.log('URL de descarga disponible en', downloadURL);
+              // Aquí puedes usar downloadURL para mostrar la vista previa
+          });
           });
       } else {
           if (Platform.OS === "web") {
@@ -2175,38 +2180,33 @@ export async function descargarTipoMaterial(nombreImagen) {
           };
       })
       .catch((error) => {
-          console.log("No se ha podido descargar el material");
+          console.log("No se ha podido descargar el tipo de material");
       });
 
   return imagenUri;
 }
 
 export async function descargarTipoMateriales() {
+
   let entidad = [];
-  let resultado;
 
-  const listRef = ref(storage, TIPOS_MATERIAL);
+  try {
+    const listRef = ref(storage, TIPOS_MATERIAL);
+    const resultado = await listAll(listRef);
 
-  await listAll(listRef)
-      .then((res) => {
-          resultado = res;
-      }).catch((error) => {
-          console.log("Error en el listado de base de datos, " + error);
-      });
-  
-  for (let i = 0; i < resultado.items.length; i++) {
-      await getDownloadURL(resultado.items[i])
-      .then((url) => {
-          imagenUri = {
-              uri: url,
-              nombre: resultado.items[i].name
-          };
-
-          entidad.push(imagenUri);
-      })
-      .catch((error) => {
-          console.log("No se ha podido descargar los materiales");
-      });
+    for (const item of resultado.items) {
+      try {
+        const url = await getDownloadURL(item);
+        entidad.push({
+          uri: url,
+          nombre: item.name
+        });
+      } catch (error) {
+        console.error("Error al descargar la URL del material: ", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error al listar los materiales en Firebase Storage: ", error);
   }
 
   return entidad;
@@ -3252,6 +3252,95 @@ export async function updateMaterial(id, nombreMaterial, fotoMaterial, stockMate
   }
 }
 
+export const setTipoMaterial = async (nombreTipoMaterial)=> {
+  try{
+
+    if(nombreTipoMaterial === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }
+    else{
+
+      const objeto = {
+        nombre: nombreTipoMaterial,
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Tipo_Material'),{
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
+}
+
+// FUNCION QUE DEVUELVE TODOS LOS TIPOS DE MATERIALES QUE TENEMOS EN LA BASE DE DATOS
+// PRUEBA REALIZADA. FUNCIONA
+export const getTipoMateriales = async() => {
+  try {
+    const materialQuery = query(collection(db, 'Tipo_Material'));
+    const querySnapshot = await getDocs(materialQuery);
+  
+    const docs = [];
+  
+    querySnapshot.forEach((docu) => {
+      const materialDatos = docu.data();
+      const id = docu.id;
+      docs.push({id, ...materialDatos});
+    });
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+  }
+  
+  export async function deleteTipoMaterial(id) {
+    try {
+        const docu = doc(db, "Tipo_Material", id);
+        const docSnapshot = await getDoc(docu);
+  
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el material correctamente");
+        }
+        else {
+            console.log("No existe el material");
+        }
+    } catch(error) {
+        console.log("Error al borrar material", error);
+    }
+  }
+  
+  export async function updateTipoMaterial(id, nombreTipo) {
+    
+    let editaMaterial = {
+        nombre:  nombreTipo, 
+    };
+  
+    try {
+        let docMaterial = doc(db, "Tipo_Material", id);
+        const docSnapshot = await getDoc(docMaterial);
+        
+        if (docSnapshot.exists()) {
+            await updateDoc(docMaterial, {
+                ...editaMaterial
+            })
+        }
+    } catch (error) {
+        console.log("Hubo un error al actualizar datos del material ", error);
+    }
+  }
 
 // FUNCION QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
 // PRUEBA REALIZADA. FUNCIONA

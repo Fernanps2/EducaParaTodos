@@ -176,7 +176,7 @@ export async function almacenaMaterial(imagen, nombre) {
  */
 export async function almacenaTipoMaterial(imagen, nombre) {
     if (imagen != '' && nombre != '')
-    almacenarTipoMaterial(imagen, nombre);
+    await almacenarTipoMaterial(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
