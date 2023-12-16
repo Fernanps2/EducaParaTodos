@@ -1766,10 +1766,8 @@ export async function almacenarTipoMaterial(imagen, nombreImagen) {
   
   try {
       if (descargarTipoMaterial(nombreImagen) != null) {
-          const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen+'.png')
-          const respuesta = await fetch(imagen);
-          const blob = await respuesta.blob();
-          const file = new Blob([blob], { type: 'image/png' });
+        const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
           uploadBytes(refImagenes, file).then((snapshot) => {
             getDownloadURL(snapshot.ref).then((downloadURL) => {
               console.log('URL de descarga disponible en', downloadURL);

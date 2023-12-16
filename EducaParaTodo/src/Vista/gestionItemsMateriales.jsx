@@ -19,7 +19,12 @@ import {
   buscarTipoMateriales,
   aniadeTipoMaterial,
 } from "../Controlador/tareas";
-import { descargaTipoMateriales, openGallery, almacenaTipoMaterial } from "../Controlador/multimedia";
+import {
+  descargaTipoMateriales,
+  openGallery,
+  almacenaTipoMaterial,
+  almacenaMaterial,
+} from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 import { Picker } from "@react-native-picker/picker";
 
@@ -34,6 +39,7 @@ export default function gestionItemMaterial() {
   // Variables para guardar los campos de añadir un material
   const [nombre, setNombre] = useState("");
   const [foto, setFoto] = useState("");
+  const [fotoUri, setFotoUri] = useState("");
   const [stock, setStock] = useState("");
   const [tipo, setTipo] = useState("");
   const [stockTipo, setStockTipo] = useState("");
@@ -53,6 +59,7 @@ export default function gestionItemMaterial() {
   // Variable para modificar un material
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [nuevaFoto, setNuevaFoto] = useState("");
+  const [nuevaFotoUri, setNuevaFotoUri] = useState("");
   const [nuevoStock, setNuevoStock] = useState("");
   const [nuevasCaracteristicas, setNuevasCaracteristicas] = useState([]);
 
@@ -85,7 +92,6 @@ export default function gestionItemMaterial() {
       const cargarMateriales = async () => {
         try {
           const datosMateriales = await buscarMateriales();
-          console.log(datosMateriales);
           setMateriales(datosMateriales); // Guardamos los datos en la variable de estado
           setFiltrar(datosMateriales);
           setCargando(false);
@@ -162,10 +168,9 @@ export default function gestionItemMaterial() {
         setTipo("");
         setStockTipo("");
         setFotoTipo("");
-        setFotoTipoUri('');
+        setFotoTipoUri("");
         let total = Number(stock) + Number(stockTipo);
         setStock(total);
-        console.log(stock);
       } else {
         setNuevasCaracteristicas([
           ...nuevasCaracteristicas,
@@ -298,7 +303,6 @@ export default function gestionItemMaterial() {
   };
 
   const borrarMaterial = async () => {
-    console.log(seleccionado.id);
     await eliminarMaterial(seleccionado.id);
     setSeleccionado([]);
     setIsSeleccionado(false);
@@ -343,18 +347,21 @@ export default function gestionItemMaterial() {
               return {
                 tipo: caracteristica.tipo,
                 cantidad: caracteristica.cantidad,
-                foto: caracteristica.foto,
+                foto: caracteristica.foto + ".png",
               };
             });
-            await aniadeMaterial(nombre, foto, stock, soloTipos);
+            await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
+            await almacenaMaterial(fotoUri, foto+'.png'); // Almacenamos la foto en la BD
             for (const caracteristica of caracteristicas) {
               if (caracteristica.nuevoTipo) {
-                await aniadeTipoMaterial(caracteristica.tipo);
+                await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
               }
               if (caracteristica.nuevaFoto) {
-                console.log('uri:', caracteristica.uri);
-                console.log('foto:', caracteristica.foto);
-                await almacenaTipoMaterial(caracteristica.uri, caracteristica.foto);
+                await almacenaTipoMaterial(
+                  // almacenamos la foto del nuevo tipo de material en la BD
+                  caracteristica.uri,
+                  caracteristica.foto+'.png'
+                );
               }
             }
             borrarTodo();
@@ -378,10 +385,23 @@ export default function gestionItemMaterial() {
                   return {
                     tipo: caracteristica.tipo,
                     cantidad: caracteristica.cantidad,
-                    foto: caracteristica.foto,
+                    foto: caracteristica.foto + ".png",
                   };
                 });
-                await aniadeMaterial(nombre, foto, stock, soloTipos);
+                await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
+                await almacenaMaterial(fotoUri, foto+'.png'); // Almacenamos la foto en la BD
+                for (const caracteristica of caracteristicas) {
+                  if (caracteristica.nuevoTipo) {
+                    await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
+                  }
+                  if (caracteristica.nuevaFoto) {
+                    await almacenaTipoMaterial(
+                      // almacenamos la foto del nuevo tipo de material en la BD
+                      caracteristica.uri,
+                      caracteristica.foto+'.png'
+                    );
+                  }
+                }
                 borrarTodo();
                 setViewTipos(false);
                 setViewStock(false);
@@ -429,7 +449,6 @@ export default function gestionItemMaterial() {
             );
           } else {
             // Obtenemos el stock de todos las caracteristicas y los sumamos.
-            console.log("Mira esto pa:", nuevasCaracteristicas);
             let stockTotal = nuevasCaracteristicas.reduce(
               (acumulador, item) => {
                 return acumulador + Number(item.cantidad);
@@ -560,7 +579,6 @@ export default function gestionItemMaterial() {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log(nuevasCaracteristicas);
           if (isSeleccionado) {
             setNuevasCaracteristicas(
               nuevasCaracteristicas.filter((item) => item.id !== id)
@@ -680,7 +698,6 @@ export default function gestionItemMaterial() {
       seleccionado !== undefined &&
       seleccionado.caracteristicas !== undefined
     ) {
-      console.log(seleccionado);
       setNuevoNombre(seleccionado.nombre);
       setNuevaFoto(seleccionado.foto);
       setNuevoStock(seleccionado.stock);
@@ -751,19 +768,51 @@ export default function gestionItemMaterial() {
 
           <View style={styles.separador} />
           {isSeleccionado ? (
-            <TextInput
-              style={[styles.input]}
-              placeholder="Elija foto"
-              value={nuevaFoto}
-              onChangeText={(texto) => setNuevaFoto(texto)}
-            />
+            <View>
+              <View style={styles.rowSolo}>
+                <TouchableOpacity
+                  style={[styles.addButtonTipoFotoBD]}
+                  onPress={async () => {
+                    const uri = await openGallery();
+                    if (uri) {
+                      setNuevaFotoUri(uri);
+                    }
+                  }}
+                >
+                  <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
+                </TouchableOpacity>
+                <TextInput
+                  style={[styles.inputNombreFotoNueva]}
+                  placeholder="Nombre foto"
+                  value={nuevaFoto}
+                  onChangeText={(texto) => setNuevaFoto(texto)}
+                />
+              </View>
+              {nuevaFotoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
+            </View>
           ) : (
-            <TextInput
-              style={[styles.input]}
-              placeholder="Elija foto"
-              value={foto}
-              onChangeText={setFoto}
-            />
+            <View>
+              <View style={styles.rowSolo}>
+                <TouchableOpacity
+                  style={[styles.addButtonTipoFotoBD]}
+                  onPress={async () => {
+                    const uri = await openGallery();
+                    if (uri) {
+                      setFotoUri(uri);
+                    }
+                  }}
+                >
+                  <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
+                </TouchableOpacity>
+                <TextInput
+                  style={[styles.inputNombreFotoNueva]}
+                  placeholder="Nombre foto"
+                  value={foto}
+                  onChangeText={(texto) => setFoto(texto)}
+                />
+              </View>
+              {fotoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
+            </View>
           )}
 
           <View style={styles.separador} />
@@ -938,7 +987,7 @@ export default function gestionItemMaterial() {
                     <TouchableOpacity
                       style={[styles.addButtonTipoFotoBD]}
                       onPress={async () => {
-                        const uri = openGallery();
+                        const uri = await openGallery();
                         if (uri) {
                           setFotoTipoUri(uri);
                         }
@@ -949,14 +998,15 @@ export default function gestionItemMaterial() {
                       </Text>
                     </TouchableOpacity>
                     <TextInput
-                    style={[styles.inputNombreFotoNueva]}
-                    placeholder="Elija el nombre"
-                    value={fotoTipo}
-                    onChangeText={setFotoTipo}
-                  />
+                      style={[styles.inputNombreFotoNueva]}
+                      placeholder="Nombre foto"
+                      value={fotoTipo}
+                      onChangeText={setFotoTipo}
+                    />
                   </View>
+                  {fotoTipoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
                   <TouchableOpacity
-                    style={[styles.addButtonTipoBD]}
+                    style={[styles.addButtonTipoBD, {marginTop: 5}]}
                     onPress={() => {
                       setCargarFotoTipoBD(true);
                       setFotoTipo("");
@@ -1138,7 +1188,7 @@ const styles = StyleSheet.create({
     width: 140,
     borderRadius: 5,
     marginRight: 10,
-    marginBottom: 10,
+    marginBottom: 2,
   },
   addButton: {
     backgroundColor: "green",
@@ -1173,7 +1223,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-  rowSolo:{
+  rowSolo: {
     flexDirection: "row",
   },
   row: {
@@ -1244,6 +1294,11 @@ const styles = StyleSheet.create({
     color: "#333", // Color oscuro para el texto para alto contraste
     fontWeight: "bold", // Peso de la fuente normal; puede ser 'bold' si es necesario
     marginVertical: 3,
+  },
+  TextSmall: {
+    fontSize: 12, // Tamaño de fuente mediano para buena legibilidad
+    color: "green", // Color oscuro para el texto para alto contraste
+    marginBottom: 5,
   },
   deleteButton: {
     padding: 10, // Espacio adicional alrededor del ícono para un área de toque más grande
