@@ -1829,11 +1829,10 @@ export async function descargarImagenes() {
   for (let i = 0; i < resultado.items.length; i++) {
       await getDownloadURL(resultado.items[i])
       .then((url) => {
-          imagenUri = {
+          let imagenUri = {
               uri: url,
               nombre: resultado.items[i].name
           };
-
           entidad.push(imagenUri);
       })
       .catch((error) => {
@@ -1882,11 +1881,10 @@ export async function descargarPictogramas() {
   for (let i = 0; i < resultado.items.length; i++) {
       await getDownloadURL(resultado.items[i])
       .then((url) => {
-          imagenUri = {
+          let imagenUri = {
               uri: url,
               nombre: resultado.items[i].name
           };
-
           entidad.push(imagenUri);
       })
       .catch((error) => {
@@ -2385,7 +2383,6 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
           const docRef = await addDoc(collection(db,'Tarea'),{
             ...objeto
           })
-          console.log('Buscamos el id',docRef.id);
           return docRef.id;
         }
       }catch(error){
@@ -2677,7 +2674,7 @@ export const deleteTareaId = async (idTarea) => {
   export const setTareaActividad = async(aula,pasos,idTarea) => {
     try{
   
-      if( aula === '' || pasos === null || idTarea === ''){
+      if( aula === '' || pasos == [] || idTarea === ''){
         if (Platform.OS === "web"){
           Swal.fire({
             title: "Mensaje Importante",
@@ -2690,7 +2687,6 @@ export const deleteTareaId = async (idTarea) => {
         }
       }
       else{
-  
         const objeto = {
           aula,
           pasos,
@@ -2806,7 +2802,7 @@ try {
       else{
 
         const objeto = {
-          Audio,
+          audio,
           imagen,
           pictograma,
           video,

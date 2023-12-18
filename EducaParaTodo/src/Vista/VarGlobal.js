@@ -171,8 +171,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
     }
 
     var imagenNuevo = {
-        Titulo: 'Ninguno',
-        URL: '',
+        nombre: 'Ninguno',
+        uri: '',
         id: 0
     };
     if (setImagen !== ''){
@@ -180,8 +180,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
     }
 
     var pictogramaNuevo = {
-        Titulo: 'Ninguno',
-        URL: '',
+        nombre: 'Ninguno',
+        uri: '',
         id: 0
     };
     if (setPictograma !== ''){
@@ -189,8 +189,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
     }
 
     var videoNuevo = {
-        Titulo: 'Ninguno',
-        URL: '',
+        nombre: 'Ninguno',
+        uri: '',
         id: 0
     };
     if (setVideo !== ''){
@@ -198,8 +198,8 @@ export function pushPasos (setNombre, setTexto, setImagen, setPictograma, setVid
     }
 
     var audioNuevo = {
-        Titulo: 'Ninguno',
-        URL: '',
+        nombre: 'Ninguno',
+        uri: '',
         id: 0
     };
     if (setAudio !== ''){

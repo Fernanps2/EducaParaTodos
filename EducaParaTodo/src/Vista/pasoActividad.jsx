@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Button,
   Platform,
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -14,11 +13,13 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import {
-  cargarPictogramasBD,
   cargarVideosBD,
-  cargarImagenesBD,
   cargarAudiosBD,
 } from "../Controlador/tareas";
+import {
+  descargaPictogramas,
+  descargaImagenes,
+} from "../Controlador/multimedia"
 
 export default function PasoActividad({ navigation }) {
   // Variables para añadir items
@@ -67,7 +68,8 @@ export default function PasoActividad({ navigation }) {
   //Cargamos pictogramas
   const cargarPictogramas = async () => {
     setIsLoadindPicto(true); // Iniciar la carga
-    setDataPicto(await cargarPictogramasBD());
+    const data = await descargaPictogramas()
+    setDataPicto(data);
     setIsLoadindPicto(false);
   };
 
@@ -81,7 +83,7 @@ export default function PasoActividad({ navigation }) {
   //Cargamos imagenes
   const cargarImagenes = async () => {
     setIsLoadindIma(true); // Iniciar la carga
-    setDataImagen(await cargarImagenesBD());
+    setDataImagen(await descargaImagenes());
     setIsLoadindIma(false);
   };
 
@@ -413,7 +415,7 @@ export default function PasoActividad({ navigation }) {
                     >
                       <Image
                         key={index}
-                        source={{ uri: picto.URL }}
+                        source={{ uri: picto.uri }}
                         style={styles.image}
                       />
                     </TouchableOpacity>
@@ -448,7 +450,7 @@ export default function PasoActividad({ navigation }) {
                       key={index}
                       onPress={() => handleVideoPress(video)}
                     >
-                      <Text style={styles.videos}>{video.Titulo}</Text>
+                      <Text style={styles.videos}>{video.nombre}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -481,7 +483,7 @@ export default function PasoActividad({ navigation }) {
                     >
                       <Image
                         key={index}
-                        source={{ uri: imagen.URL }}
+                        source={{ uri: imagen.uri }}
                         style={styles.image}
                       />
                     </TouchableOpacity>
@@ -516,7 +518,7 @@ export default function PasoActividad({ navigation }) {
                       key={index}
                       onPress={() => handleAudioPress(audio)}
                     >
-                      <Text style={styles.videos}>{audio.Titulo}</Text>
+                      <Text style={styles.videos}>{audio.nombre}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -574,7 +576,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStorePicto ? (
-            <Image source={{ uri: storePictograma.URL }} style={styles.image} />
+            <Image source={{ uri: storePictograma.uri }} style={styles.image} />
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -595,7 +597,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreVideo ? (
-            <Text style={styles.videos}>{storeVideo.Titulo} </Text>
+            <Text style={styles.videos}>{storeVideo.nombre} </Text>
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -616,7 +618,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreIma ? (
-            <Image source={{ uri: storeImagen.URL }} style={styles.image} />
+            <Image source={{ uri: storeImagen.uri }} style={styles.image} />
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -637,7 +639,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreAudio ? (
-            <Text style={styles.videos}>{storeAudio.Titulo} </Text>
+            <Text style={styles.videos}>{storeAudio.nombre} </Text>
           ) : (
             <Text>Ninguno </Text>
           )}

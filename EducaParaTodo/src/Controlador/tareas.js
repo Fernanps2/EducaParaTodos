@@ -67,7 +67,7 @@ export async function buscarPasos(idActividad){
 }
 
 export async function aniadePasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea){
-    await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
+    return await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
 }
 
 export async function aniadeTareaComanda(idTarea,menus){

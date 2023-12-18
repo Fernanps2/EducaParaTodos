@@ -150,17 +150,17 @@ export default function TareaActividad({ navigation }) {
           nombreTarea,
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
-          "Actividad",
+          "actividad",
           periocidad
         );
         const pasos = getPasos();
         const idPaso = [];
         for (const item of pasos) {
           const pasoId = await aniadePasoActividad(
-            item.audio.id,
-            item.imagen.id,
-            item.pictograma.id,
-            item.video.id,
+            item.audio.nombre,
+            item.imagen.nombre,
+            item.pictograma.nombre,
+            item.video.nombre,
             item.texto,
             item.nombre,
             idTarea

@@ -95,8 +95,6 @@ export default function gestionItemMaterial() {
           setMateriales(datosMateriales); // Guardamos los datos en la variable de estado
           setFiltrar(datosMateriales);
           setCargando(false);
-          const datosTipos = await buscarTipoMateriales();
-          setTipos(datosTipos);
         } catch (error) {
           console.error("Error al obtener materiales:", error);
           setCargando(false);
@@ -140,6 +138,8 @@ export default function gestionItemMaterial() {
     setBuscar("");
     setStockTipo("");
     setFotoTipo("");
+    setFotoTipoUri("");
+    setNuevaFotoUri("");
   };
 
   const handleAnadirTipo = () => {
@@ -149,7 +149,8 @@ export default function gestionItemMaterial() {
       fotoTipo.trim() !== "" &&
       fotoTipo !== "Ninguno" &&
       !isNaN(stockTipo) &&
-      stockTipo > 0
+      stockTipo > 0 &&
+      (!cargarFotoTipoBD ? fotoTipoUri.trim() !== "" : true)
     ) {
       if (!isSeleccionado) {
         setCaracteristicas([
@@ -179,11 +180,16 @@ export default function gestionItemMaterial() {
             tipo,
             cantidad: stockTipo,
             foto: fotoTipo,
+            uri: fotoTipoUri,
+            nuevoTipo: !cargarTipoBD,
+            nuevaFoto: !cargarFotoTipoBD,
           },
         ]);
         setTipo("");
         setStockTipo("");
         setFotoTipo("");
+        setFotoTipo("");
+        setFotoTipoUri("");
       }
     } else {
       if (Platform.OS === "web") {
@@ -311,7 +317,12 @@ export default function gestionItemMaterial() {
   };
 
   const handleAnadirMaterial = async () => {
-    if (nombre.trim() === "" || foto.trim() === "" || stock <= 0) {
+    if (
+      nombre.trim() === "" ||
+      foto.trim() === "" ||
+      nuevaFotoUri === "" ||
+      stock <= 0
+    ) {
       if (Platform.OS === "web") {
         Swal.fire({
           title: "Campos incorrectos",
@@ -351,7 +362,7 @@ export default function gestionItemMaterial() {
               };
             });
             await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
-            await almacenaMaterial(fotoUri, foto+'.png'); // Almacenamos la foto en la BD
+            await almacenaMaterial(fotoUri, foto + ".png"); // Almacenamos la foto en la BD
             for (const caracteristica of caracteristicas) {
               if (caracteristica.nuevoTipo) {
                 await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
@@ -360,7 +371,7 @@ export default function gestionItemMaterial() {
                 await almacenaTipoMaterial(
                   // almacenamos la foto del nuevo tipo de material en la BD
                   caracteristica.uri,
-                  caracteristica.foto+'.png'
+                  caracteristica.foto + ".png"
                 );
               }
             }
@@ -389,7 +400,7 @@ export default function gestionItemMaterial() {
                   };
                 });
                 await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
-                await almacenaMaterial(fotoUri, foto+'.png'); // Almacenamos la foto en la BD
+                await almacenaMaterial(fotoUri, foto + ".png"); // Almacenamos la foto en la BD
                 for (const caracteristica of caracteristicas) {
                   if (caracteristica.nuevoTipo) {
                     await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
@@ -398,7 +409,7 @@ export default function gestionItemMaterial() {
                     await almacenaTipoMaterial(
                       // almacenamos la foto del nuevo tipo de material en la BD
                       caracteristica.uri,
-                      caracteristica.foto+'.png'
+                      caracteristica.foto + ".png"
                     );
                   }
                 }
@@ -417,48 +428,76 @@ export default function gestionItemMaterial() {
     }
   };
 
+  const sinErrores = () => {
+    if (
+      nuevoNombre.trim() === "" ||
+      nuevaFoto.trim() === "" ||
+      nuevoStock <= 0
+    ) {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Campos incorrectos",
+          text: "Rellena todos los campos correctamente antes de añadir el tipo (nombre, foto o stock).",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        });
+      } else {
+        Alert.alert(
+          "Campos incorrectos", // Título
+          "Rellena todos los campos antes de añadir el tipo  (nombre, foto o stock).", // Mensaje
+          [{ text: "De acuerdo" }],
+          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+        );
+      }
+      return false;
+    } else return true;
+  };
+
   const handleModificar = async () => {
-    if (Platform.OS === "web") {
-      Swal.fire({
-        title: "Modificar materal",
-        text: "¿Quieres modificar el material?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Modificar",
-        cancelButtonText: "Cancelar",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // Comprobación de que el stock sea igual al número de items totales.
-          if (nuevasCaracteristicas.length === 0) {
-            const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
-              return {
-                tipo: caracteristica.tipo,
-                cantidad: caracteristica.cantidad,
-                foto: caracteristica.foto,
-              };
-            });
+    if (sinErrores ()) {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Modificar materal",
+          text: "¿Quieres modificar el material?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Modificar",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            // Comprobación de que el stock sea igual al número de items totales.
+            if (nuevasCaracteristicas.length === 0) {
+              const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
+                return {
+                  tipo: caracteristica.tipo,
+                  cantidad: caracteristica.cantidad,
+                  foto: caracteristica.foto + ".png",
+                };
+              });
 
-            await modificarMaterial(
-              seleccionado.id,
-              nuevoNombre,
-              nuevaFoto,
-              nuevoStock,
-              soloTipos
-            );
-          } else {
-            // Obtenemos el stock de todos las caracteristicas y los sumamos.
-            let stockTotal = nuevasCaracteristicas.reduce(
-              (acumulador, item) => {
-                return acumulador + Number(item.cantidad);
-              },
-              0
-            );
+              await modificarMaterial(
+                seleccionado.id,
+                nuevoNombre,
+                nuevaFoto + ".png",
+                nuevoStock,
+                soloTipos
+              );
+              if (nuevaFotoUri !== "")
+                await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+            } else {
+              // Obtenemos el stock de todos las caracteristicas y los sumamos.
+              let stockTotal = nuevasCaracteristicas.reduce(
+                (acumulador, item) => {
+                  return acumulador + Number(item.cantidad);
+                },
+                0
+              );
 
-            if (stockTotal !== nuevoStock) {
-              // Enviar mensajes de error y modificar el stock, y guardamos los datos.
-              if (Platform.OS === "web") {
+              if (stockTotal !== nuevoStock) {
+                // Enviar mensajes de error y modificar el stock, y guardamos los datos.
+
                 Swal.fire({
                   title: "Error en el stock final",
                   text: "La suma de los stocks de los tipos no es igual al número de stock final, luego se modificará el stock total.",
@@ -467,86 +506,207 @@ export default function gestionItemMaterial() {
                   confirmButtonColor: "#d33",
                   confirmButtonText: "De acuerdo",
                 });
-              } else {
-                Alert.alert(
-                  "Stock final modificado", // Título
-                  "La suma de los stocks de los tipos no es igual al número de stock final.", // Mensaje
-                  [{ text: "De acuerdo" }],
-                  { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+                // Se guarda el material cambiendo su stock final.
+                const soloTipos = nuevasCaracteristicas.map(
+                  (caracteristica) => {
+                    return {
+                      tipo: caracteristica.tipo,
+                      cantidad: caracteristica.cantidad,
+                      foto: caracteristica.foto + ".png",
+                    };
+                  }
                 );
+
+                await modificarMaterial(
+                  seleccionado.id,
+                  nuevoNombre,
+                  nuevaFoto + ".png",
+                  stockTotal,
+                  soloTipos
+                );
+                if (nuevaFotoUri !== "")
+                  await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+                for (const caracteristica of nuevasCaracteristicas) {
+                  if (caracteristica.nuevoTipo) {
+                    await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
+                  }
+                  if (caracteristica.nuevaFoto) {
+                    await almacenaTipoMaterial(
+                      // almacenamos la foto del nuevo tipo de material en la BD
+                      caracteristica.uri,
+                      caracteristica.foto + ".png"
+                    );
+                  }
+                }
+              } else {
+                // Guardamos los datos, ya que no hay error en las cuentas
+                const soloTipos = nuevasCaracteristicas.map(
+                  (caracteristica) => {
+                    return {
+                      tipo: caracteristica.tipo,
+                      cantidad: caracteristica.cantidad,
+                      foto: caracteristica.foto + ".png",
+                    };
+                  }
+                );
+
+                await modificarMaterial(
+                  seleccionado.id,
+                  nuevoNombre,
+                  nuevaFoto + ".png",
+                  nuevoStock,
+                  soloTipos
+                );
+
+                if (nuevaFotoUri !== "")
+                  await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+
+                for (const caracteristica of nuevasCaracteristicas) {
+                  if (caracteristica.nuevoTipo) {
+                    await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
+                  }
+                  if (caracteristica.nuevaFoto) {
+                    await almacenaTipoMaterial(
+                      // almacenamos la foto del nuevo tipo de material en la BD
+                      caracteristica.uri,
+                      caracteristica.foto + ".png"
+                    );
+                  }
+                }
               }
-              // Se guarda el material cambiendo su stock final.
-              const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
-                return {
-                  tipo: caracteristica.tipo,
-                  cantidad: caracteristica.cantidad,
-                  foto: caracteristica.foto,
-                };
-              });
-
-              await modificarMaterial(
-                seleccionado.id,
-                nuevoNombre,
-                nuevaFoto,
-                stockTotal,
-                soloTipos
-              );
-            } else {
-              // Guardamos los datos, ya que no hay error en las cuentas
-              const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
-                return {
-                  tipo: caracteristica.tipo,
-                  cantidad: caracteristica.cantidad,
-                  foto: caracteristica.foto,
-                };
-              });
-
-              await modificarMaterial(
-                seleccionado.id,
-                nuevoNombre,
-                nuevaFoto,
-                nuevoStock,
-                soloTipos
-              );
             }
-          }
 
-          borrarTodo();
-          setViewCrearMaterial(false);
-          setViewModificarMaterial(true);
-        }
-      });
-    } else {
-      Alert.alert(
-        "¿Quieres modificar el material?", // Título
-        "Pulsa una opción", // Mensaje
-        [
-          { text: "Cancelar" },
-          {
-            text: "Modificar",
-            onPress: async () => {
-              const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
-                return {
-                  tipo: caracteristica.tipo,
-                  cantidad: caracteristica.cantidad,
-                  foto: caracteristica.foto,
-                };
-              });
-              await modificarMaterial(
-                seleccionado.id,
-                nuevoNombre,
-                nuevaFoto,
-                nuevoStock,
-                soloTipos
-              );
-              borrarTodo();
-              setViewCrearMaterial(false);
-              setViewModificarMaterial(true);
+            borrarTodo();
+            setViewCrearMaterial(false);
+            setViewModificarMaterial(true);
+          }
+        });
+      } else {
+        Alert.alert(
+          "¿Quieres modificar el material?", // Título
+          "Pulsa una opción", // Mensaje
+          [
+            { text: "Cancelar" },
+            {
+              text: "Modificar",
+              onPress: async () => {
+                if (nuevasCaracteristicas.length === 0) {
+                  const soloTipos = nuevasCaracteristicas.map(
+                    (caracteristica) => {
+                      return {
+                        tipo: caracteristica.tipo,
+                        cantidad: caracteristica.cantidad,
+                        foto: caracteristica.foto + ".png",
+                      };
+                    }
+                  );
+
+                  await modificarMaterial(
+                    seleccionado.id,
+                    nuevoNombre,
+                    nuevaFoto + ".png",
+                    nuevoStock,
+                    soloTipos
+                  );
+                  if (nuevaFotoUri !== "")
+                    await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+                } else {
+                  // Obtenemos el stock de todos las caracteristicas y los sumamos.
+                  let stockTotal = nuevasCaracteristicas.reduce(
+                    (acumulador, item) => {
+                      return acumulador + Number(item.cantidad);
+                    },
+                    0
+                  );
+
+                  if (stockTotal !== nuevoStock) {
+                    // Enviar mensajes de error y modificar el stock, y guardamos los datos.
+
+                    Alert.alert(
+                      "Stock final modificado", // Título
+                      "La suma de los stocks de los tipos no es igual al número de stock final.", // Mensaje
+                      [{ text: "De acuerdo" }],
+                      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+                    );
+                    // Se guarda el material cambiendo su stock final.
+                    const soloTipos = nuevasCaracteristicas.map(
+                      (caracteristica) => {
+                        return {
+                          tipo: caracteristica.tipo,
+                          cantidad: caracteristica.cantidad,
+                          foto: caracteristica.foto + ".png",
+                        };
+                      }
+                    );
+
+                    await modificarMaterial(
+                      seleccionado.id,
+                      nuevoNombre,
+                      nuevaFoto + ".png",
+                      stockTotal,
+                      soloTipos
+                    );
+                    if (nuevaFotoUri !== "")
+                      await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+                    for (const caracteristica of nuevasCaracteristicas) {
+                      if (caracteristica.nuevoTipo) {
+                        await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
+                      }
+                      if (caracteristica.nuevaFoto) {
+                        await almacenaTipoMaterial(
+                          // almacenamos la foto del nuevo tipo de material en la BD
+                          caracteristica.uri,
+                          caracteristica.foto + ".png"
+                        );
+                      }
+                    }
+                  } else {
+                    // Guardamos los datos, ya que no hay error en las cuentas
+                    const soloTipos = nuevasCaracteristicas.map(
+                      (caracteristica) => {
+                        return {
+                          tipo: caracteristica.tipo,
+                          cantidad: caracteristica.cantidad,
+                          foto: caracteristica.foto + ".png",
+                        };
+                      }
+                    );
+
+                    await modificarMaterial(
+                      seleccionado.id,
+                      nuevoNombre,
+                      nuevaFoto + ".png",
+                      nuevoStock,
+                      soloTipos
+                    );
+
+                    if (nuevaFotoUri !== "")
+                      await almacenaMaterial(nuevaFotoUri, nuevaFoto + ".png"); // Almacenamos la foto en la BD
+
+                    for (const caracteristica of nuevasCaracteristicas) {
+                      if (caracteristica.nuevoTipo) {
+                        await aniadeTipoMaterial(caracteristica.tipo); // almacenamos el nombre del nuevo tipo en la BD
+                      }
+                      if (caracteristica.nuevaFoto) {
+                        await almacenaTipoMaterial(
+                          // almacenamos la foto del nuevo tipo de material en la BD
+                          caracteristica.uri,
+                          caracteristica.foto + ".png"
+                        );
+                      }
+                    }
+                  }
+                }
+
+                borrarTodo();
+                setViewCrearMaterial(false);
+                setViewModificarMaterial(true);
+              },
             },
-          },
-        ],
-        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-      );
+          ],
+          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+        );
+      }
     }
   };
 
@@ -699,13 +859,15 @@ export default function gestionItemMaterial() {
       seleccionado.caracteristicas !== undefined
     ) {
       setNuevoNombre(seleccionado.nombre);
-      setNuevaFoto(seleccionado.foto);
+      // Nos quedamos con el nombre de la foto sin el .png.
+      const nombreSinExtension = seleccionado.foto.split(".")[0];
+      setNuevaFoto(nombreSinExtension);
       setNuevoStock(seleccionado.stock);
       const caracteristicasTransformadas = seleccionado.caracteristicas.map(
         (caracteristica, index) => ({
           id: index, // Genera un ID único
           tipo: caracteristica.tipo,
-          foto: caracteristica.foto,
+          foto: caracteristica.foto.split(".")[0], // Quita la extensión .png
           cantidad: caracteristica.cantidad,
         })
       );
@@ -715,424 +877,433 @@ export default function gestionItemMaterial() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Items Materiales</Text>
-      <View>
-        <Text style={styles.text}>
-          ¿Qué opción desea realizar? Pulse sobre el botón que desee.
-        </Text>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
-        <View style={styles.row}>
-          <TouchableOpacity style={styles.button} onPress={handleCrearMaterial}>
-            <Text style={styles.buttonText}>Crear Material</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleModificarMaterial}
-          >
-            <Text style={styles.buttonText}>Modificar Material</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      {viewCrearMaterial && (
+      <ScrollView>
+        <Text style={styles.header}>Items Materiales</Text>
         <View>
-          <Text style={[styles.text]}>Nombre</Text>
+          <Text style={styles.text}>
+            ¿Qué opción desea realizar? Pulse sobre el botón que desee.
+          </Text>
 
-          <View style={styles.separador} />
-          {isSeleccionado ? (
-            <TextInput
-              style={[styles.input]}
-              placeholder="Elija nombre"
-              value={nuevoNombre}
-              onChangeText={(texto) => setNuevoNombre(texto)}
-            />
-          ) : (
-            <TextInput
-              style={[styles.input]}
-              placeholder="Elija nombre"
-              value={nombre}
-              onChangeText={setNombre}
-            />
-          )}
+          <View style={styles.separador}></View>
+          <View style={styles.separador}></View>
 
-          <View style={styles.separador} />
-          <View style={styles.separador} />
-
-          <Text style={[styles.text]}>Foto</Text>
-
-          <View style={styles.separador} />
-          {isSeleccionado ? (
-            <View>
-              <View style={styles.rowSolo}>
-                <TouchableOpacity
-                  style={[styles.addButtonTipoFotoBD]}
-                  onPress={async () => {
-                    const uri = await openGallery();
-                    if (uri) {
-                      setNuevaFotoUri(uri);
-                    }
-                  }}
-                >
-                  <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.inputNombreFotoNueva]}
-                  placeholder="Nombre foto"
-                  value={nuevaFoto}
-                  onChangeText={(texto) => setNuevaFoto(texto)}
-                />
-              </View>
-              {nuevaFotoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
-            </View>
-          ) : (
-            <View>
-              <View style={styles.rowSolo}>
-                <TouchableOpacity
-                  style={[styles.addButtonTipoFotoBD]}
-                  onPress={async () => {
-                    const uri = await openGallery();
-                    if (uri) {
-                      setFotoUri(uri);
-                    }
-                  }}
-                >
-                  <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.inputNombreFotoNueva]}
-                  placeholder="Nombre foto"
-                  value={foto}
-                  onChangeText={(texto) => setFoto(texto)}
-                />
-              </View>
-              {fotoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
-            </View>
-          )}
-
-          <View style={styles.separador} />
-          <View style={styles.separador} />
-
-          {viewPregunta && (
-            <>
-              <Text style={[styles.text]}>
-                ¿El objeto tiene características como grueso, fino, colores...?
-              </Text>
-
-              <View style={styles.separador} />
-
-              <View style={styles.row}>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => {
-                    setViewPregunta(false), setViewTipos(true);
-                  }}
-                >
-                  <Text style={styles.buttonText}>Sí</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => {
-                    setViewPregunta(false), setViewStock(true);
-                  }}
-                >
-                  <Text style={styles.buttonText}>No</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.separador} />
-              <View style={styles.separador} />
-            </>
-          )}
-
-          {viewStock && (
-            <>
-              <Text style={[styles.text]}>Stock</Text>
-
-              <View style={styles.separador} />
-              {isSeleccionado ? (
-                <TextInput
-                  style={[styles.input]}
-                  placeholder="Elija stock"
-                  value={nuevoStock}
-                  onChangeText={(texto) => setNuevoStock(texto)}
-                  keyboardType="numeric"
-                />
-              ) : (
-                <TextInput
-                  style={[styles.input]}
-                  placeholder="Elija stock"
-                  value={stock}
-                  onChangeText={handleStockInput}
-                  keyboardType="numeric"
-                />
-              )}
-
-              <View style={styles.separador} />
-              <View style={styles.separador} />
-            </>
-          )}
-
-          {viewTipos && (
-            <>
-              <Text style={[styles.text]}>
-                Añada una característica al material:
-              </Text>
-
-              <View style={styles.separador} />
-
-              <Text style={[styles.text]}>Tipo característica</Text>
-
-              <View style={styles.separador} />
-
-              {cargarTipoBD ? (
-                <View>
-                  <Picker
-                    selectedValue={tipo}
-                    onValueChange={(itemValue) => setTipo(itemValue)}
-                    style={[styles.picker]}
-                  >
-                    {tipos.map((tipo, index) => (
-                      <Picker.Item
-                        key={index}
-                        label={tipo.nombre}
-                        value={tipo.nombre}
-                      />
-                    ))}
-                  </Picker>
-
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoBD]}
-                    onPress={() => {
-                      setCargarTipoBD(false);
-                      setTipo("");
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Añadir nuevo</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View>
-                  <TextInput
-                    style={[styles.input]}
-                    placeholder="Elija el nombre"
-                    value={tipo}
-                    onChangeText={setTipo}
-                  />
-
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoBD]}
-                    onPress={() => {
-                      setCargarTipoBD(true);
-                      setTipo("");
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Preelección</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              <View style={styles.separador} />
-
-              <Text style={[styles.text]}>Cantidad</Text>
-
-              <View style={styles.separador} />
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija la cantidad"
-                value={stockTipo}
-                onChangeText={setStockTipo}
-                keyboardType="numeric"
-              />
-
-              <View style={[styles.separador]} />
-
-              <Text style={[styles.text]}>Foto</Text>
-
-              <View style={styles.separador} />
-
-              {cargarFotoTipoBD ? (
-                <View>
-                  <Picker
-                    selectedValue={fotoTipo}
-                    onValueChange={(itemValue) => setFotoTipo(itemValue)}
-                    style={[styles.picker]}
-                  >
-                    {fotosTipos.map((tipo, index) => (
-                      <Picker.Item
-                        key={index}
-                        label={tipo.nombre}
-                        value={tipo.nombre}
-                      />
-                    ))}
-                  </Picker>
-
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoBD]}
-                    onPress={() => {
-                      setCargarFotoTipoBD(false);
-                      setFotoTipo("");
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Añadir nuevo</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View>
-                  <View style={styles.rowSolo}>
-                    <TouchableOpacity
-                      style={[styles.addButtonTipoFotoBD]}
-                      onPress={async () => {
-                        const uri = await openGallery();
-                        if (uri) {
-                          setFotoTipoUri(uri);
-                        }
-                      }}
-                    >
-                      <Text style={styles.addButtonText}>
-                        Añadir Nueva Foto
-                      </Text>
-                    </TouchableOpacity>
-                    <TextInput
-                      style={[styles.inputNombreFotoNueva]}
-                      placeholder="Nombre foto"
-                      value={fotoTipo}
-                      onChangeText={setFotoTipo}
-                    />
-                  </View>
-                  {fotoTipoUri !== "" && <Text style={styles.TextSmall}> Añadida</Text>}
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoBD, {marginTop: 5}]}
-                    onPress={() => {
-                      setCargarFotoTipoBD(true);
-                      setFotoTipo("");
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Preelección</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              <View style={styles.separador} />
-
-              <TouchableOpacity
-                style={styles.addButtonTipo}
-                onPress={handleAnadirTipo}
-              >
-                <Text style={styles.addButtonText}>Añadir tipo</Text>
-              </TouchableOpacity>
-
-              <ScrollView
-                horizontal={true}
-                style={styles.FlatListCaracteristicas}
-              >
-                {isSeleccionado ? (
-                  <FlatList
-                    data={nuevasCaracteristicas}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderItem}
-                  />
-                ) : (
-                  <FlatList
-                    data={caracteristicas}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderItem}
-                  />
-                )}
-              </ScrollView>
-            </>
-          )}
-
-          <View style={styles.rowBotones}>
-            {isSeleccionado ? (
-              <>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={handleEliminar}
-                >
-                  <Text style={styles.addButtonText}>Eliminar</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                {!viewPregunta && (
-                  <>
-                    <TouchableOpacity
-                      style={styles.cancelButton}
-                      onPress={handleCancelar}
-                    >
-                      <Text style={styles.addButtonText}>Cancelar</Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </>
-            )}
-            {isSeleccionado ? (
-              <>
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={handleModificar}
-                >
-                  <Text style={styles.addButtonText}>Modificar</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                {!viewPregunta && (
-                  <>
-                    <TouchableOpacity
-                      style={styles.addButton}
-                      onPress={handleAnadirMaterial}
-                    >
-                      <Text style={styles.addButtonText}>Añadir</Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </>
-            )}
-          </View>
-        </View>
-      )}
-      {viewModificarMaterial && (
-        <View>
-          <View style={[styles.row]}>
-            <TextInput
-              style={[styles.input]}
-              placeholder="Elija Material"
-              value={buscar}
-              onChangeText={setBuscar}
-            />
+          <View style={styles.row}>
             <TouchableOpacity
-              style={styles.searchButton}
-              onPress={handleBuscar}
+              style={styles.button}
+              onPress={handleCrearMaterial}
             >
-              <Text style={styles.addButtonText}>Buscar</Text>
+              <Text style={styles.buttonText}>Crear Material</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleModificarMaterial}
+            >
+              <Text style={styles.buttonText}>Modificar Material</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.showAllMaterials}
-            onPress={handleMostrarTodo}
-          >
-            <Text style={styles.addButtonText}>Mostrar Todo</Text>
-          </TouchableOpacity>
-          {cargando && (
-            <View style={styles.text}>
-              <Text>Cargando...</Text>
-            </View>
-          )}
-          <View style={styles.FlatListMateriales}>
-            <FlatList
-              data={filtrar}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItemMateriales}
-            />
-          </View>
         </View>
-      )}
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        {viewCrearMaterial && (
+          <View>
+            <Text style={[styles.text]}>Nombre</Text>
+
+            <View style={styles.separador} />
+            {isSeleccionado ? (
+              <TextInput
+                style={[styles.input]}
+                placeholder="Elija nombre"
+                value={nuevoNombre}
+                onChangeText={(texto) => setNuevoNombre(texto)}
+              />
+            ) : (
+              <TextInput
+                style={[styles.input]}
+                placeholder="Elija nombre"
+                value={nombre}
+                onChangeText={setNombre}
+              />
+            )}
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            <Text style={[styles.text]}>Foto</Text>
+
+            <View style={styles.separador} />
+            {isSeleccionado ? (
+              <View>
+                <View style={styles.rowSolo}>
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoFotoBD]}
+                    onPress={async () => {
+                      const uri = await openGallery();
+                      if (uri) {
+                        setNuevaFotoUri(uri);
+                      }
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
+                  </TouchableOpacity>
+                  <TextInput
+                    style={[styles.inputNombreFotoNueva]}
+                    placeholder="Nombre foto"
+                    value={nuevaFoto}
+                    onChangeText={(texto) => setNuevaFoto(texto)}
+                  />
+                </View>
+                {nuevaFotoUri !== "" && (
+                  <Text style={styles.TextSmall}> Añadida</Text>
+                )}
+              </View>
+            ) : (
+              <View>
+                <View style={styles.rowSolo}>
+                  <TouchableOpacity
+                    style={[styles.addButtonTipoFotoBD]}
+                    onPress={async () => {
+                      const uri = await openGallery();
+                      if (uri) {
+                        setFotoUri(uri);
+                      }
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
+                  </TouchableOpacity>
+                  <TextInput
+                    style={[styles.inputNombreFotoNueva]}
+                    placeholder="Nombre foto"
+                    value={foto}
+                    onChangeText={(texto) => setFoto(texto)}
+                  />
+                </View>
+                {fotoUri !== "" && (
+                  <Text style={styles.TextSmall}> Añadida</Text>
+                )}
+              </View>
+            )}
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            {viewPregunta && (
+              <>
+                <Text style={[styles.text]}>
+                  ¿El objeto tiene características como grueso, fino,
+                  colores...?
+                </Text>
+
+                <View style={styles.separador} />
+
+                <View style={styles.row}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                      setViewPregunta(false), setViewTipos(true);
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Sí</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => {
+                      setViewPregunta(false), setViewStock(true);
+                    }}
+                  >
+                    <Text style={styles.buttonText}>No</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.separador} />
+                <View style={styles.separador} />
+              </>
+            )}
+
+            {viewStock && (
+              <>
+                <Text style={[styles.text]}>Stock</Text>
+
+                <View style={styles.separador} />
+                {isSeleccionado ? (
+                  <TextInput
+                    style={[styles.input]}
+                    placeholder="Elija stock"
+                    value={nuevoStock}
+                    onChangeText={(texto) => setNuevoStock(texto)}
+                    keyboardType="numeric"
+                  />
+                ) : (
+                  <TextInput
+                    style={[styles.input]}
+                    placeholder="Elija stock"
+                    value={stock}
+                    onChangeText={handleStockInput}
+                    keyboardType="numeric"
+                  />
+                )}
+
+                <View style={styles.separador} />
+                <View style={styles.separador} />
+              </>
+            )}
+
+            {viewTipos && (
+              <>
+                <Text style={[styles.text]}>
+                  Añada una característica al material:
+                </Text>
+
+                <View style={styles.separador} />
+
+                <Text style={[styles.text]}>Tipo característica</Text>
+
+                <View style={styles.separador} />
+
+                {cargarTipoBD ? (
+                  <View>
+                    <Picker
+                      selectedValue={tipo}
+                      onValueChange={(itemValue) => setTipo(itemValue)}
+                      style={[styles.picker]}
+                    >
+                      {tipos.map((tipo, index) => (
+                        <Picker.Item
+                          key={index}
+                          label={tipo.nombre}
+                          value={tipo.nombre}
+                        />
+                      ))}
+                    </Picker>
+
+                    <TouchableOpacity
+                      style={[styles.addButtonTipoBD]}
+                      onPress={() => {
+                        setCargarTipoBD(false);
+                        setTipo("");
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>Añadir nuevo</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View>
+                    <TextInput
+                      style={[styles.input]}
+                      placeholder="Elija el nombre"
+                      value={tipo}
+                      onChangeText={setTipo}
+                    />
+
+                    <TouchableOpacity
+                      style={[styles.addButtonTipoBD]}
+                      onPress={() => {
+                        setCargarTipoBD(true);
+                        setTipo("");
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>Preelección</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <View style={styles.separador} />
+
+                <Text style={[styles.text]}>Cantidad</Text>
+
+                <View style={styles.separador} />
+                <TextInput
+                  style={[styles.input]}
+                  placeholder="Elija la cantidad"
+                  value={stockTipo}
+                  onChangeText={setStockTipo}
+                  keyboardType="numeric"
+                />
+
+                <View style={[styles.separador]} />
+
+                <Text style={[styles.text]}>Foto</Text>
+
+                <View style={styles.separador} />
+
+                {cargarFotoTipoBD ? (
+                  <View>
+                    <Picker
+                      selectedValue={fotoTipo}
+                      onValueChange={(itemValue) => setFotoTipo(itemValue)}
+                      style={[styles.picker]}
+                    >
+                      {fotosTipos.map((tipo, index) => (
+                        <Picker.Item
+                          key={index}
+                          label={tipo.nombre}
+                          value={tipo.nombre}
+                        />
+                      ))}
+                    </Picker>
+
+                    <TouchableOpacity
+                      style={[styles.addButtonTipoBD]}
+                      onPress={() => {
+                        setCargarFotoTipoBD(false);
+                        setFotoTipo("");
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>Añadir nuevo</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View>
+                    <View style={styles.rowSolo}>
+                      <TouchableOpacity
+                        style={[styles.addButtonTipoFotoBD]}
+                        onPress={async () => {
+                          const uri = await openGallery();
+                          if (uri) {
+                            setFotoTipoUri(uri);
+                          }
+                        }}
+                      >
+                        <Text style={styles.addButtonText}>
+                          Añadir Nueva Foto
+                        </Text>
+                      </TouchableOpacity>
+                      <TextInput
+                        style={[styles.inputNombreFotoNueva]}
+                        placeholder="Nombre foto"
+                        value={fotoTipo}
+                        onChangeText={setFotoTipo}
+                      />
+                    </View>
+                    {fotoTipoUri !== "" && (
+                      <Text style={styles.TextSmall}> Añadida</Text>
+                    )}
+                    <TouchableOpacity
+                      style={[styles.addButtonTipoBD, { marginTop: 5 }]}
+                      onPress={() => {
+                        setCargarFotoTipoBD(true);
+                        setFotoTipo("");
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>Preelección</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <View style={styles.separador} />
+
+                <TouchableOpacity
+                  style={styles.addButtonTipo}
+                  onPress={handleAnadirTipo}
+                >
+                  <Text style={styles.addButtonText}>Añadir tipo</Text>
+                </TouchableOpacity>
+
+                <ScrollView style={styles.FlatListCaracteristicas}>
+                  {isSeleccionado ? (
+                    <FlatList
+                      data={nuevasCaracteristicas}
+                      keyExtractor={(item) => item.id}
+                      renderItem={renderItem}
+                    />
+                  ) : (
+                    <FlatList
+                      data={caracteristicas}
+                      keyExtractor={(item) => item.id}
+                      renderItem={renderItem}
+                    />
+                  )}
+                </ScrollView>
+              </>
+            )}
+
+            <View style={styles.rowBotones}>
+              {isSeleccionado ? (
+                <>
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={handleEliminar}
+                  >
+                    <Text style={styles.addButtonText}>Eliminar</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  {!viewPregunta && (
+                    <>
+                      <TouchableOpacity
+                        style={styles.cancelButton}
+                        onPress={handleCancelar}
+                      >
+                        <Text style={styles.addButtonText}>Cancelar</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
+              {isSeleccionado ? (
+                <>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleModificar}
+                  >
+                    <Text style={styles.addButtonText}>Modificar</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  {!viewPregunta && (
+                    <>
+                      <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={handleAnadirMaterial}
+                      >
+                        <Text style={styles.addButtonText}>Añadir</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        )}
+        {viewModificarMaterial && (
+          <View>
+            <View style={[styles.row]}>
+              <TextInput
+                style={[styles.input]}
+                placeholder="Elija Material"
+                value={buscar}
+                onChangeText={setBuscar}
+              />
+              <TouchableOpacity
+                style={styles.searchButton}
+                onPress={handleBuscar}
+              >
+                <Text style={styles.addButtonText}>Buscar</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.showAllMaterials}
+              onPress={handleMostrarTodo}
+            >
+              <Text style={styles.addButtonText}>Mostrar Todo</Text>
+            </TouchableOpacity>
+            {cargando && (
+              <View style={styles.text}>
+                <Text>Cargando...</Text>
+              </View>
+            )}
+            <View style={styles.FlatListMateriales}>
+              <FlatList
+                data={filtrar}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItemMateriales}
+              />
+            </View>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }

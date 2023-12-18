@@ -23,7 +23,6 @@ export default function VerPasosActividad({ navigation }) {
   useEffect(() => {
     if (route.params !== undefined) {
       // Añades el objeto al array
-      console.log("Estamos actualizando");
       const { nombre, texto, imagen, pictograma, video, audio } = route.params;
       global.pushPasos(nombre, texto, imagen, pictograma, video, audio);
       setData(global.getPasos);
@@ -80,16 +79,16 @@ export default function VerPasosActividad({ navigation }) {
         <Text style={styles.itemText}>{item.texto}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Pictograma</Text>
-        <Text style={styles.itemText}>{item.pictograma.Titulo}</Text>
+        <Text style={styles.itemText}>{item.pictograma.nombre}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Imagen</Text>
-        <Text style={styles.itemText}>{item.imagen.Titulo}</Text>
+        <Text style={styles.itemText}>{item.imagen.nombre}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Video</Text>
-        <Text style={styles.itemText}>{item.video.Titulo}</Text>
+        <Text style={styles.itemText}>{item.video.nombre}</Text>
         <Text style={styles.label}>Audio</Text>
-        <Text style={styles.itemText}>{item.audio.Titulo}</Text>
+        <Text style={styles.itemText}>{item.audio.nombre}</Text>
       </View>
       <TouchableOpacity
         onPress={() => deleteItem(item.id)}
