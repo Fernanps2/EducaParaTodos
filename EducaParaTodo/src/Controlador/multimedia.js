@@ -295,7 +295,7 @@ export async function descargaFotoPersona(foto) {
     if (foto != '')
         fotoCargada = await descargarFotoPersona(foto);
 
-    return emoticCargada;
+    return fotoCargada;
 }
 
 /**

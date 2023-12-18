@@ -6,10 +6,11 @@ import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion, b
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
 import {buscaImagen, buscaPictograma, buscaVideo} from '../Controlador/asignadosTarea';
-import { descargaFotoPersona } from '../Controlador/multimedia';
+import { descargaFotoPersona, descargaImagen, descargaPictograma, descargaVideo } from '../Controlador/multimedia';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import Video from 'react-native-video';
+//import Video, {VideoRef} from 'react-native-video';
+//import VideoPlayer from 'react-native-video-player';
 
 export function VerTarea ({route, navigation}){
     const {id, idAlumno} = route.params;
@@ -25,6 +26,9 @@ export function VerTarea ({route, navigation}){
     const [video, setVideo] = useState([]);
     const [imagenCargada, setImagenCargada] = useState(false);
     const [foto, setFoto] = useState([]);
+
+    //const videoRef = useRef(null);
+    //const background = require('./video.mp4');
 
     const profesorRef = useRef(profesor);
     /*const [tareaInv, setTareaInv] = useState([]);
@@ -85,7 +89,7 @@ export function VerTarea ({route, navigation}){
                 console.log(error);
             }
         };
-        listaProf();
+        listaProf(); 
     }, [tareaActvidad]);
 
     useEffect(() => {
@@ -93,7 +97,7 @@ export function VerTarea ({route, navigation}){
             try {
                 const currentProfesor = profesorRef.current;
                 console.log("CurrentProfesor: ", currentProfesor);
-    
+     
                 if (Array.isArray(currentProfesor) && currentProfesor.length > 0) {
                     const primerProfesor = currentProfesor[0];
                     
@@ -114,18 +118,14 @@ export function VerTarea ({route, navigation}){
         };
     
         getFoto();
-    }, [tareaActvidad]);
-    
-    
-    
-     
+    }, [profesor]);     
 
     useEffect(() => {
         const listaAlum = async () => {
             try {
                 const Alumn = await buscaAlumnoId(idAlumno);
                 setAlumno(Alumn);
-
+ 
                 console.log("Alumno: " + JSON.stringify(Alumn)); 
             } catch (error) {
                 console.log(error);
@@ -211,8 +211,8 @@ export function VerTarea ({route, navigation}){
         const listaImagen = async () => {
             try {
                 
-                if(pasoActualData && pasoActualData.idImagen){
-                    const Imagen = await buscaImagen(pasoActualData.idImagen);
+                if(pasoActualData && pasoActualData.imagen){
+                    const Imagen = await descargaImagen(pasoActualData.imagen);
                     setImagen(Imagen);
                     setImagenCargada(true);
                     console.log("Imagen: " + JSON.stringify(Imagen)); 
@@ -222,14 +222,14 @@ export function VerTarea ({route, navigation}){
             }
         }; 
         listaImagen();  
-    }, [pasoActualData]);
+    }, [pasoActualData]); 
 
     useEffect(() => {
         const listaPictograma = async () => {
             try {
                 
-                if(pasoActualData && pasoActualData.idPictograma){
-                    const Pictograma = await buscaPictograma(pasoActualData.idPictograma);
+                if(pasoActualData && pasoActualData.pictograma){
+                    const Pictograma = await descargaPictograma(pasoActualData.pictograma);
                     setPictograma(Pictograma);
                     console.log("Pictograma: " + JSON.stringify(Pictograma)); 
                 }
@@ -244,8 +244,8 @@ export function VerTarea ({route, navigation}){
         const listaVideo = async () => {
             try {
                 
-                if(pasoActualData && pasoActualData.idVideo){
-                    const Video = await buscaVideo(pasoActualData.idVideo);
+                if(pasoActualData && pasoActualData.video){
+                    const Video = await descargaVideo(pasoActualData.video);
                     setVideo(Video);
                     console.log("Video: " + JSON.stringify(Video)); 
                 }
@@ -264,21 +264,20 @@ export function VerTarea ({route, navigation}){
                     <Text style={styles.tarea}>{tarea.titulo}</Text>
                     <Text style={styles.aula}>Aula {tareaActvidad && tareaActvidad.aula}</Text> 
                     <Image style={styles.fotoProfe} source={{uri: foto.uri}}/>
-         
+          
                     <View style={styles.pasos}>
-                        {pasoActualData && pasoActualData.idImagen && pasoActualData.idImagen !== "Ninguno" && 
+                        {pasoActualData && pasoActualData.imagen && pasoActualData.imagen !== "Ninguno" && 
                         visualizacion == "imagenes" && (
-                        <Image source={{uri: imagen.URL}} style={styles.foto} />
+                        <Image source={{uri: imagen.uri}} style={styles.foto} />
                         )} 
 
-                        {pasoActualData && pasoActualData.idPictograma && pasoActualData.idPictograma !== "Ninguno" && 
+                        {pasoActualData && pasoActualData.pictograma && pasoActualData.pictograma !== "Ninguno" && 
                         visualizacion == "pictogramas" && (
-                        <Image source={{uri: pictograma.URL}} style={styles.foto} />
-                        )} 
+                        <Image source={{uri: pictograma.uri}} style={styles.foto} />
+                        )}  
 
-                        {pasoActualData && pasoActualData.idVideo && pasoActualData.idVideo !== "Ninguno" && 
-                        visualizacion == "video" && (
-                        <Video source={{uri:"https://www.youtube.com/watch?v=-9X2obbSECU"}} style={styles.foto} controls={true} />
+                        {pasoActualData && pasoActualData.video && pasoActualData.video !== "Ninguno" && 
+                        visualizacion == "video" && (<Image source={{uri: pictograma.uri}} style={styles.foto} />
                         )} 
          
                         {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
