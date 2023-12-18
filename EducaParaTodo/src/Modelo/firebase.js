@@ -43,6 +43,7 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
+const COL_TAREAS = 'Tarea';
 
 //valores para las carpetas de archivos
 const IMAGENES = 'Imagenes/';

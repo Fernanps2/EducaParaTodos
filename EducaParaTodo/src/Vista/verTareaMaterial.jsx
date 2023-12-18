@@ -12,7 +12,11 @@ import {
   mostrarNumeroRecogidas,
   mostrarNumeroLugaresDestino,
 } from "./pantallaTareaMaterialInformacion";
-import { descargaFotoPersona } from "../Controlador/multimedia";
+import {
+  descargaFotoPersona,
+  descargaMaterial,
+  descargaTipoMaterial,
+} from "../Controlador/multimedia";
 
 export default function VerTareaMaterial({ route, navigation }) {
   const id = route.params.id; // obtenemos el id Tarea.
@@ -196,8 +200,40 @@ export default function VerTareaMaterial({ route, navigation }) {
           // Esperamos a que todas las promesas se resuelvan
           const materiales = await Promise.all(promesas);
 
-          console.log("materailes: ", materiales);
-          setMateriales(materiales);
+          // Procesar cada material y sus caracteristicas
+          const materialesProcesados = await Promise.all(
+            materiales.map(async (subArray) => {
+              const objetosProcesados = await Promise.all(
+                subArray.map(async (objeto) => {
+                  // Procesar la foto del objeto
+                  if (objeto.foto) {
+                    objeto.foto = await descargaMaterial(objeto.foto);
+                  }
+
+                  // Procesar cada caracteristica del objeto
+                  if (objeto.caracteristicas) {
+                    objeto.caracteristicas = await Promise.all(
+                      objeto.caracteristicas.map(async (caracteristica) => {
+                        if (caracteristica.foto) {
+                          caracteristica.foto = await descargaTipoMaterial(
+                            caracteristica.foto
+                          );
+                        }
+                        return caracteristica;
+                      })
+                    );
+                  }
+
+                  return objeto; // Devuelve el objeto con foto y caracteristicas actualizadas
+                })
+              );
+
+              return objetosProcesados; // Devuelve el sub-array con todos los objetos actualizados
+            })
+          );
+
+          console.log('materiales: ', materialesProcesados)
+          setMateriales(materialesProcesados);
           setCargandoMateriales(false);
         } catch (error) {
           // Manejo de errores
@@ -230,7 +266,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           setLugarDestinoNow(aulaNow);
           if (materialesCargados !== "retroceder en destino informacion") {
             setViewDestinoQuedan(true); // para que muestre el numero de destino que tiene que ir.
-          }else{
+          } else {
             setViewDestinoQuedan(false); // para que retroceda al lugar destino anterior a la pantalla de información.
           }
         }
@@ -301,10 +337,8 @@ export default function VerTareaMaterial({ route, navigation }) {
       if (materialesCargados === "retroceder") {
         setMaterialLlevarIndex(materialLlevarIndex - 1);
         indice = materialLlevarIndex - 1;
-        console.log("aqui");
       } else {
         indice = materialLlevarIndex;
-        console.log("nox");
       }
       const tareasFiltradas = [].concat(
         ...agrupadosDestiTareas[lugarDestinoNow]
@@ -399,13 +433,11 @@ export default function VerTareaMaterial({ route, navigation }) {
     });
 
     if (destinoActualIndex < tareasListas.length - 1) {
-      console.log("siguiente clase,");
       setMaterialesCargados("siguiente clase");
       setMaterialLlevarIndex(0);
       setDestinoActualIndex(destinoActualIndex + 1);
     } else {
       // Sino hay mas vamos a la siguiente recogida
-      console.log("siguiente recogida");
       handleNextRecogida();
       setCargandoMaterialesRecogidosOrigen(true);
       setViewObjetosRecoger(false);
@@ -483,13 +515,12 @@ export default function VerTareaMaterial({ route, navigation }) {
         <TouchableOpacity
           style={styles.retrocederPulsar}
           onPress={() => {
-            if(indexLugarOrigen > 0){
-              setIndexLugarOrigen(indexLugarOrigen -1);
-              setDestinoActualIndex(lugarDestinos.length -1);
+            if (indexLugarOrigen > 0) {
+              setIndexLugarOrigen(indexLugarOrigen - 1);
+              setDestinoActualIndex(lugarDestinos.length - 1);
               setMaterialLlevarIndex(agrupadosDestiTareas[setLugarDestinoNow]);
               setCargandoMaterialesRecogidosOrigen(false);
-              console.log('lugarOrign: ',lugarOrigenNow);
-            }else{
+            } else {
               navigation.navigate("Tareas", { usuario });
             }
           }}
@@ -657,7 +688,10 @@ export default function VerTareaMaterial({ route, navigation }) {
             setCaract(objetosFiltrados); // obtenemos las caracteristicas del objeto a recoger.
           }}
         >
-          <Image source={{ uri: materialActual.foto }} style={imagenStyle} />
+          <Image
+            source={{ uri: materialActual.foto.uri }}
+            style={imagenStyle}
+          />
           <Text style={styles.textBoton}>
             Coger {materialActual.nombre}
             {materialActual.caracteristica !== "Ninguno"
@@ -757,6 +791,7 @@ export default function VerTareaMaterial({ route, navigation }) {
     }
 
     const tipoActual = tipos[indiceActualTipo];
+    console.log("este es el tipo actual: ", tipoActual);
 
     const avanzarAlSiguienteTipo = () => {
       if (indiceActualTipo < tipos.length - 1) {
@@ -777,7 +812,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             style={[styles.image, { marginHorizontal: 15 }]}
           />
           <Image
-            source={{ uri: fotoMaterial }}
+            source={{ uri: fotoMaterial.uri }}
             style={[styles.image, { marginHorizontal: 15 }]}
           />
         </View>
@@ -828,7 +863,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                     </Text>
                   )}
                   <Image
-                    source={{ uri: tipoActual.foto }}
+                    source={{ uri: tipoActual.foto.uri }}
                     style={styles.imageSmall}
                   />
                 </View>
@@ -892,7 +927,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               //setDestinoActualIndex(destinoActualIndex - 1);
               //setMaterialLlevarIndex(materialLlevarIndex-1);
               //console.log('indice Material: ',agrupadosDestiTareas[lugarDestinoNow]);
-              console.log('vamos por aqui'); // fjaslkdjfalksdjfañlksdjfñlakjsdfafldksjafñldskjfañlsdjkfañlksdjfñlksdajfd
+              console.log("vamos por aqui"); // fjaslkdjfalksdjfañlksdjfñlakjsdfafldksjafñldskjfañlsdjkfañlksdjfñlksdajfd
             } else {
               setViewCadaObjetoRecoger(true);
               setCargandoMateriales(false);
@@ -966,12 +1001,12 @@ export default function VerTareaMaterial({ route, navigation }) {
                   <Text style={styles.numeroImagen}>{stockMaterialLlevar}</Text>
                 )}
                 <Image
-                  source={{ uri: fotoMaterialLlevar }}
+                  source={{ uri: fotoMaterialLlevar.uri }}
                   style={styles.imageSmall}
                 />
                 {fotoCaracteristicaMaterialLlevar !== "" && (
                   <Image
-                    source={{ uri: fotoCaracteristicaMaterialLlevar }}
+                    source={{ uri: fotoCaracteristicaMaterialLlevar.uri }}
                     style={styles.imageSmall}
                   />
                 )}
