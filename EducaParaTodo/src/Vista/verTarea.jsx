@@ -11,6 +11,7 @@ import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
 //import Video, {VideoRef} from 'react-native-video';
 //import VideoPlayer from 'react-native-video-player';
+import { Video, ResizeMode } from 'expo-av';
 
 export function VerTarea ({route, navigation}){
     const {id, idAlumno} = route.params;
@@ -26,6 +27,9 @@ export function VerTarea ({route, navigation}){
     const [video, setVideo] = useState([]);
     const [imagenCargada, setImagenCargada] = useState(false);
     const [foto, setFoto] = useState([]);
+
+    const vid = React.useRef(null);
+    const [status, setStatus] = React.useState({});
 
     //const videoRef = useRef(null);
     //const background = require('./video.mp4');
@@ -277,7 +281,13 @@ export function VerTarea ({route, navigation}){
                         )}  
 
                         {pasoActualData && pasoActualData.video && pasoActualData.video !== "Ninguno" && 
-                        visualizacion == "video" && (<Image source={{uri: pictograma.uri}} style={styles.foto} />
+                        visualizacion == "video" && (
+                        <Video ref={vid} style={styles.video}
+                            source={{
+                                uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' /*video.uri*/,
+                            }}
+                            useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
+                            onPlaybackStatusUpdate={status => setStatus(() => status)}/>
                         )} 
          
                         {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
@@ -442,6 +452,15 @@ const styles = StyleSheet.create({
     foto: {
         marginTop: 25,
         width: RFValue(160),
+        height: RFValue(160),
+        borderRadius: 20,
+        overflow: 'hidden',
+        borderWidth: 2,
+        borderColor: 'black',
+    },
+    video: {
+        marginTop: 25,
+        width: RFValue(300),
         height: RFValue(160),
         borderRadius: 20,
         overflow: 'hidden',

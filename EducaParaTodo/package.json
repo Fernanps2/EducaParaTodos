@@ -31,7 +31,8 @@
     "react-native-video-player": "^0.14.0",
     "react-native-web": "~0.19.6",
     "sweetalert": "^2.1.2",
-    "sweetalert2": "^11.6.13"
+    "sweetalert2": "^11.6.13",
+    "expo-av": "~13.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
