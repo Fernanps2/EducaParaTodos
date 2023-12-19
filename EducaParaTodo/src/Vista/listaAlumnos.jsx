@@ -3,20 +3,20 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
-import { getAlumnos } from '../Modelo/firebase.js';
+import { buscaAlumno } from '../Controlador/alumnos';
 import DatosAlumnosLista from './datosListaAlumno';
 
-// Esta vista se usa para el homeAdmin para que se muestren todos los alumnos y a su vez la pantalla tenga botones 
-// de añadir alumno
-export default function ListaAlumnos({ navigation }) {
+export default function ListaAlumnos({route,  navigation }) {
 
+  //const datos = getAlumnos();  // Llamamos a la función para obtener los datos
+  //const alumnosArray = Object.values(datos);   // Convertimos los datos un array
   const [lista, setLista] = useState([]);
 
   // useEffect es un Hook de React que te permite sincronizar un componente con un sistema externo.
   useEffect(() => {
     const listaAlumnos = async () => {
       try {
-        const alumnos = await getAlumnos();
+        const alumnos = await buscaAlumno();
         setLista(alumnos);
         await console.log(alumnos);
       } catch (error) {
@@ -26,7 +26,7 @@ export default function ListaAlumnos({ navigation }) {
     listaAlumnos();
   }, []);
 
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

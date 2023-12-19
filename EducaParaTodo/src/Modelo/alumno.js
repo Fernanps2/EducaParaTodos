@@ -20,7 +20,7 @@ export default function alumnos () {
         nombre: 'Alumno2 apellido2 apellido2',
         nombreFoto:'alumno2.jpeg',
         fotoUrl: 'https://static.vecteezy.com/system/resources/previews/001/242/860/non_2x/school-child-students-education-pupil-boy-in-glasses-learn-lesson-photo.jpg',
-        tareasPendiente: ['Hacer la colada', 'Hacer ejercicio', 'Tirar la basura'],
+        tareasPendiente: ['Poner la mesa', 'Hacer ejercicio', 'Tirar la basura'],
         tareasCompletadas: ['tarea 3', 'tarea 4'],
         fotoTarea:'https://retos-directivos.eae.es/wp-content/uploads/2019/01/iStock-924555992.jpg',
     }

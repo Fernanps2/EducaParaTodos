@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
 import { buscaProfesor } from '../Controlador/profesores';
-import { getProfesores } from '../Modelo/firebase';
-import DatosProfesor from './DatosProfesor';
+import DatosListaProfesor from './datosListaProfesor';
+// import { getProfesores } from '../Modelo/firebase';
 
 export default function ListaProfesores({ navigation }) {
 
@@ -17,12 +17,12 @@ export default function ListaProfesores({ navigation }) {
   useEffect(() => {
     const ListaProfesores = async () => {
       try {
-        const profesores = await getProfesores();
-        console.log(profesores);
+        const profesores = await buscaProfesor();
+        console.log('profesores' + profesores);
         setLista(profesores);
-        await console.log(profesores);
+        await console.log('lista' + lista);
       } catch (error) {
-        console.log(error);
+        console.log('error' + error);
       }
     };
     ListaProfesores();
@@ -36,10 +36,9 @@ export default function ListaProfesores({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.datos}>
-
-        {lista.map((profesor, index) => (
+        {lista && lista.map((profesor, index) => (
           <View key={index} style={styles.elementoList}>
-            <DatosProfesor profesor={profesor} navigation={navigation} />
+            <DatosListaProfesor profesor={profesor} navigation={navigation} />
           </View>
         ))}
       </ScrollView>

@@ -7,14 +7,17 @@ const LoginScreen = ({ route, navigation} ) => {
   const [password, setPassword] = useState('');
   const tipo = route.params.tipo;
   const {login} = useUser();
+  let logueado = false;
 
-  const handleLogin = () => {
-    const logueado = login(username, password, tipo);
+  const handleLogin = async () => {
+    logueado = (await login(username, password, tipo));
+
+    //console.log("logueado:",logueado);
 
     if (logueado && tipo == 'profesor')
-      navigation.navigate('HomeEducador')
+      navigation.navigate('HomeEducador', username );
     else if (logueado && tipo == 'administrador')
-      navigation.navigate('HomeAdmin');
+      navigation.navigate('HomeAdmin', username);
     else
       alert('Usuario y contraseña inválidos');
   };

@@ -1,7 +1,24 @@
 import React from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Image } from 'react-native';
+import { useEffect, useState } from 'react';
+import { aniadeProfesor } from '../Controlador/profesores';
+import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';
 
 export default function AniadirProfesor ({navigation }) {
+  const [datosProfesor, setDatosProfesor] = useState({
+    nombre: "",
+    apellidos: "",
+    contrasenia: "",
+  });
+
+  const [imageUri, setImageUri] = useState("");
+
+  const handeChangeText = (value, name) => {
+    setDatosProfesor(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  }
 
   const showAlertStore = () => {
     Alert.alert(
@@ -9,11 +26,21 @@ export default function AniadirProfesor ({navigation }) {
       "Pulsa una opción", // Mensaje
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () => navigation.navigate('HomeAdmin')}
+        { text: "Confirmar", onPress: () =>{
+            almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
+              "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+            navigation.navigate('listaProfesores');
+          }
+        }
       ],
       { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
     );
   };
+
+  const handleImage = async() => {
+    setImageUri(await openGallery());
+  }
 
     return (
       <View style={styles.container}>
@@ -21,14 +48,41 @@ export default function AniadirProfesor ({navigation }) {
         <Text style={styles.title}>EducaParaTodos</Text>
       </View>
 
-      <TextInput style={styles.input} placeholder="Nombre" />
-      <TextInput style={styles.input} placeholder="Apellidos" />
-      <TextInput style={styles.input} placeholder="Correo" />
-      <TextInput style={styles.input} placeholder="Información Adicional" />
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre"
+        value={datosProfesor.nombre}
+        onChangeText={(value)=>handeChangeText(value,'nombre')}
+        />
+      <TextInput
+        style={styles.input}
+        placeholder="Apellidos"
+        value={datosProfesor.apellidos}
+        onChangeText={(value)=>handeChangeText(value,'apellidos')}
+        />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Contraseña"
+        secureTextEntry
+        value={datosProfesor.contrasenia}
+        onChangeText={(value)=>handeChangeText(value,'contrasenia')}
+        />
 
       <View style={styles.photoSection}>
-        <Text>Foto del usuario:</Text>
-        <View style={styles.userIcon} />
+        <Text>Añadir foto del usuario:</Text>
+        <TouchableOpacity>
+          {imageUri ? (
+            <Image source={{ uri: imageUri }} style={styles.userIcon} />
+          ) : (
+            <View style={styles.userIconPlaceholder} />
+          )}
+        </TouchableOpacity>
+        <Button
+          onPress={() =>handleImage()}
+          title="Seleccionar una imagen"
+        />
+    
       </View>
 
       <TouchableOpacity style={styles.addButton}
@@ -65,11 +119,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   userIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'grey',
-    marginBottom: 10,
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    // Otros estilos para la imagen
+  },
+  userIconPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    backgroundColor: '#cccccc', // Un color de fondo para el placeholder
+    // Otros estilos para el placeholder
   },
   addButton: {
     backgroundColor: '#007BFF',

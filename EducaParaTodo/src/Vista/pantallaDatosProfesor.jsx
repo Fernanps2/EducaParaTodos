@@ -1,26 +1,74 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { borraProfesor } from '../Controlador/profesores';
+import { useEffect, useState } from 'react';
+import { descargaFotoPersona } from '../Controlador/multimedia';
 
 
-const pantallaDatosProfesor = ({route, navigation}) => {
+const PantallaDatosProfesor = ({route, navigation}) => {
 
     const {profesor} =route.params;
+
+    const [imagen, setImagen] = useState([]);
+
+  // useEffect es un Hook de React que te permite sincronizar un componente con un sistema externo.
+useEffect(() => {
+    const imagen = async () => {
+      try {
+        const imagen = await descargaFotoPersona(profesor.foto);
+        setImagen(imagen);
+        await console.log(imagen);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    imagen();
+  }, []);
+
+    const showAlertStore = () => {
+      Alert.alert(
+        "¿Quiere eliminar el Profesor?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              borraProfesor(profesor.id);
+              navigation.navigate('listaProfesores');
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    };
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}> Datos del alumno</Text>
+                <Text style={styles.title}> Datos del profesor</Text>
             </View>
             <Text style={styles.input}> Nombre: {profesor.nombre} </Text>
             <Text style={styles.input}> Apellidos: {profesor.apellidos} </Text>
-            <Text style={styles.input}> Correo:  </Text>
+            <View style={styles.photoSection}>
+              <TouchableOpacity>
+                {imagen.uri!=null ? (
+                  <Image source={{ uri: imagen.uri }} style={styles.userIcon} />
+                ) : (
+                  <View style={styles.userIconPlaceholder} > 
+                    <Text> No hay foto </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+        
+    
+            </View>
 
           
         <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Modificar Profesor</Text>
-      </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
+        <BotonModificarProfesor texto={"Modificar profesor"} profesor={profesor} navigation={navigation} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}
+        onPress={()=>{ showAlertStore()}}>
         <Text style={styles.buttonText}>Eliminar Profesor</Text>
       </TouchableOpacity>
         </View>
@@ -30,7 +78,7 @@ const pantallaDatosProfesor = ({route, navigation}) => {
     )
 }
 
-export default pantallaDatosProfesor;
+export default PantallaDatosProfesor;
 
 const styles = StyleSheet.create({
     container: {
@@ -51,6 +99,23 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       padding: 10,
       marginBottom: 10,
+    },
+    photoSection: {
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    userIcon: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      // Otros estilos para la imagen
+    },
+    userIconPlaceholder: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      backgroundColor: '#cccccc', // Un color de fondo para el placeholder
+      // Otros estilos para el placeholder
     },
     buttonContainer: {
       flexDirection: 'row', // Alinea los elementos horizontalmente

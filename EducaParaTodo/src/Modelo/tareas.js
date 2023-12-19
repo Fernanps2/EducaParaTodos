@@ -1,7 +1,7 @@
 import React from 'react';
-import RecogerLosPlatos from '../../Imagenes/verTarea/recogerlosplatos.png';
-import PonerLaMesa from '../../Imagenes/verTarea/ponerlamesa.png';
-import MesaPuesta  from '../../Imagenes/verTarea/mesapuesta.png';
+import RecogerLosPlatos from './verTarea/recogerlosplatos.png';
+import PonerLaMesa from './verTarea/ponerlamesa.png';
+import MesaPuesta  from './verTarea/mesapuesta.png';
 
 export default function tareas(){
 

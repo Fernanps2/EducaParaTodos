@@ -1,18 +1,32 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform } from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
+import { useEffect, useState } from 'react';
+import { descargaFotoPersona } from '../Controlador/multimedia';
 
-
-// Esta vista sirve para mostrar los datos de un alumno
 const DatosAlumnosLista = ({ alumno, navigation }) => {
+
+    const [imagen, setImagen] = useState([]);
+
+  // useEffect es un Hook de React que te permite sincronizar un componente con un sistema externo.
+  useEffect(() => {
+    const imagen = async () => {
+      try {
+        const imagen = await descargaFotoPersona(alumno.foto);
+        setImagen(imagen);
+        await console.log(imagen);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    imagen();
+  }, []);
+
     return (
             <View>
                 <TouchableOpacity onPress={() => navigation.navigate('pantallaDatosAlumno', { alumno: alumno })}>
-                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
+                    {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-                    <Image style={styles.image} source={{uri:alumno.fotoUrl}} />
+                    <Image style={styles.image} source={{uri:imagen.uri}} />
                     <Text style={styles.texto}> Nombre: {alumno.nombre} </Text>
                 </TouchableOpacity>
             </View>
