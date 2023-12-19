@@ -7,8 +7,11 @@ import {
   TextInput,
   Platform,
   Alert,
+  FlatList,
+  Image,
+  ScrollView
 } from "react-native";
-import { almacenaImagen, almacenaPictograma, almacenaVideo, openGallery } from "../Controlador/multimedia";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 
 export default function GestionItemActividad() {
@@ -31,6 +34,8 @@ export default function GestionItemActividad() {
   const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
 
   const [viewEliminarImagen, setViewEliminarImagen] = useState(false);
+  const [imagenes, setImagenes] = useState([]);
+  const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]);
 
   //Sección de funciones
   const handleVideo = () => {
@@ -79,7 +84,7 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false); 
     setViewEliminarImagen(false);
   }
-  const handleEliminarImagen = () => {
+  const handleEliminarImagen = async () => {
     setViewPictograma(false);
     setViewVideo(false);
     setViewImagen(false);
@@ -87,6 +92,8 @@ export default function GestionItemActividad() {
     setViewEliminarVideo(false);
     setViewEliminarPictograma(false);
     setViewEliminarImagen(true); //
+
+    setImagenes(await descargaImagenes());
   }
   const handleEliminarAudio = () => {
     setViewPictograma(false);
@@ -165,6 +172,65 @@ export default function GestionItemActividad() {
       }
     }
   };
+
+  //FUNCIONES PARA ELIMINAR IMAGEN
+  //Para seleccionar y deseleccionar una imagen
+  const toggleSelection = (imageId) => {
+    const index = imagenesSeleccionadas.indexOf(imageId);
+
+    if (index == -1) {
+      setImagenesSeleccionadas([...imagenesSeleccionadas, imageId]);
+    } else {
+      const updatedSelection = [...imagenesSeleccionadas];
+      updatedSelection.splice(index,1);
+      setImagenesSeleccionadas(updatedSelection);
+    }
+  };
+  
+  //Renderizar la imagen
+  const renderImage = ({item}) => {
+    const isSelected = imagenesSeleccionadas.includes(item.nombre);
+    //console.log(item.uri);
+
+    return (
+      <TouchableOpacity
+        style={isSelected ? styles.selectedImage : styles.image}
+        onPress={() => toggleSelection(item.nombre)}
+      >
+        <Image
+          source={{uri: item.uri}}
+          style={styles.imageStyle}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const eliminarImagenes = async () => {
+    if (viewEliminarImagen) {
+      imagenesSeleccionadas.map((selectedId) => {
+        eliminaImagen(selectedId);
+      });
+      setImagenesSeleccionadas([]);
+
+      console.log("Imágenes eliminadas");
+
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "Listo",
+          text: "Imágenes borradas correctamente",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Listo', 'Imágenes borradas correctamente');
+      }
+
+      //Actualizamos de nuevo las imágenes
+      setImagenes(await descargaImagenes());
+    }
+  }
+
+  //FIN FUNCIONES ELIMINAR IMAGEN
 
   const abrirGaleria = async() => {
     if(viewPictograma) setUrlPictograma(await openGallery());
@@ -350,6 +416,39 @@ export default function GestionItemActividad() {
           </TouchableOpacity>
         </View>
       )}
+      {viewEliminarImagen && (
+        <ScrollView>
+          <View style={styles.separador} />
+
+          <Text style={styles.text}>Selecciona las imágenes a eliminar:</Text>
+
+          <View style={styles.separador}/>
+          <View style={styles.separador}/>
+
+          <View style={styles.container}>
+          
+            <FlatList
+              data={imagenes}
+              renderItem={renderImage}
+              keyExtractor={(item) => item.name}
+              numColumns={3}
+              contentContainerStyle={styles.imageGrid}
+            />
+            <View style={styles.selectedImagesContainer}>
+              <Text>Imágenes seleccionadas:</Text>
+              {imagenesSeleccionadas.map((selectedId) => (
+                <Text key={selectedId}>{imagenes.find(item => item.nombre == selectedId).nombre}</Text>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.separador}/>
+
+          <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
+            <Text style={styles.buttonText}>Eliminar</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -442,5 +541,35 @@ const styles = StyleSheet.create({
   },
   textoSeleccionado: {
     color: "green"
-  }
+  },
+  image: {
+    margin: 5,
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'black',
+},
+  selectedImage: {
+    margin: 5,
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'green',
+  },
+  imageStyle: {
+    width: '100%',
+    height: 100,
+  },
+  selectedImagesContainer: {
+    marginTop: 20,
+  },
+  imageGrid: {
+    justifyContent: 'space-between', // Espacio entre las filas
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
 });
