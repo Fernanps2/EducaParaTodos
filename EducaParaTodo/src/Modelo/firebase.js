@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc, orderBy } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
 import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
+import { Alert } from 'react-native';
 
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
@@ -46,6 +47,7 @@ const VIDEOS = 'Videos/';
 const EMOTICONOS = 'Emoticonos/';
 const PERSONAS = 'Personas/';
 const LOGIN = 'ImagenesLogin/';
+const MENUS = 'Menus/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -1683,6 +1685,35 @@ export async function almacenarFotoPersona(foto, nombreFoto) {
     }
 }
 
+export async function almacenarFotoMenu(foto, nombreFoto) {
+    //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
+    if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
+
+    try {
+        if (descargarFotoPersona(nombreFoto) != null) {
+            const refFoto = ref(storage, MENUS + nombreFoto)
+            const file = await (await fetch(foto)).blob();
+            uploadBytes(refFoto, file).then((snapshot) => {
+                console.log('Se ha subido la foto');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                    title: "ERROR",
+                    text: "El nombre del archivo ya existe, elija uno diferente",
+                    icon: "warning",
+                    confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 export async function almacenarImagenLogin(imagen, nombreImagen) {
 
     try {
@@ -1944,6 +1975,31 @@ export async function descargarFotoPersona(nombreFoto) {
     return imagenUri;
 }
 
+export async function descargarFotoMenu(nombreFoto) {
+    console.log("descargando foto del menu");
+    console.log()
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, MENUS + nombreFoto);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+
+    return imagenUri;
+}
+
+
 export async function descargarFotosPersonas() {
     let entidad = [];
     let resultado;
@@ -2203,10 +2259,10 @@ export const asignarFeedback = async (idTarea, feedBack) => {
 }
 
 // PROBADA Y FUNCIONA. 
-
+// Obtenemos todas las tareas asociadas a un alumno
 export const getTareaId = async (idAlumno) => {
 
-
+    console.log("fire base id: " + idAlumno);
     try {
         const q = query(collection(db, "Tarea"), where("idAlumno", "==", idAlumno),where('completado','==','false'));
         const querySnapshot = await getDocs(q);
@@ -2234,6 +2290,24 @@ export const getTareaId = async (idAlumno) => {
         Alert.alert(error);
     }
 };
+
+export const getTarea = async (idTarea) => {
+
+    try {
+        const docRef = doc(collection(db,'Tarea'),idTarea);
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+            const datos = docSnap.data();
+            return datos;
+            }
+        } catch (error) {
+        console.log(error);
+    }
+};
+
+
+
 
 // Obtener todas las tareas
 export const getTareas = async () => {
@@ -2558,7 +2632,7 @@ export const getTareasComanda = async () => {
 export const getTComanda = async () => {
     const tipo = 'comanda';
     try {
-        const consulta = query(collection(db, 'Tarea'), where('tipo', '==', tipo));
+        const consulta = query(collection(db, 'Tarea'), where('tipo', '==', tipo),where('completado','==','true'));
         const querySnapshot = await getDocs(consulta);
 
         const docs = [];
@@ -2581,10 +2655,44 @@ export const getTComanda = async () => {
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMenu = async (idTarea, idMenu, idAlimentos) => {
+// export const setMenu = async (idTarea, idMenu, idAlimentos) => {
+//     try {
+
+//         if (idTarea === '' || idMenu === '' || idAlimentos === null) {
+//             if (Platform.OS === "web") {
+//                 Swal.fire({
+//                     title: "Mensaje Importante",
+//                     text: "Debes rellenar los campos requeridos",
+//                     icon: "warning",
+//                     confirmButtonText: "De acuerdo",
+//                 })
+//             } else {
+//                 Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+//             }
+//         }
+//         else {
+
+//             const objeto = {
+//                 idTarea,
+//                 idMenu,
+//                 idAlimentos,
+//             }
+
+//             // Necesitamos poner setDoc para especificar el ID del documento
+//             await addDoc(collection(db, 'Menus-Comanda'), {
+//                 ...objeto
+//             });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+export const setMenu = async (Nombre, Imagen) => {
+    console.log("nombre imagen es: " + Imagen);
     try {
 
-        if (idTarea === '' || idMenu === '' || idAlimentos === null) {
+        if (Nombre === '' || Imagen === '') {
             if (Platform.OS === "web") {
                 Swal.fire({
                     title: "Mensaje Importante",
@@ -2599,13 +2707,12 @@ export const setMenu = async (idTarea, idMenu, idAlimentos) => {
         else {
 
             const objeto = {
-                idTarea,
-                idMenu,
-                idAlimentos,
+                Nombre,
+                Imagen,
             }
 
             // Necesitamos poner setDoc para especificar el ID del documento
-            await addDoc(collection(db, 'Menus-Comanda'), {
+            await addDoc(collection(db, 'Menu'), {
                 ...objeto
             });
         }
@@ -2613,6 +2720,27 @@ export const setMenu = async (idTarea, idMenu, idAlimentos) => {
         console.log(error);
     }
 }
+
+export async function deleteMenu(nombre) {
+    try {
+        const menuQuery = query(collection(db, 'Menu'),where('Nombre','==',nombre));
+        const querySnapshot = await getDocs(menuQuery);
+
+
+        if (!querySnapshot.empty) {
+            const docMenu = querySnapshot.docs[0];
+            await deleteDoc(docMenu.ref);
+            console.log("Se ha borrado el menu correctamente");
+        }
+        else {
+            console.log("No existe el menu");
+        }
+    } catch (error) {
+        console.log("Error al borrar menu", error);
+    }
+}
+
+
 
 
 // Devolvemos todos los menus.
@@ -2910,7 +3038,6 @@ export const getPictogramasNumero = async () => {
     try {
         const q = query(collection(db, 'PictogramasNumero'), orderBy("Numero"));
         const querySnapshot = await getDocs(q);
-        console.log("consulta: " + querySnapshot);
         const docs = [];
 
         for (const pictograma of querySnapshot.docs) {
@@ -2967,6 +3094,7 @@ export const setPedido = async (idTarea, idMenu, idProf, aula, nPedidos) => {
 // de un menú concreto en una clase concreto. Se usa en seleccionAula.jsx
 
 export const getPedido = async (idMenu, idProfesor, idTarea) => {
+    console.log("id tarea: " + idTarea);
     try {
         const pedidoQuery = query(collection(db, 'Pedidos'), where('idMenu', '==', idMenu), where('idProf', '==', idProfesor), where('idTarea','==',idTarea));
         const querySnapshot = await getDocs(pedidoQuery);
@@ -2984,7 +3112,7 @@ export const getPedido = async (idMenu, idProfesor, idTarea) => {
         }
 
     } catch (error) {
-        console.log(error);
+        console.log("error en buscarPedido: " + error);
         throw error; // Lanza el error para que pueda ser manejado por el llamador
     }
 }
@@ -3046,7 +3174,6 @@ export async function getPedidosTarea(idTarea) {
 
         }
 
-        console.log("los pedidos de la tarea son: " + JSON.stringify(docs));
         return docs;
 
     } catch (error) {

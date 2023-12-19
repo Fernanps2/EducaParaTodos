@@ -41,10 +41,15 @@ import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
 import seleccionAula from './src/Vista/seleccionAula.jsx';
-import seleccionMenus from './src/Vista/seleccionMenu.jsx';
 import seleccionCantidad from './src/Vista/seleccionCantidad.jsx';
 import ComandasCreadas from './src/Vista/comandasCreadas.jsx';
 import DatosComandas from './src/Vista/datosComanda.jsx';
+import mostrarResumen from './src/Vista/mostrarResumen.jsx';
+import PantallaFelicitacion from './src/Vista/pantallaFelicitacion.jsx';
+import GestionMenus from './src/Vista/gestionMenus.jsx';
+import AniadirMenu from './src/Vista/aniadirMenu.jsx';
+import { aniadeMenu } from './src/Controlador/tareas.js';
+import eliminarMenu from './src/Vista/eliminarMenu.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -101,10 +106,14 @@ export default function App() {
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
           <Stack.Screen name="modificarProfesor" component={ModificarProfesor} />
           <Stack.Screen name="seleccionAula" component={seleccionAula} />
-          <Stack.Screen name="seleccionMenu" component={seleccionMenus} />
           <Stack.Screen name="seleccionCantidad" component={seleccionCantidad} />
           <Stack.Screen name="comandasCreadas" component={ComandasCreadas} />
           <Stack.Screen name="datosComandas" component={DatosComandas} />
+          <Stack.Screen name="mostrarResumen" component={mostrarResumen} />
+          <Stack.Screen name="pantallaFelicitacion" component={PantallaFelicitacion} />
+          <Stack.Screen name="gestionMenus" component={GestionMenus} />
+          <Stack.Screen name="aniadirMenu" component={AniadirMenu} />
+          <Stack.Screen name="eliminarMenu" component={eliminarMenu} />
 
 
         </Stack.Navigator>
@@ -112,18 +121,3 @@ export default function App() {
     </UserContextProvider>
   );
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: 'white',
-//     alignItems: 'center',
-//     justifyContent: 'start',
-//   },
-//   text: {
-//     fontSize: 50,
-//     paddingTop: 30,
-//     fontWeight: 'bold',
-//   },
-// });
-

@@ -32,7 +32,6 @@ const DatosComanda = ({ comanda,navigation}) => {
 
     const id = comanda.id;
 
-
     return(
         <View>
             <TouchableOpacity onPress={() => navigation.navigate('datosComandas', { id})}>
@@ -66,10 +65,6 @@ const ComandasCreadas = ({navigation}) => {
 
     return (
         <View>
-            <View>
-                <Text> TAREAS COMANDAS </Text>
-            </View>
-
             <ScrollView contentContainerStyle={styles.datos}>
                 {comandasArray.map((comanda, index) => (
                     <View key={index} style={styles.contenedor_tareas}>

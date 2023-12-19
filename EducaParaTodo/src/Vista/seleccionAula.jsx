@@ -11,50 +11,51 @@ import { buscaAlumnoId } from '../Controlador/alumnos';
 import Tareas from './tareas';
 import { descargarFotoPersona } from '../Modelo/firebase';
 
-const showAlert = async (id, alumno, navigation) => {
-  if (navigation)
-    console.log("la navegacion es correcta231");
-  if (Platform.OS === "web") {
-    Swal.fire({
-      title: "¿Finalizar tarea?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#008000",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Guardar",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await completarTarea(id);
-        navigation.navigate('Tareas', { alumno }); // Navegar a la página tareas
-      }
-    });
+// const showAlert = async (id, alumno, navigation) => {
+//   if (navigation)
+//     console.log("la navegacion es correcta231");
+//   if (Platform.OS === "web") {
+//     Swal.fire({
+//       title: "¿Finalizar tarea?",
+//       icon: "warning",
+//       showCancelButton: true,
+//       confirmButtonColor: "#008000",
+//       cancelButtonColor: "#d33",
+//       confirmButtonText: "Guardar",
+//       cancelButtonText: "Cancelar",
+//     }).then(async (result) => {
+//       if (result.isConfirmed) {
+//         await completarTarea(id);
+//         navigation.navigate('Tareas', { alumno }); // Navegar a la página tareas
+//       }
+//     });
 
-  } else {
-    Alert.alert(
-      "¿Quiere finalizar la tarea?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar" },
-        {
-          text: "Confirmar",
-          onPress: async () => {
-            await completarTarea(id);
-            navigation.navigate('Tareas', { alumno }); // Navegar a la página SeleccionAula
-          }
-        },
-      ],
-      { cancelable: false } // Si se puede cancelar tocando fuera de la alerta
-    );
-  }
-};
+//   } else {
+//     Alert.alert(
+//       "¿Quiere finalizar la tarea?", // Título
+//       "Pulsa una opción", // Mensaje
+//       [
+//         { text: "Cancelar" },
+//         {
+//           text: "Confirmar",
+//           onPress: async () => {
+//             await completarTarea(id);
+//             navigation.navigate('Tareas', { alumno }); // Navegar a la página SeleccionAula
+//           }
+//         },
+//       ],
+//       { cancelable: false } // Si se puede cancelar tocando fuera de la alerta
+//     );
+//   }
+// };
 
-const DatosProfesor = ({ prof, id, navigation }) => {
+const DatosProfesor = ({ prof, id, indiceMenu,navigation }) => {
 
   const [seleccionado, setSeleccionado] = useState(false);
   const [foto, setFoto] = useState([]);
 
   // Obtenemos todos los menús para ver los menús que tenemos en la base de datos
+  // Esto lo  queremos hacer para ver si hemos recogido la comanda para todos los menús disponibles en un aula en
   // Usamos useFocusEffect con useCallback para que así se renderice cada vez que se abra la pestaña
   useFocusEffect(
     useCallback(() => {
@@ -64,10 +65,10 @@ const DatosProfesor = ({ prof, id, navigation }) => {
           const numeroMenus = menus.length;
 
           const datosPedido = await buscarPedidoProfesor(prof.id, id);
-          if (datosPedido.length >= numeroMenus) {
-            setSeleccionado(true);
-          }
-
+          if(datosPedido)
+            if (datosPedido.length >= numeroMenus) {
+              setSeleccionado(true);
+            }
         } catch (error) {
           console.log("error: " + error);
         }
@@ -79,7 +80,6 @@ const DatosProfesor = ({ prof, id, navigation }) => {
   useEffect(() => {
     const getFoto = async () => {
       try {
-        console.log("nombre profesor: " + prof.nombre);
         const fotoDescargada = await descargarFotoPersona(prof.foto);
         setFoto(fotoDescargada);
       } catch (error) {
@@ -94,10 +94,13 @@ const DatosProfesor = ({ prof, id, navigation }) => {
   return (
     <View>
       <View>
-        <TouchableOpacity onPress={() => navigation.navigate('seleccionMenu', { id, prof })}>
-          {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
-             para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-          <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{ uri: foto.uri }} />
+        <TouchableOpacity onPress={() => navigation.navigate('seleccionCantidad', { prof,id,indiceMenu,navigation })}>
+          <View style={styles.selected}>
+            {seleccionado && (
+              <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{uri:"https://us.123rf.com/450wm/alonastep/alonastep1608/alonastep160800258/61775461-tick-elemento-de-se%C3%B1al-icono-de-marca-de-verificaci%C3%B3n-verde-aislado-en-el-fondo-blanco-simple.jpg" }} />
+            )}
+            <Image style={[styles.foto, seleccionado && styles.selectedFoto]} source={{ uri: foto.uri }} />
+          </View>
           <Text style={[styles.texto, seleccionado && styles.textoSelected]}> Aula: {prof.aula} </Text>
         </TouchableOpacity>
       </View>
@@ -114,14 +117,18 @@ const SeleccionAula = ({ route, navigation }) => {
   const [profesoresArray, setProfesoresArray] = useState([]);
   const [tareaFinalizada, setTareaFinalizada] = useState(false);
   const [alumno, setAlumno] = useState([]);
+  let indiceMenu = 0;
 
   useEffect(() => {
     const getProfesores = async () => {
       try {
         const profesores = await buscaProfesor();
         const datosTarea = await buscarTarea(id);
+        console.log("los datos de la tarea son: " + JSON.stringify(datosTarea));
         const idAlumno = datosTarea.idAlumno;
+        console.log("el id del alumno es: " + idAlumno);
         const alumnoDatos = await buscaAlumnoId(idAlumno);
+        console.log("los datos del alumno son: " + JSON.stringify(alumnoDatos));
         setAlumno(alumnoDatos);
         setProfesoresArray(profesores);
       } catch (error) {
@@ -160,13 +167,15 @@ const SeleccionAula = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={styles.datos}>
         {profesoresArray.map((profesor, index) => (
           <View key={index} style={styles.contenedor_tareas}>
-            <DatosProfesor prof={profesor} id={id} navigation={navigation} />
+            <DatosProfesor prof={profesor} id={id} indiceMenu={indiceMenu} navigation={navigation} />
           </View>
 
         ))}
         <TouchableOpacity onPress={() => {
-          if (tareaFinalizada)
-            showAlert(id, alumno, navigation);
+          if (tareaFinalizada){
+            completarTarea(id);
+            navigation.navigate('pantallaFelicitacion',{alumno,navigation});
+          }
           else
             console.log("No ha finalizado la tarea");
         }}>
@@ -196,7 +205,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
-
+  selected:{
+    flexDirection:'row',
+    flexWrap:'wrap',
+  },
   title: {
     fontSize: 50,
     fontWeight: 'bold',
@@ -221,12 +233,14 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
   selectedFoto: {
+    width: RFValue(70),
+    height: RFValue(70),
     borderWidth: 8,
     borderColor: 'green',
   },
   contenedor_tareas: {
     flexDirection: 'column',
-    width: '33%',
+    width: '25%',
     alignItems: 'center',
   },
 
