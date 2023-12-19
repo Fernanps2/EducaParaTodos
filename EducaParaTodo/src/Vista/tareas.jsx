@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
+import { RFValue } from "react-native-responsive-fontsize";
 
 const manejoPresionarBoton = (tarea, navigation, usuario) => {
   const id = tarea.id;
@@ -90,13 +91,18 @@ const Tareas = ({ route, navigation }) => {
               ) : (
                 <View style={styles.contenedor_tarea_unica}>
                   <View style={styles.row}>
-                    {indiceActual > 0 && (
+                    {indiceActual > 0 ? (
                       <TouchableOpacity onPress={tareaAnterior}>
                         <Image
                           style={[styles.flechas, { marginHorizontal: 30 }]}
                           source={require("../../Imagenes/flechaAtras.png")}
                         />
+                        <Text style={[styles.texto, { marginHorizontal: 30 }]}>Atrás</Text>
                       </TouchableOpacity>
+                    ) : (
+                      <View
+                        style={[styles.flechas, { marginHorizontal: 30 }]}
+                      />
                     )}
 
                     <DatosTareas
@@ -104,13 +110,18 @@ const Tareas = ({ route, navigation }) => {
                       navigation={navigation}
                       usuario={usuario}
                     />
-                    {indiceActual < tareas.length - 1 && (
+                    {indiceActual < tareas.length - 1 ? (
                       <TouchableOpacity onPress={siguienteTarea}>
                         <Image
                           style={[styles.flechas, { marginHorizontal: 30 }]}
                           source={require("../../Imagenes/flechaSiguiente.png")}
                         />
+                        <Text style={[styles.texto,{ marginHorizontal: 30 }]}>Siguiente</Text>
                       </TouchableOpacity>
+                    ) : (
+                      <View
+                        style={[styles.flechas, { marginHorizontal: 30 }]}
+                      />
                     )}
                   </View>
                 </View>
@@ -139,7 +150,7 @@ export default Tareas;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: RFValue(20),
     alignItems: "center",
   },
   datos: {
@@ -150,40 +161,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   caja: {
-    margin: 30,
+    margin: RFValue(10),
     backgroundColor: "lightblue",
-    padding: 20,
-    borderRadius: 10,
+    padding: RFValue(8),
+    borderRadius: RFValue(10),
   },
   titulo: {
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 40,
+    fontSize: RFValue(15),
   },
   texto: {
     fontWeight: "bold",
-    marginBottom: 50,
-    marginTop: 5,
+    marginBottom: RFValue(50),
+    marginTop: RFValue(5),
     flexWrap: "wrap",
-    //width: 200,
-    maxWidth: 150,
+    maxWidth: RFValue(100),
+    fontSize: RFValue(10),
   },
   felicitacionText: {
     fontWeight: "bold",
-    fontSize: 30,
+    fontSize: RFValue(10),
   },
   foto: {
-    width: 150,
-    height: 150,
-    borderRadius: 20,
+    width: RFValue(80),
+    height: RFValue(80),
+    borderRadius: RFValue(20),
     overflow: "hidden",
-    borderWidth: 2,
+    borderWidth: RFValue(1),
     borderColor: "black",
-  },
-  contenedor_tareas: {
-    flexDirection: "column",
-    width: "50%",
-    alignItems: "center",
   },
   contenedor_tarea_unica: {
     flexDirection: "column",
@@ -191,11 +197,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 300,
-    height: 300,
+    width: RFValue(125),
+    height: RFValue(125),
   },
   flechas: {
-    width: 100,
-    height: 100,
+    width: RFValue(60),
+    height: RFValue(60),
   },
 });

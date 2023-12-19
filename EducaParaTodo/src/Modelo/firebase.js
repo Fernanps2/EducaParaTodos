@@ -54,6 +54,7 @@ const PERSONAS = 'Personas/';
 const LOGIN = 'ImagenesLogin/';
 const MATERIALES = 'materiales/';
 const TIPOS_MATERIAL = 'Tipo_Materiales/';
+const TIPO_TAREAS = 'fotosTipoTareas/';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -1934,7 +1935,7 @@ export async function descargarVideos() {
   for (let i = 0; i < resultado.items.length; i++) {
       await getDownloadURL(resultado.items[i])
       .then((url) => {
-          imagenUri = {
+          let imagenUri = {
               uri: url,
               nombre: resultado.items[i].name
           };
@@ -1942,7 +1943,7 @@ export async function descargarVideos() {
           entidad.push(imagenUri);
       })
       .catch((error) => {
-          console.log("No se ha podido descargar el video");
+          console.log("No se ha podido descargar el video: ", error);
       });
   }
 
@@ -2209,6 +2210,32 @@ export async function descargarTipoMateriales() {
   return entidad;
 }
 
+export async function descargarTipoTareas() {
+
+  let entidad = [];
+
+  try {
+    const listRef = ref(storage, TIPO_TAREAS);
+    const resultado = await listAll(listRef);
+
+    for (const item of resultado.items) {
+      try {
+        const url = await getDownloadURL(item);
+        entidad.push({
+          uri: url,
+          nombre: item.name
+        });
+      } catch (error) {
+        console.error("Error al descargar la URL del material: ", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error al listar los materiales en Firebase Storage: ", error);
+  }
+
+  return entidad;
+}
+
 export async function eliminarImagen(nombreArchivo) {
   const refArchivo = ref(storage, IMAGENES+nombreArchivo);
 
@@ -2327,32 +2354,11 @@ export const almacenarAlumno = async(nombre,apellidos,visualizacionPreferente)=>
 // }
 
 
-// Obtener todas las tareas
-export const getUrlTipoTarea = async (tipo) => {
-
-  try {
-    const q = query(collection(db,"FotoTipoTarea"),where("tipo", "==", tipo));
-    const querySnapshot = await getDocs(q);
-
-    let docs = '';
-  
-    for (const tareaDoc of querySnapshot.docs) {
-      const datos = tareaDoc.data();
-  
-      docs = datos.url;
-    }
-  
-    return docs;
-  } catch (error) {
-    Alert.alert(error);
-  }
-  };
-
 
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
+export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad, foto) => {
     try{
-        if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == ''){
+        if(titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == '' || foto == ''){
           if (Platform.OS === "web"){
             Swal.fire({
               title: "Mensaje Importante",
@@ -2367,7 +2373,7 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
         else{
           var idAlumno = '';
           var completado = 'false';
-          var fotoURL = await getUrlTipoTarea (tipo);
+          //var fotoURL = await getUrlTipoTarea (tipo);
 
           const objeto = {
             titulo,
@@ -2377,7 +2383,7 @@ export const setTarea = async (titulo,fechaInicio,fechaFin,tipo,periocidad) => {
             idAlumno,
             tipo,
             periocidad,
-            fotoURL,
+            fotoURL: foto,
           }
           
           // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.

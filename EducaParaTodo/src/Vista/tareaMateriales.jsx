@@ -22,23 +22,42 @@ import {
   inicializarmateriales,
   isVaciaListaMateriales,
   get_materialesBD,
-  setInicioPantalla,  
+  setInicioPantalla,
 } from "./VarGlobal";
+import { descargaTipoTareas } from "../Controlador/multimedia";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
   const [nombreTarea, setNombreTarea] = useState("");
+
   // Variables para guardar fecha y hora
   const [inicioFecha, setInicioFecha] = useState("");
   const [inicioHora, setInicioHora] = useState("");
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
+
   //Variables para switch
   const [periocidad, setPeriocidad] = useState("Diario");
+
+  // Variable para la foto
+  const [fotostipo, setFotosTipo] = useState([]);
+  const [foto, setFoto] = useState("");
+
+  // Variable para carga
+  const [cargando, setCargando] = useState(true);
 
   // Actualizamos la variable que indica que hemos entrado a la pantalla de crear tarea materiales
   useEffect(() => {
     setInicioPantalla(true);
+    async function descargarDatos() {
+      const data = await descargaTipoTareas();
+      data.unshift("Ninguno");
+      setFotosTipo(data);
+
+      setCargando(false);
+    }
+
+    descargarDatos();
   }, []);
 
   // Borramos toda la información cuando pulsamos borrar
@@ -167,7 +186,8 @@ export default function TareaActividad({ navigation }) {
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
           "material",
-          periocidad
+          periocidad,
+          foto,
         );
         // Obtenemos todos los objetos de materiales de la tarea
         const materiales = get();
@@ -256,7 +276,7 @@ export default function TareaActividad({ navigation }) {
               confirmButtonText: "De acuerdo",
             });
           } else {
-            if (nombreTarea === "") {
+            if (nombreTarea === "" || foto === "" || foto === "Ninguno") {
               Swal.fire({
                 title: "Campo incompleto.",
                 text: "Pon nombre a la tarea.",
@@ -305,159 +325,191 @@ export default function TareaActividad({ navigation }) {
 
   return (
     <>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
+      {cargando ? (
+        <Text style={styles.textoCargando}>Cargando...</Text>
+      ) : (
+        <>
+          <View style={styles.separador} />
+          <View style={styles.separador} />
 
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        {Platform.OS === "web" && (
-          <>
-            <Text style={[styles.title]}>Materiales</Text>
-            <TouchableOpacity
-              onPress={() => 
-                {setInicioPantalla(false)
-                navigation.navigate("gestionTareas")}}
-            >
-              <Image
-                source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                style={[styles.Image, { marginLeft: 40 }]}
+          <View style={[styles.row, { justifyContent: "center" }]}>
+            {Platform.OS === "web" && (
+              <>
+                <Text style={[styles.title]}>Materiales</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setInicioPantalla(false);
+                    navigation.navigate("gestionTareas");
+                  }}
+                >
+                  <Image
+                    source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+                    style={[styles.Image, { marginLeft: 40 }]}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+
+          <View style={styles.container}>
+            <View style={[styles.row, { justifyContent: "center" }]}>
+              {Platform.OS !== "web" && (
+                <>
+                  <Text style={[styles.title]}>Materiales</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setInicioPantalla(false);
+                      navigation.navigate("gestionTareas");
+                    }}
+                  >
+                    <Image
+                      source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+                      style={[styles.Image, { marginLeft: 40 }]}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+
+            <View style={styles.separador} />
+
+            <Text style={styles.text}>Nombre Tarea</Text>
+
+            <View style={styles.separador} />
+
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija Nombre"
+              value={nombreTarea}
+              onChangeText={setNombreTarea}
+            />
+
+            <View style={styles.separador} />
+
+            <Text style={styles.text}>Inicio Tarea </Text>
+
+            <View style={styles.separador} />
+
+            <View style={[styles.row]}>
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="aaaa-mm-dd"
+                value={inicioFecha}
+                onChangeText={setInicioFecha}
               />
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="hh:mm"
+                value={inicioHora}
+                onChangeText={setInicioHora}
+              />
+            </View>
 
-      <View style={styles.container}>
-        <View style={[styles.row, { justifyContent: "center" }]}>
-          {Platform.OS !== "web" && (
-            <>
-              <Text style={[styles.title]}>Materiales</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setInicioPantalla(false)
-                  navigation.navigate("gestionTareas")}}
+            <View style={styles.separador} />
+
+            <Text style={styles.text}>Fin Tarea </Text>
+
+            <View style={styles.separador} />
+
+            <View style={[styles.row]}>
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="aaaa-mm-dd"
+                value={finFecha}
+                onChangeText={setFinFecha}
+              />
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="hh:mm"
+                value={finHora}
+                onChangeText={setFinHora}
+              />
+            </View>
+            <View style={styles.separador} />
+
+            <View style={styles.row}>
+              <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+              <Picker
+                selectedValue={periocidad}
+                onValueChange={(itemValue, itemIndex) =>
+                  setPeriocidad(itemValue)
+                }
+                style={styles.picker}
               >
-                <Image
-                  source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                  style={[styles.Image, { marginLeft: 40 }]}
+                <Picker.Item label="Diario" value="diario" />
+                <Picker.Item label="Semanal" value="semanal" />
+                <Picker.Item label="Mensual" value="mensual" />
+              </Picker>
+            </View>
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            <View style={styles.row}>
+              <Text style={[styles.text, { marginRight: 5 }]}>Foto </Text>
+              <Picker
+                selectedValue={foto}
+                onValueChange={(itemValue, itemIndex) => setFoto(itemValue)}
+                style={styles.pickerFoto}
+              >
+                {fotostipo.map((foto, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={foto === "Ninguno" ? "Ninguno" : `${foto.nombre}`}
+                    value={foto.nombre}
+                  />
+                ))}
+              </Picker>
+            </View>
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            <Button
+              title="Añadir Material"
+              onPress={() => navigation.navigate("anadirMaterial")}
+              color="#D3D3D3"
+            />
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            <Button
+              title="Ver todos materiales"
+              onPress={() => navigation.navigate("verTodosMateriales")}
+              color="#90EE90"
+            />
+
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
+            <View style={[styles.buttonContainer]}>
+              <View style={[styles.button]}>
+                <Button
+                  title="Borrar"
+                  onPress={() => showAlertDelete()}
+                  color="#FF0000"
                 />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+              </View>
 
-        <View style={styles.separador} />
-
-        <Text style={styles.text}>Nombre Tarea</Text>
-
-        <View style={styles.separador} />
-
-        <TextInput
-          style={[styles.input]}
-          placeholder="Elija Nombre"
-          value={nombreTarea}
-          onChangeText={setNombreTarea}
-        />
-
-        <View style={styles.separador} />
-
-        <Text style={styles.text}>Inicio Tarea </Text>
-
-        <View style={styles.separador} />
-
-        <View style={[styles.row]}>
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="aaaa-mm-dd"
-            value={inicioFecha}
-            onChangeText={setInicioFecha}
-          />
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="hh:mm"
-            value={inicioHora}
-            onChangeText={setInicioHora}
-          />
-        </View>
-
-        <View style={styles.separador} />
-
-        <Text style={styles.text}>Fin Tarea </Text>
-
-        <View style={styles.separador} />
-
-        <View style={[styles.row]}>
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="aaaa-mm-dd"
-            value={finFecha}
-            onChangeText={setFinFecha}
-          />
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="hh:mm"
-            value={finHora}
-            onChangeText={setFinHora}
-          />
-        </View>
-        <View style={styles.separador} />
-
-        <View style={styles.row}>
-          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
-          <Picker
-            selectedValue={periocidad}
-            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Diario" value="diario" />
-            <Picker.Item label="Semanal" value="semanal" />
-            <Picker.Item label="Mensual" value="mensual" />
-          </Picker>
-        </View>
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-
-        <Button
-          title="Añadir Material"
-          onPress={() => navigation.navigate("anadirMaterial")}
-          color="#D3D3D3"
-        />
-
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-
-        <Button
-          title="Ver todos materiales"
-          onPress={() => navigation.navigate("verTodosMateriales")}
-          color="#90EE90"
-        />
-
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-
-        <View style={[styles.buttonContainer]}>
-          <View style={[styles.button]}>
-            <Button
-              title="Borrar"
-              onPress={() => showAlertDelete()}
-              color="#FF0000"
-            />
+              <View style={[styles.button]}>
+                <Button
+                  title="Guardar"
+                  onPress={() => showAlertStore()}
+                  color="#0000FF"
+                />
+              </View>
+            </View>
           </View>
-
-          <View style={[styles.button]}>
-            <Button
-              title="Guardar"
-              onPress={() => showAlertStore()}
-              color="#0000FF"
-            />
-          </View>
-        </View>
-      </View>
+        </>
+      )}
     </>
   );
 }
@@ -515,5 +567,13 @@ const styles = StyleSheet.create({
   picker: {
     height: 25,
     width: Platform.OS === "web" ? 150 : 200,
+  },
+  pickerFoto: {
+    height: 25,
+    width: Platform.OS === "web" ? 200 : 250,
+  },
+  textoCargando: {
+    textAlign: "center",
+    fontSize: 15,
   },
 });

@@ -8,7 +8,9 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import Swal from "sweetalert2";
 import { anadeVideo } from "../Controlador/tareas";
+import { almacenaVideo, openGallery } from "../Controlador/multimedia";
 
 export default function GestionItemActividad() {
   const [urlVideo, setUrlVideo] = useState("");
@@ -33,20 +35,36 @@ export default function GestionItemActividad() {
     setnombreVideo("");
     setUrlVideo("");
   };
-  const handleAñadir = () => {
+  const handleAñadirVideo = async () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {
-        anadeVideo(nombreVideo, urlVideo);
+        await almacenaVideo(urlVideo, nombreVideo + ".mp4");
+        if (Platform.OS === "web") {
+          Swal.fire({
+            title: "Subida completada",
+            text: "El video se ha añadido con éxito",
+            icon: "success",
+            confirmButtonText: "De acuerdo",
+          });
+        } else {
+          Alert.alert("Subida completada", "El video se ha añadido con éxito");
+        }
+        setViewVideo(false);
+        setnombreVideo("");
+        setUrlVideo("");
       } else {
-        if (Platform.OS === "web"){
+        if (Platform.OS === "web") {
           Swal.fire({
             title: "Campos Incompletos",
             text: "Debes rellenar los campos requeridos",
             icon: "warning",
             confirmButtonText: "De acuerdo",
-          })
-        }else{
-          Alert.alert('Campos Incompletos,', 'Debes rellenar los campos requeridos');
+          });
+        } else {
+          Alert.alert(
+            "Campos Incompletos,",
+            "Debes rellenar los campos requeridos"
+          );
         }
       }
     }
@@ -102,17 +120,23 @@ export default function GestionItemActividad() {
       <View style={styles.separador} />
       <View style={styles.separador} />
       {viewVideo && (
-        <View>
-          <Text style={[styles.text]}>Introduzca URL:</Text>
-
+        <View style={styles.container}>
           <View style={styles.separador} />
 
-          <TextInput
-            style={[styles.input]}
-            placeholder="URL"
-            value={urlVideo}
-            onChangeText={setUrlVideo}
-          />
+          <TouchableOpacity
+            style={styles.buttonAñadir}
+            onPress={async () => {
+              setUrlVideo(await openGallery());
+            }}
+          >
+            {urlVideo == "" ? (
+              <Text style={styles.textoNoSeleccionado}>
+                Pulsa el botón para elegir Video
+              </Text>
+            ) : (
+              <Text style={styles.textoSeleccionado}>Video Seleccionado </Text>
+            )}
+          </TouchableOpacity>
 
           <View style={styles.separador} />
           <View style={styles.separador} />
@@ -123,13 +147,13 @@ export default function GestionItemActividad() {
 
           <TextInput
             style={[styles.input]}
-            placeholder="Elija Nombre"
+            placeholder="Elija nombre para el video"
             value={nombreVideo}
             onChangeText={setnombreVideo}
           />
         </View>
       )}
-      <TouchableOpacity style={styles.addButton} onPress={handleAñadir}>
+      <TouchableOpacity style={styles.addButton} onPress={handleAñadirVideo}>
         <Text style={styles.addButtonText}>Añadir</Text>
       </TouchableOpacity>
     </View>
@@ -177,6 +201,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  buttonAñadir: {
+    backgroundColor: "#e0e0e0", // Un color gris claro para los botones
+    padding: 5,
+    marginVertical: 1,
+    width: 250,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
+    marginHorizontal: Platform.OS === "web" ? 10 : 3,
+  },
+  textoSeleccionado: {
+    color: "green",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  textoNoSeleccionado: {
+    textAlign: "center",
   },
   row: {
     flexDirection: "row",

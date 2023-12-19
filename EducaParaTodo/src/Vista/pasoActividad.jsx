@@ -13,12 +13,12 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import {
-  cargarVideosBD,
   cargarAudiosBD,
 } from "../Controlador/tareas";
 import {
   descargaPictogramas,
   descargaImagenes,
+  descargaVideos,
 } from "../Controlador/multimedia"
 
 export default function PasoActividad({ navigation }) {
@@ -68,15 +68,14 @@ export default function PasoActividad({ navigation }) {
   //Cargamos pictogramas
   const cargarPictogramas = async () => {
     setIsLoadindPicto(true); // Iniciar la carga
-    const data = await descargaPictogramas()
-    setDataPicto(data);
+    setDataPicto(await descargaPictogramas());
     setIsLoadindPicto(false);
   };
 
   //Cargamos videos
   const cargarVideos = async () => {
     setIsLoadindVideo(true); // Iniciar la carga
-    setDataVideo(await cargarVideosBD());
+    setDataVideo(await descargaVideos());
     setIsLoadindVideo(false);
   };
 
@@ -507,7 +506,7 @@ export default function PasoActividad({ navigation }) {
           <View>
             <View style={styles.rectangleOthers}>
               {isLoadingAudio ? (
-                <Text>Cargando_Videos... </Text>
+                <Text>Cargando_Audios... </Text>
               ) : (
                 <ScrollView
                   horizontal={true}

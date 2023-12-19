@@ -5,8 +5,8 @@ export async function obtenerProfesores (){
     return await getProfesores();
 }
 
-export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad){
-        return await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
+export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad, foto){
+        return await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad, foto);
 }
 
 export async function asignarFeedbackBD (idTarea, feedBack){

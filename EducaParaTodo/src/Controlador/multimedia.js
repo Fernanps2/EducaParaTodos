@@ -1,6 +1,6 @@
 import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial} from "../Modelo/firebase";
 import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial} from "../Modelo/firebase";
-import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales  } from "../Modelo/firebase";
+import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales, descargarTipoTareas  } from "../Modelo/firebase";
 import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
@@ -485,6 +485,22 @@ export async function descargaTipoMaterial(imagen) {
  */
 export async function descargaTipoMateriales() {
     const array = await descargarTipoMateriales();
+
+    return array;
+}
+
+/**
+ * @name descargarTipoTareas
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaTipoTareas() {
+    const array = await descargarTipoTareas();
 
     return array;
 }
