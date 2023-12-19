@@ -1,13 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
 
@@ -26,7 +19,9 @@ const manejoPresionarBoton = (tarea, navigation, usuario) => {
 const DatosTareas = ({ tarea, navigation, usuario }) => {
   return (
     <View>
-      <TouchableOpacity onPress={() => manejoPresionarBoton(tarea, navigation, usuario)}>
+      <TouchableOpacity
+        onPress={() => manejoPresionarBoton(tarea, navigation, usuario)}
+      >
         {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
         <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
@@ -37,10 +32,10 @@ const DatosTareas = ({ tarea, navigation, usuario }) => {
 };
 
 const Tareas = ({ route, navigation }) => {
-  const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
+  const { usuario } = route.params;
 
   const [tareas, setTareas] = useState([]);
-  const [hayTarea, setHayTarea] = useState(false);
+  const [indiceActual, setIndiceActual] = useState(0);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
@@ -49,15 +44,26 @@ const Tareas = ({ route, navigation }) => {
         const Tareas = await buscarTarea(usuario.id);
         setTareas(Tareas);
         setCargando(false);
-        if (Tareas.length === 0) {
-          setHayTarea(false);
-        } else setHayTarea(true);
       } catch (error) {
         console.log(error);
       }
     };
     listaTareas();
   }, []);
+
+  // Función para avanzar a la siguiente tarea
+  const siguienteTarea = () => {
+    if (indiceActual < tareas.length - 1) {
+      setIndiceActual(indiceActual + 1);
+    }
+  };
+
+  // Función para regresar a la tarea anterior
+  const tareaAnterior = () => {
+    if (indiceActual > 0) {
+      setIndiceActual(indiceActual - 1);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -72,22 +78,43 @@ const Tareas = ({ route, navigation }) => {
           </>
         ) : (
           <>
-            {hayTarea ? (
-              <ScrollView contentContainerStyle={styles.datos}>
-                {tareas.map((tarea, index) => (
-                  <View
-                    key={index}
-                    // Cambia el estilo dependiendo de si solo hay una tarea o más
-                    style={
-                      tareas.length === 1
-                        ? styles.contenedor_tarea_unica
-                        : styles.contenedor_tareas
-                    }
-                  >
-                    <DatosTareas tarea={tarea} navigation={navigation} usuario={usuario} />
+            {tareas.length > 0 ? (
+              tareas.length == 1 ? (
+                <View style={styles.contenedor_tarea_unica}>
+                  <DatosTareas
+                    tarea={tareas[indiceActual]}
+                    navigation={navigation}
+                    usuario={usuario}
+                  />
+                </View>
+              ) : (
+                <View style={styles.contenedor_tarea_unica}>
+                  <View style={styles.row}>
+                    {indiceActual > 0 && (
+                      <TouchableOpacity onPress={tareaAnterior}>
+                        <Image
+                          style={[styles.flechas, { marginHorizontal: 30 }]}
+                          source={require("../../Imagenes/flechaAtras.png")}
+                        />
+                      </TouchableOpacity>
+                    )}
+
+                    <DatosTareas
+                      tarea={tareas[indiceActual]}
+                      navigation={navigation}
+                      usuario={usuario}
+                    />
+                    {indiceActual < tareas.length - 1 && (
+                      <TouchableOpacity onPress={siguienteTarea}>
+                        <Image
+                          style={[styles.flechas, { marginHorizontal: 30 }]}
+                          source={require("../../Imagenes/flechaSiguiente.png")}
+                        />
+                      </TouchableOpacity>
+                    )}
                   </View>
-                ))}
-              </ScrollView>
+                </View>
+              )
             ) : (
               <View>
                 {console.log("No hay tarea")}
@@ -118,6 +145,9 @@ const styles = StyleSheet.create({
   datos: {
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  row: {
+    flexDirection: "row",
   },
   caja: {
     margin: 30,
@@ -163,5 +193,9 @@ const styles = StyleSheet.create({
   image: {
     width: 300,
     height: 300,
+  },
+  flechas: {
+    width: 100,
+    height: 100,
   },
 });
