@@ -4,11 +4,11 @@ import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMat
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
-
+/*
 export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
 }
-
+*/
 // Esta función busca la tarea con ese ID
 export async function buscarTarea(idTarea){
     let tarea = null;

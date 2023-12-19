@@ -7,57 +7,125 @@ import {
   TextInput,
   Platform,
   Alert,
+  FlatList,
+  Image,
+  ScrollView
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
 import { almacenaPictograma, openGallery, descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { ScrollView } from "react-native-web";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
+import Swal from "sweetalert2";
 
 export default function GestionItemActividad() {
+  //Sección de variables para añadir item
   const [urlVideo, setUrlVideo] = useState("");
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
 
   const [Pictogramas,setPictogramas] = useState([]);
-  const [nombreEliminarPictograma, setnombreEliminarPictograma] = useState("");
-  const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
 
   const [urlPictograma, setUrlPictograma] = useState("");
   const [nombrePictograma, setnombrePictograma] = useState("");
   const [viewPictograma, setViewPictograma] = useState(false);
 
+  const [urlImagen, setUrlImagen] = useState("");
+  const [nombreImagen, setNombreImagen] = useState("");
+  const [viewImagen, setViewImagen] = useState(false);
+
+  //Sección de variables para eliminar un item
+  const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
+
+  const [nombreEliminarPictograma, setnombreEliminarPictograma] = useState("");
+  const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
+
+  const [viewEliminarImagen, setViewEliminarImagen] = useState(false);
+  const [imagenes, setImagenes] = useState([]);
+  const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]);
+
+  //Sección de funciones
   const handleVideo = () => {
-    setViewVideo(true);
+    setViewVideo(true); //
     setViewPictograma(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
   const handleImagen = () => {
     setViewVideo(false);
-    setnombreVideo("");
-    setUrlVideo("");
     setViewPictograma(false);
+    setViewImagen(true); //
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
   const handleAudio = () => {
     setViewVideo(false);
-    setnombreVideo("");
-    setUrlVideo("");
     setViewPictograma(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
 
-  const handleEliminarPictograma = async () => {
-    setViewEliminarPictograma(true);
-    setViewPictograma(false);
-    setViewVideo(false);
-    await MostrarPictogramas();
-  }
   const handlePictograma = () => {
-    setViewPictograma(true);
+    setViewPictograma(true); //
     setViewVideo(false);
     setViewEliminarPictograma(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
+
+  const handleEliminarVideo = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(true); //
+    setViewEliminarPictograma(false); 
+    setViewEliminarImagen(false);
+  }
+  const handleEliminarImagen = async () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(true); //
+
+    setImagenes(await descargaImagenes());
+  }
+  const handleEliminarAudio = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
+  }
+  const handleEliminarPictograma = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(true); //
+    setViewEliminarImagen(false);
+  }
 
   const handleAñadir = () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {
-        setVideo(nombreVideo, urlVideo);
+        almacenaVideo(urlVideo, nombreVideo);
       } else {
         if (Platform.OS === "web"){
           Swal.fire({
@@ -110,8 +178,88 @@ export default function GestionItemActividad() {
 
 
 
+  const handleAñadirImagen = async () => {
+    if (viewImagen) {
+      if (nombreImagen !== "" && urlImagen !== "") {
+        console.log(urlImagen);
+        almacenaImagen(urlImagen, nombreImagen);
+      } else {
+        if (Platform.OS ===   "web"){
+          Swal.fire({
+            title: "Campos Incompletos",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Campos Incompletos,', 'Debes rellenar los campos requeridos');
+        }
+      }
+    }
+  };
+
+  //FUNCIONES PARA ELIMINAR IMAGEN
+  //Para seleccionar y deseleccionar una imagen
+  const toggleSelection = (imageId) => {
+    const index = imagenesSeleccionadas.indexOf(imageId);
+
+    if (index == -1) {
+      setImagenesSeleccionadas([...imagenesSeleccionadas, imageId]);
+    } else {
+      const updatedSelection = [...imagenesSeleccionadas];
+      updatedSelection.splice(index,1);
+      setImagenesSeleccionadas(updatedSelection);
+    }
+  };
+  
+  //Renderizar la imagen
+  const renderImage = ({item}) => {
+    const isSelected = imagenesSeleccionadas.includes(item.nombre);
+    //console.log(item.uri);
+
+    return (
+      <TouchableOpacity
+        style={isSelected ? styles.selectedImage : styles.image}
+        onPress={() => toggleSelection(item.nombre)}
+      >
+        <Image
+          source={{uri: item.uri}}
+          style={styles.imageStyle}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const eliminarImagenes = async () => {
+    if (viewEliminarImagen) {
+      imagenesSeleccionadas.map((selectedId) => {
+        eliminaImagen(selectedId);
+      });
+      setImagenesSeleccionadas([]);
+
+      console.log("Imágenes eliminadas");
+
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "Listo",
+          text: "Imágenes borradas correctamente",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Listo', 'Imágenes borradas correctamente');
+      }
+
+      //Actualizamos de nuevo las imágenes
+      setImagenes(await descargaImagenes());
+    }
+  }
+
+  //FIN FUNCIONES ELIMINAR IMAGEN
+
   const abrirGaleria = async() => {
-    setUrlPictograma(await openGallery());
+    if(viewPictograma) setUrlPictograma(await openGallery());
+    else if (viewImagen) setUrlImagen(await openGallery());
   }
 
   return (
@@ -135,17 +283,17 @@ export default function GestionItemActividad() {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-        <TouchableOpacity style={styles.buttonDelete} >
+        <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarVideo} >
             <Text style={styles.buttonText}>Eliminar Video</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarAudio} >
             <Text style={styles.buttonText}>Eliminar Audio</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarImagen} >
             <Text style={styles.buttonText}>Eliminar Imagen</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
-            <Text style={styles.buttonText} onPress={handleEliminarPictograma}>Eliminar Pictograma</Text>
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarPictograma} >
+            <Text style={styles.buttonText}>Eliminar Pictograma</Text>
           </TouchableOpacity>
           
         </View>
@@ -173,20 +321,20 @@ export default function GestionItemActividad() {
             </View>
             <View style={styles.separador}></View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarVideo}>
                 <Text style={styles.buttonText}>Eliminar Video</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarAudio}>
                 <Text style={styles.buttonText}>Eliminar Audio</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.separador}></View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarImagen}>
                 <Text style={styles.buttonText}>Eliminar Imagen</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonDelete}>
-                <Text style={styles.buttonText} onPress={handleEliminarPictograma}>Eliminar Pictograma</Text>
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarPictograma}>
+                <Text style={styles.buttonText}>Eliminar Pictograma</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -268,6 +416,72 @@ export default function GestionItemActividad() {
             ))}
           </ScrollView>
         </View>
+      )}
+      {viewImagen && (
+        <View>
+
+          <View style={styles.separador} />
+
+          <TouchableOpacity style={styles.buttonAñadir} onPress={()  => abrirGaleria()}>
+            {urlImagen=="" ? (<Text>Pulsa el botón para elegir Imagen</Text>) : (<Text style={styles.textoSeleccionado}>Imagen Seleccionada </Text>)}
+          </TouchableOpacity>
+
+
+
+          <View style={styles.separador} />
+          <View style={styles.separador} />
+
+          <Text style={[styles.text]}>Introduzca Nombre:</Text>
+
+          <View style={styles.separador} />
+
+          <TextInput
+            style={[styles.input]}
+            placeholder="Elija Nombre"
+            value={nombreImagen}
+            onChangeText={setNombreImagen}
+          />
+          
+          <View style={styles.separador5} />
+          <View style={styles.separador5} />
+
+          <TouchableOpacity style={styles.addButton} onPress={handleAñadirImagen}>
+            <Text style={styles.addButtonText}>Añadir</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {viewEliminarImagen && (
+        <ScrollView>
+          <View style={styles.separador} />
+
+          <Text style={styles.text}>Selecciona las imágenes a eliminar:</Text>
+
+          <View style={styles.separador}/>
+          <View style={styles.separador}/>
+
+          <View style={styles.container}>
+          
+            <FlatList
+              data={imagenes}
+              renderItem={renderImage}
+              keyExtractor={(item) => item.name}
+              numColumns={3}
+              contentContainerStyle={styles.imageGrid}
+            />
+            <View style={styles.selectedImagesContainer}>
+              <Text>Imágenes seleccionadas:</Text>
+              {imagenesSeleccionadas.map((selectedId) => (
+                <Text key={selectedId}>{imagenes.find(item => item.nombre == selectedId).nombre}</Text>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.separador}/>
+
+          <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
+            <Text style={styles.buttonText}>Eliminar</Text>
+          </TouchableOpacity>
+        </ScrollView>
       )}
     </View>
   );
@@ -358,5 +572,38 @@ const styles = StyleSheet.create({
   },
   separador5: {
     height: 50,
+  },
+  textoSeleccionado: {
+    color: "green"
+  },
+  image: {
+    margin: 5,
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'black',
+},
+  selectedImage: {
+    margin: 5,
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'green',
+  },
+  imageStyle: {
+    width: '100%',
+    height: 100,
+  },
+  selectedImagesContainer: {
+    marginTop: 20,
+  },
+  imageGrid: {
+    justifyContent: 'space-between', // Espacio entre las filas
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

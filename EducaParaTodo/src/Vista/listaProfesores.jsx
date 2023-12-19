@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 //import alumnos from '../Modelo/alumno';
 //import { buscaAlumno } from '../Controlador/alumnos';
 import { buscaProfesor } from '../Controlador/profesores';
-import DatosProfesor from './datosProfesor';
+import DatosListaProfesor from './datosListaProfesor';
 // import { getProfesores } from '../Modelo/firebase';
 
 export default function ListaProfesores({ navigation }) {
@@ -38,7 +38,7 @@ export default function ListaProfesores({ navigation }) {
       <ScrollView contentContainerStyle={styles.datos}>
         {lista && lista.map((profesor, index) => (
           <View key={index} style={styles.elementoList}>
-            <DatosProfesor profesor={profesor} navigation={navigation} />
+            <DatosListaProfesor profesor={profesor} navigation={navigation} />
           </View>
         ))}
       </ScrollView>

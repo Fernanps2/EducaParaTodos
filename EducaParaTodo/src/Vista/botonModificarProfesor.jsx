@@ -1,8 +1,5 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity, Platform } from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
 
 const BotonModificarProfesor = ({ texto, profesor, navigation }) => {
     return (
