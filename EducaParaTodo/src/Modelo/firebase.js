@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
 import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
+import { Platform } from 'react-native';
+import Swal from "sweetalert2";
 
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
@@ -1587,13 +1589,14 @@ export async function almacenarImagen(imagen, nombreImagen) {
     
     try {
         //Comprobamos si existe la imagen
-        if (await descargarImagen(nombreImagen).nombre == null) {
+        if ((await descargarImagen(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, IMAGENES+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
                 console.log('Se ha subido la imagen');
             });
         } else {
+            console.log("El nombre de archivo ya existe");
             if (Platform.OS === "web") {
                 Swal.fire({
                   title: "ERROR",
@@ -1614,7 +1617,7 @@ export async function almacenarPictograma(imagen, nombreImagen) {
 
     try {
         //Comprobamos si existe el pictograma
-        if (await descargarPictograma(nombreImagen).nombre == null) {
+        if ((await descargarPictograma(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
@@ -1640,7 +1643,7 @@ export async function almacenarPictograma(imagen, nombreImagen) {
 export async function almacenarVideo(video, nombreVideo) {
 
     try {
-        if (await descargarVideo(nombreVideo).nombre == null ) {
+        if ((await descargarVideo(nombreVideo)).nombre == null ) {
             const refImagenes = ref(storage, VIDEOS+nombreVideo)
             const file = await(await fetch(video)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
@@ -1668,7 +1671,7 @@ export async function almacenarFotoPersona(foto, nombreFoto) {
     if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
 
     try {
-        if (await descargarFotoPersona(nombreFoto).nombre == null) {
+        if ((await descargarFotoPersona(nombreFoto)).nombre == null) {
             const refFoto = ref(storage, PERSONAS+nombreFoto)
             const file = await(await fetch(foto)).blob();
             uploadBytes(refFoto, file).then((snapshot) => {
@@ -1694,7 +1697,7 @@ export async function almacenarFotoPersona(foto, nombreFoto) {
 export async function almacenarImagenLogin(imagen, nombreImagen) {
     
     try {
-        if (await descargarImagenLogin(nombreImagen).nombre == null) {
+        if ((await descargarImagenLogin(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, LOGIN+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
@@ -1720,7 +1723,7 @@ export async function almacenarImagenLogin(imagen, nombreImagen) {
 export async function almacenarMaterial(imagen, nombreImagen) {
     
     try {
-        if (await descargarMaterial(nombreImagen).nombre == null) {
+        if ((await descargarMaterial(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, MATERIALES+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {

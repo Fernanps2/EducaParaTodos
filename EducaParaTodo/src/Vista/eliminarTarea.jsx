@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import appFirebase, { getAlumnos } from '../Modelo/firebase';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 //import EliminarTareaAlumno from './EliminarTareaAlumno';
 //import aniadirPictograma from './aniadirPictograma';

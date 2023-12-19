@@ -1,7 +1,8 @@
  import React, { useState, useEffect } from 'react';
- import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
+ import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
  import { descargaFotoPersona } from '../Controlador/multimedia';
  import useUser from '../Controlador/useUser';
+ import Swal from "sweetalert2";
 
 
  const LoginScreenAlumno = ({ route, navigation }) => {
@@ -18,7 +19,16 @@
     if (logueado)
       navigation.navigate('Tareas', {usuario:alumno})
      else
-       alert('No está identificado');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Cuidado",
+          text: "La contraseña no es correcta, prueba con otra",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Cuidado', 'La contraseña no es correcta, prueba con otra');
+      }
    };
 
    useEffect(() => {
