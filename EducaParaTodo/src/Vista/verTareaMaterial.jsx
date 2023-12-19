@@ -11,6 +11,7 @@ import {
 import {
   mostrarNumeroRecogidas,
   mostrarNumeroLugaresDestino,
+  mostrarPensando,
 } from "./pantallaTareaMaterialInformacion";
 import {
   descargaFotoPersona,
@@ -48,6 +49,7 @@ export default function VerTareaMaterial({ route, navigation }) {
   const [cargando, setCargando] = useState(true);
   const [materialRecogido, setMaterialRecogido] = useState(false);
   const [viewRecogidasQuedan, setViewRecogidasQuedan] = useState(true);
+  const [viewPantallaSeguro, setViewPantallaSeguro] = useState(false);
   const [esPrimeraVezRecogida, setEsPrimeraVezRecogida] = useState(true);
   const [viewDestinoQuedan, setViewDestinoQuedan] = useState(true);
 
@@ -231,8 +233,6 @@ export default function VerTareaMaterial({ route, navigation }) {
               return objetosProcesados; // Devuelve el sub-array con todos los objetos actualizados
             })
           );
-
-          console.log('materiales: ', materialesProcesados)
           setMateriales(materialesProcesados);
           setCargandoMateriales(false);
         } catch (error) {
@@ -249,12 +249,15 @@ export default function VerTareaMaterial({ route, navigation }) {
   // se actualiza el lugar destino actual
   useEffect(() => {
     const actualizaLugarDestino = () => {
-      setMaterialLlevarIndex(0);
       let aulaNow;
       if (lugarDestinos.length > 0 && Object.keys(tareas).length > 0) {
-        if (cambioOrigen !== lugarOrigenNow) {
+        if (
+          cambioOrigen !== lugarOrigenNow &&
+          materialesCargados !== "retroceder en destino informacion"
+        ) {
           setDestinoActualIndex(0);
           setCambioOrigen(lugarOrigenNow);
+          console.log("Se hace ?");
         }
         const tareasFiltradas = tareas[lugarOrigenNow];
         const idsDestino = lugarDestinos.map((destino) => destino.id);
@@ -263,6 +266,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         );
         if (tareasConDestinoCorrecto.length > destinoActualIndex) {
           aulaNow = tareasConDestinoCorrecto[destinoActualIndex].lugarDestino;
+
           setLugarDestinoNow(aulaNow);
           if (materialesCargados !== "retroceder en destino informacion") {
             setViewDestinoQuedan(true); // para que muestre el numero de destino que tiene que ir.
@@ -270,7 +274,6 @@ export default function VerTareaMaterial({ route, navigation }) {
             setViewDestinoQuedan(false); // para que retroceda al lugar destino anterior a la pantalla de información.
           }
         }
-
         if (materialesCargados === "siguiente clase") {
           const tareasAplanados = [].concat(...agrupadosDestiTareas[aulaNow]);
           const materialesAplanados = [].concat(...materiales);
@@ -303,6 +306,9 @@ export default function VerTareaMaterial({ route, navigation }) {
     };
 
     actualizaLugarDestino();
+    if (materialesCargados !== "retroceder en destino informacion") {
+      setMaterialLlevarIndex(0);
+    }
   }, [destinoActualIndex, lugarOrigenNow]); // Se actualiza cuando va al siguiente lugar de dejada(index) y cuando se almacena los lugares destino.
 
   // se actualiza variables del lugar origen
@@ -310,9 +316,11 @@ export default function VerTareaMaterial({ route, navigation }) {
     if (lugaresOrigen.length > 0 && aulas.length > 0) {
       const lugar = lugaresOrigen[indexLugarOrigen].id;
       setLugarOrigenNow(lugar);
-      setIndiceActual(0);
-      setMaterialRecogido(false);
-      setViewRecogidasQuedan(true); // Para que muestre la pantalla con info de la recogidas que le queda.
+      if (materialesCargados !== "retroceder en destino informacion") {
+        setIndiceActual(0); // indice de materiales a recoger en lugar origen
+        setMaterialRecogido(false);
+        setViewRecogidasQuedan(true); // Para que muestre la pantalla con info de la recogidas que le queda.
+      }
 
       const aula = aulas.find((a) => a.aula === lugar);
       if (aula) {
@@ -376,6 +384,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         }
       }
     };
+
     actualizaMaterialLlevar();
     setMaterialesCargados("");
   }, [materialLlevarIndex, materialesCargados]);
@@ -437,10 +446,9 @@ export default function VerTareaMaterial({ route, navigation }) {
       setMaterialLlevarIndex(0);
       setDestinoActualIndex(destinoActualIndex + 1);
     } else {
-      // Sino hay mas vamos a la siguiente recogida
-      handleNextRecogida();
-      setCargandoMaterialesRecogidosOrigen(true);
-      setViewObjetosRecoger(false);
+      // Caso que no haya mas clases a donde llevar materiales.
+      setViewPantallaSeguro(true);
+      setViewDestinoQuedan(true);
     }
   };
 
@@ -508,28 +516,77 @@ export default function VerTareaMaterial({ route, navigation }) {
     }
   };
 
+  // Obtenems el último objeto a dejar en un lugar al hacer marcha atrás en la pantalla de información de dejar objetos.
+  const obtenerUltimoObjeto = () => {
+    const tareasFiltradas1 = tareas[lugarOrigenNow];
+    const idsDestino = lugarDestinos.map((destino) => destino.id);
+    const tareasConDestinoCorrecto = tareasFiltradas1.filter((tarea) =>
+      idsDestino.includes(tarea.lugarDestino)
+    );
+
+    // Obtenemos el aula
+    let aulaNow = tareasConDestinoCorrecto[destinoActualIndex - 1].lugarDestino;
+
+    // Obtenemos el nuevo lugarDestinoNow.
+    setMaterialesCargados("retroceder en destino informacion");
+    setDestinoActualIndex(destinoActualIndex - 1);
+
+    const tareasFiltradas = [].concat(...agrupadosDestiTareas[aulaNow]);
+
+    // Cogemos solo aquellas tareas con lugarOrigenNow.
+    const tareasAplanados = tareasFiltradas.filter(
+      (tarea) => tarea.lugarOrigen === lugarOrigenNow
+    );
+
+    const materialesAplanados = [].concat(...materiales);
+
+    let indice = tareasAplanados.length - 1; // cogemos el ultimo
+
+    if (tareasAplanados.length > indice) {
+      const tareaActual = tareasAplanados[indice];
+      setStockMaterialllevar(tareaActual.cantidad);
+      setCaracteristicaMaterialLlevar(tareaActual.caracteristica);
+      // Obtenemos el material correspondiente.
+      const material = materialesAplanados.find(
+        (material) => material.id === tareaActual.idMaterial
+      );
+      // Nos quitamo estorbos.
+      if (material !== undefined) {
+        setNombreMaterialLlevar(material.nombre);
+        setFotoMaterialLlevar(material.foto);
+
+        // sino tiene caracteristicas obtenemos su foto directamente
+        if (tareaActual.caracteristica !== "Ninguno") {
+          // Buscar la foto de la característica específica
+          const fotoCaracteristica = material.caracteristicas.find(
+            (carac) => carac.tipo === tareaActual.caracteristica
+          )?.foto;
+          setFotoCaracteristicaMaterialLlevar(fotoCaracteristica);
+        } else {
+          setFotoCaracteristicaMaterialLlevar("");
+        }
+      }
+    }
+    setMaterialLlevarIndex(indice);
+  };
+
   // Pantalla primera de ir al lugar de origen a recoger los materiales.
   const renderLugarOrigen = () => {
     return viewRecogidasQuedan ? (
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.retrocederPulsar}
-          onPress={() => {
-            if (indexLugarOrigen > 0) {
-              setIndexLugarOrigen(indexLugarOrigen - 1);
-              setDestinoActualIndex(lugarDestinos.length - 1);
-              setMaterialLlevarIndex(agrupadosDestiTareas[setLugarDestinoNow]);
-              setCargandoMaterialesRecogidosOrigen(false);
-            } else {
+        {indexLugarOrigen == 0 && (
+          <TouchableOpacity
+            style={styles.retrocederPulsar}
+            onPress={() => {
               navigation.navigate("Tareas", { usuario });
-            }
-          }}
-        >
-          <Image
-            style={styles.imageRetroceder}
-            source={require("../../Imagenes/retroceder.png")}
-          />
-        </TouchableOpacity>
+            }}
+          >
+            <Image
+              style={styles.imageRetroceder}
+              source={require("../../Imagenes/retroceder.png")}
+            />
+          </TouchableOpacity>
+        )}
         {mostrarNumeroRecogidas(
           lugaresOrigen.length - indexLugarOrigen,
           styles,
@@ -558,15 +615,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         <TouchableOpacity
           style={styles.retrocederPulsar}
           onPress={() => {
-            if (indexLugarOrigen > 0) {
-              // Volvemos hacia atras en lugar origen, ya que esos materiales venían de otro lugar.
-              setIndexLugarOrigen(indexLugarOrigen - 1);
-              // Cargamos la pantalla anteiror de recoger materiales en un lugar origen.
-              setCargandoMaterialesRecogidosOrigen(true);
-              setViewCadaObjetoRecoger(false);
-            } else {
-              setViewRecogidasQuedan(true);
-            }
+            setViewRecogidasQuedan(true);
           }}
         >
           <Image
@@ -666,14 +715,14 @@ export default function VerTareaMaterial({ route, navigation }) {
           source={{ uri: fotoLugarOrigen.uri }}
           style={[styles.image, { marginHorizontal: 45 }]}
         />
-        <Text style={[styles.text, { marginHorizontal: 30 }]}>
+        <Text style={[styles.text, { marginHorizontal: 30, flex: 1 }]}>
           {lugar === "Almacen"
             ? `Estoy en el ${lugar}`
             : `Estoy en el aula ${lugar}`}
         </Text>
 
         <TouchableOpacity
-          style={styles.imagenYTextoPulsar}
+          style={[styles.imagenYTextoPulsar]}
           onPress={() => {
             setViewCadaObjetoRecoger(true);
             const stock = tareasAplanados
@@ -700,11 +749,14 @@ export default function VerTareaMaterial({ route, navigation }) {
           </Text>
         </TouchableOpacity>
 
+        <View style={[{ flex: 1 }]}></View>
+        <View style={[{ flex: 1 }]}></View>
+
         {materialesAplanados.length - 1 !== indiceActual &&
           (materialRecogido || tickMaterial.tick) && (
             <View style={styles.container}>
               <TouchableOpacity
-                style={[styles.imagePulsar, { marginHorizontal: 20, flex: 1 }]}
+                style={[styles.imagePulsar, { marginHorizontal: 20 }]}
                 onPress={() => {
                   avanzarMaterial(); // Llamada directa a la función avanzarMaterial
                   setMaterialRecogido(false); // Se esconde la opción de pasar a recoger el siguinte material en un lugar origen.
@@ -791,7 +843,6 @@ export default function VerTareaMaterial({ route, navigation }) {
     }
 
     const tipoActual = tipos[indiceActualTipo];
-    console.log("este es el tipo actual: ", tipoActual);
 
     const avanzarAlSiguienteTipo = () => {
       if (indiceActualTipo < tipos.length - 1) {
@@ -816,7 +867,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             style={[styles.image, { marginHorizontal: 15 }]}
           />
         </View>
-        <Text style={styles.text}>
+        <Text style={[styles.text, { flex: 1 }]}>
           {lugarOrigenNow === "Almacen"
             ? `Estoy en el ${lugarOrigenNow}. Cojo ${nombreMaterial}`
             : `Estoy en el aula ${lugarOrigenNow}. Cojo ${nombreMaterial}`}
@@ -876,6 +927,9 @@ export default function VerTareaMaterial({ route, navigation }) {
           )}
         </View>
 
+        <View style={[{ flex: 1 }]}></View>
+        <View style={[{ flex: 1 }]}></View>
+
         {indiceActualTipo >= tipos.length - 1 ? (
           <View style={[styles.container, { flex: 1 }]}>
             <TouchableOpacity
@@ -889,7 +943,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                 style={styles.imageSiguiente}
               />
             </TouchableOpacity>
-            <Text style={[styles.text, { flex: 1 }]}>Todo Recogido</Text>
+            <Text style={[styles.text]}>Todo Recogido</Text>
           </View>
         ) : (
           <View style={[styles.container]}>
@@ -904,7 +958,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                 style={[styles.imageSiguiente]}
               />
             </TouchableOpacity>
-            <Text style={[styles.text, { flex: 1 }]}>Cogido</Text>
+            <Text style={[styles.text]}>Cogido</Text>
           </View>
         )}
       </View>
@@ -917,52 +971,53 @@ export default function VerTareaMaterial({ route, navigation }) {
     const aula = aulas.find((a) => a.aula === lugarDestinoNow);
 
     return viewDestinoQuedan ? (
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.retrocederPulsar}
-          onPress={() => {
-            if (destinoActualIndex > 0) {
-              //setViewMaterialLlevarClase(true);
-              //setMaterialesCargados('retroceder en destino informacion');
-              //setDestinoActualIndex(destinoActualIndex - 1);
-              //setMaterialLlevarIndex(materialLlevarIndex-1);
-              //console.log('indice Material: ',agrupadosDestiTareas[lugarDestinoNow]);
-              console.log("vamos por aqui"); // fjaslkdjfalksdjfañlksdjfñlakjsdfafldksjafñldskjfañlsdjkfañlksdjfñlksdajfd
-            } else {
-              setViewCadaObjetoRecoger(true);
-              setCargandoMateriales(false);
-              setViewCadaObjetoRecoger(false);
-              setCargandoMaterialesRecogidosOrigen(true);
-            }
-          }}
-        >
-          <Image
-            style={styles.imageRetroceder}
-            source={require("../../Imagenes/retroceder.png")}
-          />
-        </TouchableOpacity>
-        {mostrarNumeroLugaresDestino(
-          filtrarDestinoPorOrigen().length - destinoActualIndex,
-          styles,
-          visualizacion,
-          aulas,
-          tareas[lugarOrigenNow],
-          destinoActualIndex
-        )}
+      viewPantallaSeguro ? (
+        <>{pantallaConfirmacion()}</>
+      ) : (
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.retrocederPulsar}
+            onPress={() => {
+              if (destinoActualIndex > 0) {
+                setViewDestinoQuedan(false);
+                setViewMaterialLlevarClase(true);
+                obtenerUltimoObjeto();
+              } else {
+                setViewCadaObjetoRecoger(true);
+                setCargandoMateriales(false);
+                setViewCadaObjetoRecoger(false);
+                setCargandoMaterialesRecogidosOrigen(true);
+              }
+            }}
+          >
+            <Image
+              style={styles.imageRetroceder}
+              source={require("../../Imagenes/retroceder.png")}
+            />
+          </TouchableOpacity>
+          {mostrarNumeroLugaresDestino(
+            filtrarDestinoPorOrigen().length - destinoActualIndex,
+            styles,
+            visualizacion,
+            aulas,
+            tareas[lugarOrigenNow],
+            destinoActualIndex
+          )}
 
-        <TouchableOpacity
-          style={styles.imagePulsar}
-          onPress={() => {
-            setViewDestinoQuedan(false);
-          }}
-        >
-          <Image
-            source={require("../../Imagenes/siguiente.png")}
-            style={styles.imageSiguiente}
-          />
-        </TouchableOpacity>
-        <Text style={styles.felicitacionText}>¡Seguimos!</Text>
-      </View>
+          <TouchableOpacity
+            style={styles.imagePulsar}
+            onPress={() => {
+              setViewDestinoQuedan(false);
+            }}
+          >
+            <Image
+              source={require("../../Imagenes/siguiente.png")}
+              style={styles.imageSiguiente}
+            />
+          </TouchableOpacity>
+          <Text style={styles.felicitacionText}>¡Seguimos!</Text>
+        </View>
+      )
     ) : (
       <View style={styles.container}>
         {viewMaterialLlevarClase ? (
@@ -983,7 +1038,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               />
             </TouchableOpacity>
             <Image source={aula.foto} style={styles.image} />
-            <Text style={styles.text}>
+            <Text style={[styles.text, { flex: 1 }]}>
               {lugarDestinoNow === "Almacen"
                 ? `Estoy en el ${lugarDestinoNow}`
                 : `Estoy en el aula ${lugarDestinoNow}`}
@@ -1029,8 +1084,8 @@ export default function VerTareaMaterial({ route, navigation }) {
               </View>
             )}
 
-            <View style={styles.separador}></View>
-            <View style={styles.separador}></View>
+            <View style={[{ flex: 1 }]}></View>
+            <View style={[{ flex: 1 }]}></View>
 
             {materialLlevarIndex ==
             agrupadosDestiTareas[lugarDestinoNow].filter((objeto) => {
@@ -1069,6 +1124,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             )}
           </View>
         ) : (
+          ///////////////////////////////////////////////////////////////////////////////////
           <View style={styles.container}>
             <TouchableOpacity
               style={styles.retrocederPulsar}
@@ -1124,23 +1180,78 @@ export default function VerTareaMaterial({ route, navigation }) {
     );
   };
 
+  const pantallaConfirmacion = () => {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.row, { flex: 1 }]}>
+          <Image
+            style={styles.imageLarge}
+            source={require("../../Imagenes/pensar.png")}
+          />
+          <Image
+            style={styles.imageLarge}
+            source={require("../../Imagenes/terminar.png")}
+          />
+        </View>
+        <Text style={[styles.felicitacionText, { flex: 1 }]}>
+          ¿Has terminado?
+        </Text>
+
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.imagePulsar, { marginHorizontal: 20 }]}
+            onPress={() => {
+              setViewDestinoQuedan(false);
+              setViewMaterialLlevarClase(true);
+            }}
+          >
+            <Image
+              style={styles.imageSiguiente}
+              source={require("../../Imagenes/retroceder.png")}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.imagePulsar, { marginHorizontal: 20 }]}
+            onPress={() => {
+              // vamos a la siguiente recogida
+              handleNextRecogida();
+              setCargandoMaterialesRecogidosOrigen(true);
+              setViewObjetosRecoger(false);
+              setViewPantallaSeguro(false);
+            }}
+          >
+            <Image
+              source={require("../../Imagenes/bien.png")}
+              style={styles.imageSiguiente}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.felicitacionText, { marginHorizontal: 60 }]}>
+            No
+          </Text>
+          <Text style={[styles.felicitacionText, { marginHorizontal: 60 }]}>
+            Si
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
   // Pantalla para mostrar al alumno la felicitacion de haber terminado
   const renderFelicitaciones = () => {
     return (
       <View style={styles.container}>
         <Image
           source={require("../../Imagenes/TareasAlumnos/muyBien.png")}
-          style={styles.imageLarge}
+          style={styles.imageVeryLarge}
         />
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <Text style={styles.felicitacionText}>Muy Bien Hecho</Text>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
+
+        <Text style={[styles.felicitacionText, { flex: 1 }]}>
+          Muy Bien Hecho
+        </Text>
+
         <TouchableOpacity
           style={styles.imagePulsar}
           onPress={() => {
@@ -1152,6 +1263,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             style={styles.imageSiguiente}
           />
         </TouchableOpacity>
+        <Text style={styles.felicitacionText}>Hecho</Text>
       </View>
     );
   };
@@ -1210,6 +1322,10 @@ const styles = StyleSheet.create({
   image: {
     width: RFValue(60),
     height: RFValue(60),
+  },
+  imageVeryLarge: {
+    width: RFValue(180),
+    height: RFValue(180),
   },
   imageLarge: {
     width: RFValue(90),
