@@ -8,10 +8,11 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { setVideo } from "../Modelo/firebase";
-import { almacenaPictograma, openGallery } from "../Controlador/multimedia";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, openGallery } from "../Controlador/multimedia";
+import Swal from "sweetalert2";
 
 export default function GestionItemActividad() {
+  //Sección de variables para añadir item
   const [urlVideo, setUrlVideo] = useState("");
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
@@ -20,31 +21,96 @@ export default function GestionItemActividad() {
   const [nombrePictograma, setnombrePictograma] = useState("");
   const [viewPictograma, setViewPictograma] = useState(false);
 
+  const [urlImagen, setUrlImagen] = useState("");
+  const [nombreImagen, setNombreImagen] = useState("");
+  const [viewImagen, setViewImagen] = useState(false);
+
+  //Sección de variables para eliminar un item
+  const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
+
+  const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
+
+  const [viewEliminarImagen, setViewEliminarImagen] = useState(false);
+
+  //Sección de funciones
   const handleVideo = () => {
-    setViewVideo(true);
+    setViewVideo(true); //
     setViewPictograma(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
   const handleImagen = () => {
     setViewVideo(false);
-    setnombreVideo("");
-    setUrlVideo("");
     setViewPictograma(false);
+    setViewImagen(true); //
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
   const handleAudio = () => {
     setViewVideo(false);
-    setnombreVideo("");
-    setUrlVideo("");
     setViewPictograma(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
   const handlePictograma = () => {
-    setViewPictograma(true);
+    setViewPictograma(true); //
     setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
   };
+
+  const handleEliminarVideo = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(true); //
+    setViewEliminarPictograma(false); 
+    setViewEliminarImagen(false);
+  }
+  const handleEliminarImagen = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(true); //
+  }
+  const handleEliminarAudio = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(false);
+    setViewEliminarImagen(false);
+  }
+  const handleEliminarPictograma = () => {
+    setViewPictograma(false);
+    setViewVideo(false);
+    setViewImagen(false);
+
+    setViewEliminarVideo(false);
+    setViewEliminarPictograma(true); //
+    setViewEliminarImagen(false);
+  }
 
   const handleAñadir = () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {
-        setVideo(nombreVideo, urlVideo);
+        almacenaVideo(urlVideo, nombreVideo);
       } else {
         if (Platform.OS === "web"){
           Swal.fire({
@@ -80,8 +146,29 @@ export default function GestionItemActividad() {
     }
   };
 
+  const handleAñadirImagen = async () => {
+    if (viewImagen) {
+      if (nombreImagen !== "" && urlImagen !== "") {
+        console.log(urlImagen);
+        almacenaImagen(urlImagen, nombreImagen);
+      } else {
+        if (Platform.OS ===   "web"){
+          Swal.fire({
+            title: "Campos Incompletos",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Campos Incompletos,', 'Debes rellenar los campos requeridos');
+        }
+      }
+    }
+  };
+
   const abrirGaleria = async() => {
-    setUrlPictograma(await openGallery());
+    if(viewPictograma) setUrlPictograma(await openGallery());
+    else if (viewImagen) setUrlImagen(await openGallery());
   }
 
   return (
@@ -105,16 +192,16 @@ export default function GestionItemActividad() {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-        <TouchableOpacity style={styles.buttonDelete} >
+        <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarVideo} >
             <Text style={styles.buttonText}>Eliminar Video</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarAudio} >
             <Text style={styles.buttonText}>Eliminar Audio</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarImagen} >
             <Text style={styles.buttonText}>Eliminar Imagen</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} >
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarPictograma} >
             <Text style={styles.buttonText}>Eliminar Pictograma</Text>
           </TouchableOpacity>
           
@@ -143,19 +230,19 @@ export default function GestionItemActividad() {
             </View>
             <View style={styles.separador}></View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarVideo}>
                 <Text style={styles.buttonText}>Eliminar Video</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarAudio}>
                 <Text style={styles.buttonText}>Eliminar Audio</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.separador}></View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.buttonDelete} >
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarImagen}>
                 <Text style={styles.buttonText}>Eliminar Imagen</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonDelete}>
+              <TouchableOpacity style={styles.buttonDelete} onPress={handleEliminarPictograma}>
                 <Text style={styles.buttonText}>Eliminar Pictograma</Text>
               </TouchableOpacity>
             </View>
@@ -226,6 +313,39 @@ export default function GestionItemActividad() {
           <View style={styles.separador5} />
 
           <TouchableOpacity style={styles.addButton} onPress={handleAñadirPictograma}>
+            <Text style={styles.addButtonText}>Añadir</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {viewImagen && (
+        <View>
+
+          <View style={styles.separador} />
+
+          <TouchableOpacity style={styles.buttonAñadir} onPress={()  => abrirGaleria()}>
+            {urlImagen=="" ? (<Text>Pulsa el botón para elegir Imagen</Text>) : (<Text style={styles.textoSeleccionado}>Imagen Seleccionada </Text>)}
+          </TouchableOpacity>
+
+
+
+          <View style={styles.separador} />
+          <View style={styles.separador} />
+
+          <Text style={[styles.text]}>Introduzca Nombre:</Text>
+
+          <View style={styles.separador} />
+
+          <TextInput
+            style={[styles.input]}
+            placeholder="Elija Nombre"
+            value={nombreImagen}
+            onChangeText={setNombreImagen}
+          />
+          
+          <View style={styles.separador5} />
+          <View style={styles.separador5} />
+
+          <TouchableOpacity style={styles.addButton} onPress={handleAñadirImagen}>
             <Text style={styles.addButtonText}>Añadir</Text>
           </TouchableOpacity>
         </View>
@@ -320,4 +440,7 @@ const styles = StyleSheet.create({
   separador5: {
     height: 50,
   },
+  textoSeleccionado: {
+    color: "green"
+  }
 });
