@@ -17,7 +17,7 @@ import {
   getIdMenusSeleccionados,
   filtroID,
   getObjMenusSeleccionados,
-  isVaciaListaMenus,
+  isVaciaAlgunListaMenus,
 } from "./VarGlobal";
 import {
   aniadeTarea,
@@ -224,7 +224,7 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          if (isVaciaListaMenus ()) {
+          if (isVaciaAlgunListaMenus ()) {
             Swal.fire({
               title: "Menu Vacio",
               text: "Verifica que hayas elegido algún menú, y que haya alimentos en él.",
@@ -255,7 +255,7 @@ export default function TareaActividad({ navigation }) {
           {
             text: "Confirmar",
             onPress: () => {
-              if (isVaciaListaMenus()) {
+              if (isVaciaAlgunListaMenus()) {
                 Alert.alert(
                   "Menu Vacio", // Título
                   "Verifica que hayas elegido algún menú, y que haya alimentos en él.", // Mensaje

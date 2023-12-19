@@ -21,28 +21,11 @@ export default function TiposMenusComanda({ navigation }) {
   const [selectedMenu, setSelectedMenu] = useState("");
   const [menus, setMenus] = useState([]);
 
-  // Función para actualizar menus
-  const actualizarMenus = () => {
-    const nuevosMenus = { "Ninguno": [] };
-    global.soloMenus.forEach((menuTitulo) => {
-      nuevosMenus[menuTitulo] = [];
-    });
-    setMenus(nuevosMenus);
-  };
-
   // Guardamos la relación entre menus y alimentos.
   useEffect(() => {
-    if (global.cambiadoSoloMenus === true) {
-      actualizarMenus();
-      global.setChangedSoloMenus(false);
-    } else {
-      if (global.isVaciaListaMenus){
-        const nuevosMenus = { "Ninguno": [] };
-        setMenus(nuevosMenus);
-      }else{
+        console.log('aqo');
+        global.actualizarListaMenus ();
         setMenus(global.getMenus);
-      }
-    }
   }, []);
 
   const [selectedAlimento, setSelectedAlimento] = useState();

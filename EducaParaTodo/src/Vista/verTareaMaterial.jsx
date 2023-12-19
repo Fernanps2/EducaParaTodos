@@ -83,6 +83,20 @@ export default function VerTareaMaterial({ route, navigation }) {
   const [cambioOrigen, setCambioOrigen] = useState("");
   const [materialesCargados, setMaterialesCargados] = useState("");
 
+  // Variable para imagenes de pictogramas de numeros
+  const imagenesNumeros = {
+    1: require("../../Imagenes/Numeros/1.png"),
+    2: require("../../Imagenes/Numeros/2.png"),
+    3: require("../../Imagenes/Numeros/3.png"),
+    4: require("../../Imagenes/Numeros/4.png"),
+    5: require("../../Imagenes/Numeros/5.png"),
+    6: require("../../Imagenes/Numeros/6.png"),
+    7: require("../../Imagenes/Numeros/7.png"),
+    8: require("../../Imagenes/Numeros/8.png"),
+    9: require("../../Imagenes/Numeros/9.png"),
+    10: require("../../Imagenes/Numeros/10.png"),
+  };
+
   // se cargan las aulas, tareas, profesores, y lugares de origen y destino
   useEffect(() => {
     async function cargarDatos() {
@@ -886,7 +900,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                 <View>
                   {stock >= 1 && stock <= 10 ? (
                     <Image
-                      source={require(`../../Imagenes/Numeros/${stock}.png`)}
+                      source={imagenesNumeros[stock]}
                       style={[styles.image]}
                     />
                   ) : (
@@ -907,7 +921,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                 <View style={[styles.row]}>
                   {tipoActual.cantidad >= 1 && tipoActual.cantidad <= 10 ? (
                     <Image
-                      source={require(`../../Imagenes/Numeros/${tipoActual.cantidad}.png`)}
+                      source={imagenesNumeros[tipoActual.cantidad]}
                       style={[styles.imageSmall]}
                     />
                   ) : (
@@ -1048,7 +1062,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               <View style={styles.row}>
                 {stockMaterialLlevar >= 1 && stockMaterialLlevar <= 10 ? (
                   <Image
-                    source={require(`../../Imagenes/Numeros/${stockMaterialLlevar}.png`)}
+                    source={imagenesNumeros[stockMaterialLlevar]}
                     style={styles.imageSmall}
                   />
                 ) : (

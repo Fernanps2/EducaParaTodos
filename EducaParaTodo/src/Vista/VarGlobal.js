@@ -75,17 +75,26 @@ export var listaMenus =[];
 export function isVaciaListaMenus (){
   if (listaMenus.length === 0) {
     return true;
+  }else {
+    return false;
   }
-  for (const menu in listaMenus) {
-    if (menu !== 'Ninguno'){
-        if (listaMenus[menu].length === 0) {
-            // Si alguno de los menús está vacío, devolver true
-            return true;
-          }
-    }
-  }
-  return false;
 }
+
+export function isVaciaAlgunListaMenus (){
+    if (listaMenus.length === 0) {
+      return true;
+    }
+    for (const menu in listaMenus) {
+      if (menu !== 'Ninguno'){
+          if (listaMenus[menu].length === 0) {
+              // Si alguno de los menús está vacío, devolver true
+              return true;
+            }
+      }
+    }
+    return false;
+  }
+
 export function setListaMenus (lista){
     listaMenus = lista;
 }
@@ -103,21 +112,36 @@ export function filtroID (nombreMenu){
   return idAlimentos;
 }
 
+export function actualizarListaMenus() {
+    // Inicializar listaMenus con el menú "Ninguno" si aún no existe
+    if (!listaMenus.hasOwnProperty("Ninguno")) {
+        listaMenus["Ninguno"] = [];
+    }
+
+    // Añadir nuevos menús de soloMenus a listaMenus
+    for (const menu of soloMenus) {
+        if (!listaMenus.hasOwnProperty(menu)) {
+            // Si el menú no existe en listaMenus, se añade con una lista de alimentos vacía
+            listaMenus[menu] = [];
+        }
+    }
+
+    // Eliminar menús de listaMenus que no están en soloMenus, excepto el menú "Ninguno"
+    for (const menu in listaMenus) {
+        if (!soloMenus.includes(menu) && menu !== "Ninguno") {
+            // Si el menú no está en soloMenus y no es "Ninguno", se elimina de listaMenus
+            delete listaMenus[menu];
+        }
+    }
+}
+
 // SOlo obtiene los menus selccionados sin las relaciones entre alimentos
 export var soloMenus = [];
-export var cambiadoSoloMenus = false;
 export function setSoloMenus (menus) {
     soloMenus = menus;
-    cambiadoSoloMenus = true;
 }
 export function getSoloMenus () {
     return soloMenus;
-}
-export function setChangedSoloMenus (status){
-    cambiadoSoloMenus = status;
-}
-export function isChangedSoloMenus (){
-    return cambiadoSoloMenus;
 }
 
 // Objetos se los menus seleccionados
@@ -147,7 +171,6 @@ export function setAlimentosObjetos (objetos){
 export function inicializarMenus (){
     listaMenus = [];
     soloMenus = [];
-    cambiadoSoloMenus = false;
     menusObjetos = [];
     alimentosObjetos = [];
 }
