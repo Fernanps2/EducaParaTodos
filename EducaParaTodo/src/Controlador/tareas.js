@@ -1,5 +1,6 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea} from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor} from "../Modelo/firebase";
+import { Alert } from "react-native";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -9,11 +10,13 @@ export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
 }
 */
-// Esta función busca la tarea con ese ID
-export async function buscarTarea(idTarea){
+// Esta función busca las tareas asociadas a un alumno
+// Busca las que idAlumno sea igual al parámetro idAlumno
+export async function buscarTareaAlumno(idAlumno){
     let tarea = null;
+    console.log("el id es: " + idAlumno);
 
-    tarea = await getTareaId(idTarea);
+    tarea = await getTareaId(idAlumno);
 
     return tarea;
 }
@@ -25,6 +28,15 @@ export async function buscarTareas(){
     tareas = await getTareas();
 
     return tareas;
+}
+
+// Funcion que busca una tarea cuyo id del documento sea igual a idTarea
+export async function buscarTarea(idTarea){
+    let tarea = null;
+
+    tarea = await getTarea(idTarea);
+
+    return tarea;
 }
 
 export async function borrarTarea (idTarea){
@@ -80,7 +92,7 @@ export async function buscarTareasComandas(){
     return tareas;
 }
 
-// Esta función muestra todas las tareas de tipo comanda en la colección tarea
+// Esta función muestra todas las tareas de tipo comanda en la colección tarea que están completadas por lo que esto incluye también que esté asignada a un alumno
 export async function buscarTComandas(){
     let tareas = null;
 
@@ -90,8 +102,9 @@ export async function buscarTComandas(){
 }
 
 
-export async function aniadeMenu(idTarea,idMenu, idAlimentos){
-    await setMenu(idTarea,idMenu,idAlimentos);
+export async function aniadeMenu(nombre,foto){
+    console.log("añadimos menu en controlador");
+    await setMenu(nombre,foto);
 }
 
 // Esta función muestra todos los menús
@@ -249,8 +262,11 @@ export async function buscarPedidosTarea (idTarea){
 }
 
 export async function completarTarea(idTarea){
-    console.log("completando tarea 1");
     await terminarTarea(idTarea);
+}
+
+export async function eliminarMenu(nombre){
+    await deleteMenu(nombre);
 }
 
 

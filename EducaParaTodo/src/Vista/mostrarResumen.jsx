@@ -5,19 +5,20 @@ import { buscaAlumnoId } from '../Controlador/alumnos';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { buscarMenus } from '../Controlador/tareas';
 import { buscaProfesor } from '../Controlador/profesores';
+import { descargarFotoPersona,descargarFotoMenu } from '../Modelo/firebase';
 
 
 
-// A esta pagina se llega desde el homeAdmin > comandasCreadas > esta página.
+// A esta pagina se llega cuando el alumno realiza la comanda de todos los menús de una clase
 // Aquí se muestran los datos recogidos en una tarea comanda en concreto
-// Primero obtenemos todos los menús, luego por menú sacamos todos los aulas y por último
-// se muestran los pedidos por menú y aula. Realmente solo se muestran los pedidos que se han hecho
-// ya que si no se mostraría una línea por cada combinación posible de menú y aula
 
-const DatosComandaDetalle = ({menu, id, prof}) => {
+const DatosResumenDetalle = ({prof, menu, id}) => {
+    console.log("el menu es: "+JSON.stringify(menu));
 
     const [pedido, setPedido] = useState([]);
     const [numeroPedidos, setNumeroPedidos] = useState("0");
+    const [fotoMenu,setFotoMenu] = useState([]);
+  
     
     useEffect(() => {
         const obtenerPedidos = async() => {
@@ -28,7 +29,6 @@ const DatosComandaDetalle = ({menu, id, prof}) => {
 
                     setPedido(primerPedido);
                     setNumeroPedidos(primerPedido.nPedidos); // Actualiza directamente
-                    console.log("numero de pedidos: " + primerPedido.nPedidos);
                 }
             } catch(error){
                 console.log("error: " + error);
@@ -38,56 +38,42 @@ const DatosComandaDetalle = ({menu, id, prof}) => {
         // Esto hace que la función se ejecute cada vez que se cambie la combinación de 
         // id menu e id profesor, ya que si no pusiéramos esto solo se ejecutaría la primera vez
     },[menu.id, prof.id]);
- 
-
-    console.log("pedidos son: " + JSON.stringify(pedido));
-    console.log("numero pedidos: " + numeroPedidos);
-
-
-    return (
-        <View>
-            {numeroPedidos > 0 &&
-            <Text> Menú: {menu.Nombre} Aula: {prof.aula} Cantidad: {numeroPedidos}</Text>
-            }
-        </View>
-    )
-}
-
-
-const DatosAula = ({ menu, id }) => {
-
-    const [profesoresArray, setProfesoresArray] = useState([]);
 
     useEffect(() => {
-        const getProfesores = async () => {
-            try {
-                const profesores = await buscaProfesor();
-                setProfesoresArray(profesores);
-            } catch (error) {
-                console.log("error: " + error);
-            }
+        const getFoto = async () => {
+          try {
+            const fotoMen = await descargarFotoMenu(menu.Imagen);
+            setFotoMenu(fotoMen);
+          } catch (error) {
+            console.log("error: " + error);
+          }
         }
-        getProfesores();
-    }, []);
+        getFoto();
+      }, [menu]);
+    
+
+
 
     return (
         <View style={styles.container}>
-            {/* <ScrollView contentContainerStyle={styles.datos}> */}
-                {profesoresArray.map((profesor, index) => (
-                    <View key={index}>
-                        <DatosComandaDetalle menu={menu} id={id} prof={profesor} />
-                    </View>
-                ))}
-            {/* </ScrollView> */}
+            {numeroPedidos > 0 &&
+            <View>
+                <Text> 
+                    Menú: {menu.Nombre} Cantidad: {numeroPedidos} 
+                </Text>        
+                <Image style={styles.foto} source={{ uri: fotoMenu.uri }} />      
+            </View>  
+            }
         </View>
     )
 }
 
-const DatosComanda = ({route}) => {
-    const {id} = route.params;
-    console.log("idasjdfñas: " + id);
+const mostrarResumen = ({route}) => {
+    const {id,prof,navigation} = route.params;
 
     const [menuArray, setMenuArray] = useState([]);
+    const [fotoProfesor,setFotoProfesor] = useState([]);
+    const indiceMenu=0;
 
     useEffect(() => {
         const getMenus = async () => {
@@ -102,21 +88,51 @@ const DatosComanda = ({route}) => {
         getMenus();
     }, []);
 
+    useEffect(() => {
+        const getFoto = async () => {
+          try {
+            const fotoProf = await descargarFotoPersona(prof.foto);
+            setFotoProfesor(fotoProf);
+          } catch (error) {
+            console.log("error: " + error);
+          }
+        }
+        getFoto();
+      }, [prof]);
+    
+
 
     return (
+        <ScrollView contentContainerStyle={styles.datos}>
         <View style={styles.container}>
+            <View style={styles.datos}>
+                <Text style={styles.title}> PEDIDOS AULA: {prof.aula}</Text>
+                <Image style={styles.foto} source={{ uri: fotoProfesor.uri }} />
+                <View style={styles.fotos}>
+                {/* Tick verde */}
+                    <TouchableOpacity onPress={() => navigation.navigate('seleccionAula',{id,navigation})}>
+                        <Image style={styles.foto} source={{uri:"https://us.123rf.com/450wm/alonastep/alonastep1608/alonastep160800258/61775461-tick-elemento-de-se%C3%B1al-icono-de-marca-de-verificaci%C3%B3n-verde-aislado-en-el-fondo-blanco-simple.jpg"}}/>
+                    </TouchableOpacity>
+                    {/* Cruz roja */}
+                    <TouchableOpacity onPress={() => navigation.navigate('seleccionCantidad',{prof,id,indiceMenu,navigation})}>
+                        <Image style={styles.foto} source={{uri:"https://www.shutterstock.com/image-vector/cross-icon-simple-design-260nw-2187745095.jpg"}} />
+                    </TouchableOpacity>
+                 </View>
+
+            </View>
             <ScrollView contentContainerStyle={styles.datos}>
                 {menuArray.map((menu, index) => (
                     <View key={index}>
-                        <DatosAula menu={menu} id={id} />
+                        <DatosResumenDetalle prof = {prof} menu={menu} id={id}/>
                     </View>
                 ))}
             </ScrollView>
         </View>
+        </ScrollView>
     )
 }
 
-export default DatosComanda;
+export default mostrarResumen;
 
 
 const styles = StyleSheet.create({
@@ -140,6 +156,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginRight: 50,
     },
+    fotos:{
+        flexDirection:'row',
+        marginLeft:200,        
+    },
     texto: {
         fontWeight: 'bold',
         marginBottom: 50,
@@ -154,6 +174,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 2,
         borderColor: 'black',
+        marginLeft:20,
 
 
     },

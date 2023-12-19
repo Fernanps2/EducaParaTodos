@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'rea
 import { CerrarSesion } from './cerrarSesion';
 import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
 import { useFocusEffect } from '@react-navigation/native';
+import { buscarTareaAlumno } from '../Controlador/tareas';
 
 const manejoPresionarBoton = (tarea, navigation) => {
     
@@ -41,8 +42,7 @@ const Tareas = ({ route, navigation }) => {
         useCallback(() => {
             const listaTareas = async () => {
                 try {
-                    const Tareas = await getTareaId(usuario.id);
-                    console.log("tareas son: " + JSON.stringify(Tareas));
+                    const Tareas = await buscarTareaAlumno(usuario.id);
                     setTareas(Tareas);
                     console.log(tareas);
                 } catch (error) {
