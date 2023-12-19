@@ -1593,7 +1593,7 @@ export async function almacenarImagen(imagen, nombreImagen) {
             const refImagenes = ref(storage, IMAGENES+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
-                console.log('Se ha subido la imagen');
+                console.log('Se ha feedsubido la imagen');
             });
         } else {
             console.log("El nombre de archivo ya existe");

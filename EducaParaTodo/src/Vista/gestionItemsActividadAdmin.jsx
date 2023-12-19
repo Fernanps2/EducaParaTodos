@@ -12,8 +12,7 @@ import {
   ScrollView
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
-import { almacenaPictograma, openGallery, descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
-import { ScrollView } from "react-native-web";
+import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 
@@ -23,7 +22,6 @@ export default function GestionItemActividad() {
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
 
-  const [Pictogramas,setPictogramas] = useState([]);
 
   const [urlPictograma, setUrlPictograma] = useState("");
   const [nombrePictograma, setnombrePictograma] = useState("");
@@ -36,8 +34,10 @@ export default function GestionItemActividad() {
   //Sección de variables para eliminar un item
   const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
 
-  const [nombreEliminarPictograma, setnombreEliminarPictograma] = useState("");
   const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
+  const [pictogramas,setPictogramas] = useState([]);
+  const [pictogramasSeleccionados, setPictogramasSeleccionados] = useState([]);
+
 
   const [viewEliminarImagen, setViewEliminarImagen] = useState(false);
   const [imagenes, setImagenes] = useState([]);
@@ -112,7 +112,7 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false);
     setViewEliminarImagen(false);
   }
-  const handleEliminarPictograma = () => {
+  const handleEliminarPictograma = async () => {
     setViewPictograma(false);
     setViewVideo(false);
     setViewImagen(false);
@@ -120,6 +120,8 @@ export default function GestionItemActividad() {
     setViewEliminarVideo(false);
     setViewEliminarPictograma(true); //
     setViewEliminarImagen(false);
+
+    setPictogramas(await descargaPictogramas());
   }
 
   const handleAñadir = () => {
@@ -160,21 +162,7 @@ export default function GestionItemActividad() {
       }
     }
   };
-  
-  useEffect(() => {
 
-    MostrarPictogramas();
-  }, []);
-
-  const MostrarPictogramas = async () => {
-    try{
-      const DesPictogramas = await descargaPictogramas();
-      setPictogramas(DesPictogramas);
-      console.log(DesPictogramas);
-    } catch (error){
-      console.error('Error en obtener los pictogramas: ' , error);
-    }
-};
 
 
 
@@ -255,7 +243,70 @@ export default function GestionItemActividad() {
     }
   }
 
+  
+
   //FIN FUNCIONES ELIMINAR IMAGEN
+
+  // FUNCIONES PARA ELIMINAR PICTOGRAMAS
+
+   //Para seleccionar y deseleccionar una imagen
+   const toggleSelectionPictograma = (pictogramaid) => {
+    const index = pictogramasSeleccionados.indexOf(pictogramaid);
+
+    if (index == -1) {
+      setPictogramasSeleccionados([...pictogramasSeleccionados, pictogramaid]);
+    } else {
+      const updatedSelection = [...pictogramasSeleccionados];
+      updatedSelection.splice(index,1);
+      setPictogramasSeleccionados(updatedSelection);
+    }
+  };
+  
+  //Renderizar la imagen
+  const renderPictograma = ({item}) => {
+    const isSelected = pictogramasSeleccionados.includes(item.nombre);
+    //console.log(item.uri);
+
+    return (
+      <TouchableOpacity
+        style={isSelected ? styles.selectedImage : styles.image}
+        onPress={() => toggleSelectionPictograma(item.nombre)}
+      >
+        <Image
+          source={{uri: item.uri}}
+          style={styles.imageStyle}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const EliminarPictograma = async () => {
+    if (viewEliminarPictograma) {
+      pictogramasSeleccionados.map((selectedId) => {
+        eliminaPictograma(selectedId);
+      })
+      setPictogramasSeleccionados([]);
+
+      console.log("Pictogramas eliminados");
+
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "Listo",
+          text: "Pictogramas borrados correctamente",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Listo', 'Pictogramas borrados correctamente');
+      }
+
+      //Actualizamos de nuevo los pictogramas
+      setPictogramas(await descargaPictogramas());
+    }
+  }
+
+  // FIN DE FUNCIONES PARA ELIMINAR PICTOGRAMAS
+
 
   const abrirGaleria = async() => {
     if(viewPictograma) setUrlPictograma(await openGallery());
@@ -409,46 +460,70 @@ export default function GestionItemActividad() {
         </View>
       )}
       {viewEliminarPictograma && (
-        <View>
-          <ScrollView style={styles.row}>
-            {Pictogramas.map((item, index) => (
-              <Text key={index}>{item.nombre}</Text>
+        <ScrollView>
+        <View style={styles.separador} />
+
+        <Text style={styles.text}>Selecciona los pictogramas a eliminar:</Text>
+
+        <View style={styles.separador}/>
+        <View style={styles.separador}/>
+
+        <View style={styles.container}>
+        
+          <FlatList
+            data={pictogramas}
+            renderItem={renderPictograma}
+            keyExtractor={(item) => item.name}
+            numColumns={3}
+            contentContainerStyle={styles.imageGrid}
+          />
+          <View style={styles.selectedImagesContainer}>
+            <Text>Pictogramas seleccionados:</Text>
+            {pictogramasSeleccionados.map((selectedId) => (
+              <Text key={selectedId}>{pictogramas.find(item => item.nombre == selectedId).nombre}</Text>
             ))}
-          </ScrollView>
+          </View>
         </View>
+
+        <View style={styles.separador}/>
+
+        <TouchableOpacity style={styles.buttonDelete} onPress={EliminarPictograma}>
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </ScrollView>
       )}
       {viewImagen && (
-        <View>
+        <ScrollView>
+        <View style={styles.separador} />
 
-          <View style={styles.separador} />
+        <Text style={styles.text}>Selecciona las imágenes a eliminar:</Text>
 
-          <TouchableOpacity style={styles.buttonAñadir} onPress={()  => abrirGaleria()}>
-            {urlImagen=="" ? (<Text>Pulsa el botón para elegir Imagen</Text>) : (<Text style={styles.textoSeleccionado}>Imagen Seleccionada </Text>)}
-          </TouchableOpacity>
+        <View style={styles.separador}/>
+        <View style={styles.separador}/>
 
-
-
-          <View style={styles.separador} />
-          <View style={styles.separador} />
-
-          <Text style={[styles.text]}>Introduzca Nombre:</Text>
-
-          <View style={styles.separador} />
-
-          <TextInput
-            style={[styles.input]}
-            placeholder="Elija Nombre"
-            value={nombreImagen}
-            onChangeText={setNombreImagen}
+        <View style={styles.container}>
+        
+          <FlatList
+            data={imagenes}
+            renderItem={renderImage}
+            keyExtractor={(item) => item.name}
+            numColumns={3}
+            contentContainerStyle={styles.imageGrid}
           />
-          
-          <View style={styles.separador5} />
-          <View style={styles.separador5} />
-
-          <TouchableOpacity style={styles.addButton} onPress={handleAñadirImagen}>
-            <Text style={styles.addButtonText}>Añadir</Text>
-          </TouchableOpacity>
+          <View style={styles.selectedImagesContainer}>
+            <Text>Imágenes seleccionadas:</Text>
+            {imagenesSeleccionadas.map((selectedId) => (
+              <Text key={selectedId}>{imagenes.find(item => item.nombre == selectedId).nombre}</Text>
+            ))}
+          </View>
         </View>
+
+        <View style={styles.separador}/>
+
+        <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </ScrollView>
       )}
       {viewEliminarImagen && (
         <ScrollView>

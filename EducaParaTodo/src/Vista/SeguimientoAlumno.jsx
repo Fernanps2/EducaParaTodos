@@ -8,8 +8,10 @@ import tareas from '../Modelo/tareas';
 const SeguimientoAlumno = ({route}) => {
     
   const {idAlumno} = route.params;
-   const [Tareas, setTareasNombres] = useState([]);
-//   const [Pasos, setPasos] = useState([]);
+  const [Tareas, setTareasNombres] = useState([]);
+  const [Pasos, setPasos] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchTareasNombres = async () => {
@@ -24,10 +26,9 @@ const SeguimientoAlumno = ({route}) => {
     fetchTareasNombres();
   }, [idAlumno]);
 /*
-  useEffect(() => {
-    const mostrarpasos = async () => {
+  const mostrarpasos = async (Idtarea) => {
         try {
-          const pasos = await buscarPasos("sY52BaClUOtrlCpTGYbb");
+          const pasos = await buscarPasos(Idtarea);
           setPasos(pasos)
           console.log("se mete en mostrar pasos");
           console.log(pasos);
@@ -36,34 +37,31 @@ const SeguimientoAlumno = ({route}) => {
         } finally {
           setIsLoading(false);
         }
-      };
-      mostrarpasos();
-  }, ["sY52BaClUOtrlCpTGYbb"]);
- */
-
-  const [isLoading, setIsLoading] = useState(false);
-
+  };
+*/
 
 
   return (
     
     <View>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="black" />
+  {isLoading ? (
+    <ActivityIndicator size="large" color="black" />
+  ) : (
+    <ScrollView contentContainerStyle={styles.container}>
+      {Tareas.length === 0 ? (
+        <Text style={{fontSize: 20,}}>No hay tareas asignadas</Text>
       ) : (
-        
-        <ScrollView contentContainerStyle={styles.container}>
-          {Tareas.map((tarea) => (
-            <View key={tarea.id} style={styles.cardWithImage}>
-                <Text >{tarea.titulo}</Text>
-                <View style={styles.separador}/>
-                <CheckBox value={JSON.parse(tarea.completado)}></CheckBox>
-            </View>
-          ))}
-        </ScrollView>
-        
+        Tareas.map((tarea) => (
+          <View key={tarea.id} style={styles.cardWithImage}>
+            <Text>{tarea.titulo}</Text>
+            <View style={styles.separador} />
+            <CheckBox value={JSON.parse(tarea.completado)} />
+          </View>
+        ))
       )}
-    </View>
+    </ScrollView>
+  )}
+</View>
   );
 };
 
