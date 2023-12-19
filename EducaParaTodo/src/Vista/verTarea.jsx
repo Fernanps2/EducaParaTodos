@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Constants from 'expo-constants';
-import { View, Text, StyleSheet, Button, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
-import tareas from '../Modelo/tareas';
-import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion, buscarTareasInventarioId, buscarTareasComandasId } from '../Controlador/tareas';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion} from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
-import {buscaImagen, buscaPictograma, buscaVideo} from '../Controlador/asignadosTarea';
 import { descargaFotoPersona, descargaImagen, descargaPictograma, descargaVideo } from '../Controlador/multimedia';
 import { Entypo } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
-//import Video, {VideoRef} from 'react-native-video';
-//import VideoPlayer from 'react-native-video-player';
 import { Video, ResizeMode } from 'expo-av';
 
 export function VerTarea ({route, navigation}){
@@ -25,18 +21,13 @@ export function VerTarea ({route, navigation}){
     const [imagen, setImagen] = useState([]);
     const [pictograma, setPictograma] = useState([]);
     const [video, setVideo] = useState([]);
-    const [imagenCargada, setImagenCargada] = useState(false);
+    //const [imagenCargada, setImagenCargada] = useState(false);
     const [foto, setFoto] = useState([]);
 
     const vid = React.useRef(null);
     const [status, setStatus] = React.useState({});
 
-    //const videoRef = useRef(null);
-    //const background = require('./video.mp4');
-
     const profesorRef = useRef(profesor);
-    /*const [tareaInv, setTareaInv] = useState([]);
-    const [tareaCom, setTareaCom] = useState([]);*/
 
     useEffect(() => {
         const listaTarea = async () => {
@@ -44,7 +35,7 @@ export function VerTarea ({route, navigation}){
                 const Tarea = await buscarTareaId(id);
                 setTarea(Tarea);
 
-                console.log("tarea: " + JSON.stringify(Tarea));
+                //console.log("tarea: " + JSON.stringify(Tarea));
             } catch (error) {
                 console.log(error);
             }
@@ -58,7 +49,7 @@ export function VerTarea ({route, navigation}){
                 const Tareas = await buscarTareaActividad(id);
                 setTareaAct(Tareas);
 
-                console.log("tareasL: " + JSON.stringify(Tareas));
+                //console.log("tareasL: " + JSON.stringify(Tareas));
             } catch (error) {
                 console.log(error);
             }
@@ -72,7 +63,7 @@ export function VerTarea ({route, navigation}){
                 const Pasos = await buscarPasos(id);
                 setPasos(Pasos);
 
-                console.log("Pasos: " + JSON.stringify(Pasos)); 
+                //console.log("Pasos: " + JSON.stringify(Pasos)); 
             } catch (error) {
                 console.log(error);
             }
@@ -88,7 +79,7 @@ export function VerTarea ({route, navigation}){
                 const Profe = await buscaProfesorAula(tareaActvidad.aula);
                 setProfesor(Profe);
                 profesorRef.current = Profe;
-                console.log("Profesor: " + JSON.stringify(Profe)); 
+                //console.log("Profesor: " + JSON.stringify(Profe)); 
             } catch (error) {
                 console.log(error);
             }
@@ -100,24 +91,24 @@ export function VerTarea ({route, navigation}){
         const getFoto = async () => {
             try {
                 const currentProfesor = profesorRef.current;
-                console.log("CurrentProfesor: ", currentProfesor);
+                //console.log("CurrentProfesor: ", currentProfesor);
      
                 if (Array.isArray(currentProfesor) && currentProfesor.length > 0) {
                     const primerProfesor = currentProfesor[0];
                     
                     if (primerProfesor.foto && typeof primerProfesor.foto === "string" && primerProfesor.foto.trim() !== "") {
-                        console.log("foto profesor: ", primerProfesor.foto);
+                        //console.log("foto profesor: ", primerProfesor.foto);
                         const fotoDescargada = await descargaFotoPersona(primerProfesor.foto);
                         setFoto(fotoDescargada);
-                        console.log("foto descargada: ", fotoDescargada);
+                        //console.log("foto descargada: ", fotoDescargada);
                     } else {
-                        console.log("La propiedad 'foto' en el primer profesor no es una cadena válida o está vacía.");
+                        //console.log("La propiedad 'foto' en el primer profesor no es una cadena válida o está vacía.");
                     }
                 } else {
-                    console.log("currentProfesor es un array vacío o no es un array.");
+                    //console.log("currentProfesor es un array vacío o no es un array.");
                 }
             } catch (error) {
-                console.log("Error al obtener la foto: ", error);
+                //console.log("Error al obtener la foto: ", error);
             }
         };
     
@@ -130,7 +121,7 @@ export function VerTarea ({route, navigation}){
                 const Alumn = await buscaAlumnoId(idAlumno);
                 setAlumno(Alumn);
  
-                console.log("Alumno: " + JSON.stringify(Alumn)); 
+                //console.log("Alumno: " + JSON.stringify(Alumn)); 
             } catch (error) {
                 console.log(error);
             }
@@ -144,45 +135,13 @@ export function VerTarea ({route, navigation}){
                 const Visuali = await buscaVisualizacion(id);
                 setVisualizacion(Visuali);
 
-                console.log("Visualizacion: " + JSON.stringify(Visuali)); 
+                //console.log("Visualizacion: " + JSON.stringify(Visuali)); 
             } catch (error) {
                 console.log(error);
             }
         };
         listaVis();
     }, []);
-
-    /*useEffect(() => {
-        const listaTareas = async () => {
-            try {
-                const Tarea = await buscarTareasInventarioId(id);
-                setTareaInv(Tarea);
-
-                console.log("tareasInv: " + JSON.stringify(Tarea));
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        listaTareas();
-    }, []);  
-    
-    useEffect(() => {
-        const listaTareas = async () => {
-            try {
-                const Tarea = await buscarTareasComandasId(id);
-                setTareaCom(Tarea);
-
-                console.log("tareasCom: " + JSON.stringify(Tarea));
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        listaTareas();
-    }, []); */ 
-
-    
-    /*const tareaInventario = tareaInv[0];
-    const tareaComanda = tareaCom[0];*/
 
     const [checkedStates, setCheckedStates] = useState([]);
     const [pasoActual, setPasoActual] = useState(0);
@@ -219,7 +178,7 @@ export function VerTarea ({route, navigation}){
                     const Imagen = await descargaImagen(pasoActualData.imagen);
                     setImagen(Imagen);
                     setImagenCargada(true);
-                    console.log("Imagen: " + JSON.stringify(Imagen)); 
+                    //console.log("Imagen: " + JSON.stringify(Imagen)); 
                 }
             } catch (error) {
                 console.log(error);
@@ -235,7 +194,7 @@ export function VerTarea ({route, navigation}){
                 if(pasoActualData && pasoActualData.pictograma){
                     const Pictograma = await descargaPictograma(pasoActualData.pictograma);
                     setPictograma(Pictograma);
-                    console.log("Pictograma: " + JSON.stringify(Pictograma)); 
+                    //console.log("Pictograma: " + JSON.stringify(Pictograma)); 
                 }
             } catch (error) {
                 console.log(error);
@@ -251,7 +210,7 @@ export function VerTarea ({route, navigation}){
                 if(pasoActualData && pasoActualData.video){
                     const Video = await descargaVideo(pasoActualData.video);
                     setVideo(Video);
-                    console.log("Video: " + JSON.stringify(Video)); 
+                    //console.log("Video: " + JSON.stringify(Video)); 
                 }
             } catch (error) {
                 console.log(error);
@@ -259,148 +218,101 @@ export function VerTarea ({route, navigation}){
         }; 
         listaVideo();  
     }, [pasoActualData]);
+
+    useEffect(() => {
+        // Función para reproducir el video automáticamente
+        const playVideo = async () => {
+          if (vid.current) {
+            await vid.current.playAsync();
+          }
+        };
+    
+        playVideo();
+      }, [video]);
     
     
     return (
-       /*} <View>
-    {tarea && tarea.tipo == "actividad" ? (*/
-                <View style={styles.container}> 
-                    <Text style={styles.tarea}>{tarea.titulo}</Text>
-                    <Text style={styles.aula}>Aula {tareaActvidad && tareaActvidad.aula}</Text> 
-                    <Image style={styles.fotoProfe} source={{uri: foto.uri}}/>
-          
-                    <View style={styles.pasos}>
-                        {pasoActualData && pasoActualData.imagen && pasoActualData.imagen !== "Ninguno" && 
-                        visualizacion == "imagenes" && (
-                        <Image source={{uri: imagen.uri}} style={styles.foto} />
-                        )} 
+        <View style={styles.container}> 
+            <Text style={styles.tarea}>{tarea.titulo}</Text>
+            <Text style={styles.aula}>Aula {tareaActvidad && tareaActvidad.aula}</Text> 
+            <Image style={styles.fotoProfe} source={{uri: foto.uri}} accessibilityLabel={profesor.nombre}/>
+    
+            <View style={styles.pasos}>
+                {pasoActualData && pasoActualData.imagen && pasoActualData.imagen !== "Ninguno" && 
+                visualizacion == "imagenes" && (
+                    <Image source={{uri: imagen.uri}} style={styles.foto} accessibilityLabel={pasoActualData.texto}/>
+                )} 
 
-                        {pasoActualData && pasoActualData.pictograma && pasoActualData.pictograma !== "Ninguno" && 
-                        visualizacion == "pictogramas" && (
-                        <Image source={{uri: pictograma.uri}} style={styles.foto} />
-                        )}  
+                {pasoActualData && pasoActualData.pictograma && pasoActualData.pictograma !== "Ninguno" && 
+                visualizacion == "pictogramas" && (
+                    <Image source={{uri: pictograma.uri}} style={styles.foto} />
+                )}  
 
-                        {pasoActualData && pasoActualData.video && pasoActualData.video !== "Ninguno" && 
-                        visualizacion == "video" && (
-                        <Video ref={vid} style={styles.video}
-                            source={{
-                                uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' /*video.uri*/,
-                            }}
-                            useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
-                            onPlaybackStatusUpdate={status => setStatus(() => status)}/>
-                        )} 
-         
-                        {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
-        
-                        <View style={styles.botonesContainer}>
-                                {pasoActual > 0 && (
-                                    <TouchableOpacity onPress={handleAnterior} style={styles.botonAnterior}>
-                                        <Entypo name="arrow-long-left" size={65} color="black" />
-                                        <Text style={styles.botonTexto}>Anterior</Text>
-                                    </TouchableOpacity> 
-                                )}
-                                <TouchableOpacity onPress={handleSiguiente} style={styles.botonSiguiente}>
-                                    <Entypo name="arrow-long-right" size={65} color="black" />
-                                    <Text style={styles.botonTexto}>Siguiente</Text>
-                                </TouchableOpacity>
-                        </View> 
-                    </View>
-        
-                    <View style={{margin: 20}}>
-                        <TouchableOpacity style={styles.checkBox} onPress={handlePress}>
-                            {checkedStates[pasoActual] ? <Text style={styles.check}>✔️</Text> : null}
+                {pasoActualData && pasoActualData.video && pasoActualData.video !== "Ninguno" && 
+                visualizacion == "video" && (
+                    <Video ref={vid} style={styles.video}
+                    source={{uri: video.uri}}
+                    useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
+                    onPlaybackStatusUpdate={status => setStatus(() => status)}/>
+                )} 
+    
+                {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
+
+                <View style={styles.botonesContainer}>
+                        {pasoActual > 0 && (
+                            <TouchableOpacity onPress={handleAnterior} style={styles.botonAnterior}>
+                                <Entypo name="arrow-long-left" size={120} color="black" />
+                                <Text style={styles.botonTexto}>Anterior</Text>
+                            </TouchableOpacity> 
+                        )}
+                        <TouchableOpacity onPress={handleSiguiente} style={styles.botonSiguiente}>
+                            <Entypo name="arrow-long-right" size={120} color="black" />
+                            <Text style={styles.botonTexto}>Siguiente</Text> 
                         </TouchableOpacity>
-                    </View>
-        
-                    {/*<View style={{ alignItems: 'center' }}>
-                        <Text style={styles.opciones}>Opciones:</Text>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap' }}>
-                            <View style={{marginHorizontal: 1}}>
-                                <Button
-                                    // onPress={onPressLearnMore}
-                                    title="Texto"
-                                    color="#509594"
-                                />
-                            </View>
-                            <View style={{marginHorizontal: 1}}>
-                                <Button
-                                    // onPress={onPressLearnMore}
-                                    title="Imágenes"
-                                    color="#509594"
-                                />
-                            </View>
-                            <View style={{marginHorizontal: 1}}>
-                                <Button
-                                    // onPress={onPressLearnMore}
-                                    title="Vídeo"
-                                    color="#509594"
-                                />
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
-                            <View style={{marginHorizontal: 1}}>
-                                <Button
-                                    // onPress={onPressLearnMore}
-                                    title="Pictogramas"
-                                    color="#509594"
-                                />
-                            </View>
-                            <View style={{marginHorizontal: 1}}>
-                                <Button
-                                    // onPress={onPressLearnMore}
-                                    title="Audio"
-                                    color="#509594"
-                                />
-                            </View>
-                        </View>
-                                </View>*/}
+                </View> 
             </View>
-            /*) : tarea && tarea.tipo == "material" ? (
-                <View style={styles.container}>
-                    <Text style={styles.tarea}>{tarea.titulo}</Text>
-                    <Text style={styles.aula}>{tareaInventario && tareaInventario.cantidad}</Text>
-                </View>
-            ) : ( //De tipo comanda
-                <View>
-                    <Text style={styles.tarea}>{tarea.titulo}</Text>
-                    <Text style={styles.aula}>{tareaComanda && tareaComanda.menus[0]}</Text>
-                </View>
-            )}
-        </View>*/
-       
-        
+
+            <View style={{margin: 20}}>
+                <TouchableOpacity style={styles.checkBox} onPress={handlePress}>
+                    {checkedStates[pasoActual] ? <Text style={styles.check}>✔️</Text> : null}
+                </TouchableOpacity>
+            </View>
+    </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         //marginTop: Constants.statusBarHeight,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     tarea: {
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 40
+        fontSize: RFValue(20)
     },
     aula: {
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 20,
-        marginTop: 20
+        fontSize: RFValue(13), 
+        //marginTop: 0
     },
     pasos: {
+        flex:1,
         alignItems: 'center',
+        
     },
     texto:{
-        fontSize: 20,
-        margin: Constants.statusBarHeight
-    },
+        fontSize: RFValue(15),
+        margin: RFValue(10)
+    }, 
     botonesContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 20,
-        paddingHorizontal: 40
+       // marginTop: 0,
+        paddingHorizontal: RFValue(40)
     },
     botonAnterior: {
         flex: 1,
@@ -412,59 +324,42 @@ const styles = StyleSheet.create({
     },
     botonTexto: {
         textAlign: 'center',
-        fontSize: 20
-    },
-    opciones: {
-        fontSize: 30,
-        textAlign: 'center',
-        marginBottom: 10
-    },
-    descripcion: {
-        fontSize: 17,
-        padding: 20,
-        textAlign: 'center'
-    },
-    title: {
-        fontSize: 20,
-        textDecorationLine: 'underline'
-    },
-    data: {
-        fontSize: 17, padding: 20
+        fontSize: RFValue(19)
     },
     check: {
         alignSelf: 'center',
-        fontSize: 32
+        fontSize: RFValue(30)
     },
     checkBox: {
-        width: 50,
-        height: 50,
-        borderWidth: 2,
+        width: RFValue(50),
+        height: RFValue(50),
+        borderWidth: RFValue(2),
         borderColor: 'green'
     },
     fotoProfe: {
-        width: RFValue(100),
-        height: RFValue(100),
-        borderRadius: 20,
+        width: RFValue(55),
+        height: RFValue(55),
+        borderRadius: RFValue(10),
         overflow: 'hidden',
-        borderWidth: 2,
+        borderWidth: RFValue(1),
         borderColor: 'black',
     },
     foto: {
-        marginTop: 25,
-        width: RFValue(160),
-        height: RFValue(160),
-        borderRadius: 20,
+        marginTop: RFValue(15),
+        width: RFValue(240),
+        height: RFValue(140),
+        borderRadius: RFValue(5),
         overflow: 'hidden',
-        borderWidth: 2,
+        borderWidth: RFValue(1),
         borderColor: 'black',
     },
     video: {
-        marginTop: 25,
-        width: RFValue(300),
-        height: RFValue(160),
-        borderRadius: 20,
+        marginTop: RFValue(15),
+        width: RFValue(240),
+        height: RFValue(120),
+        borderRadius: RFValue(5),
         overflow: 'hidden',
-        borderWidth: 2,
+        borderWidth: RFValue(1),
         borderColor: 'black',
     }
 })
