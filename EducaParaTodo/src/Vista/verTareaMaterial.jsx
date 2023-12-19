@@ -749,14 +749,11 @@ export default function VerTareaMaterial({ route, navigation }) {
           </Text>
         </TouchableOpacity>
 
-        <View style={[{ flex: 1 }]}></View>
-        <View style={[{ flex: 1 }]}></View>
-
         {materialesAplanados.length - 1 !== indiceActual &&
           (materialRecogido || tickMaterial.tick) && (
             <View style={styles.container}>
               <TouchableOpacity
-                style={[styles.imagePulsar, { marginHorizontal: 20 }]}
+                style={[styles.imagePulsar, { marginHorizontal: 20, flex: 1 }]}
                 onPress={() => {
                   avanzarMaterial(); // Llamada directa a la función avanzarMaterial
                   setMaterialRecogido(false); // Se esconde la opción de pasar a recoger el siguinte material en un lugar origen.
@@ -764,7 +761,7 @@ export default function VerTareaMaterial({ route, navigation }) {
               >
                 <Image
                   source={require("../../Imagenes/siguiente.png")}
-                  style={styles.imageSiguiente}
+                  style={[styles.imageSiguiente, { flex: 1 }]}
                 />
               </TouchableOpacity>
 
@@ -778,7 +775,7 @@ export default function VerTareaMaterial({ route, navigation }) {
           tickMaterial.tick && (
             <View style={styles.container}>
               <TouchableOpacity
-                style={[styles.imagePulsar, { marginHorizontal: 20 }]}
+                style={[styles.imagePulsar, { marginHorizontal: 20, flex: 1 }]}
                 onPress={() => {
                   setCargandoMaterialesRecogidosOrigen(false);
                   setViewDestinoQuedan(true); // para que muestre el numero de destino que tiene que ir.
@@ -786,11 +783,11 @@ export default function VerTareaMaterial({ route, navigation }) {
               >
                 <Image
                   source={require("../../Imagenes/tick.png")}
-                  style={[styles.imageSiguiente]}
+                  style={[styles.imageSiguiente, { flex: 1 }]}
                 />
               </TouchableOpacity>
 
-              <Text style={[styles.text, { marginHorizontal: 20, flex: 1 }]}>
+              <Text style={[styles.text, { marginHorizontal: 20 }]}>
                 Reparto los materiales
               </Text>
             </View>
@@ -857,6 +854,14 @@ export default function VerTareaMaterial({ route, navigation }) {
 
     return (
       <View style={styles.container}>
+        <View
+          style={[
+            {
+              width: RFValue(20),
+              height: RFValue(20),
+            },
+          ]}
+        />
         <View style={styles.row}>
           <Image
             source={{ uri: imagenLugarOrigenNow.uri }}
@@ -873,27 +878,24 @@ export default function VerTareaMaterial({ route, navigation }) {
             : `Estoy en el aula ${lugarOrigenNow}. Cojo ${nombreMaterial}`}
         </Text>
 
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-
         <View style={styles.container}>
           {caract[0] === "Ninguno" ? (
             <View style={styles.container}>
               {(visualizacion === "imagenes" ||
                 visualizacion === "pictogramas") && (
-                <View style={styles.row}>
+                <View>
                   {stock >= 1 && stock <= 10 ? (
                     <Image
                       source={require(`../../Imagenes/Numeros/${stock}.png`)}
-                      style={styles.image}
+                      style={[styles.image]}
                     />
                   ) : (
-                    <Text style={styles.numeroImagen}>{stock}</Text>
+                    <Text style={[styles.numeroImagen]}>{stock}</Text>
                   )}
                 </View>
               )}
 
-              <Text style={[styles.text, { flex: 1 }]}>
+              <Text style={[styles.text]}>
                 Cojo {stock} {nombreMaterial}
                 {stock > 1 ? "s" : ""}
               </Text>
@@ -906,7 +908,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                   {tipoActual.cantidad >= 1 && tipoActual.cantidad <= 10 ? (
                     <Image
                       source={require(`../../Imagenes/Numeros/${tipoActual.cantidad}.png`)}
-                      style={styles.imageSmall}
+                      style={[styles.imageSmall]}
                     />
                   ) : (
                     <Text style={styles.numeroImagen}>
@@ -915,32 +917,29 @@ export default function VerTareaMaterial({ route, navigation }) {
                   )}
                   <Image
                     source={{ uri: tipoActual.foto.uri }}
-                    style={styles.imageSmall}
+                    style={[styles.imageSmall]}
                   />
                 </View>
               )}
 
-              <Text style={[styles.text, { flex: 1 }]}>
+              <Text style={[styles.text]}>
                 {`Cojo ${tipoActual.cantidad} ${nombreMaterial} ${tipoActual.nombre}`}
               </Text>
             </View>
           )}
         </View>
 
-        <View style={[{ flex: 1 }]}></View>
-        <View style={[{ flex: 1 }]}></View>
-
         {indiceActualTipo >= tipos.length - 1 ? (
-          <View style={[styles.container, { flex: 1 }]}>
+          <View style={[styles.container]}>
             <TouchableOpacity
-              style={[styles.imagePulsar]}
+              style={[styles.imagePulsar, { flex: 1 }]}
               onPress={() => {
                 handleActualizaEstado();
               }}
             >
               <Image
                 source={require("../../Imagenes/tick.png")}
-                style={styles.imageSiguiente}
+                style={[styles.imageSiguiente, { flex: 1 }]}
               />
             </TouchableOpacity>
             <Text style={[styles.text]}>Todo Recogido</Text>
@@ -948,14 +947,14 @@ export default function VerTareaMaterial({ route, navigation }) {
         ) : (
           <View style={[styles.container]}>
             <TouchableOpacity
-              style={[styles.imagePulsar]}
+              style={[styles.imagePulsar, { flex: 1 }]}
               onPress={() => {
                 avanzarAlSiguienteTipo();
               }}
             >
               <Image
                 source={require("../../Imagenes/siguiente.png")}
-                style={[styles.imageSiguiente]}
+                style={[styles.imageSiguiente, { flex: 1 }]}
               />
             </TouchableOpacity>
             <Text style={[styles.text]}>Cogido</Text>
@@ -1084,9 +1083,6 @@ export default function VerTareaMaterial({ route, navigation }) {
               </View>
             )}
 
-            <View style={[{ flex: 1 }]}></View>
-            <View style={[{ flex: 1 }]}></View>
-
             {materialLlevarIndex ==
             agrupadosDestiTareas[lugarDestinoNow].filter((objeto) => {
               return objeto.lugarOrigen === lugarOrigenNow;
@@ -1109,14 +1105,14 @@ export default function VerTareaMaterial({ route, navigation }) {
             ) : (
               <View style={styles.container}>
                 <TouchableOpacity
-                  style={styles.imagePulsar}
+                  style={[styles.imagePulsar, { flex: 1 }]}
                   onPress={() => {
                     handleNextMaterialLlevar(); // Pasamos al siguiente material,
                   }}
                 >
                   <Image
                     source={require("../../Imagenes/siguiente.png")}
-                    style={styles.imageSiguiente}
+                    style={[styles.imageSiguiente, { flex: 1 }]}
                   />
                 </TouchableOpacity>
                 <Text style={styles.text}>Dejo otro material</Text>
