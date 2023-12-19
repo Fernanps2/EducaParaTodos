@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, View, TextInput, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import Emoji from 'react-native-emoji';
+//import Emoji from 'react-native-emoji';
 import useUser from '../Controlador/useUser'
 
 const LoginScreen = ({ route, navigation} ) => {
