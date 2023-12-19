@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity, Alert } from 'react-native';
-import appFirebase, { getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
+import appFirebase, { descargarImagenes, getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import EliminarTareaAlumno from './EliminarTareaAlumno';
 import { getTarea } from '../Modelo/firebase';
-import { asignarFeedback } from '../Modelo/firebase';
-import { cargaImagen } from '../Controlador/multimedia';
+import { asignarFeedback, descargarEmoticono, } from '../Modelo/firebase';
+import { cargaImagen, descargaEmoticonos, descargaImagenes, descargaImagen} from '../Controlador/multimedia';
 //import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 
@@ -14,6 +14,8 @@ const FeedbackAlumno = ({route}) => {
   const {idAlumno} = route.params;
   const [tareas, setTareas] = useState([]);
   const [feedback, setFeedback] = useState('');
+  const [emoticonos, setEmoticonos] = useState([]);
+
 
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const FeedbackAlumno = ({route}) => {
       try {
         const tareasObtenidas = await getTareaIdCompletada(idAlumno);
         setTareas(tareasObtenidas);
-        //console.log(tareasObtenidas.id);
+        console.log(tareasObtenidas.id);
         
       } catch (error) {
         console.error('Error al obtener las tareas:', error);
@@ -30,24 +32,21 @@ const FeedbackAlumno = ({route}) => {
 
     cargarTareas();
   }, [idAlumno]);
-/*
+
   useEffect(() => {
-    const actualizarFeedback = async (idTarea, mensaje) => {
-    
-      try {
-  
-        console.log('ID de tarea:', idTarea);
-        console.log('Mensaje a asignar FeedBack', mensaje);
-    
-        await asignarFeedback('P9kEFuZP5t3sUde8ffXQ', mensaje);
-        console.log('Feedback actualizado correctamente');
-      } catch (error) {
-        console.error('Error al actualizar el feedback:', error);
+    const descargaEmoticono = async() => {
+      try{
+        const EmoticonosObtenidos = await descargarImagenes();
+        setEmoticonos(EmoticonosObtenidos);
+        console.log(EmoticonosObtenidos);
+      } catch (error){
+        console.log('Error al obtener los emoticonos', error);
       }
     };
-    actualizarFeedback(idTarea, mensaje);
+
+    descargaEmoticono();
   }, []);
-*/
+
 const showAlertStore = (id, feedback) =>{
   Alert.alert(
     "¿Estas seguro de asignar este feedback?",
@@ -62,6 +61,7 @@ const showAlertStore = (id, feedback) =>{
 
 
   return (
+  
     <ScrollView style={styles.datos}>
   {tareas.map((tareas) => (
     <View key={tareas.id} style={styles.datos} > 
@@ -75,7 +75,7 @@ const showAlertStore = (id, feedback) =>{
         placeholder=" Escribe tu feedback aquí"
       />
       <View ></View>
-      <TouchableOpacity onPress={() => cargaImagen()}>
+      <TouchableOpacity onPress={() => showAlertStore()}>
           <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10, marginLeft: 10, }}>
             <Text style={{ color: 'white', textAlign: 'center' }}>Enviar Feedback</Text>
           </View>
@@ -88,6 +88,9 @@ const showAlertStore = (id, feedback) =>{
 
     </View>
   ))}
+  <View>
+    <Text>{emoticonos.nombre}</Text>
+  </View>
 </ScrollView>
 
   );

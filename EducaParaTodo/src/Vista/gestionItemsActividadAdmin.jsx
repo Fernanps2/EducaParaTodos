@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -9,12 +9,17 @@ import {
   Alert,
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
-import { almacenaPictograma, openGallery } from "../Controlador/multimedia";
+import { almacenaPictograma, openGallery, descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
+import { ScrollView } from "react-native-web";
 
 export default function GestionItemActividad() {
   const [urlVideo, setUrlVideo] = useState("");
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
+
+  const [Pictogramas,setPictogramas] = useState([]);
+  const [nombreEliminarPictograma, setnombreEliminarPictograma] = useState("");
+  const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
 
   const [urlPictograma, setUrlPictograma] = useState("");
   const [nombrePictograma, setnombrePictograma] = useState("");
@@ -36,9 +41,17 @@ export default function GestionItemActividad() {
     setUrlVideo("");
     setViewPictograma(false);
   };
+
+  const handleEliminarPictograma = async () => {
+    setViewEliminarPictograma(true);
+    setViewPictograma(false);
+    setViewVideo(false);
+    await MostrarPictogramas();
+  }
   const handlePictograma = () => {
     setViewPictograma(true);
     setViewVideo(false);
+    setViewEliminarPictograma(false);
   };
 
   const handleAñadir = () => {
@@ -79,6 +92,23 @@ export default function GestionItemActividad() {
       }
     }
   };
+  
+  useEffect(() => {
+
+    MostrarPictogramas();
+  }, []);
+
+  const MostrarPictogramas = async () => {
+    try{
+      const DesPictogramas = await descargaPictogramas();
+      setPictogramas(DesPictogramas);
+      console.log(DesPictogramas);
+    } catch (error){
+      console.error('Error en obtener los pictogramas: ' , error);
+    }
+};
+
+
 
   const abrirGaleria = async() => {
     setUrlPictograma(await openGallery());
@@ -115,7 +145,7 @@ export default function GestionItemActividad() {
             <Text style={styles.buttonText}>Eliminar Imagen</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonDelete} >
-            <Text style={styles.buttonText}>Eliminar Pictograma</Text>
+            <Text style={styles.buttonText} onPress={handleEliminarPictograma}>Eliminar Pictograma</Text>
           </TouchableOpacity>
           
         </View>
@@ -156,7 +186,7 @@ export default function GestionItemActividad() {
                 <Text style={styles.buttonText}>Eliminar Imagen</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonDelete}>
-                <Text style={styles.buttonText}>Eliminar Pictograma</Text>
+                <Text style={styles.buttonText} onPress={handleEliminarPictograma}>Eliminar Pictograma</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -228,6 +258,15 @@ export default function GestionItemActividad() {
           <TouchableOpacity style={styles.addButton} onPress={handleAñadirPictograma}>
             <Text style={styles.addButtonText}>Añadir</Text>
           </TouchableOpacity>
+        </View>
+      )}
+      {viewEliminarPictograma && (
+        <View>
+          <ScrollView style={styles.row}>
+            {Pictogramas.map((item, index) => (
+              <Text key={index}>{item.nombre}</Text>
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
