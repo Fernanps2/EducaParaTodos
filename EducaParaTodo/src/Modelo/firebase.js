@@ -1781,7 +1781,7 @@ export async function descargarImagenes() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1834,7 +1834,7 @@ export async function descargarPictogramas() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1887,7 +1887,7 @@ export async function descargarVideos() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1940,7 +1940,7 @@ export async function descargarEmoticonos() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1993,7 +1993,7 @@ export async function descargarFotosPersonas() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -2046,7 +2046,7 @@ export async function descargarImagenesLogin() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -2099,7 +2099,7 @@ export async function descargarMateriales() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
