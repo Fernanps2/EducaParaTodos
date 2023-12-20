@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Platform } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 // Mostramos el número de lugar origen que quedan

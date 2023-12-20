@@ -3641,3 +3641,23 @@ export const setVideo = async (nombreVideo, urlVideo)=> {
     }
   }  
   }
+
+  export async function terminarTarea(idTarea){
+
+    try {
+        const docRef = doc(collection(db,'Tarea'),idTarea);
+        const docSnapshot = await getDoc(docRef);
+        
+        if(docSnapshot.exists()){
+            console.log("docSnapShot existe");
+            // Actualizar el documento existente
+            await updateDoc(docRef, {
+            completado: "true",
+            // Otros campos que deseas actualizar
+            });
+        }
+    
+    } catch (error) {
+        console.log("Problema al actualizar datos de mensaje " + error);
+    }
+}

@@ -1,39 +1,20 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
 import { RFValue } from "react-native-responsive-fontsize";
-import {descargaTipoTarea} from "../Controlador/multimedia";
+import { descargaTipoTarea } from "../Controlador/multimedia";
 
-const manejoPresionarBoton = (tarea, navigation, usuario) => {
-  const id = tarea.id;
-  if (tarea.tipo == "comanda") {
-    navigation.navigate("paginaAulas", { id, usuario });
-  } else if (tarea.tipo === "actividad") {
-    navigation.navigate("verTarea", { id, usuario });
-  } else if (tarea.tipo === "material") {
-    navigation.navigate("verTareaMaterial", { id, usuario });
-  }
-};
+export default function Tareas({ route, navigation }) {
 
-// Componente que muestra los datos de las tareas
-const DatosTareas = ({ tarea, navigation, usuario }) => {
-  return (
-    <View>
-      <TouchableOpacity
-        onPress={() => manejoPresionarBoton(tarea, navigation, usuario)}
-      >
-        {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
-                 para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-        <Image style={styles.foto} source={{ uri: tarea.fotoURL.uri }} />
-      </TouchableOpacity>
-      <Text style={styles.texto}>{tarea.titulo} </Text>
-    </View>
-  );
-};
-
-const Tareas = ({ route, navigation }) => {
   const { usuario } = route.params;
 
   const [tareas, setTareas] = useState([]);
@@ -42,9 +23,10 @@ const Tareas = ({ route, navigation }) => {
 
   useEffect(() => {
     const listaTareas = async () => {
+      setCargando(true);
       try {
         const tareas = await buscarTarea(usuario.id);
-
+        console.log("sus tareas: ", tareas);
         const datos = await Promise.all(
           tareas.map(async ({ id, tipo, fotoURL, titulo }) => {
             if (fotoURL !== "") {
@@ -54,17 +36,20 @@ const Tareas = ({ route, navigation }) => {
             return null; // Retornar null para los casos donde no hay foto
           })
         );
+        const datosFiltrados = datos.filter((tarea) => tarea !== null);
 
-        console.log('datos son estos: ', datos);
+        console.log("datos son estos: ", datosFiltrados);
 
-        setTareas(datos);
+        setIndiceActual(0);
+        setTareas(datosFiltrados);
         setCargando(false);
       } catch (error) {
         console.log(error);
       }
     };
+    console.log("hecho");
     listaTareas();
-  }, []);
+  }, [usuario, route.params.refresh]);
 
   // Función para avanzar a la siguiente tarea
   const siguienteTarea = () => {
@@ -78,6 +63,31 @@ const Tareas = ({ route, navigation }) => {
     if (indiceActual > 0) {
       setIndiceActual(indiceActual - 1);
     }
+  };
+
+  const manejoPresionarBoton = (tarea, navigation, usuario) => {
+    const id = tarea.id;
+    if (tarea.tipo == "comanda") {
+      navigation.navigate("paginaAulas", { id, usuario });
+    } else if (tarea.tipo === "actividad") {
+      navigation.navigate("verTarea", { id, usuario });
+    } else if (tarea.tipo === "material") {
+      navigation.navigate("verTareaMaterial", { id, usuario });
+    }
+  };
+
+  // Componente que muestra los datos de las tareas
+  const DatosTareas = ({ tarea, navigation, usuario }) => {
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => manejoPresionarBoton(tarea, navigation, usuario)}
+        >
+          <Image style={styles.foto} source={{ uri: tarea.fotoURL.uri }} />
+        </TouchableOpacity>
+        <Text style={styles.texto}>{tarea.titulo} </Text>
+      </View>
+    );
   };
 
   return (
@@ -111,7 +121,9 @@ const Tareas = ({ route, navigation }) => {
                           style={[styles.flechas, { marginHorizontal: 30 }]}
                           source={require("../../Imagenes/flechaAtras.png")}
                         />
-                        <Text style={[styles.texto, { marginHorizontal: 30 }]}>Atrás</Text>
+                        <Text style={[styles.texto, { marginHorizontal: 30 }]}>
+                          Atrás
+                        </Text>
                       </TouchableOpacity>
                     ) : (
                       <View
@@ -130,7 +142,9 @@ const Tareas = ({ route, navigation }) => {
                           style={[styles.flechas, { marginHorizontal: 30 }]}
                           source={require("../../Imagenes/flechaSiguiente.png")}
                         />
-                        <Text style={[styles.texto,{ marginHorizontal: 30 }]}>Siguiente</Text>
+                        <Text style={[styles.texto, { marginHorizontal: 30 }]}>
+                          Siguiente
+                        </Text>
                       </TouchableOpacity>
                     ) : (
                       <View
@@ -157,9 +171,7 @@ const Tareas = ({ route, navigation }) => {
       </>
     </View>
   );
-};
-
-export default Tareas;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -183,23 +195,23 @@ const styles = StyleSheet.create({
   titulo: {
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: Platform.OS === 'web' ? RFValue(15) : RFValue(22),
+    fontSize: Platform.OS === "web" ? RFValue(15) : RFValue(22),
   },
   texto: {
     fontWeight: "bold",
     marginBottom: RFValue(50),
     marginTop: RFValue(5),
     flexWrap: "wrap",
-    maxWidth: Platform.OS === 'web' ? RFValue(100) : RFValue(150),
-    fontSize: Platform.OS === 'web' ? RFValue(10) : RFValue (13),
+    maxWidth: Platform.OS === "web" ? RFValue(100) : RFValue(150),
+    fontSize: Platform.OS === "web" ? RFValue(10) : RFValue(13),
   },
   felicitacionText: {
     fontWeight: "bold",
     fontSize: RFValue(10),
   },
   foto: {
-    width: Platform.OS === 'web' ? RFValue(80) : RFValue(150),
-    height: Platform.OS === 'web' ? RFValue(80) : RFValue(150),
+    width: Platform.OS === "web" ? RFValue(80) : RFValue(150),
+    height: Platform.OS === "web" ? RFValue(80) : RFValue(150),
     borderRadius: RFValue(20),
     overflow: "hidden",
     borderWidth: RFValue(1),
@@ -207,11 +219,11 @@ const styles = StyleSheet.create({
   },
   contenedor_tarea_unica: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     flexDirection: "column",
     width: "100%", // Ocupa todo el ancho para una sola tarea
     alignItems: "center",
-    alignContent: 'center',
+    alignContent: "center",
   },
   image: {
     width: RFValue(125),

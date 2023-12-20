@@ -14,6 +14,7 @@ import {
   obtenerProfesores,
   getMaterialIdBD,
   getvisualizacion,
+  completarTarea,
 } from "../Controlador/tareas";
 import {
   mostrarNumeroRecogidas,
@@ -1338,8 +1339,9 @@ export default function VerTareaMaterial({ route, navigation }) {
 
         <TouchableOpacity
           style={styles.imagePulsar}
-          onPress={() => {
-            navigation.navigate("Tareas", { usuario });
+          onPress={ async () => {
+            await completarTarea(id);
+            navigation.navigate("Tareas", { usuario, refresh: Date.now() });
           }}
         >
           <Image

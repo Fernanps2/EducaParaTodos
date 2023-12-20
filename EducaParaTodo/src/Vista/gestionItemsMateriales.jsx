@@ -320,7 +320,7 @@ export default function gestionItemMaterial() {
     if (
       nombre.trim() === "" ||
       foto.trim() === "" ||
-      nuevaFotoUri === "" ||
+      fotoUri === "" ||
       stock <= 0
     ) {
       if (Platform.OS === "web") {

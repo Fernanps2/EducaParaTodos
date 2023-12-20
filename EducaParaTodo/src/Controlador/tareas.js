@@ -1,4 +1,4 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores } from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
@@ -230,4 +230,8 @@ export async function getvisualizacion (id){
     let visu = null;
     visu = await getAlumnoVisualizacionTarea (id)
     return visu;
+}
+
+export async function completarTarea(idTarea){
+        await terminarTarea(idTarea);
 }
