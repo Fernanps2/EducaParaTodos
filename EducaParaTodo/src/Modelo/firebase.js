@@ -227,6 +227,31 @@ export async function getAlumnoID(id) {
     return instancia;
 }
 
+export async function descargarImagenLogin(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, LOGIN+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la imagen para login");
+        });
+
+    return imagenUri;
+}
+
+
+
+
 // función para obtener las 4 imágenes del login del alumno
 
 export const getAlumnoImagenesLogin = async (idAlumno) => {
@@ -2051,27 +2076,7 @@ export async function descargarFotosPersonas() {
     return entidad;
 }
 
-export async function descargarImagenLogin(nombreImagen) {
-    let imagenUri = {
-        uri: null,
-        nombre: null
-    };
 
-    const refImagen = ref(storage, LOGIN+nombreImagen);
-
-    await getDownloadURL(refImagen)
-        .then((url) => {
-            imagenUri = {
-                uri: url,
-                nombre: refImagen.name
-            };
-        })
-        .catch((error) => {
-            console.log("No se ha podido descargar la imagen para login");
-        });
-
-    return imagenUri;
-}
 
 export async function descargarImagenesLogin() {
     let entidad = [];
