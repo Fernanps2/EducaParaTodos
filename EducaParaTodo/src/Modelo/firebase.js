@@ -2630,6 +2630,7 @@ export const getTareasComanda = async () => {
 // ESta funcion sirve para obtener las tareas comanda de la colección Tarea
 // Funciona 
 export const getTComanda = async () => {
+    console.log("entrando en getTcomanda");
     const tipo = 'comanda';
     try {
         const consulta = query(collection(db, 'Tarea'), where('tipo', '==', tipo),where('completado','==','true'));
@@ -2760,6 +2761,27 @@ export const getMenus = async () => {
         return docs;
     } catch (error) {
         console.log(error);
+        throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
+// Devolvemos todos los menús (el campo menus de un documento) asociados a una tarea comanda en concreto
+export const getMenusComanda = async (idTarea) => {
+    try {
+        const menuQuery = query(collection(db, 'Tarea-Comanda'),where('idTarea','==',idTarea));
+        const querySnapshot = await getDocs(menuQuery);
+
+        const docs = [];
+
+        querySnapshot.forEach((docu) => {
+            const menus = docu.data().menus; // Extraemos nombre
+            docs.push({...menus });
+        });
+
+        console.log("los id de los menus son: " + JSON.stringify(docs));
+        return docs;
+    } catch (error) {
+        console.log("error firebase: " + error);
         throw error; // Lanza el error para que pueda ser manejado por el llamador
     }
 }

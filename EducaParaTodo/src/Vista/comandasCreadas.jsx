@@ -55,7 +55,8 @@ const ComandasCreadas = ({navigation}) => {
             try {
                 const comandas = await buscarTComandas();
                 setComandasArray(comandas);
-                console.log(comandas);
+
+                console.log("las tareas comandas que hay son: " + comandas);
             } catch (error) {
                 console.log("error: " + error);
             }

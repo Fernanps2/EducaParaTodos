@@ -1,97 +1,24 @@
 import React, { Profiler, useEffect, useState, useCallback } from 'react';
 import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform, Button} from 'react-native';
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
-import { aniadirPedido, buscarMenu, buscarPictogramasNumero,buscarPedido, actualizarPedido } from '../Controlador/tareas';
+import { aniadirPedido, buscarMenu, buscarPictogramasNumero,buscarPedido, actualizarPedido, buscarMenusComanda } from '../Controlador/tareas';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Swal from "sweetalert2";
 import seleccionAula from './seleccionAula';
 import { descargarFotoMenu, descargarFotoPersona } from '../Modelo/firebase';
-import { buscarMenus } from '../Controlador/tareas';
 import { useFocusEffect } from '@react-navigation/native';
 // import Spinner from 'react-native-loading-spinner-overlay'; // Importa el componente de carga
 
-const SeleccionCantidadMenu = ({menu, prof, id,siguienteMenu, navigation}) => {
+const SeleccionCantidadMenu = ({menu, idMenu, prof, id,siguienteMenu, navigation}) => {
+  console.log("menu pasado como arg: " + JSON.stringify(menu));
+  console.log("id pasado como arg menu: " +idMenu);
 
   const [pictogramasNumero, setPictogramasNumero] = useState([]);
   const [fotoProfesor, setFotoProfesor] = useState([]);
   const [fotoMenu, setFotoMenu] = useState([]);
   const [existePedido, setExistePedido] = useState(false);
   const [cargando, setCargando] = useState(true);
-  const [cargandoFoto, setCargandoFoto] = useState(true);
-
-  // const showAlertGuardar = async (id, idMenu, prof, pedidos, existePedido, navigation) => {
-  //   console.log("alerta id: " + id);
-  //   if (Platform.OS === "web") {
-  //     try {
-  //       const result = await Swal.fire({
-  //         title: "¿Guardar menus?",
-  //         icon: "warning",
-  //         showCancelButton: true,
-  //         confirmButtonColor: "#008000",
-  //         cancelButtonColor: "#d33",
-  //         confirmButtonText: "Guardar",
-  //         cancelButtonText: "Cancelar",
-  //       });
-  
-  //       if (result.isConfirmed) {
-  //         setCargando(true);
-
-  //         if (existePedido) {
-  //           console.log("actualizamos pedido");
-  //           await actualizarPedido(id, idMenu, prof.id, prof.aula, pedidos);
-  //         } else {
-  //           console.log("añadimos pedido");
-  //           await aniadirPedido(id, idMenu, prof.id, prof.aula, pedidos);
-  //         }
-  
-  //         return true;
-  //       } else {
-
-  //         return false;
-  //       }
-  //     } catch (error) {
-  //       console.error("Error en showAlertGuardar:", error);
-  //       return false;
-  //     }
-  //   } else {
-  //     try {
-  //       const confirmed = await new Promise((resolve, reject) => {
-  //         Alert.alert(
-  //           "¿Quiere guardar?", // Título
-  //           "Pulsa una opción", // Mensaje
-  //           [
-  //             {
-  //               text: "Cancelar",
-  //               onPress: () => resolve(false),
-  //             },
-  //             {
-  //               text: "Confirmar",
-  //               onPress: async() => {
-  //                 setCargando(true);
-
-  //                 if (existePedido) {
-  //                   await actualizarPedido(id, idMenu, prof.id, prof.aula, pedidos);
-  //                 } else {
-  //                   await aniadirPedido(id, idMenu, prof.id, prof.aula, pedidos);
-  //                 }
-  //                 resolve(true);
-  //               },
-  //             },
-  //           ],
-  //           { cancelable: false } // Si se puede cancelar tocando fuera de la alerta
-  //         );
-  //       });
-  
-  //       return confirmed;
-  //     } catch (error) {
-  //       console.error("Error en showAlertGuardar:", error);
-  //       return false;
-  //     } finally {
-  //       setCargando(false);
-  //     }
-  //   }
-  // };
-  
+  const [cargandoFoto, setCargandoFoto] = useState(true);  
 
   const showAlertGuardar = async (id, idMenu, prof, pedidos, existePedido, navigation) => {  
           setCargando(true);
@@ -108,13 +35,6 @@ const SeleccionCantidadMenu = ({menu, prof, id,siguienteMenu, navigation}) => {
       }
     }
 
-  if(menu != null){
-    const idMenu = menu.id;
-    console.log("el id del menud es: " + idMenu);
-  }else{
-    console.log("menu es null");
-  }  
-
 useFocusEffect(
   useCallback(() => {
     const cargarDatos = async () => {
@@ -126,7 +46,7 @@ useFocusEffect(
         console.log("busando pedidos: " );
         if(menu != null){
           console.log("dnetor del if");
-          const idMenu = menu.id;
+          console.log("menud entro del if: " +idMenu);
           const datosPedido = await buscarPedido(idMenu, prof.id, id);
           console.log("losd atos del pedido son: " + datosPedido);
           setExistePedido(datosPedido && datosPedido.length > 0);
@@ -182,7 +102,7 @@ useFocusEffect(
               {pictogramasNumero.map((pictograma, index) => (
                   <View key={index} style={styles.contenedor_tareas}>
                     <TouchableOpacity onPress={async () => {
-                        await showAlertGuardar(id,menu.id,prof,pictograma.Numero,existePedido,navigation);
+                        await showAlertGuardar(id,idMenu,prof,pictograma.Numero,existePedido,navigation);
                         siguienteMenu();
                       }}>
                       <Text> Cantidad: {pictograma.Numero}</Text>
@@ -206,6 +126,8 @@ const SeleccionCantidad = ({route, navigation}) => {
   let [indiceMenus, setIndiceMenus] = useState(indiceMenu);
   let [menu, setMenu] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [idMenu, setIdMenu] = useState([]);
+  const [numeroMenus,setNumeroMenus] = useState([]);
   const [cargandoFoto, setCargandoFoto] = useState(true);
 
   useFocusEffect(
@@ -213,26 +135,45 @@ const SeleccionCantidad = ({route, navigation}) => {
       const cargarDatos = async () => {
       try {
         setCargando(true);
-        const menus = await buscarMenus();
+        const menus = await buscarMenusComanda(id);
+        const primerElemento = menus[0];
+        const claves = Object.keys(primerElemento);
+        const nMenus = claves.length;
+        setNumeroMenus(nMenus);
         setMenusArray(menus);
         setIndiceMenus(indiceMenu);
-        let menuSeleccionado = menus[0];
+        console.log("los menus son: " + JSON.stringify(menus));
+        let idMenuSelect = menus[0];
+        console.log("el idMenuSElect es: " + JSON.stringify(idMenuSelect[0]));
+        setIdMenu(idMenuSelect[0]);
+        let menuSelect = await buscarMenu(idMenuSelect[0]);
+        let menuSeleccionado = menuSelect;
         setMenu(menuSeleccionado);
 
         setCargando(false);
       } catch (error) {
-        console.log("error: " + error);
+        console.log("error en cantidad: " + error);
       }
     };
     cargarDatos();
     }, [])
   );
 
-const siguienteMenu = () => {
-  if(indiceMenus < menusArray.length - 1){
+const siguienteMenu = async() => {
+  if(indiceMenus < numeroMenus-1){
     let indice = indiceMenus+1;
     setIndiceMenus(indice);
-    setMenu(menusArray[indice]);
+    const menus = await buscarMenusComanda(id);
+    console.log("los menus en siguiente menus son: " + JSON.stringify(menus));
+    console.log("el indice dentro de siguiente menu es : " + indice);
+    let idMenuSelect = menus[0];
+    console.log("id menu select es: " + idMenuSelect[indice]);
+    let idMenu = idMenuSelect[indice];
+    setIdMenu(idMenu);
+    console.log("el id Menu en siguienteMenu es: " + idMenu);
+    const menu = await buscarMenu(idMenu);
+    console.log("el menu en siguiente menu es: " + JSON.stringify(menu));
+    setMenu(menu);
   }else{
     console.log(indiceMenus);
     navigation.navigate('mostrarResumen',{id,prof,navigation});
@@ -248,7 +189,7 @@ const siguienteMenu = () => {
       <View style={styles.container}>
           <View style={styles.header}>
           <View style={styles.centro}>
-                <SeleccionCantidadMenu menu={menu} prof={prof} id={id} siguienteMenu = {siguienteMenu} navigation={navigation} />
+                <SeleccionCantidadMenu menu={menu} idMenu={idMenu} prof={prof} id={id} siguienteMenu = {siguienteMenu} navigation={navigation} />
           </View>
         </View>
       </View>

@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu} from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -113,6 +113,14 @@ export async function buscarMenus(){
 
     menus = await getMenus();
 
+    return menus;
+}
+
+// Devolvemos todos los menús (el campo menus del documento) asociados a una tarea comanda en concreto
+
+export async function buscarMenusComanda(idTarea){
+    let menus = null;
+    menus = await getMenusComanda(idTarea);
     return menus;
 }
 

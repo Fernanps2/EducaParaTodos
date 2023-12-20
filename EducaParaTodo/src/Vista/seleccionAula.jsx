@@ -3,7 +3,7 @@ import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Pla
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
 import { responsiveFontSize } from 'react-native-responsive-screen';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { buscarPedidoProfesor, buscarMenus, buscarPedidosTarea, buscarTarea } from '../Controlador/tareas';
+import { buscarPedidoProfesor, buscarMenus, buscarPedidosTarea, buscarTarea, buscarMenusComanda } from '../Controlador/tareas';
 import { useFocusEffect } from '@react-navigation/native';
 import { completarTarea } from '../Controlador/tareas';
 import Swal from 'sweetalert2';
@@ -61,7 +61,7 @@ const DatosProfesor = ({ prof, id, indiceMenu,navigation }) => {
     useCallback(() => {
       const getDatos = async () => {
         try {
-          const menus = await buscarMenus();
+          const menus = await buscarMenusComanda(id);
           const numeroMenus = menus.length;
 
           const datosPedido = await buscarPedidoProfesor(prof.id, id);
@@ -132,7 +132,7 @@ const SeleccionAula = ({ route, navigation }) => {
         setAlumno(alumnoDatos);
         setProfesoresArray(profesores);
       } catch (error) {
-        console.log("error: " + error);
+        console.log("error en aula: " + error);
       }
     }
     getProfesores();
@@ -144,9 +144,17 @@ const SeleccionAula = ({ route, navigation }) => {
         try {
           const profesores = await buscaProfesor();
           const pedidos = await buscarPedidosTarea(id);
-          const menus = await buscarMenus();
+          const menus = await buscarMenusComanda(id);
+          const primerElemento = menus[0];
+          const claves = Object.keys(primerElemento);
+          const numeroMenus = claves.length;
+          console.log("menus es: " + JSON.stringify(menus));
 
-          if (pedidos.length == profesores.length * menus.length) {
+          console.log("el numero de menus es: " + numeroMenus);
+          console.log("el numero de pedidos es: " + pedidos.length);
+          console.log("el numero de profesores es: " + profesores.length);
+
+          if (pedidos.length == profesores.length * numeroMenus) {
             setTareaFinalizada(true);
           }
 

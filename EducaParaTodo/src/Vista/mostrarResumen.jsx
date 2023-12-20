@@ -37,7 +37,7 @@ const DatosResumenDetalle = ({prof, menu, id}) => {
         obtenerPedidos();
         // Esto hace que la función se ejecute cada vez que se cambie la combinación de 
         // id menu e id profesor, ya que si no pusiéramos esto solo se ejecutaría la primera vez
-    },[menu.id, prof.id]);
+    },[menu.id]);
 
     useEffect(() => {
         const getFoto = async () => {
@@ -58,8 +58,8 @@ const DatosResumenDetalle = ({prof, menu, id}) => {
         <View style={styles.container}>
             {numeroPedidos > 0 &&
             <View>
-                <Text> 
-                    Menú: {menu.Nombre} Cantidad: {numeroPedidos} 
+                <Text style={styles.textoNormal}> 
+                    MENÚ: {menu.Nombre} CANTIDAD: {numeroPedidos} 
                 </Text>        
                 <Image style={styles.foto} source={{ uri: fotoMenu.uri }} />      
             </View>  
@@ -80,7 +80,7 @@ const mostrarResumen = ({route}) => {
             try {
                 const menus = await buscarMenus();
                 setMenuArray(menus);
-                console.log(menuArray);
+                console.log(" array de menus es: " + menus);
             } catch (error) {
                 console.log("error: " + error);
             }
@@ -183,5 +183,9 @@ const styles = StyleSheet.create({
         width: '33%',
         alignItems: 'center',
     },
+    textoNormal:{
+        fontWeight:'bold',
+        fontSize: 20,
+    }
 
 });

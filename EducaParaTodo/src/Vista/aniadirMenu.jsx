@@ -1,8 +1,10 @@
 
 
 import React, { useState } from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image } from 'react-native';
-import {almacenaFotoMenu, almacenaFotoPersona, openGallery} from '../Controlador/multimedia' 
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, Button, Image } from 'react-native';
+import {openGallery} from '../Controlador/multimedia' 
+import Swal from 'sweetalert2';
+import { almacenaFotoMenu } from '../Controlador/multimedia';
 import { aniadeMenu } from '../Controlador/tareas';
 
 export default function AniadirMenu ({ navigation }) {
@@ -21,22 +23,70 @@ export default function AniadirMenu ({ navigation }) {
 
   const [imageUri, setImageUri] = useState(null);
 
+  // const showAlertStore = () => {
+  //   Alert.alert(
+  //     "¿Quiere guardar?", // Título
+  //     "Pulsa una opción", // Mensaje
+  //     [
+  //       { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+  //       { text: "Confirmar", onPress: () =>{
+  //           almacenaFotoMenu(imageUri, "Menu"+datosMenu.nombre);
+  //           aniadeMenu(datosMenu.nombre,"Menu"+datosMenu.nombre);
+  //           navigation.navigate('gestionMenus',{navigation});
+  //         }
+  //       }
+  //     ],
+  //     { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+  //   );
+  // };
+
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{
-            almacenaFotoMenu(imageUri, "Menu"+datosMenu.nombre);
-            aniadeMenu(datosMenu.nombre,"Menu"+datosMenu.nombre);
-            navigation.navigate('gestionMenus',{navigation});
-          }
+    if (Platform.OS === 'web') {
+      Swal.fire({
+        title: '¿Quiere guardar?',
+        text: 'Pulsa una opción',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Acciones a realizar si se confirma
+          almacenaFotoMenu(imageUri, "Menu" + datosMenu.nombre);
+          aniadeMenu(datosMenu.nombre, "Menu" + datosMenu.nombre);
+          navigation.navigate('gestionMenus', { navigation });
+        } else {
+          // Acciones a realizar si se cancela
+          console.log('Cancelar presionado');
         }
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+      });
+    } else {
+      Alert.alert(
+        '¿Quiere guardar?', // Título
+        'Pulsa una opción', // Mensaje
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => console.log('Cancelar presionado'),
+            style: 'cancel',
+          },
+          {
+            text: 'Confirmar',
+            onPress: () => {
+              almacenaFotoMenu(imageUri, "Menu" + datosMenu.nombre);
+              aniadeMenu(datosMenu.nombre, "Menu" + datosMenu.nombre);
+              navigation.navigate('gestionMenus', { navigation });
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
+
+
 
   const handleImage = async() => {
     setImageUri(await openGallery());
