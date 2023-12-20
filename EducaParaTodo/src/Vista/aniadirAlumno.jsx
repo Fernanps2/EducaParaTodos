@@ -27,17 +27,23 @@ export default function AniadirAlumno ({ navigation }) {
 
   //Vector con nombres de las imagenes de la contraseña
   const [imagenesNombreContrasenia, setImagenesNombreContrasenia] = useState({
-    imagen1: "",
-    imagen2: "",
-    imagen3: "",
-    imagen4: "",
+    imagenNombre1: "",
+    imagenNombre2: "",
+    imagenNombre3: "",
+    imagenNombre4: "",
   });
 
+
+  //Vector con datos del alumno
   const [datosAlumno, setDatosAlumno] = useState({
     nombre: "",
     apellidos: "",
     contrasenia: "",
   });
+
+  ////////////////////////////////////////////////////////////////////
+  // Funciones para modificar los datos
+  ///////////////////////////////////////////////////////////////////
 
   const handeChangeText = (value, name) => {
     setDatosAlumno(prevState => ({
@@ -60,6 +66,14 @@ export default function AniadirAlumno ({ navigation }) {
     }));
   }
 
+  const handleImage = async() => {
+    setImageUri(await openGallery());
+  }
+
+  const handleImageLogin = async(name) => {
+    handleChangeImagenUriLogin(await openGallery(), name);
+  }
+
   const options = ['texto', 'imagenes', 'pictogramas', 'video', 'audio'];
 
   const handleOptionPress = (option) => {
@@ -77,35 +91,60 @@ export default function AniadirAlumno ({ navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+            //almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
             if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
+              /*
               //Asociamos los nombres a las imagenes
-              handleChangeImagenNombreLogin("Imagen1"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen1');
-              handleChangeImagenNombreLogin("Imagen2"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen2');
-              handleChangeImagenNombreLogin("Imagen3"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen3');
-              handleChangeImagenNombreLogin("Imagen4"+datosAlumno.nombre+datosAlumno.apellidos, 'imagen4');
-              //Asociamos a la contraseña el nombre de las imagenes
-              handeChangeText(imagenesNombreContrasenia, 'contrasenia');
+              handleChangeImagenNombreLogin("Imagen1"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre1');
+              handleChangeImagenNombreLogin("Imagen2"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre2');
+              handleChangeImagenNombreLogin("Imagen3"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre3');
+              handleChangeImagenNombreLogin("Imagen4"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre4');
+              
+              //Establecemos un breve retraso para asegurar que se actualiza el estado
+              setTimeout(() => {
+                const nombresContrasenia = [
+                  imagenesNombreContrasenia.imagenNombre1,
+                  imagenesNombreContrasenia.imagenNombre2,
+                  imagenesNombreContrasenia.imagenNombre3,
+                  imagenesNombreContrasenia.imagenNombre4
+                ];
+                handeChangeText(nombresContrasenia.join(','), 'contrasenia');
+              }, 0);
+              */
+              // Concatena los nombres de las imágenes para establecer la contraseña
+              const contrasenia = `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`;
+              handeChangeText(contrasenia, 'contrasenia');
               //Almacenamos las imagenes
-              almacenaImagenLogin(imagenesContrasenia.imagen1, imagenesNombreContrasenia.imagen1);
-              almacenaImagenLogin(imagenesContrasenia.imagen2, imagenesNombreContrasenia.imagen2);
-              almacenaImagenLogin(imagenesContrasenia.imagen3, imagenesNombreContrasenia.imagen3);
-              almacenaImagenLogin(imagenesContrasenia.imagen4, imagenesNombreContrasenia.imagen4);
+              almacenaImagenLogin(imagenesContrasenia.imagen1, "Imagen1"+datosAlumno.nombre+datosAlumno.apellidos);
+              almacenaImagenLogin(imagenesContrasenia.imagen2, "Imagen2"+datosAlumno.nombre+datosAlumno.apellidos);
+              almacenaImagenLogin(imagenesContrasenia.imagen3, "Imagen3"+datosAlumno.nombre+datosAlumno.apellidos);
+              almacenaImagenLogin(imagenesContrasenia.imagen4, "Imagen4"+datosAlumno.nombre+datosAlumno.apellidos);
+              
+              console.log(imagenesContrasenia.imagen1);
+              console.log(imagenesContrasenia.imagen2);
+              console.log(imagenesContrasenia.imagen3);
+              console.log(imagenesContrasenia.imagen4);
+ 
+              console.log(imagenesNombreContrasenia.imagen1);
+              console.log(imagenesNombreContrasenia.imagen2);
+              console.log(imagenesNombreContrasenia.imagen3);
+              console.log(imagenesNombreContrasenia.imagen4);
+ 
+              console.log(datosAlumno.contrasenia);
+             
+
             }
 
-            aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
-              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
-            navigation.navigate('listaAlumnos');
+            //aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+              //"Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+            
+              navigation.navigate('listaAlumnos');
           }
         }
       ],
       { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
     );
   };
-
-  const handleImage = async() => {
-    setImageUri(await openGallery());
-  }
 
     return (
       <ScrollView style={styles.container}>
@@ -153,7 +192,7 @@ export default function AniadirAlumno ({ navigation }) {
           <View style={styles.containerContrasenia}>
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen1')}
+                onPress={() => handleImageLogin('imagen1')}
                 title="Imagen1"
               />
               {imagenesContrasenia.imagen1!=null ? (
@@ -165,7 +204,7 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 2 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen2')}
+                onPress={() => handleImageLogin('imagen2')}
                 title="Imagen2"
               />
               {imagenesContrasenia.imagen2!=null ? (
@@ -178,7 +217,7 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 3 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen3')}
+                onPress={() => handleImageLogin('imagen3')}
                 title="Imagen3"
               />
               {imagenesContrasenia.imagen3!=null ? (
@@ -191,7 +230,7 @@ export default function AniadirAlumno ({ navigation }) {
             {/* Imagen 4 */}
             <View style={styles.botonesContrasenia}>
               <Button
-                onPress={() => handleChangeImagenUriLogin(openGallery(), 'imagen4')}
+                onPress={() => handleImageLogin('imagen4')}
                 title="Imagen4"
               />
               {imagenesContrasenia.imagen4!=null ? (
