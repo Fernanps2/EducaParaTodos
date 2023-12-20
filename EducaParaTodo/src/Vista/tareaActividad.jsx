@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
 import {
@@ -193,7 +194,7 @@ export default function TareaActividad({ navigation }) {
           finFecha + "//" + finHora,
           "actividad",
           periocidad,
-          foto,
+          foto
         );
         const pasos = getPasos();
         const idPaso = [];
@@ -335,7 +336,7 @@ export default function TareaActividad({ navigation }) {
       {cargando ? (
         <Text style={styles.textoCargando}>Cargando...</Text>
       ) : (
-        <>
+        <ScrollView>
           <View style={styles.separador} />
           <View style={styles.separador} />
 
@@ -343,14 +344,6 @@ export default function TareaActividad({ navigation }) {
             {Platform.OS === "web" && (
               <>
                 <Text style={[styles.title]}>Actividad</Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("gestionTareas")}
-                >
-                  <Image
-                    source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                    style={[styles.Image, { marginLeft: 40 }]}
-                  />
-                </TouchableOpacity>
               </>
             )}
           </View>
@@ -513,7 +506,7 @@ export default function TareaActividad({ navigation }) {
               </View>
             </View>
           </View>
-        </>
+        </ScrollView>
       )}
     </>
   );
@@ -576,9 +569,11 @@ const styles = StyleSheet.create({
   picker: {
     height: 25,
     width: Platform.OS === "web" ? 150 : 200,
+    borderWidth: 1,
   },
   pickerFoto: {
     height: 25,
     width: Platform.OS === "web" ? 200 : 250,
+    borderWidth: 1,
   },
 });

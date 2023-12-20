@@ -107,14 +107,6 @@ export default function VerTodosMateriales({ navigation }) {
 
       <View style={[{ flexDirection: "row" }, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Materiales en Tarea</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("tareaMateriales")}
-        >
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.separador} />

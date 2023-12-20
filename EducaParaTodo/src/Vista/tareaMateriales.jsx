@@ -336,17 +336,6 @@ export default function TareaActividad({ navigation }) {
             {Platform.OS === "web" && (
               <>
                 <Text style={[styles.title]}>Materiales</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setInicioPantalla(false);
-                    navigation.navigate("gestionTareas");
-                  }}
-                >
-                  <Image
-                    source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                    style={[styles.Image, { marginLeft: 40 }]}
-                  />
-                </TouchableOpacity>
               </>
             )}
           </View>
@@ -356,17 +345,6 @@ export default function TareaActividad({ navigation }) {
               {Platform.OS !== "web" && (
                 <>
                   <Text style={[styles.title]}>Materiales</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setInicioPantalla(false);
-                      navigation.navigate("gestionTareas");
-                    }}
-                  >
-                    <Image
-                      source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                      style={[styles.Image, { marginLeft: 40 }]}
-                    />
-                  </TouchableOpacity>
                 </>
               )}
             </View>

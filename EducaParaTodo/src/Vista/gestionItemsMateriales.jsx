@@ -9,8 +9,8 @@ import {
   Alert,
   FlatList,
   Image,
-  ScrollView,
 } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 import {
   aniadeMaterial,
   buscarMateriales,
@@ -158,7 +158,7 @@ export default function gestionItemMaterial() {
           {
             id: idMaterial,
             tipo,
-            cantidad: stockTipo,
+            cantidad: Number(stockTipo),
             foto: fotoTipo,
             uri: fotoTipoUri,
             nuevoTipo: !cargarTipoBD,
@@ -178,7 +178,7 @@ export default function gestionItemMaterial() {
           {
             id: nuevasCaracteristicas.length + 2,
             tipo,
-            cantidad: stockTipo,
+            cantidad: Number(stockTipo),
             foto: fotoTipo,
             uri: fotoTipoUri,
             nuevoTipo: !cargarTipoBD,
@@ -357,11 +357,16 @@ export default function gestionItemMaterial() {
             const soloTipos = caracteristicas.map((caracteristica) => {
               return {
                 tipo: caracteristica.tipo,
-                cantidad: caracteristica.cantidad,
+                cantidad: Number(caracteristica.cantidad),
                 foto: caracteristica.foto + ".png",
               };
             });
-            await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
+            await aniadeMaterial(
+              nombre,
+              foto + ".png",
+              Number(stock),
+              soloTipos
+            ); // Almacenamos material en la BD
             await almacenaMaterial(fotoUri, foto + ".png"); // Almacenamos la foto en la BD
             for (const caracteristica of caracteristicas) {
               if (caracteristica.nuevoTipo) {
@@ -395,11 +400,16 @@ export default function gestionItemMaterial() {
                 const soloTipos = caracteristicas.map((caracteristica) => {
                   return {
                     tipo: caracteristica.tipo,
-                    cantidad: caracteristica.cantidad,
+                    cantidad: Number(caracteristica.cantidad),
                     foto: caracteristica.foto + ".png",
                   };
                 });
-                await aniadeMaterial(nombre, foto + ".png", stock, soloTipos); // Almacenamos material en la BD
+                await aniadeMaterial(
+                  nombre,
+                  foto + ".png",
+                  Number(stock),
+                  soloTipos
+                ); // Almacenamos material en la BD
                 await almacenaMaterial(fotoUri, foto + ".png"); // Almacenamos la foto en la BD
                 for (const caracteristica of caracteristicas) {
                   if (caracteristica.nuevoTipo) {
@@ -432,7 +442,7 @@ export default function gestionItemMaterial() {
     if (
       nuevoNombre.trim() === "" ||
       nuevaFoto.trim() === "" ||
-      nuevoStock <= 0
+      Number(nuevoStock) <= 0
     ) {
       if (Platform.OS === "web") {
         Swal.fire({
@@ -454,7 +464,7 @@ export default function gestionItemMaterial() {
   };
 
   const handleModificar = async () => {
-    if (sinErrores ()) {
+    if (sinErrores()) {
       if (Platform.OS === "web") {
         Swal.fire({
           title: "Modificar materal",
@@ -472,7 +482,7 @@ export default function gestionItemMaterial() {
               const soloTipos = nuevasCaracteristicas.map((caracteristica) => {
                 return {
                   tipo: caracteristica.tipo,
-                  cantidad: caracteristica.cantidad,
+                  cantidad: Number(caracteristica.cantidad),
                   foto: caracteristica.foto + ".png",
                 };
               });
@@ -481,7 +491,7 @@ export default function gestionItemMaterial() {
                 seleccionado.id,
                 nuevoNombre,
                 nuevaFoto + ".png",
-                nuevoStock,
+                Number(nuevoStock),
                 soloTipos
               );
               if (nuevaFotoUri !== "")
@@ -511,7 +521,7 @@ export default function gestionItemMaterial() {
                   (caracteristica) => {
                     return {
                       tipo: caracteristica.tipo,
-                      cantidad: caracteristica.cantidad,
+                      cantidad: Number(caracteristica.cantidad),
                       foto: caracteristica.foto + ".png",
                     };
                   }
@@ -521,7 +531,7 @@ export default function gestionItemMaterial() {
                   seleccionado.id,
                   nuevoNombre,
                   nuevaFoto + ".png",
-                  stockTotal,
+                  Number(stockTotal),
                   soloTipos
                 );
                 if (nuevaFotoUri !== "")
@@ -544,7 +554,7 @@ export default function gestionItemMaterial() {
                   (caracteristica) => {
                     return {
                       tipo: caracteristica.tipo,
-                      cantidad: caracteristica.cantidad,
+                      cantidad: Number(caracteristica.cantidad),
                       foto: caracteristica.foto + ".png",
                     };
                   }
@@ -554,7 +564,7 @@ export default function gestionItemMaterial() {
                   seleccionado.id,
                   nuevoNombre,
                   nuevaFoto + ".png",
-                  nuevoStock,
+                  Number(nuevoStock),
                   soloTipos
                 );
 
@@ -595,7 +605,7 @@ export default function gestionItemMaterial() {
                     (caracteristica) => {
                       return {
                         tipo: caracteristica.tipo,
-                        cantidad: caracteristica.cantidad,
+                        cantidad: Number(caracteristica.cantidad),
                         foto: caracteristica.foto + ".png",
                       };
                     }
@@ -605,7 +615,7 @@ export default function gestionItemMaterial() {
                     seleccionado.id,
                     nuevoNombre,
                     nuevaFoto + ".png",
-                    nuevoStock,
+                    Number(nuevoStock),
                     soloTipos
                   );
                   if (nuevaFotoUri !== "")
@@ -633,7 +643,7 @@ export default function gestionItemMaterial() {
                       (caracteristica) => {
                         return {
                           tipo: caracteristica.tipo,
-                          cantidad: caracteristica.cantidad,
+                          cantidad: Number(caracteristica.cantidad),
                           foto: caracteristica.foto + ".png",
                         };
                       }
@@ -643,7 +653,7 @@ export default function gestionItemMaterial() {
                       seleccionado.id,
                       nuevoNombre,
                       nuevaFoto + ".png",
-                      stockTotal,
+                      Number(stockTotal),
                       soloTipos
                     );
                     if (nuevaFotoUri !== "")
@@ -666,7 +676,7 @@ export default function gestionItemMaterial() {
                       (caracteristica) => {
                         return {
                           tipo: caracteristica.tipo,
-                          cantidad: caracteristica.cantidad,
+                          cantidad: Number(caracteristica.cantidad),
                           foto: caracteristica.foto + ".png",
                         };
                       }
@@ -676,7 +686,7 @@ export default function gestionItemMaterial() {
                       seleccionado.id,
                       nuevoNombre,
                       nuevaFoto + ".png",
-                      nuevoStock,
+                      Number(nuevoStock),
                       soloTipos
                     );
 
@@ -877,191 +887,179 @@ export default function gestionItemMaterial() {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <Text style={styles.header}>Items Materiales</Text>
-        <View>
-          <Text style={styles.text}>
-            ¿Qué opción desea realizar? Pulse sobre el botón que desee.
-          </Text>
+      {!viewCrearMaterial && !viewModificarMaterial && (
+        <Text style={styles.text}>
+          ¿Qué opción desea realizar? Pulse sobre el botón que desee.
+        </Text>
+      )}
 
-          <View style={styles.separador}></View>
-          <View style={styles.separador}></View>
+      <View style={styles.separador}></View>
 
-          <View style={styles.row}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleCrearMaterial}
-            >
-              <Text style={styles.buttonText}>Crear Material</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleModificarMaterial}
-            >
-              <Text style={styles.buttonText}>Modificar Material</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        {viewCrearMaterial && (
-          <View>
-            <Text style={[styles.text]}>Nombre</Text>
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.button} onPress={handleCrearMaterial}>
+          <Text style={styles.buttonText}>Crear Material</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleModificarMaterial}
+        >
+          <Text style={styles.buttonText}>Modificar Material</Text>
+        </TouchableOpacity>
+      </View>
 
-            <View style={styles.separador} />
-            {isSeleccionado ? (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija nombre"
-                value={nuevoNombre}
-                onChangeText={(texto) => setNuevoNombre(texto)}
-              />
-            ) : (
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija nombre"
-                value={nombre}
-                onChangeText={setNombre}
-              />
-            )}
+      {viewCrearMaterial && (
+        <View style={styles.container}>
+          <View style={[{ height: RFValue(5) }]} />
 
-            <View style={styles.separador} />
-            <View style={styles.separador} />
+          <Text style={[styles.text]}>Nombre </Text>
 
-            <Text style={[styles.text]}>Foto</Text>
+          {isSeleccionado ? (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija nombre"
+              value={nuevoNombre}
+              onChangeText={(texto) => setNuevoNombre(texto)}
+            />
+          ) : (
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija nombre"
+              value={nombre}
+              onChangeText={setNombre}
+            />
+          )}
 
-            <View style={styles.separador} />
-            {isSeleccionado ? (
-              <View>
-                <View style={styles.rowSolo}>
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoFotoBD]}
-                    onPress={async () => {
-                      const uri = await openGallery();
-                      if (uri) {
-                        setNuevaFotoUri(uri);
-                      }
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    style={[styles.inputNombreFotoNueva]}
-                    placeholder="Nombre foto"
-                    value={nuevaFoto}
-                    onChangeText={(texto) => setNuevaFoto(texto)}
-                  />
-                </View>
-                {nuevaFotoUri !== "" && (
-                  <Text style={styles.TextSmall}> Añadida</Text>
-                )}
-              </View>
-            ) : (
-              <View>
-                <View style={styles.rowSolo}>
-                  <TouchableOpacity
-                    style={[styles.addButtonTipoFotoBD]}
-                    onPress={async () => {
-                      const uri = await openGallery();
-                      if (uri) {
-                        setFotoUri(uri);
-                      }
-                    }}
-                  >
-                    <Text style={styles.addButtonText}>Añadir Nueva Foto</Text>
-                  </TouchableOpacity>
-                  <TextInput
-                    style={[styles.inputNombreFotoNueva]}
-                    placeholder="Nombre foto"
-                    value={foto}
-                    onChangeText={(texto) => setFoto(texto)}
-                  />
-                </View>
-                {fotoUri !== "" && (
-                  <Text style={styles.TextSmall}> Añadida</Text>
-                )}
-              </View>
-            )}
+          <View style={[{ height: RFValue(5) }]} />
 
-            <View style={styles.separador} />
-            <View style={styles.separador} />
+          <Text style={[styles.text]}>Foto</Text>
 
-            {viewPregunta && (
-              <>
-                <Text style={[styles.text]}>
-                  ¿El objeto tiene características como grueso, fino,
-                  colores...?
+          {isSeleccionado ? (
+            <View style={styles.rowSolo}>
+              <TouchableOpacity
+                style={[styles.addButtonTipoFotoBD]}
+                onPress={async () => {
+                  const uri = await openGallery();
+                  if (uri) {
+                    setNuevaFotoUri(uri);
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    ...styles.addButtonText,
+                    color: nuevaFotoUri !== "" ? "green" : "#fff",
+                  }}
+                >
+                  {nuevaFotoUri !== "" ? "Foto Añadida" : "Añadir Nueva Foto"}
                 </Text>
+              </TouchableOpacity>
+              <TextInput
+                style={[styles.inputNombreFotoNueva]}
+                placeholder="Nombre foto"
+                value={nuevaFoto}
+                onChangeText={(texto) => setNuevaFoto(texto)}
+              />
+            </View>
+          ) : (
+            <View style={styles.rowSolo}>
+              <TouchableOpacity
+                style={[styles.addButtonTipoFotoBD]}
+                onPress={async () => {
+                  const uri = await openGallery();
+                  if (uri) {
+                    setFotoUri(uri);
+                  }
+                }}
+              >
+                <Text
+                  style={{
+                    ...styles.addButtonText,
+                    color: fotoUri !== "" ? "green" : "#fff",
+                  }}
+                >
+                  {fotoUri !== "" ? "Foto Añadida" : "Añadir Nueva Foto"}
+                </Text>
+              </TouchableOpacity>
+              <TextInput
+                style={[styles.inputNombreFotoNueva]}
+                placeholder="Nombre foto"
+                value={foto}
+                onChangeText={(texto) => setFoto(texto)}
+              />
+            </View>
+          )}
 
-                <View style={styles.separador} />
+          {viewPregunta && (
+            <>
+              <Text style={[styles.text]}>
+                ¿El objeto tiene características como grueso, fino, colores...?
+              </Text>
 
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                      setViewPregunta(false), setViewTipos(true);
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Sí</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {
-                      setViewPregunta(false), setViewStock(true);
-                    }}
-                  >
-                    <Text style={styles.buttonText}>No</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.separador} />
-                <View style={styles.separador} />
-              </>
-            )}
+              <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.buttonSmall}
+                  onPress={() => {
+                    setViewPregunta(false), setViewTipos(true);
+                  }}
+                >
+                  <Text style={styles.buttonText}>Si </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonSmall}
+                  onPress={() => {
+                    setViewPregunta(false), setViewStock(true);
+                  }}
+                >
+                  <Text style={styles.buttonText}>No</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.separador} />
+              <View style={styles.separador} />
+            </>
+          )}
 
-            {viewStock && (
-              <>
-                <Text style={[styles.text]}>Stock</Text>
+          {viewStock && (
+            <>
+              <View style={[{ height: RFValue(5) }]} />
+              <Text style={[styles.text]}>Stock </Text>
 
-                <View style={styles.separador} />
-                {isSeleccionado ? (
-                  <TextInput
-                    style={[styles.input]}
-                    placeholder="Elija stock"
-                    value={nuevoStock}
-                    onChangeText={(texto) => setNuevoStock(texto)}
-                    keyboardType="numeric"
-                  />
-                ) : (
-                  <TextInput
-                    style={[styles.input]}
-                    placeholder="Elija stock"
-                    value={stock}
-                    onChangeText={handleStockInput}
-                    keyboardType="numeric"
-                  />
-                )}
+              {isSeleccionado ? (
+                <TextInput
+                  style={[styles.input]}
+                  placeholder="Elija stock"
+                  value={nuevoStock}
+                  onChangeText={(texto) => setNuevoStock(texto)}
+                  keyboardType="numeric"
+                />
+              ) : (
+                <TextInput
+                  style={[styles.input]}
+                  placeholder="Elija stock"
+                  value={stock}
+                  onChangeText={handleStockInput}
+                  keyboardType="numeric"
+                />
+              )}
+            </>
+          )}
 
-                <View style={styles.separador} />
-                <View style={styles.separador} />
-              </>
-            )}
+          {viewTipos && (
+            <View style={styles.containertipo}>
+              <View style={styles.container}>
+                <View style={[{ height: RFValue(5) }]} />
 
-            {viewTipos && (
-              <>
                 <Text style={[styles.text]}>
                   Añada una característica al material:
                 </Text>
 
-                <View style={styles.separador} />
+                <View style={[{ height: RFValue(5) }]} />
 
-                <Text style={[styles.text]}>Tipo característica</Text>
-
-                <View style={styles.separador} />
+                <Text style={[styles.text]}>Tipo característica </Text>
 
                 {cargarTipoBD ? (
-                  <View>
+                  <View
+                    style={[{ alignContent: "center", alignItems: "center" }]}
+                  >
                     <Picker
                       selectedValue={tipo}
                       onValueChange={(itemValue) => setTipo(itemValue)}
@@ -1083,11 +1081,15 @@ export default function gestionItemMaterial() {
                         setTipo("");
                       }}
                     >
-                      <Text style={styles.addButtonText}>Añadir nuevo</Text>
+                      <Text style={styles.addButtonText}>
+                        Nueva caracteristica
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 ) : (
-                  <View>
+                  <View
+                    style={[{ alignContent: "center", alignItems: "center" }]}
+                  >
                     <TextInput
                       style={[styles.input]}
                       placeholder="Elija el nombre"
@@ -1107,11 +1109,9 @@ export default function gestionItemMaterial() {
                   </View>
                 )}
 
-                <View style={styles.separador} />
+                <View style={[{ height: RFValue(2) }]} />
 
                 <Text style={[styles.text]}>Cantidad</Text>
-
-                <View style={styles.separador} />
                 <TextInput
                   style={[styles.input]}
                   placeholder="Elija la cantidad"
@@ -1120,14 +1120,12 @@ export default function gestionItemMaterial() {
                   keyboardType="numeric"
                 />
 
-                <View style={[styles.separador]} />
-
                 <Text style={[styles.text]}>Foto</Text>
 
-                <View style={styles.separador} />
-
                 {cargarFotoTipoBD ? (
-                  <View>
+                  <View
+                    style={[{ alignContent: "center", alignItems: "center" }]}
+                  >
                     <Picker
                       selectedValue={fotoTipo}
                       onValueChange={(itemValue) => setFotoTipo(itemValue)}
@@ -1149,11 +1147,15 @@ export default function gestionItemMaterial() {
                         setFotoTipo("");
                       }}
                     >
-                      <Text style={styles.addButtonText}>Añadir nuevo</Text>
+                      <Text style={styles.addButtonText}>
+                        Nueva caracteristica
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 ) : (
-                  <View>
+                  <View
+                    style={[{ alignContent: "center", alignItems: "center" }]}
+                  >
                     <View style={styles.rowSolo}>
                       <TouchableOpacity
                         style={[styles.addButtonTipoFotoBD]}
@@ -1164,8 +1166,15 @@ export default function gestionItemMaterial() {
                           }
                         }}
                       >
-                        <Text style={styles.addButtonText}>
-                          Añadir Nueva Foto
+                        <Text
+                          style={{
+                            ...styles.addButtonText,
+                            color: fotoTipoUri !== "" ? "green" : "#fff",
+                          }}
+                        >
+                          {fotoTipoUri !== ""
+                            ? "Foto Añadida"
+                            : "Añadir Nueva Foto"}
                         </Text>
                       </TouchableOpacity>
                       <TextInput
@@ -1175,11 +1184,8 @@ export default function gestionItemMaterial() {
                         onChangeText={setFotoTipo}
                       />
                     </View>
-                    {fotoTipoUri !== "" && (
-                      <Text style={styles.TextSmall}> Añadida</Text>
-                    )}
                     <TouchableOpacity
-                      style={[styles.addButtonTipoBD, { marginTop: 5 }]}
+                      style={[styles.addButtonTipoBD]}
                       onPress={() => {
                         setCargarFotoTipoBD(true);
                         setFotoTipo("");
@@ -1199,7 +1205,7 @@ export default function gestionItemMaterial() {
                   <Text style={styles.addButtonText}>Añadir tipo</Text>
                 </TouchableOpacity>
 
-                <ScrollView style={styles.FlatListCaracteristicas}>
+                <View style={styles.FlatListCaracteristicas}>
                   {isSeleccionado ? (
                     <FlatList
                       data={nuevasCaracteristicas}
@@ -1213,97 +1219,101 @@ export default function gestionItemMaterial() {
                       renderItem={renderItem}
                     />
                   )}
-                </ScrollView>
+                </View>
+              </View>
+            </View>
+          )}
+
+          <View style={styles.rowBotones}>
+            {isSeleccionado ? (
+              <>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={handleEliminar}
+                >
+                  <Text style={styles.addButtonText}>Eliminar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {!viewPregunta && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.cancelButton}
+                      onPress={handleCancelar}
+                    >
+                      <Text style={styles.addButtonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </>
             )}
-
-            <View style={styles.rowBotones}>
-              {isSeleccionado ? (
-                <>
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={handleEliminar}
-                  >
-                    <Text style={styles.addButtonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  {!viewPregunta && (
-                    <>
-                      <TouchableOpacity
-                        style={styles.cancelButton}
-                        onPress={handleCancelar}
-                      >
-                        <Text style={styles.addButtonText}>Cancelar</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
-              )}
-              {isSeleccionado ? (
-                <>
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={handleModificar}
-                  >
-                    <Text style={styles.addButtonText}>Modificar</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  {!viewPregunta && (
-                    <>
-                      <TouchableOpacity
-                        style={styles.addButton}
-                        onPress={handleAnadirMaterial}
-                      >
-                        <Text style={styles.addButtonText}>Añadir</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
-              )}
-            </View>
-          </View>
-        )}
-        {viewModificarMaterial && (
-          <View>
-            <View style={[styles.row]}>
-              <TextInput
-                style={[styles.input]}
-                placeholder="Elija Material"
-                value={buscar}
-                onChangeText={setBuscar}
-              />
-              <TouchableOpacity
-                style={styles.searchButton}
-                onPress={handleBuscar}
-              >
-                <Text style={styles.addButtonText}>Buscar</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              style={styles.showAllMaterials}
-              onPress={handleMostrarTodo}
-            >
-              <Text style={styles.addButtonText}>Mostrar Todo</Text>
-            </TouchableOpacity>
-            {cargando && (
-              <View style={styles.text}>
-                <Text>Cargando...</Text>
-              </View>
+            {isSeleccionado ? (
+              <>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={handleModificar}
+                >
+                  <Text style={styles.addButtonText}>Modificar</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                {!viewPregunta && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={handleAnadirMaterial}
+                    >
+                      <Text style={styles.addButtonText}>Añadir</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
             )}
-            <View style={styles.FlatListMateriales}>
-              <FlatList
-                data={filtrar}
-                keyExtractor={(item) => item.id}
-                renderItem={renderItemMateriales}
-              />
-            </View>
           </View>
-        )}
-      </ScrollView>
+        </View>
+      )}
+      {viewModificarMaterial && (
+        <View style={styles.container}>
+          <View style={styles.separador} />
+
+          <View style={[styles.row]}>
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija Material"
+              value={buscar}
+              onChangeText={setBuscar}
+            />
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={handleBuscar}
+            >
+              <Text style={styles.addButtonText}>Buscar</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[{ height: RFValue(1) }]} />
+          <TouchableOpacity
+            style={styles.showAllMaterials}
+            onPress={handleMostrarTodo}
+          >
+            <Text style={styles.addButtonText}>Mostrar Todo</Text>
+          </TouchableOpacity>
+          {cargando && (
+            <View style={styles.text}>
+              <Text>Cargando...</Text>
+            </View>
+          )}
+          <View style={styles.FlatListMateriales}>
+            <View style={[{ height: RFValue(2) }]} />
+            <FlatList
+              data={filtrar}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItemMateriales}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -1314,26 +1324,39 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     alignContent: "center",
-    justifyContent: "center",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
   },
   contentContainer: {
     alignItems: "center",
   },
+  containertipo: {
+    width: Platform.OS === "web" ? RFValue(200) : RFValue(250),
+    height: Platform.OS === 'web' ? 'auto' : RFValue(413),
+    padding: RFValue(2),
+    borderRadius: RFValue(5),
+    borderWidth: RFValue(1),
+    borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
+  },
   button: {
     backgroundColor: "#e0e0e0", // Un color gris claro para los botones
-    padding: 10,
+    padding: RFValue(2),
     marginVertical: 5,
-    width: 100,
+    width: Platform.OS === "web" ? RFValue(100) : RFValue(150),
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
-    marginHorizontal: 10,
+    marginHorizontal: RFValue(10),
+  },
+  buttonSmall: {
+    backgroundColor: "#e0e0e0", // Un color gris claro para los botones
+    padding: RFValue(5),
+    marginVertical: 5,
+    width: Platform.OS === "web" ? RFValue(20) : RFValue(70),
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
+    marginHorizontal: RFValue(10),
+    alignItems: "center",
+    alignContent: "center",
   },
   buttonText: {
     color: "black",
@@ -1341,53 +1364,54 @@ const styles = StyleSheet.create({
   },
   addButtonTipo: {
     backgroundColor: "blue",
-    padding: 5,
-    width: 120,
+    padding: RFValue(2),
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(100),
     borderRadius: 5,
-    marginRight: 100,
   },
   addButtonTipoBD: {
     backgroundColor: "grey",
-    padding: 5,
-    width: 120,
+    padding: RFValue(2),
+    width: Platform.OS === "web" ? RFValue(70) : RFValue(200),
     borderRadius: 5,
-    marginRight: 100,
   },
   addButtonTipoFotoBD: {
-    backgroundColor: "grey",
-    padding: 5,
-    width: 140,
+    backgroundColor: "lightblue", // Un color gris claro para los botones
+    padding: RFValue(1),
+    width: Platform.OS === "web" ? RFValue(70) : RFValue(100),
+    height: Platform.OS === "web" ? RFValue(10) : RFValue(25),
     borderRadius: 5,
-    marginRight: 10,
-    marginBottom: 2,
+    borderWidth: 1,
+    borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
+    marginHorizontal: RFValue(10),
   },
   addButton: {
     backgroundColor: "green",
-    padding: 10,
-    width: 100,
+    padding: RFValue(5),
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(100),
     borderRadius: 5,
   },
   cancelButton: {
     backgroundColor: "red",
-    padding: 10,
-    width: 100,
+    padding: RFValue(5),
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(100),
     borderRadius: 5,
-    marginHorizontal: 20,
+    marginHorizontal: RFValue(20),
   },
   searchButton: {
     backgroundColor: "blue",
-    padding: 5,
-    width: 100,
-    height: 30,
+    padding: Platform.OS === "web" ? RFValue(2) : RFValue(5),
+    width: Platform.OS === "web" ? RFValue(25) : RFValue(100),
+    height: Platform.OS === "web" ? RFValue(10) : RFValue(35),
     borderRadius: 5,
-    marginHorizontal: 10,
+    marginHorizontal: RFValue(10),
+    alignContent: "center",
+    alignItems: "center",
   },
   showAllMaterials: {
     backgroundColor: "gray",
-    padding: 5,
-    width: 120,
+    padding: RFValue(2),
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(120),
     borderRadius: 5,
-    marginLeft: 300,
   },
   addButtonText: {
     color: "#fff",
@@ -1398,47 +1422,47 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   row: {
-    marginHorizontal: 50,
+    marginHorizontal: RFValue(50),
     flexDirection: "row",
   },
   rowBotones: {
     position: "absolute",
-    bottom: -75,
+    bottom: RFValue(10),
     flexDirection: "row",
     alignItems: "center",
   },
   separador: {
-    height: 10,
+    height: RFValue(2),
   },
   input: {
     borderWidth: 1,
     borderColor: "grey",
     borderRadius: 5,
-    marginBottom: 10,
-    width: 250,
-    height: 30,
-    padding: 5,
+    marginBottom: RFValue(2),
+    width: Platform.OS === "web" ? RFValue(100) : RFValue(200),
+    height: Platform.OS === "web" ? RFValue(8) : RFValue(25),
+    padding: RFValue(5),
   },
   inputNombreFotoNueva: {
     borderWidth: 1,
     borderColor: "grey",
     borderRadius: 5,
-    marginBottom: 10,
-    width: 120,
-    height: 30,
-    padding: 5,
+    marginBottom: RFValue(1),
+    width: Platform.OS === "web" ? RFValue(120) : RFValue(200),
+    height: Platform.OS === "web" ? RFValue(10) : RFValue(25),
+    padding: RFValue(5),
   },
   text: {
-    fontSize: 15,
+    fontSize: Platform.OS === "web" ? RFValue(5) : RFValue(12),
   },
   separador: {
-    height: 10,
+    height: RFValue(10),
   },
   itemContainerTipo: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    padding: RFValue(5),
     borderBottomWidth: 1,
     borderBottomColor: "#cccccc",
   },
@@ -1446,77 +1470,75 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
+    padding: RFValue(10),
     borderBottomWidth: 1,
     borderBottomColor: "#cccccc",
-    width: 200,
-    marginLeft: 140,
+    width: Platform.OS === "web" ? RFValue(100) : RFValue(300),
   },
   label: {
     fontWeight: "bold",
   },
   itemText: {
-    fontSize: 14, // Tamaño de fuente mediano para buena legibilidad
+    fontSize: Platform.OS === "web" ? RFValue(5) : RFValue(10), // Tamaño de fuente mediano para buena legibilidad
     color: "#333", // Color oscuro para el texto para alto contraste
-    marginVertical: 3,
+    marginVertical: RFValue(3),
   },
   itemTextBold: {
-    fontSize: 14, // Tamaño de fuente mediano para buena legibilidad
+    fontSize: Platform.OS === "web" ? RFValue(5) : RFValue(10), // Tamaño de fuente mediano para buena legibilidad
     color: "#333", // Color oscuro para el texto para alto contraste
     fontWeight: "bold", // Peso de la fuente normal; puede ser 'bold' si es necesario
-    marginVertical: 3,
+    marginVertical: RFValue(3),
   },
   TextSmall: {
-    fontSize: 12, // Tamaño de fuente mediano para buena legibilidad
+    fontSize: RFValue(12), // Tamaño de fuente mediano para buena legibilidad
     color: "green", // Color oscuro para el texto para alto contraste
-    marginBottom: 5,
+    marginBottom: RFValue(5),
   },
   deleteButton: {
-    padding: 10, // Espacio adicional alrededor del ícono para un área de toque más grande
-    marginRight: 5, // Espacio a la derecha si es necesario
+    padding: RFValue(5), // Espacio adicional alrededor del ícono para un área de toque más grande
+    marginRight: RFValue(5), // Espacio a la derecha si es necesario
     justifyContent: "center", // Centra el ícono verticalmente dentro del botón
     alignItems: "center", // Centra el ícono horizontalmente dentro del botón
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: Platform.OS === "web" ? RFValue(10) : RFValue(20),
+    height: Platform.OS === "web" ? RFValue(10) : RFValue(20),
   },
   materialInfo: {
     flexDirection: "column",
-    width: 200,
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(200),
   },
   materialName: {
-    fontSize: 16,
+    fontSize: Platform.OS === "web" ? RFValue(8) : RFValue(16),
     fontWeight: "bold",
-    marginVertical: 8,
+    marginVertical: RFValue(8),
   },
   materialTotal: {
-    fontSize: 14,
+    fontSize: Platform.OS === "web" ? RFValue(6) : RFValue(14),
   },
   FlatListCaracteristicas: {
-    marginTop: 10,
-    marginLeft: 30,
-    height: 100,
-    maxHeight: 500,
-    width: 200,
-    maxWidth: 200,
+    marginTop: RFValue(2),
+    height: Platform.OS === "web" ? RFValue(60) : RFValue(100),
+    maxHeight: Platform.OS === "web" ? RFValue(60) : RFValue(100),
+    width: Platform.OS === "web" ? RFValue(80) : RFValue(200),
+    maxWidth: Platform.OS === "web" ? RFValue(80) : RFValue(200),
   },
   FlatListMateriales: {
-    height: 500,
-    maxHeight: 500,
+    height: Platform.OS === "web" ? RFValue(200) : RFValue(500),
+    maxHeight: Platform.OS === "web" ? RFValue(200) : RFValue(500),
   },
   leftColumn: {
     flexDirection: "column",
     justifyContent: "center",
-    marginRight: 30,
+    marginRight: RFValue(5),
   },
   rightColumn: {
     flexDirection: "column",
     alignItems: "flex-start",
   },
   picker: {
-    height: 25,
-    width: Platform.OS === "web" ? 150 : 200,
-    marginBottom: 10,
+    height: Platform.OS === "web" ? RFValue(10) : RFValue(25),
+    width: Platform.OS === "web" ? RFValue(100) : RFValue(200),
+    marginBottom: RFValue(1),
   },
 });

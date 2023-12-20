@@ -11,6 +11,7 @@ import {
   TextInput,
   Image,
   Platform,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
 import { buscarMateriales } from "../Controlador/tareas";
@@ -25,8 +26,6 @@ import {
   getInicioPantalla,
 } from "./VarGlobal";
 
-//import { DataContextMateriales } from "./DataContextMateriales";
-
 export default function AnadirMaterial({ navigation }) {
   // Variables para elegir material
   const [initialMaterials, setInitialMaterials] = useState([]);
@@ -38,8 +37,10 @@ export default function AnadirMaterial({ navigation }) {
     const cargarMateriales = async () => {
       try {
         const datosMateriales = await buscarMateriales();
-        console.log(datosMateriales)
         const datosMaterialesActuales = get_materialesBD();
+        console.log("Datos de buscarMateriales:", datosMateriales);
+        console.log("Datos de get_materialesBD:", datosMaterialesActuales);
+
         if (datosMaterialesActuales.length === 0 || getInicioPantalla()) {
           set_materialesBD(datosMateriales);
           setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
@@ -127,51 +128,55 @@ export default function AnadirMaterial({ navigation }) {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.listItem}>
-      <View style={styles.materialInfo}>
-        <Text style={styles.materialName}>{item.nombre}</Text>
-        <Text
-          style={styles.materialTotal}
-        >{`Cantidad total: ${getCantidadForCaracteristica(
-          item.stock,
-          item.caracteristicas,
-          caracteristica
-        )} `}</Text>
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.listItem}>
+        <View style={styles.materialInfo}>
+          <Text style={styles.materialName}>{item.nombre}</Text>
+          <Text
+            style={styles.materialTotal}
+          >{`Cantidad total: ${getCantidadForCaracteristica(
+            item.stock,
+            item.caracteristicas,
+            caracteristica
+          )} `}</Text>
+        </View>
+        <Picker
+          selectedValue={caracteristica}
+          style={styles.picker}
+          onValueChange={(itemValue) => seleccionTipo(itemValue, item)}
+        >
+          <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />
+          {item.caracteristicas.map((caracteristica, index) => (
+            <Picker.Item
+              key={index}
+              label={caracteristica.tipo}
+              value={caracteristica.tipo}
+            />
+          ))}
+        </Picker>
+        <TouchableOpacity
+          style={[
+            styles.checkbox,
+            selectedMaterialId === item.id
+              ? styles.checkboxChecked
+              : styles.checkboxUnchecked,
+          ]}
+          onPress={() => selectMaterial(item)}
+        >
+          {selectedMaterialId === item.id && (
+            <Text style={styles.checkboxLabel}>✓</Text>
+          )}
+        </TouchableOpacity>
       </View>
-      <Picker
-        selectedValue={caracteristica}
-        style={styles.picker}
-        onValueChange={(itemValue) => seleccionTipo(itemValue, item)}
-      >
-        <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
-        {item.caracteristicas.map((caracteristica, index) => (
-          <Picker.Item
-            key={index}
-            label={caracteristica.tipo}
-            value={caracteristica.tipo}
-          />
-        ))}
-      </Picker>
-      <TouchableOpacity
-        style={[
-          styles.checkbox,
-          selectedMaterialId === item.id
-            ? styles.checkboxChecked
-            : styles.checkboxUnchecked,
-        ]}
-        onPress={() => selectMaterial(item)}
-      >
-        {selectedMaterialId === item.id && (
-          <Text style={styles.checkboxLabel}>✓</Text>
-        )}
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   const guardarDatos = () => {
     // que no pueda introducir un material con la misma característica dos veces.
-    if (existeLista(selectedMaterialId, caracDef, pickupLocation, dropoffLocation)) {
+    if (
+      existeLista(selectedMaterialId, caracDef, pickupLocation, dropoffLocation)
+    ) {
       if (Platform.OS === "web") {
         Swal.fire({
           title: "Material ya introducido",
@@ -215,7 +220,7 @@ export default function AnadirMaterial({ navigation }) {
           if (
             pickupLocation == "Ninguno" ||
             dropoffLocation == "Ninguno" ||
-            pickupLocation == dropoffLocation || 
+            pickupLocation == dropoffLocation ||
             isNaN(labelQty) ||
             labelQty.trim() === "" ||
             labelQty <= 0 ||
@@ -283,7 +288,7 @@ export default function AnadirMaterial({ navigation }) {
               if (
                 pickupLocation == "Ninguno" ||
                 dropoffLocation == "Ninguno" ||
-                pickupLocation == dropoffLocation || 
+                pickupLocation == dropoffLocation ||
                 isNaN(labelQty) ||
                 labelQty.trim() === "" ||
                 labelQty <= 0 ||
@@ -342,133 +347,141 @@ export default function AnadirMaterial({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        <Text style={[styles.title]}>Añadir Material</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("tareaMateriales")}
-        >
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.row}>
-        <Text style={styles.text}>Recoger en: </Text>
-        <Picker
-          selectedValue={pickupLocation}
-          style={styles.picker}
-          onValueChange={(itemValue) => setPickupLocation(itemValue)}
-        >
-          <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
-          <Picker.Item key="0" label="Almacén" value="Almacen" />,
-          <Picker.Item key="1" label="Aula A" value="A" />,
-          <Picker.Item key="2" label="Aula B" value="B" />,
-          <Picker.Item key="3" label="Aula C" value="C" />,
-          <Picker.Item key="4" label="Aula D" value="D" />,
-          <Picker.Item key="5" label="Aula E" value="E" />,
-          <Picker.Item key="6" label="Aula F" value="F" />,
-          <Picker.Item key="7" label="Aula G" value="G" />,
-          <Picker.Item key="8" label="Aula H" value="H" />,
-          <Picker.Item key="9" label="Aula I" value="I" />,
-          <Picker.Item key="10" label="Aula J" value="J" />,
-        </Picker>
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={styles.row}>
-        <Text style={styles.text}>Llevar a: </Text>
-
-        <Picker
-          selectedValue={dropoffLocation}
-          style={styles.picker}
-          onValueChange={(itemValue) => setDropoffLocation(itemValue)}
-        >
-          <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />,
-          <Picker.Item key="0" label="Almacén" value="Almacen" />,
-          <Picker.Item key="1" label="Aula A" value="A" />,
-          <Picker.Item key="2" label="Aula B" value="B" />,
-          <Picker.Item key="3" label="Aula C" value="C" />,
-          <Picker.Item key="4" label="Aula D" value="D" />,
-          <Picker.Item key="5" label="Aula E" value="E" />,
-          <Picker.Item key="6" label="Aula F" value="F" />,
-          <Picker.Item key="7" label="Aula G" value="G" />,
-          <Picker.Item key="8" label="Aula H" value="H" />,
-          <Picker.Item key="9" label="Aula I" value="I" />,
-          <Picker.Item key="10" label="Aula J" value="J" />,
-        </Picker>
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <Text style={styles.text}>Busque material </Text>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={[styles.row]}>
-        <TextInput
-          placeholder="Buscar"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          style={styles.input}
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => searchMaterials()}
-        >
-          <Text style={styles.buttonText}>Buscar </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={[styles.row]}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => showAllMaterials()}
-        >
-          <Text style={styles.buttonText}>Mostrar Todo </Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.text, { fontSize: 15 }]}>Cantidad </Text>
-
-        <TextInput
-          placeholder="Nº"
-          value={labelQty}
-          onChangeText={setLabelQty}
-          keyboardType="numeric"
-          style={[styles.input, { width: 50 }]}
-        />
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      {cargando && (
-        <View style={styles.text}>
-          <Text>Cargando...</Text>
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={[styles.row, { justifyContent: "center" }]}>
+          <Text style={[styles.title]}>Añadir Material</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("tareaMateriales")}
+          >
+            <Image
+              source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+              style={[styles.Image, { marginLeft: 40 }]}
+            />
+          </TouchableOpacity>
         </View>
-      )}
-      <View style={styles.Flatlist}>
-        <FlatList
-          data={materials}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-      <View style={[styles.buttonContainer]}>
-        <View style={[styles.button]}>
-          <Button
-            title="Guardar"
-            onPress={() => showAlertStore()}
-            color="#0000FF"
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.row}>
+          <Text style={styles.text}>Recoger en: </Text>
+
+          <Picker
+            selectedValue={pickupLocation}
+            style={styles.picker}
+            onValueChange={(itemValue) => setPickupLocation(itemValue)}
+          >
+            <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />
+            <Picker.Item key="0" label="Almacén" value="Almacen" />
+            <Picker.Item key="1" label="Aula A" value="A" />
+            <Picker.Item key="2" label="Aula B" value="B" />
+            <Picker.Item key="3" label="Aula C" value="C" />
+            <Picker.Item key="4" label="Aula D" value="D" />
+            <Picker.Item key="5" label="Aula E" value="E" />
+            <Picker.Item key="6" label="Aula F" value="F" />
+            <Picker.Item key="7" label="Aula G" value="G" />
+            <Picker.Item key="8" label="Aula H" value="H" />
+            <Picker.Item key="9" label="Aula I" value="I" />
+            <Picker.Item key="10" label="Aula J" value="J" />
+          </Picker>
+        </View>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={styles.row}>
+          <Text style={styles.text}>Llevar a: </Text>
+
+          <Picker
+            selectedValue={dropoffLocation}
+            style={styles.picker}
+            onValueChange={(itemValue) => setDropoffLocation(itemValue)}
+          >
+            <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />
+            <Picker.Item key="0" label="Almacén" value="Almacen" />
+            <Picker.Item key="1" label="Aula A" value="A" />
+            <Picker.Item key="2" label="Aula B" value="B" />
+            <Picker.Item key="3" label="Aula C" value="C" />
+            <Picker.Item key="4" label="Aula D" value="D" />
+            <Picker.Item key="5" label="Aula E" value="E" />
+            <Picker.Item key="6" label="Aula F" value="F" />
+            <Picker.Item key="7" label="Aula G" value="G" />
+            <Picker.Item key="8" label="Aula H" value="H" />
+            <Picker.Item key="9" label="Aula I" value="I" />
+            <Picker.Item key="10" label="Aula J" value="J" />
+          </Picker>
+        </View>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <Text style={styles.text}>Busque material </Text>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={[styles.row]}>
+          <TextInput
+            placeholder="Buscar"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={styles.input}
+          />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => searchMaterials()}
+          >
+            <Text style={styles.buttonText}>Buscar </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={[styles.row]}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => showAllMaterials()}
+          >
+            <Text style={styles.buttonText}>Mostrar Todo </Text>
+          </TouchableOpacity>
+
+          <Text style={[styles.text, { fontSize: 15 }]}>Cantidad </Text>
+
+          <TextInput
+            placeholder="Nº"
+            value={labelQty}
+            onChangeText={setLabelQty}
+            keyboardType="numeric"
+            style={[styles.input, { width: 50 }]}
           />
         </View>
-      </View>
-    </SafeAreaView>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        {cargando || materials.length == 0 ? (
+          <View style={styles.Flatlist}>
+            <View style={styles.text}>
+              <Text>Cargando...</Text>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.Flatlist}>
+            <FlatList
+              data={materials}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        )}
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+        <View style={[styles.buttonContainer]}>
+          <View style={[styles.button]}>
+            <Button
+              title="Guardar"
+              onPress={() => showAlertStore()}
+              color="#0000FF"
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    </ScrollView>
   );
 }
 

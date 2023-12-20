@@ -644,8 +644,6 @@ export default function PasoActividad({ navigation }) {
           )}
         </View>
 
-        <View style={styles.separador}></View>
-
         <View style={[styles.addButtonGuardar]}>
           <Button
             title="Guardar"
@@ -723,7 +721,7 @@ const styles = StyleSheet.create({
     width: Platform.OS === "web" ? 80 : 90,
     position: "absolute",
     left: 150,
-    top: 800,
+    top: 825,
   },
   addButtonAñadirPaso: {
     backgroundColor: "#808080",

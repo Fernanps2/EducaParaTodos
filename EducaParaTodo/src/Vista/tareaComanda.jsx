@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
 import {
@@ -181,7 +182,7 @@ export default function TareaActividad({ navigation }) {
           finFecha + "//" + finHora,
           "comanda",
           periocidad,
-          foto,
+          foto
         );
         // Obtenemos todos los id de los menus de la tarea
         const menus = getIdMenusSeleccionados();
@@ -256,7 +257,7 @@ export default function TareaActividad({ navigation }) {
             });
             navigation.navigate("tiposMenusComanda");
           } else {
-            if (nombreTarea === "" || foto === '' || foto === 'Ninguno') {
+            if (nombreTarea === "" || foto === "" || foto === "Ninguno") {
               Swal.fire({
                 title: "Campo incompleto.",
                 text: "Pon nombre a la tarea.",
@@ -309,7 +310,7 @@ export default function TareaActividad({ navigation }) {
       {cargando ? (
         <Text style={styles.textoCargando}>Cargando...</Text>
       ) : (
-        <>
+        <ScrollView>
           <View style={styles.separador} />
           <View style={styles.separador} />
 
@@ -317,14 +318,6 @@ export default function TareaActividad({ navigation }) {
             {Platform.OS === "web" && (
               <>
                 <Text style={[styles.title]}>Comanda</Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("gestionTareas")}
-                >
-                  <Image
-                    source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                    style={[styles.Image, { marginLeft: 40 }]}
-                  />
-                </TouchableOpacity>
               </>
             )}
           </View>
@@ -334,14 +327,6 @@ export default function TareaActividad({ navigation }) {
               {Platform.OS !== "web" && (
                 <>
                   <Text style={[styles.title]}>Comanda</Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("gestionTareas")}
-                  >
-                    <Image
-                      source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                      style={[styles.Image, { marginLeft: 40 }]}
-                    />
-                  </TouchableOpacity>
                 </>
               )}
             </View>
@@ -486,7 +471,7 @@ export default function TareaActividad({ navigation }) {
               </View>
             </View>
           </View>
-        </>
+        </ScrollView>
       )}
     </>
   );

@@ -153,12 +153,6 @@ export default function TiposMenusComanda({ navigation }) {
 
       <View style={[styles.row, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Alimentos Menu</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.separador} />

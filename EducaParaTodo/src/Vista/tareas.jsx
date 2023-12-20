@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -183,32 +183,35 @@ const styles = StyleSheet.create({
   titulo: {
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: RFValue(15),
+    fontSize: Platform.OS === 'web' ? RFValue(15) : RFValue(22),
   },
   texto: {
     fontWeight: "bold",
     marginBottom: RFValue(50),
     marginTop: RFValue(5),
     flexWrap: "wrap",
-    maxWidth: RFValue(100),
-    fontSize: RFValue(10),
+    maxWidth: Platform.OS === 'web' ? RFValue(100) : RFValue(150),
+    fontSize: Platform.OS === 'web' ? RFValue(10) : RFValue (13),
   },
   felicitacionText: {
     fontWeight: "bold",
     fontSize: RFValue(10),
   },
   foto: {
-    width: RFValue(80),
-    height: RFValue(80),
+    width: Platform.OS === 'web' ? RFValue(80) : RFValue(150),
+    height: Platform.OS === 'web' ? RFValue(80) : RFValue(150),
     borderRadius: RFValue(20),
     overflow: "hidden",
     borderWidth: RFValue(1),
     borderColor: "black",
   },
   contenedor_tarea_unica: {
+    flex: 1,
+    justifyContent: 'center',
     flexDirection: "column",
     width: "100%", // Ocupa todo el ancho para una sola tarea
     alignItems: "center",
+    alignContent: 'center',
   },
   image: {
     width: RFValue(125),

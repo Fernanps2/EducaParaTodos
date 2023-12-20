@@ -11,6 +11,7 @@ import {
   Button,
   Image,
   Platform,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
 import { buscarMenus } from "../Controlador/tareas";
@@ -134,80 +135,78 @@ export default function TiposMenusComanda({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
 
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        <Text style={[styles.title]}>Tipos de Menu</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <Text style={styles.text}>Añada tipo de menú: </Text>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <View style={[styles.row]}>
-        {cargando && (
-          <View style={styles.text}>
-            <Text>Cargando...</Text>
-          </View>
-        )}
-        {!cargando && (
-          <Picker
-            selectedValue={selectedMenuType}
-            style={styles.picker}
-            onValueChange={(itemValue) => {
-              setSelectedMenuType(itemValue);
-            }}
-          >
-            <Picker.Item key={"Ninguno"} label={"Ninguno"} value={"Ninguno"} />
-            {menuTypes.map((menuType) => (
-              <Picker.Item
-                key={menuType.id}
-                label={menuType.Nombre}
-                value={menuType.Nombre}
-              />
-            ))}
-          </Picker>
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={() => addItem()}>
-          <Text style={styles.buttonText}>Añadir </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <FlatList
-        data={menuList}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <View style={[styles.buttonContainer]}>
-        <View style={[styles.button]}>
-          <Button
-            title="Guardar"
-            onPress={() => showAlertStore()}
-            color="#0000FF"
-          />
+        <View style={[styles.row, { justifyContent: "center" }]}>
+          <Text style={[styles.title]}>Tipos de Menu</Text>
         </View>
-      </View>
-    </SafeAreaView>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <Text style={styles.text}>Añada tipo de menú: </Text>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <View style={[styles.row]}>
+          {cargando && (
+            <View style={styles.text}>
+              <Text>Cargando...</Text>
+            </View>
+          )}
+          {!cargando && (
+            <Picker
+              selectedValue={selectedMenuType}
+              style={styles.picker}
+              onValueChange={(itemValue) => {
+                setSelectedMenuType(itemValue);
+              }}
+            >
+              <Picker.Item
+                key={"Ninguno"}
+                label={"Ninguno"}
+                value={"Ninguno"}
+              />
+              {menuTypes.map((menuType) => (
+                <Picker.Item
+                  key={menuType.id}
+                  label={menuType.Nombre}
+                  value={menuType.Nombre}
+                />
+              ))}
+            </Picker>
+          )}
+
+          <TouchableOpacity style={styles.button} onPress={() => addItem()}>
+            <Text style={styles.buttonText}>Añadir </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <FlatList
+          data={menuList}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <View style={[styles.buttonContainer]}>
+          <View style={[styles.button]}>
+            <Button
+              title="Guardar"
+              onPress={() => showAlertStore()}
+              color="#0000FF"
+            />
+          </View>
+        </View>
+      </SafeAreaView>
   );
 }
 
