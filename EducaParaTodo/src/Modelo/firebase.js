@@ -1793,6 +1793,35 @@ export async function almacenarTipoMaterial(imagen, nombreImagen) {
   }
 }
 
+export async function almacenarTipoTarea(imagen, nombreImagen) {
+  
+  try {
+      if (descargarTipoTarea(nombreImagen) != null) {
+        const refImagenes = ref(storage, TIPO_TAREAS+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+              console.log('URL de descarga disponible en', downloadURL);
+              // Aquí puedes usar downloadURL para mostrar la vista previa
+          });
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
 export async function descargarImagen(nombreImagen) {
   let imagenUri = {
       uri: null,
@@ -2210,6 +2239,28 @@ export async function descargarTipoMateriales() {
   return entidad;
 }
 
+export async function descargarTipoTarea(nombreFoto) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, TIPO_TAREAS+nombreFoto);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la foto");
+      });
+
+  return imagenUri;
+}
+
 export async function descargarTipoTareas() {
 
   let entidad = [];
@@ -2235,6 +2286,7 @@ export async function descargarTipoTareas() {
 
   return entidad;
 }
+
 
 export async function eliminarImagen(nombreArchivo) {
   const refArchivo = ref(storage, IMAGENES+nombreArchivo);
@@ -2298,6 +2350,16 @@ export async function eliminarMaterial(nombreArchivo) {
 
 export async function eliminarTipoMaterial(nombreArchivo) {
   const refArchivo = ref(storage, TIPOS_MATERIAL+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarTipoTarea(nombreArchivo) {
+  const refArchivo = ref(storage, TIPO_TAREAS+nombreArchivo);
 
   await deleteObject(refArchivo).then(() => {
       console.log("Se ha borrado el archivo correctamente")

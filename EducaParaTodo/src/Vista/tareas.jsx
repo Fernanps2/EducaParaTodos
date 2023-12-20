@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
 import { buscarTarea } from "../Controlador/tareas";
 import { RFValue } from "react-native-responsive-fontsize";
+import {descargaTipoTarea} from "../Controlador/multimedia";
 
 const manejoPresionarBoton = (tarea, navigation, usuario) => {
   const id = tarea.id;
@@ -25,7 +26,7 @@ const DatosTareas = ({ tarea, navigation, usuario }) => {
       >
         {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
-        <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
+        <Image style={styles.foto} source={{ uri: tarea.fotoURL.uri }} />
       </TouchableOpacity>
       <Text style={styles.texto}>{tarea.titulo} </Text>
     </View>
@@ -42,8 +43,21 @@ const Tareas = ({ route, navigation }) => {
   useEffect(() => {
     const listaTareas = async () => {
       try {
-        const Tareas = await buscarTarea(usuario.id);
-        setTareas(Tareas);
+        const tareas = await buscarTarea(usuario.id);
+
+        const datos = await Promise.all(
+          tareas.map(async ({ id, tipo, fotoURL, titulo }) => {
+            if (fotoURL !== "") {
+              const fotoDescargada = await descargaTipoTarea(fotoURL);
+              return { id, tipo, titulo, fotoURL: fotoDescargada };
+            }
+            return null; // Retornar null para los casos donde no hay foto
+          })
+        );
+
+        console.log('datos son estos: ', datos);
+
+        setTareas(datos);
         setCargando(false);
       } catch (error) {
         console.log(error);

@@ -1,7 +1,7 @@
-import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial} from "../Modelo/firebase";
-import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial} from "../Modelo/firebase";
+import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial, almacenarTipoTarea} from "../Modelo/firebase";
+import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial, descargarTipoTarea} from "../Modelo/firebase";
 import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales, descargarTipoTareas  } from "../Modelo/firebase";
-import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial, eliminarTipoTarea } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -177,6 +177,33 @@ export async function almacenaMaterial(imagen, nombre) {
 export async function almacenaTipoMaterial(imagen, nombre) {
     if (imagen != '' && nombre != '')
     await almacenarTipoMaterial(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}
+
+/**
+ * @name almacenarTipoTarea
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del tipo de tarea a subir
+ * @param {String} nombre nombre de la imagen del tipo de tarea
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaTipoTarea(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+    await almacenarTipoTarea(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -506,6 +533,27 @@ export async function descargaTipoTareas() {
 }
 
 /**
+ * @name descargarTipoTarea
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para el tipo de tarea a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaTipoTarea(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarTipoTarea(imagen);
+
+    return imagenCargada;
+}
+
+/**
  * @name eliminaImagen
  * 
  * @description Borra la imagen con el nombre del archivo
@@ -593,6 +641,19 @@ export async function eliminaMaterial(nombreArchivo) {
 export async function eliminaTipoMaterial(nombreArchivo) {
     if (nombreArchivo != null && nombreArchivo != '') {
         await eliminarTipoMaterial(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaTipoTarea
+ * 
+ * @description Borra la imagen para el tipo de tarea con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaTipoTarea(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarTipoTarea(nombreArchivo);
     }
 }
 
