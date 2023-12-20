@@ -1,6 +1,6 @@
 import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial, almacenarTipoTarea} from "../Modelo/firebase";
-import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial, descargarTipoTarea} from "../Modelo/firebase";
-import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales, descargarTipoTareas  } from "../Modelo/firebase";
+import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial, descargarTipoTarea, descargarLugarNoAula} from "../Modelo/firebase";
+import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales, descargarTipoTareas, descargarLugaresNoAulas  } from "../Modelo/firebase";
 import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial, eliminarTipoTarea } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
@@ -549,6 +549,43 @@ export async function descargaTipoTarea(imagen) {
 
     if (imagen != '')
         imagenCargada = await descargarTipoTarea(imagen);
+
+    return imagenCargada;
+}
+
+/**
+ * @name descargaLugarNoAula
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaLugarNoAula() {
+    const array = await descargarLugarNoAula();
+
+    return array;
+}
+
+/**
+ * @name descargaLugaresNoAulas
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para el tipo de lugar a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaLugaresNoAulas(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarLugaresNoAulas(imagen);
 
     return imagenCargada;
 }

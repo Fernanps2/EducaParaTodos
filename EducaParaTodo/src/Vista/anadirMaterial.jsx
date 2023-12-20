@@ -374,6 +374,7 @@ export default function AnadirMaterial({ navigation }) {
           >
             <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />
             <Picker.Item key="0" label="Almacén" value="Almacen" />
+            <Picker.Item key="11" label="Impresora" value="Impresora" />
             <Picker.Item key="1" label="Aula A" value="A" />
             <Picker.Item key="2" label="Aula B" value="B" />
             <Picker.Item key="3" label="Aula C" value="C" />
@@ -398,6 +399,7 @@ export default function AnadirMaterial({ navigation }) {
           >
             <Picker.Item key="Ninguno" label="Ninguno" value="Ninguno" />
             <Picker.Item key="0" label="Almacén" value="Almacen" />
+            <Picker.Item key="11" label="Impresora" value="Impresora" />
             <Picker.Item key="1" label="Aula A" value="A" />
             <Picker.Item key="2" label="Aula B" value="B" />
             <Picker.Item key="3" label="Aula C" value="C" />

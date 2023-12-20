@@ -55,6 +55,7 @@ const LOGIN = 'ImagenesLogin/';
 const MATERIALES = 'materiales/';
 const TIPOS_MATERIAL = 'Tipo_Materiales/';
 const TIPO_TAREAS = 'fotosTipoTareas/';
+const LUGAR_NO_AULAS= 'Lugares_No_Aulas/';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -2267,6 +2268,55 @@ export async function descargarTipoTareas() {
 
   try {
     const listRef = ref(storage, TIPO_TAREAS);
+    const resultado = await listAll(listRef);
+
+    for (const item of resultado.items) {
+      try {
+        const url = await getDownloadURL(item);
+        entidad.push({
+          uri: url,
+          nombre: item.name
+        });
+      } catch (error) {
+        console.error("Error al descargar la URL del material: ", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error al listar los materiales en Firebase Storage: ", error);
+  }
+
+  return entidad;
+}
+
+
+export async function descargarLugarNoAula(nombreFoto) {
+  let imagenUri = {
+      uri: null,
+      nombre: null
+  };
+
+  const refImagen = ref(storage, LUGAR_NO_AULAS+nombreFoto);
+
+  await getDownloadURL(refImagen)
+      .then((url) => {
+          imagenUri = {
+              uri: url,
+              nombre: refImagen.name
+          };
+      })
+      .catch((error) => {
+          console.log("No se ha podido descargar la foto");
+      });
+
+  return imagenUri;
+}
+
+export async function descargarLugaresNoAulas() {
+
+  let entidad = [];
+
+  try {
+    const listRef = ref(storage, LUGAR_NO_AULAS);
     const resultado = await listAll(listRef);
 
     for (const item of resultado.items) {

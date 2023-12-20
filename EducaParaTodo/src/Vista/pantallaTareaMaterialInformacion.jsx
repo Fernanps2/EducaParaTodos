@@ -50,11 +50,11 @@ export const mostrarNumeroRecogidas = (
                     {item.aula === "Almacen" ? (
                       <>
                         <Image
-                          source={item.foto.uri}
+                          source={{ uri: item.foto.uri }}
                           style={[
                             {
-                              width: RFValue(50),
-                              height: RFValue(50),
+                              width: Platform.OS === "web" ? RFValue(50) : RFValue(70),
+                              height: Platform.OS === "web" ? RFValue(50) : RFValue(70),
                               marginHorizontal: 10,
                             },
                           ]}
@@ -66,8 +66,8 @@ export const mostrarNumeroRecogidas = (
                           source={{ uri: item.foto.uri }}
                           style={[
                             {
-                              width: RFValue(50),
-                              height: RFValue(50),
+                              width: Platform.OS === "web" ? RFValue(50) : RFValue(70),
+                              height: Platform.OS === "web" ? RFValue(50) : RFValue(70),
                               marginHorizontal: 10,
                             },
                           ]}
@@ -77,15 +77,15 @@ export const mostrarNumeroRecogidas = (
 
                     <Text style={estilos.text}>
                       {item.aula === "Almacen"
-                        ? `${item.aula}`
-                        : `Aula ${item.aula}`}
+                        ? `${item.aula} `
+                        : `Aula ${item.aula} `}
                     </Text>
                   </>
                 ) : (
                   <Text style={[estilos.text, { marginHorizontal: 10 }]}>
                     {item.aula === "Almacen"
-                      ? `${item.aula}`
-                      : `Aula ${item.aula}`}
+                      ? `${item.aula} `
+                      : `Aula ${item.aula} `}
                   </Text>
                 )}
               </View>
@@ -174,8 +174,8 @@ export const mostrarNumeroLugaresDestino = (
                           source={item.foto.uri}
                           style={[
                             {
-                              width: RFValue(50),
-                              height: RFValue(50),
+                              width: Platform.OS === "web" ? RFValue(50) : RFValue(70),
+                              height: Platform.OS === "web" ? RFValue(50) : RFValue(70),
                               marginHorizontal: 10,
                             },
                           ]}
@@ -187,8 +187,8 @@ export const mostrarNumeroLugaresDestino = (
                           source={{ uri: item.foto.uri }}
                           style={[
                             {
-                              width: RFValue(50),
-                              height: RFValue(50),
+                              width: Platform.OS === "web" ? RFValue(50) : RFValue(70),
+                              height: Platform.OS === "web" ? RFValue(50) : RFValue(70),
                               marginHorizontal: 10,
                             },
                           ]}
@@ -197,15 +197,15 @@ export const mostrarNumeroLugaresDestino = (
                     )}
                     <Text style={estilos.text}>
                       {item.aula === "Almacen"
-                        ? `${item.aula}`
-                        : `Aula ${item.aula}`}
+                        ? `${item.aula} `
+                        : `Aula ${item.aula} `}
                     </Text>
                   </>
                 ) : (
                   <Text style={[estilos.text, { marginHorizontal: 10 }]}>
                     {item.aula === "Almacen"
-                      ? `${item.aula}`
-                      : `Aula ${item.aula}`}
+                      ? `${item.aula} `
+                      : `Aula ${item.aula} `}
                   </Text>
                 )}
               </View>
