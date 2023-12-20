@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
 import { buscaAlumnoNombre, obtenerImagenesLoginAlumno, obtenerIdAlumnoPorNombre } from '../Controlador/alumnos.js';
+import { descargaImagenLogin, obtenerNombresImagenesAlumno } from '../Controlador/multimedia.js';
 
 
 const LoginScreenAlumno = ({ route, navigation }) => {
@@ -17,15 +18,15 @@ const LoginScreenAlumno = ({ route, navigation }) => {
   const { login } = useUser();
   const [errorState, setErrorState] = useState(false);
   const [imageStates, setImageStates] = useState(
-    Array(4).fill({
-      selected: false,
-      status: null // tick, cross, etc.
-    })
-  );
+      Array(4).fill({
+        selected: false,
+        status: null,
+      })
+    );
 
 
     /*useEffect(() => {
-      
+
       const obtenerImagenesAlumno = async () => {
         try {
           const alumnoNombre = await buscaAlumnoNombre(alumno.nombre);
@@ -45,19 +46,33 @@ const LoginScreenAlumno = ({ route, navigation }) => {
       obtenerImagenesAlumno();
     }, [alumno.nombre]);*/
 
-       useEffect(() => {
-         const obtenerImagenesAlumno = async () => {
-           try {
-             const alumnoId = await obtenerIdAlumnoPorNombre(alumno.nombre);
-             const imagenes = await obtenerImagenesLoginAlumno(alumnoId);
-             setAlumnoImagenes(imagenes);
-           } catch (error) {
-             console.log("Error al obtener imágenes o ID del alumno:", error);
-           }
-         };
+        useEffect(() => {
+          const obtenerImagenesAlumno = async () => {
+            try {
+              const alumnoId = await obtenerIdAlumnoPorNombre(alumno.nombre);
+              const nombresImagenes = await obtenerNombresImagenesAlumno(alumnoId);
+              const imagenes = await Promise.all(
+                nombresImagenes.map(async (nombreImagen) => {
+                  return await descargaImagenLogin(nombreImagen);
+                })
+              );
 
-         obtenerImagenesAlumno();
-       }, [alumno.nombre]);
+              const tempArray = [];
+              for (let i = 0; i < imagenes.length; i += 2) {
+                tempArray.push({
+                  img1: imagenes[i]?.uri || '',
+                  img2: imagenes[i + 1]?.uri || '',
+                });
+              }
+
+              setAlumnoImagenes(tempArray);
+            } catch (error) {
+              console.log("Error al obtener imágenes o ID del alumno:", error);
+            }
+          };
+
+          obtenerImagenesAlumno();
+        }, [alumno.nombre]);
 
 
 
@@ -72,17 +87,17 @@ const LoginScreenAlumno = ({ route, navigation }) => {
    };
 
 
-     const resetSelection = () => {
-       setSelectedImages(Array(4).fill(false));
-       setCurrentOrder([]);
-       setErrorState(false);
-       setImageStates(
-         Array(4).fill({
-           selected: false,
-           status: null // tick, cross, etc.
-         })
-       );
-     };
+      const resetSelection = () => {
+             setSelectedImages(Array(4).fill(false));
+             setCurrentOrder([]);
+             setErrorState(false);
+             setImageStates(
+               Array(4).fill({
+                 selected: false,
+                 status: null // tick, cross, etc.
+               })
+             );
+           };
 
     // cambio de estado al pulsar sobre una imagen y orden de pulsación
     const toggleImageSelection = (index) => {
@@ -134,90 +149,85 @@ const LoginScreenAlumno = ({ route, navigation }) => {
     };
 
 
-  return (
-    <View style={styles.containerTitle}>
-      <Text style={styles.title}>EducaParaTodos</Text>
-      <View style={styles.container}>
-        <Text style={styles.text}>Usuario</Text>
-        <Text style={styles.usuario}>{alumno.nombre}</Text>
-        <Text style={styles.text}>Contraseña</Text>
-        {/*<TextInput
-          style={styles.input}
-          placeholder="Introduzca aquí su contraseña"
-          secureTextEntry
-          onChangeText={text => setPassword(text)}
-        />*/}
+
+
+   return (
+     <View style={styles.containerTitle}>
+       <Text style={styles.title}>EducaParaTodos</Text>
+       <View style={styles.container}>
+         <Text style={styles.text}>Usuario</Text>
+         <Text style={styles.usuario}>{alumno.nombre}</Text>
+         <Text style={styles.text}>Contraseña</Text>
+         {/*<TextInput
+           style={styles.input}
+           placeholder="Introduzca aquí su contraseña"
+           secureTextEntry
+           onChangeText={text => setPassword(text)}
+         />*/}
 
 
 
-        <View style={styles.imageContainer}>
-          {alumnoImagenes.map((imagenData, index) => (
-            <View key={index} style={styles.imageGroup}>
-              <View style={styles.imageRow}>
-                {[imagenData.img1, imagenData.img2].map((imgSrc, imgIndex) => (
-                  <TouchableOpacity
-                    key={imgIndex}
-                    onPress={() => toggleImageSelection(index * 2 + imgIndex)}
-                    style={[
-                      styles.imageWrapper,
-                      imageStates[index * 2 + imgIndex].selected && styles.selectedImageContainer,
-                      errorState && imageStates[index * 2 + imgIndex].selected && styles.errorImageContainer,
-                    ]}
-                  >
-                    <Image
-                      source={{ uri: imgSrc }}
-                      style={styles.imageStyle}
-                      onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 1}:`, error)}
-                    />
-                    {imageStates[index * 2 + imgIndex].status === 'tick' && (
-                      <Text style={styles.tick}>✓</Text>
-                    )}
-                    {imageStates[index * 2 + imgIndex].status === 'cross' && (
-                      <Text style={styles.cross}>✖</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <View style={styles.imageRow}>
-                {[imagenData.img3, imagenData.img4].map((imgSrc, imgIndex) => (
-                  <TouchableOpacity
-                    key={imgIndex}
-                    onPress={() => toggleImageSelection(index * 2 + imgIndex + 2)}
-                    style={[
-                      styles.imageWrapper,
-                      imageStates[index * 2 + imgIndex + 2].selected && styles.selectedImageContainer,
-                      errorState && imageStates[index * 2 + imgIndex + 2].selected && styles.errorImageContainer,
-                    ]}
-                  >
-                    <Image
-                      source={{ uri: imgSrc }}
-                      style={styles.imageStyle}
-                      onError={(error) => console.log(`Error al cargar la imagen img${imgIndex + 3}:`, error)}
-                    />
-                    {imageStates[index * 2 + imgIndex + 2].status === 'tick' && (
-                      <Text style={styles.tick}>✓</Text>
-                    )}
-                    {imageStates[index * 2 + imgIndex + 2].status === 'cross' && (
-                      <Text style={styles.cross}>✖</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          ))}
-        </View>
+     <View style={styles.imageContainer}>
+       {alumnoImagenes.map((imagenData, index) => (
+         <View key={index} style={styles.imageGroup}>
+           <View style={styles.imageRow}>
+             <TouchableOpacity
+               onPress={() => toggleImageSelection(index * 2)}
+               style={[
+                 styles.imageWrapper,
+                 imageStates[index * 2]?.selected && styles.selectedImageContainer,
+                 errorState && imageStates[index * 2]?.selected && styles.errorImageContainer,
+               ]}
+             >
+               <Image
+                 source={{ uri: imagenData.img1 }}
+                 style={styles.imageStyle}
+                 onError={(error) => console.log(`Error al cargar la imagen img1:`, error)}
+               />
+               {imageStates[index * 2]?.status === 'tick' && (
+                 <Text style={styles.tick}>✓</Text>
+               )}
+               {imageStates[index * 2]?.status === 'cross' && (
+                 <Text style={styles.cross}>✖</Text>
+               )}
+             </TouchableOpacity>
+             <TouchableOpacity
+               onPress={() => toggleImageSelection(index * 2 + 1)}
+               style={[
+                 styles.imageWrapper,
+                 imageStates[index * 2 + 1]?.selected && styles.selectedImageContainer,
+                 errorState && imageStates[index * 2 + 1]?.selected && styles.errorImageContainer,
+               ]}
+             >
+               <Image
+                 source={{ uri: imagenData.img2 }}
+                 style={styles.imageStyle}
+                 onError={(error) => console.log(`Error al cargar la imagen img2:`, error)}
+               />
+               {imageStates[index * 2 + 1]?.status === 'tick' && (
+                 <Text style={styles.tick}>✓</Text>
+               )}
+               {imageStates[index * 2 + 1]?.status === 'cross' && (
+                 <Text style={styles.cross}>✖</Text>
+               )}
+             </TouchableOpacity>
+           </View>
+         </View>
+       ))}
+     </View>
 
-        <View style={styles.containerButton}>
-          <Button title="Entrar" onPress={() => {
-             handleLogin();
-          }
-                                          } />
-          <Button title="Salir" onPress={() => navigation.goBack()}/>
-        </View>
-      </View>
-    </View>
-  );
+         <View style={styles.containerButton}>
+           <Button title="Entrar" onPress={() => {
+              handleLogin();
+           }
+                                           } />
+           <Button title="Salir" onPress={() => navigation.goBack()}/>
+         </View>
+       </View>
+     </View>
+   );
 };
+
 
 const styles = StyleSheet.create({
   containerButton: {
@@ -316,5 +326,6 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
 });
+
 
 export default LoginScreenAlumno;
