@@ -18,6 +18,7 @@ import PantallaPrincipal from './src/Vista/pantallaPrincipal.jsx';
 import Tareas from './src/Vista/tareas.jsx';
 import LoginScreen from './src/Vista/loginEducador.js';
 import LoginScreenAlumno from './src/Vista/loginAlumno.js';
+import LoginScreenAlumnoImagenes from './src/Vista/loginAlumnoImagenes.js';
 import HomeEducador from './src/Vista/homeEducador.jsx';
 import AniadirProfesor from './src/Vista/aniadirProfesor.jsx';
 import HomeAdmin from './src/Vista/homeAdmin.jsx';
@@ -25,6 +26,7 @@ import ListaAlumnos from './src/Vista/listaAlumnos.jsx';
 import ListaProfesores from './src/Vista/listaProfesores.jsx';
 import PantallaDatosAlumno from './src/Vista/pantallaDatosAlumno.jsx';
 import PantallaDatosProfesor from './src/Vista/pantallaDatosProfesor.jsx';
+import ModificarDatosAdmin from './src/Vista/ModificarDatosAdmin.jsx';
 import EliminarTarea from './src/Vista/eliminarTarea.jsx';
 import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
 import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
@@ -67,6 +69,7 @@ export default function App() {
           <Stack.Screen name="Tareas" component={Tareas} />
           <Stack.Screen name="LoginEducador" component={LoginScreen} />
           <Stack.Screen name="LoginAlumno" component={LoginScreenAlumno}/>
+          <Stack.Screen name="LoginAlumnoImagenes" component={LoginScreenAlumnoImagenes}/>
           <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
           <Stack.Screen name="gestionMateriales" component={GestionMateriales} />
           <Stack.Screen name="gestionItemActividad" component={GestionItemActividad} />
@@ -101,6 +104,7 @@ export default function App() {
           <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
           <Stack.Screen name="modDatosProfesor" component={ModificarDatosProfesor} />
+          <Stack.Screen name="modDatosAdmin" component={ModificarDatosAdmin} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
           <Stack.Screen name="modificarProfesor" component={ModificarProfesor} />
