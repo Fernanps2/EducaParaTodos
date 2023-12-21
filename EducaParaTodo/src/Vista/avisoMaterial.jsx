@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 import { buscaProfesorId } from '../Controlador/profesores';
@@ -12,12 +12,24 @@ import useUser from '../Controlador/useUser';
 
 export default function AvisoMaterial ({ navigation }) {
 
+  //Obtenemos el profesor
   const {jwt} = useUser();
-  const profesor = buscaProfesorId(jwt);
-  const nombreUsuario = "Carlos"; //profesor.nombre;
+  const [profesor, setProfesor] = useState('');
+
+  useEffect(() => {
+    const loadData = async() => {
+      try {
+        const profesorEntidad = await buscaProfesorId(jwt);
+        setProfesor(profesorEntidad); 
+      } catch(error) {
+        console.log(error);
+      }
+    }
+    loadData();
+  }, []);
+  
 
   const [datosMensaje, setDatosMensaje] = useState({
-    idProfesor: "YAfvRkMFpFBI9A2Cxzmf", //profesor.id,
     mensaje: "",
     aula: "",
     fecha: new Date(),
@@ -63,14 +75,9 @@ export default function AvisoMaterial ({ navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            //Prueba de funcionamiento
-            console.log(datosMensaje.aula);
-            console.log(format(datosMensaje.fecha, 'dd/MM/yyyy'));
-            console.log(format(datosMensaje.hora, 'HH:mm'));
-            console.log(datosMensaje.idProfesor);
-            console.log(datosMensaje.mensaje);
-            aniadeMensaje(datosMensaje.idProfesor, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
-            navigation.navigate('HomeEducador', nombreUsuario );
+            //Añadimos el mensaje a la base de datos
+            aniadeMensaje(jwt, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
+            navigation.navigate('HomeEducador', profesor.nombre );
           }
         }
       ],
