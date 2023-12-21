@@ -1,7 +1,53 @@
-import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin,almacenarFotoMenu,almacenarMaterial} from "../Modelo/firebase";
-import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin,descargarMaterial} from "../Modelo/firebase";
-import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin,descargarMateriales } from "../Modelo/firebase";
-import { getAlumnoID, eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin,eliminarMaterial } from "../Modelo/firebase";
+import { 
+    almacenarImagen, 
+    almacenarPictograma, 
+    almacenarVideo, 
+    almacenarFotoPersona, 
+    almacenarImagenLogin,
+    almacenarMaterial,
+    almacenarTipoMaterial,
+    almacenarTipoTarea,
+    almacenarFotoLugar
+} from "../Modelo/firebase";
+
+import { 
+    descargarImagen, 
+    descargarPictograma, 
+    descargarVideo, 
+    descargarEmoticono, 
+    descargarFotoPersona, 
+    descargarImagenLogin,
+    descargarMaterial,
+    descargarTipoMaterial,
+    descargarTipoTarea,
+    descargarLugarNoAula
+} from "../Modelo/firebase";
+
+import { 
+    descargarImagenes, 
+    descargarPictogramas, 
+    descargarVideos, 
+    descargarEmoticonos, 
+    descargarFotosPersonas, 
+    descargarImagenesLogin, 
+    descargarMateriales, 
+    descargarTipoMateriales, 
+    descargarTipoTareas, 
+    descargarLugaresNoAulas  
+} from "../Modelo/firebase";
+
+import { 
+    eliminarImagen, 
+    eliminarPictograma, 
+    eliminarVideo, 
+    eliminarFotoPersona, 
+    eliminarImagenLogin,
+    eliminarMaterial,
+    eliminarTipoMaterial,
+    eliminarTipoTarea,
+    eliminarFotoLugar 
+} from "../Modelo/firebase";
+
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -184,6 +230,87 @@ export async function almacenaImagenLogin(imagen, nombre) {
 export async function almacenaMaterial(imagen, nombre) {
     if (imagen != '' && nombre != '')
         almacenarMaterial(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}
+
+/**
+ * @name almacenaTipoMaterial
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del tipo de material a subir
+ * @param {String} nombre nombre de la imagen del tipo de material
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaTipoMaterial(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+    await almacenarTipoMaterial(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}
+
+/**
+ * @name almacenarTipoTarea
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del tipo de tarea a subir
+ * @param {String} nombre nombre de la imagen del tipo de tarea
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaTipoTarea(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+    await almacenarTipoTarea(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}almacenarFotoLugar
+
+/**
+ * @name almacenaFotoLugar
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del lugar a subir
+ * @param {String} nombre nombre de la imagen del lugar
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaFotoLugar(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+    await almacenarFotoLugar(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -492,6 +619,117 @@ export async function descargaMateriales() {
 }
 
 /**
+ * @name descargaTipoMaterial
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para el tipo del material a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaTipoMaterial(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarTipoMaterial(imagen);
+
+    return imagenCargada;
+}
+
+/**
+ * @name descargaTipoMateriales
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaTipoMateriales() {
+    const array = await descargarTipoMateriales();
+
+    return array;
+}
+
+/**
+ * @name descargarTipoTareas
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaTipoTareas() {
+    const array = await descargarTipoTareas();
+
+    return array;
+}
+
+/**
+ * @name descargarTipoTarea
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para el tipo de tarea a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaTipoTarea(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarTipoTarea(imagen);
+
+    return imagenCargada;
+}
+
+/**
+ * @name descargaLugarNoAula
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaLugarNoAula(nombre) {
+    const array = await descargarLugarNoAula(nombre);
+
+    return array;
+}
+
+/**
+ * @name descargaLugaresNoAulas
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para el tipo de lugar a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaLugaresNoAulas(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarLugaresNoAulas(imagen);
+
+    return imagenCargada;
+}
+
+/**
  * @name eliminaImagen
  * 
  * @description Borra la imagen con el nombre del archivo
@@ -566,6 +804,45 @@ export async function eliminaImagenLogin(nombreArchivo) {
 export async function eliminaMaterial(nombreArchivo) {
     if (nombreArchivo != null && nombreArchivo != '') {
         await eliminarMaterial(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaTipoMaterial
+ * 
+ * @description Borra la imagen para el tipo del material con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaTipoMaterial(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarTipoMaterial(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaTipoTarea
+ * 
+ * @description Borra la imagen para el tipo de tarea con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaTipoTarea(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarTipoTarea(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaFotoLugar
+ * 
+ * @description Borra la imagen para el lugar con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaFotoLugar(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarFotoLugar(nombreArchivo);
     }
 }
 

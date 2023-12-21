@@ -1,9 +1,15 @@
 import { Alert } from "react-native";
 import { getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
 import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
-export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
-        await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
+export async function obtenerProfesores (){
+    return await getProfesores();
+}
+
+export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periocidad, foto){
+        return await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad, foto);
 }
 /*
 export async function asignarFeedbackBD (idTarea, feedBack){
@@ -15,16 +21,22 @@ export async function asignarFeedbackBD (idTarea, feedBack){
 export async function buscarTareaAlumno(idAlumno){
     let tarea = null;
     console.log("el id es: " + idAlumno);
-
     tarea = await getTareaId(idAlumno);
+    
+    return tarea;
+}
 
+
+// Esta función busca la tarea con ese ID
+export async function buscarTarea(usuarioId){
+    tarea = await getTareaId(usuarioId);    
     return tarea;
 }
 
 export async function buscarTareaId(idTarea){
     let tarea = null;
 
-    tarea = await getTareaById(idAlumno);
+    tarea = await getTareaById(idTarea);
 
     return tarea;
 }
@@ -100,7 +112,7 @@ export async function buscarPasos(idActividad){
 }
 
 export async function aniadePasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea){
-    await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
+    return await setPasoActividad(audio,imagen,pictograma,video,texto,nombre,idTarea);
 }
 
 export async function aniadeTareaComanda(idTarea,menus){
@@ -190,12 +202,12 @@ export async function buscarAlimentos(){
     return alimentos;
 }
 
-export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
-    await setTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea);
+export async function aniadeTareaInventario(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea){
+    await setTareaInventario(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea);
 }
 
-export async function aniadeMaterial(foto,nombre,stock){
-    await setMaterial(foto,nombre,stock);
+export async function aniadeMaterial(nombre, foto, stock, caracteristicas){
+    await setMaterial(nombre, foto, stock, caracteristicas);
 }
 
 // Esta función devuelve el material con ese nombre
@@ -225,6 +237,35 @@ export async function buscarMateriales(){
     return materiales;
 }
 
+export async function eliminarMaterial(id){
+    await deleteMaterial(id);
+}
+
+export async function modificarMaterial(id, nombre, foto, stock, caracteristicas){
+    await updateMaterial (id, nombre, foto, stock, caracteristicas);
+}
+
+export async function aniadeTipoMaterial(nombre){
+    await setTipoMaterial(nombre);
+}
+
+// Esta función devuelve todos los tipos de materiales almacenados en la base de datos
+export async function buscarTipoMateriales(){
+    let tipos = null;
+
+    tipos = await getTipoMateriales();
+
+    return tipos;
+}
+
+export async function eliminarTipoMaterial(id){
+    await deleteTipoMaterial(id);
+}
+
+export async function modificarTipoMaterial(id, nombre){
+    await updateTipoMaterial (id, nombre);
+}
+
 //Esta función devuelve todas las tareas Inventario almacenadas en la base de datos
 export async function buscarTareasInventario(){
     let tareasInventario = null;
@@ -238,8 +279,31 @@ export async function buscarTareasInventarioId(idTarea){
     let tareasInventario = null;
 
     tareasInventario = await getTareasInventarioId(idTarea);
-
+    
     return tareasInventario;
+}
+
+//Esta función devuelve una tarea inventario específica.
+export async function buscarTareaIdTareasInventario(id){
+    let tareasInventario = null;
+
+    tareasInventario = await getTareaIdTareasInventario(id);
+    
+    return tareasInventario;
+}
+
+// Esta función actualiza un lugar
+export async function modificarLugarNoAula(id, nombre, foto){
+    await updateLugaresNoAulas (id, nombre, foto);
+}
+
+//Esta función devuelve los lugares que no son aulas.
+export async function buscarLugaresNoAulas(){
+    let lugares = null;
+
+    lugares = await getLugaresNoAulas();
+
+    return lugares;
 }
 
 export async function anadeVideo (nombreVideo, urlVideo){
@@ -320,3 +384,12 @@ export async function eliminarMenu(nombre){
 
 
 
+export async function getvisualizacion (id){
+    let visu = null;
+    visu = await getAlumnoVisualizacionTarea (id)
+    return visu;
+}
+
+export async function completarTarea(idTarea){
+        await terminarTarea(idTarea);
+}

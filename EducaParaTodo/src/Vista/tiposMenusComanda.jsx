@@ -11,12 +11,14 @@ import {
   Button,
   Image,
   Platform,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMenus, setMenu } from "../Modelo/firebase";
+import { buscarMenus } from "../Controlador/tareas";
 import * as global from "./VarGlobal";
 
 export default function TiposMenusComanda({ navigation }) {
+
   // Variables para tipo de menu
   const [selectedMenuType, setSelectedMenuType] = useState("Ninguno");
   const [menuList, setMenuList] = useState([]);
@@ -24,9 +26,10 @@ export default function TiposMenusComanda({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    // Se carga los menús desde la base de datos y se añade 
     const cargarMenus = async () => {
       try {
-        const datos = await getMenus();
+        const datos = await buscarMenus();
         const menusConNinguno = [...datos.map((item) => item)];
         setMenuTypes(menusConNinguno); // Guardamos los datos en la variable de estado
         setCargando(false);
@@ -36,24 +39,60 @@ export default function TiposMenusComanda({ navigation }) {
       }
     };
     cargarMenus(); // Llamamos a la función al montar el componente
-    setMenuList(global.getSoloMenus);
+    setMenuList(global.getSoloMenus); // Actualiza la lista de menus con la variable global.
   }, []);
 
+  // Se añade un neuvo menu a la lista de menús.
   const addItem = () => {
     if (
       selectedMenuType !== "Ninguno" &&
       !menuList.some((menuItem) => menuItem === selectedMenuType)
     ) {
+      // Se añade solo cuando no esta ya en la lista o este no sea ninguno
       setMenuList([selectedMenuType, ...menuList]);
     }
   };
 
+  // Se elimina un menú de la lista de menús, tiene mensajes de confirmación.
   const deleteItem = (index) => {
-    let arrayCopy = [...menuList];
-    arrayCopy.splice(index, 1);
-    setMenuList(arrayCopy);
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          let arrayCopy = [...menuList];
+          arrayCopy.splice(index, 1);
+          setMenuList(arrayCopy);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              let arrayCopy = [...menuList];
+              arrayCopy.splice(index, 1);
+              setMenuList(arrayCopy);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
+  // Renderiza el contenido de los menús elegidos junto con su botón de eliminar.
   const renderItem = ({ item, index }) => (
     <View style={styles.listItem}>
       <Text style={styles.itemText}>{item}</Text>
@@ -66,12 +105,14 @@ export default function TiposMenusComanda({ navigation }) {
     </View>
   );
 
+  // Se guardar la lista de menús en la variables global. Y pasamos a la pantalla donde se elijen los alimentos.
   const guardarDatos = () => {
     global.setSoloMenus(menuList); // LLevamos la cuenta de los menus para que no se pierden información
     global.setMenusObjetos(menuTypes, menuList); // Llevamos la cuenta de los objetos de los menus elegidos
     navigation.navigate("alimentosMenusComanda");
   };
 
+  // Muestra mensaje de confirmación de guardar la lista de menús.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -102,80 +143,78 @@ export default function TiposMenusComanda({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.separador} />
+        <View style={styles.separador} />
 
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        <Text style={[styles.title]}>Tipos de Menu</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <Text style={styles.text}>Añada tipo de menú: </Text>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <View style={[styles.row]}>
-        {cargando && (
-          <View style={styles.text}>
-            <Text>Cargando...</Text>
-          </View>
-        )}
-        {!cargando && (
-          <Picker
-            selectedValue={selectedMenuType}
-            style={styles.picker}
-            onValueChange={(itemValue) => {
-              setSelectedMenuType(itemValue);
-            }}
-          >
-            <Picker.Item key={"Ninguno"} label={"Ninguno"} value={"Ninguno"} />
-            {menuTypes.map((menuType) => (
-              <Picker.Item
-                key={menuType.id}
-                label={menuType.Nombre}
-                value={menuType.Nombre}
-              />
-            ))}
-          </Picker>
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={() => addItem()}>
-          <Text style={styles.buttonText}>Añadir </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <FlatList
-        data={menuList}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-
-      <View style={styles.separador} />
-      <View style={styles.separador} />
-
-      <View style={[styles.buttonContainer]}>
-        <View style={[styles.button]}>
-          <Button
-            title="Guardar"
-            onPress={() => showAlertStore()}
-            color="#0000FF"
-          />
+        <View style={[styles.row, { justifyContent: "center" }]}>
+          <Text style={[styles.title]}>Tipos de Menu</Text>
         </View>
-      </View>
-    </SafeAreaView>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <Text style={styles.text}>Añada tipo de menú: </Text>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <View style={[styles.row]}>
+          {cargando && (
+            <View style={styles.text}>
+              <Text>Cargando...</Text>
+            </View>
+          )}
+          {!cargando && (
+            <Picker
+              selectedValue={selectedMenuType}
+              style={styles.picker}
+              onValueChange={(itemValue) => {
+                setSelectedMenuType(itemValue);
+              }}
+            >
+              <Picker.Item
+                key={"Ninguno"}
+                label={"Ninguno"}
+                value={"Ninguno"}
+              />
+              {menuTypes.map((menuType) => (
+                <Picker.Item
+                  key={menuType.id}
+                  label={menuType.Nombre}
+                  value={menuType.Nombre}
+                />
+              ))}
+            </Picker>
+          )}
+
+          <TouchableOpacity style={styles.button} onPress={() => addItem()}>
+            <Text style={styles.buttonText}>Añadir </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <FlatList
+          data={menuList}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <View style={[styles.buttonContainer]}>
+          <View style={[styles.button]}>
+            <Button
+              title="Guardar"
+              onPress={() => showAlertStore()}
+              color="#0000FF"
+            />
+          </View>
+        </View>
+      </SafeAreaView>
   );
 }
 

@@ -7,35 +7,75 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
+  Platform,
 } from "react-native";
-import * as global from './VarGlobal';
+import Swal from "sweetalert2";
+import * as global from "./VarGlobal";
 import { useRoute } from "@react-navigation/native";
 
 export default function VerPasosActividad({ navigation }) {
-  // Variables para los alimentos del menu
+
+  // Variables para los pasos de la actividad
   const [data, setData] = useState([]);
 
   const route = useRoute();
 
+  // se realiza solo cuando cambia los parámetros route.
   useEffect(() => {
     if (route.params !== undefined) {
-      // Añades el objeto al array
-      console.log("Estamos actualizando")
+      // Añades el paso nuevo al array y a la variable data
       const { nombre, texto, imagen, pictograma, video, audio } = route.params;
       global.pushPasos(nombre, texto, imagen, pictograma, video, audio);
       setData(global.getPasos);
     }
   }, [route.params]);
 
+  // se realiza cada vez que se renderiza esta pantalla
   useEffect(() => {
     setData(global.getPasos);
-  }, );
+  });
 
+  // Da un aviso para confirmar la eliminación de un pas
   const deleteItem = (id) => {
-    global.filtrarPasos(id);
-    setData(global.getPasos)
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Actualiza la variables global que lleva cuenta de los pasos y la variable data.
+          global.filtrarPasos(id);
+          setData(global.getPasos);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              // Actualiza la variables global que lleva cuenta de los pasos y la variable data.
+              global.filtrarPasos(id);
+              setData(global.getPasos);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
+  // renderiza la lista de pasos creados con su nombre, e items. Además de un botón de eliminar.
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
@@ -46,16 +86,16 @@ export default function VerPasosActividad({ navigation }) {
         <Text style={styles.itemText}>{item.texto}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Pictograma</Text>
-        <Text style={styles.itemText}>{item.pictograma.Titulo}</Text>
+        <Text style={styles.itemText}>{item.pictograma.nombre}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Imagen</Text>
-        <Text style={styles.itemText}>{item.imagen.Titulo}</Text>
+        <Text style={styles.itemText}>{item.imagen.nombre}</Text>
         <View style={styles.separador} />
         <Text style={styles.label}>Video</Text>
-        <Text style={styles.itemText}>{item.video.Titulo}</Text>
+        <Text style={styles.itemText}>{item.video.nombre}</Text>
         <Text style={styles.label}>Audio</Text>
-        <Text style={styles.itemText}>{item.audio.Titulo}</Text>
+        <Text style={styles.itemText}>{item.audio.nombre}</Text>
       </View>
       <TouchableOpacity
         onPress={() => deleteItem(item.id)}

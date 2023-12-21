@@ -17,27 +17,16 @@ import * as global from "./VarGlobal";
 import {buscarAlimentos} from "../Controlador/tareas"
 
 export default function TiposMenusComanda({ navigation }) {
+  
   // Variables para los alimentos del menu
   const [selectedMenu, setSelectedMenu] = useState("");
   const [menus, setMenus] = useState([]);
 
-  // Función para actualizar menus
-  const actualizarMenus = () => {
-    const nuevosMenus = { "Ninguno": [] };
-    global.soloMenus.forEach((menuTitulo) => {
-      nuevosMenus[menuTitulo] = [];
-    });
-    setMenus(nuevosMenus);
-  };
-
   // Guardamos la relación entre menus y alimentos.
   useEffect(() => {
-    if (global.cambiadoSoloMenus === true) {
-      actualizarMenus();
-      global.setChangedSoloMenus(false);
-    } else {
-      setMenus(global.getMenus);
-    }
+        console.log('aqo');
+        global.actualizarListaMenus ();
+        setMenus(global.getMenus);
   }, []);
 
   const [selectedAlimento, setSelectedAlimento] = useState();
@@ -46,6 +35,10 @@ export default function TiposMenusComanda({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    /**
+     * La función cargarAlimentos es una función asíncrona que recupera datos de una fuente, 
+     * los almacena en un arreglo y establece variables de estado con los datos recuperados.
+     */
     const cargarAlimentos = async () => {
       try {
         const datos = await buscarAlimentos();
@@ -62,6 +55,10 @@ export default function TiposMenusComanda({ navigation }) {
     cargarAlimentos(); // Llamamos a la función al montar el componente
   }, []);
 
+/**
+* La función addFood verifica si tanto selectedAlimento como selectedMenu no están vacíos o son "Ninguno"
+* , y si es así, añade selectedAlimento al selectedMenu en el objeto menus.
+ */
   const addFood = () => {
     if (
       selectedAlimento &&
@@ -80,12 +77,47 @@ export default function TiposMenusComanda({ navigation }) {
     }
   };
 
+  // Elimina un alimento de los menus
   const deleteFood = (food) => {
-    const updatedMenu = { ...menus };
-    updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
-      (item) => item !== food
-    );
-    setMenus(updatedMenu);
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const updatedMenu = { ...menus };
+          updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
+            (item) => item !== food
+          );
+          setMenus(updatedMenu);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              const updatedMenu = { ...menus };
+              updatedMenu[selectedMenu] = updatedMenu[selectedMenu].filter(
+                (item) => item !== food
+              );
+              setMenus(updatedMenu);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   // Guardamos los alumentos que se añadieron al menu.
@@ -95,6 +127,7 @@ export default function TiposMenusComanda({ navigation }) {
     navigation.navigate("tareaComanda");
   };
 
+  //Envía una alerta antes de guardar
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -131,12 +164,6 @@ export default function TiposMenusComanda({ navigation }) {
 
       <View style={[styles.row, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Alimentos Menu</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("tareaComanda")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.separador} />

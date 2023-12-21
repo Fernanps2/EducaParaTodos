@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import {
+  Platform,
+  Alert,
+} from "react-native";
+import Swal from "sweetalert2";
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc, orderBy } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
 import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
-import { Platform } from 'react-native';
-import Swal from "sweetalert2";
-import { Alert } from 'react-native';
-
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
 
@@ -31,6 +32,7 @@ export const AppFirebase = initializeApp(firebaseConfig);
 const storage = getStorage(AppFirebase);
 const db = getFirestore(AppFirebase);
 
+
 //valores de las colecciones en la base de datos
 const COL_ALUMNOS = 'alumnos';
 const COL_PROFESORES = 'profesores';
@@ -41,6 +43,8 @@ const COL_ALUMNOS_FOROS = 'alumnosForos';
 const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
+const COL_TAREAS = 'Tarea';
+const COL_LUGAR_NO_AULA='Lugares-No-Aulas';
 
 //valores para las carpetas de archivos
 const IMAGENES = 'Imagenes/';
@@ -52,6 +56,9 @@ const LOGIN = 'ImagenesLogin/';
 const MATERIALES = 'materiales/';
 const MENUS = 'Menus/';
 
+const TIPOS_MATERIAL = 'Tipo_Materiales/';
+const TIPO_TAREAS = 'fotosTipoTareas/';
+const LUGAR_NO_AULAS= 'Lugares_No_Aulas/';
 
 /**********  INICIO FUNCIONES ALUMNO ********/
 
@@ -344,7 +351,7 @@ export async function getProfesores() {
               nombre,
               apellidos,
               foto,
-              aula
+              aula,
             });
         }
     } catch (error) {
@@ -1253,8 +1260,24 @@ export async function deleteAlumnoTarea(id) {
     }
 }
 
+export async function getAlumnoVisualizacionTarea (id){
+    let dato = '';
+    try {
+        const docu = doc(db, COL_TAREAS, id);
+        const docSnapshot = await getDoc(docu);
 
+        if (docSnapshot.exists()) {
+            const {visualizacion} = docSnapshot.data();
+            dato = visualizacion;            
+        } else {
+            console.log("No existe la instancia");
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
+    return dato;
+}
 
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/
 
@@ -1677,7 +1700,7 @@ export async function deleteMensaje(id) {
 
 /**********  FINAL FUNCIONES MENSAJES ********/
 
-/********** INICIO FUNCIONES PARA MULTIMEDIA ********/
+//********** INICIO FUNCIONES PARA MULTIMEDIA ********/
 
 export async function almacenarImagen(imagen, nombreImagen) {
 
@@ -1844,7 +1867,7 @@ export async function almacenarImagenLogin(imagen, nombreImagen) {
 }
 
 export async function almacenarMaterial(imagen, nombreImagen) {
-    
+  
     try {
         if ((await descargarMaterial(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, MATERIALES+nombreImagen)
@@ -1867,9 +1890,9 @@ export async function almacenarMaterial(imagen, nombreImagen) {
     } catch(error) {
         console.log(error);
     }
-}
+  }
 
-export async function descargarImagen(nombreImagen) {
+  export async function descargarImagen(nombreImagen) {
     let imagenUri = {
         uri: null,
         nombre: null
@@ -1943,7 +1966,6 @@ export async function descargarPictograma(nombreImagen) {
 
     return imagenUri;
 }
-
 export async function descargarPictogramas() {
     let entidad = [];
     let resultado;
@@ -2081,6 +2103,7 @@ export async function descargarEmoticonos() {
     return entidad;
 }
 
+
 export async function descargarFotoPersona(nombreFoto) {
     console.log()
     let imagenUri = {
@@ -2089,30 +2112,6 @@ export async function descargarFotoPersona(nombreFoto) {
     };
 
     const refImagen = ref(storage, PERSONAS + nombreFoto);
-
-    await getDownloadURL(refImagen)
-        .then((url) => {
-            imagenUri = {
-                uri: url,
-                nombre: refImagen.name
-            };
-        })
-        .catch((error) => {
-            console.log("No se ha podido descargar la foto");
-        });
-
-    return imagenUri;
-}
-
-export async function descargarFotoMenu(nombreFoto) {
-    console.log("descargando foto del menu");
-    console.log()
-    let imagenUri = {
-        uri: null,
-        nombre: null
-    };
-
-    const refImagen = ref(storage, MENUS + nombreFoto);
 
     await getDownloadURL(refImagen)
         .then((url) => {
@@ -2181,6 +2180,7 @@ export async function descargarImagenLogin(nombreImagen) {
 
     return imagenUri;
 }
+
 
 export async function descargarImagenesLogin() {
     let entidad = [];
@@ -2266,7 +2266,155 @@ export async function descargarMateriales() {
     return entidad;
 }
 
-export async function eliminarImagen(nombreArchivo) {
+export async function descargarTipoMaterial(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+  
+    const refImagen = ref(storage, TIPOS_MATERIAL+nombreImagen);
+  
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el tipo de material");
+        });
+  
+    return imagenUri;
+  }
+
+
+  export async function descargarTipoMateriales() {
+
+    let entidad = [];
+  
+    try {
+      const listRef = ref(storage, TIPOS_MATERIAL);
+      const resultado = await listAll(listRef);
+  
+      for (const item of resultado.items) {
+        try {
+          const url = await getDownloadURL(item);
+          entidad.push({
+            uri: url,
+            nombre: item.name
+          });
+        } catch (error) {
+          console.error("Error al descargar la URL del material: ", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error al listar los materiales en Firebase Storage: ", error);
+    }
+  
+    return entidad;
+  }
+
+  
+
+export async function descargarTipoTarea(nombreFoto) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+  
+    const refImagen = ref(storage, TIPO_TAREAS+nombreFoto);
+  
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+  
+    return imagenUri;
+  }
+  
+  export async function descargarTipoTareas() {
+  
+    let entidad = [];
+  
+    try {
+      const listRef = ref(storage, TIPO_TAREAS);
+      const resultado = await listAll(listRef);
+  
+      for (const item of resultado.items) {
+        try {
+          const url = await getDownloadURL(item);
+          entidad.push({
+            uri: url,
+            nombre: item.name
+          });
+        } catch (error) {
+          console.error("Error al descargar la URL del material: ", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error al listar los materiales en Firebase Storage: ", error);
+    }
+  
+    return entidad;
+  }
+
+  
+export async function descargarLugarNoAula(nombreFoto) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+  
+    const refImagen = ref(storage, LUGAR_NO_AULAS+nombreFoto);
+  
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto");
+        });
+  
+    return imagenUri;
+  }
+  
+  export async function descargarLugaresNoAulas() {
+  
+    let entidad = [];
+  
+    try {
+      const listRef = ref(storage, LUGAR_NO_AULAS);
+      const resultado = await listAll(listRef);
+  
+      for (const item of resultado.items) {
+        try {
+          const url = await getDownloadURL(item);
+          entidad.push({
+            uri: url,
+            nombre: item.name
+          });
+        } catch (error) {
+          console.error("Error al descargar la URL del material: ", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error al listar los materiales en Firebase Storage: ", error);
+    }
+  
+    return entidad;
+  }
+
+  export async function eliminarImagen(nombreArchivo) {
     const refArchivo = ref(storage, IMAGENES+nombreArchivo);
 
     await deleteObject(refArchivo).then(() => {
@@ -2278,23 +2426,129 @@ export async function eliminarImagen(nombreArchivo) {
 
 export async function eliminarPictograma(nombreArchivo) {
     const refArchivo = ref(storage, PICTOGRAMAS+nombreArchivo);
-
+  
     await deleteObject(refArchivo).then(() => {
         console.log("Se ha borrado el archivo correctamente")
     }).catch((error) => {
         console.log(error);
     });
+  }
+  /********** FINAL FUNCIONES PARA MULTIMEDIA ********/
+
+
+
+export async function descargarFotoMenu(nombreFoto) {
+    console.log("descargando foto del menu");
+    console.log()
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, MENUS + nombreFoto);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar la foto: ", error);
+        });
+
+    return imagenUri;
 }
 
-export async function eliminarVideo(nombreArchivo) {
-    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
 
-    await deleteObject(refArchivo).then(() => {
-        console.log("Se ha borrado el archivo correctamente")
-    }).catch((error) => {
+
+export async function almacenarTipoMaterial(imagen, nombreImagen) {
+  
+    try {
+        if (descargarTipoMaterial(nombreImagen) != null) {
+          const refImagenes = ref(storage, TIPOS_MATERIAL+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+              getDownloadURL(snapshot.ref).then((downloadURL) => {
+                console.log('URL de descarga disponible en', downloadURL);
+                // Aquí puedes usar downloadURL para mostrar la vista previa
+            });
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
         console.log(error);
-    });
-}
+    }
+  }
+  
+  export async function almacenarTipoTarea(imagen, nombreImagen) {
+    
+    try {
+        if (descargarTipoTarea(nombreImagen) != null) {
+          const refImagenes = ref(storage, TIPO_TAREAS+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+              getDownloadURL(snapshot.ref).then((downloadURL) => {
+                console.log('URL de descarga disponible en', downloadURL);
+                // Aquí puedes usar downloadURL para mostrar la vista previa
+            });
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+  }
+  
+  export async function almacenarFotoLugar(imagen, nombreImagen) {
+    
+    try {
+        if (descargarTipoTarea(nombreImagen) != null) {
+          const refImagenes = ref(storage, LUGAR_NO_AULAS+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+              getDownloadURL(snapshot.ref).then((downloadURL) => {
+                console.log('URL de descarga disponible en', downloadURL);
+                // Aquí puedes usar downloadURL para mostrar la vista previa
+            });
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+  }
 
 export async function eliminarFotoPersona(nombreArchivo) {
     const refArchivo = ref(storage, PERSONAS+nombreArchivo);
@@ -2325,6 +2579,47 @@ export async function eliminarMaterial(nombreArchivo) {
         console.log(error);
     });
 }
+
+export async function eliminarTipoMaterial(nombreArchivo) {
+    const refArchivo = ref(storage, TIPOS_MATERIAL+nombreArchivo);
+  
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+  }
+
+  
+export async function eliminarTipoTarea(nombreArchivo) {
+    const refArchivo = ref(storage, TIPO_TAREAS+nombreArchivo);
+  
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+  }
+  
+  export async function eliminarFotoLugar(nombreArchivo) {
+    const refArchivo = ref(storage, LUGAR_NO_AULAS+nombreArchivo);
+  
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+  }
+
+  export async function eliminarVideo(nombreArchivo) {
+    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
+  
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+  }
 
 /******** FINAL FUNCIONES PARA MULTIMEDIA ********/
 
@@ -2372,10 +2667,11 @@ export const almacenarAlumno = async (nombre, apellidos, visualizacionPreferente
 // }
 
 
+
 // Funcion para añadir una tarea a la base de datos. PROBADA FUNCIONA CORRECTAMENTE
-export const setTarea = async (titulo, fechaInicio, fechaFin, tipo, periocidad) => {
+export const setTarea = async (titulo, fechaInicio, fechaFin, tipo, periocidad, foto) => {
     try {
-        if (titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == '') {
+        if (titulo === '' || fechaInicio === '' || fechaFin === '' || tipo === '' || periocidad == '' || foto == '') {
             if (Platform.OS === "web") {
                 Swal.fire({
                     title: "Mensaje Importante",
@@ -2397,7 +2693,8 @@ export const setTarea = async (titulo, fechaInicio, fechaFin, tipo, periocidad) 
                 fechaInicio,
                 idAlumno,
                 tipo,
-                periocidad
+                periocidad,
+                fotoURL: foto,
             }
 
             // Hacemos que nos devuelva el id de la tarea para luego referenciarlo con el tipo de tarea que hemos creado.
@@ -2488,14 +2785,27 @@ export const getTareaIdCompletada = async (idAlumno) => {
     console.log(idAlumno);
     
     try {
-      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno),where("completado", "==", "true"));
-      const querySnapshot = await getDocs(q);
+      if(idAlumno === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }else
+      {
+        const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where('completado','==','true'));
+        const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     
       const docs = [];
     
       for (const tareaDoc of querySnapshot.docs) {
-        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, fotoURL } = tareaDoc.data();
     
         docs.push({
           id: tareaDoc.id,
@@ -2505,11 +2815,13 @@ export const getTareaIdCompletada = async (idAlumno) => {
           fechaFin,
           tipo,
           idAlumno,
+          fotoURL
         });
       }
     
       return docs;
-    } catch (error) {
+    }
+ }catch (error) {
       console.log(error);
       Alert.alert(error);
     }
@@ -2517,17 +2829,34 @@ export const getTareaIdCompletada = async (idAlumno) => {
 
 export const getTarea = async (idTarea) => {
 
-    try {
-        const docRef = doc(collection(db,'Tarea'),idTarea);
-        const docSnap = await getDoc(docRef);
-
-        if(docSnap.exists()){
-            const datos = docSnap.data();
-            return datos;
-            }
-        } catch (error) {
-        console.log(error);
+  console.log(idAlumno);
+  
+  try {
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
+    const querySnapshot = await getDocs(q);
+    // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+  
+    const docs = [];
+  
+    for (const tareaDoc of querySnapshot.docs) {
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
+      docs.push({
+        id: tareaDoc.id,
+        titulo,
+        completado,
+        fechaInicio,
+        fechaFin,
+        tipo,
+        idAlumno,
+        fotoURL,
+      });
     }
+} catch (error) {
+    console.error(error);
+    // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
+    throw error;
+  }
 };
 
 
@@ -2575,16 +2904,17 @@ export const getTareas = async () => {
         for (const tareaDoc of querySnapshot.docs) {
             const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
 
-            docs.push({
-                id: tareaDoc.id,
-                titulo,
-                completado,
-                fechaInicio,
-                fechaFin,
-                tipo,
-                idAlumno,
-            });
-        }
+    docs.push({
+      id: tareaDoc.id,
+      titulo,
+      completado,
+      fechaInicio,
+      fechaFin,
+      tipo,
+      idAlumno,
+      fotoURL,
+    });
+  }
 
         return docs;
     } catch (error) {
@@ -2800,18 +3130,18 @@ export const setPasoActividad = async (audio, imagen, pictograma, video, texto, 
             } else {
                 Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
             }
-        }
-        else {
+        
+        }else {
 
             const objeto = {
-                idAudio,
-                idImagen,
-                idPictograma,
-                idVideo,
+                audio,
+                imagen,
+                pictograma,
+                video,
                 texto,
                 nombre,
                 idTarea
-            }
+              }
 
             const idPaso = await addDoc(collection(db, 'PasosActividad'), {
                 ...objeto
@@ -3140,100 +3470,101 @@ export const getAlimento = async (nombre) => {
     }
 };
 
-// Esta función devuelve todos los alimentos que tengamos
-export const getAlimentos = async () => {
-    try {
-        const alimentosQuery = query(collection(db, 'Alimentos'));
-        const querySnapshot = await getDocs(alimentosQuery);
+// FUNCION QUE DEVUELVE TODOS LOS MATERIALES QUE TENEMOS EN LA BASE DE DATOS
+// PRUEBA REALIZADA. FUNCIONA
+export const getAlimentos = async() => {
+  try {
+    const materialQuery = query(collection(db, 'Alimentos'));
+    const querySnapshot = await getDocs(materialQuery);
+  
+    const docs = [];
+  
+    querySnapshot.forEach((docu) => {
+      const alimentosDatos = docu.data();  
+      const id = docu.id;
+      docs.push({id, ...alimentosDatos});
+    });
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+  }
 
-        const docs = [];
-
-        querySnapshot.forEach((docu) => {
-            const alimentoDatos = docu.data();
-
-            docs.push(alimentoDatos);
-        });
-
-        return docs;
-    } catch (error) {
-        console.log(error);
-        throw error; // Lanza el error para que pueda ser manejado por el llamador
-    }
-};
-
-
-
-
-
-export const setTareaInventario = async (idMaterial, cantidad, lugarOrigen, lugarDestino, idTarea) => {
-    try {
-
-        if (idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === '') {
-            if (Platform.OS === "web") {
-                Swal.fire({
-                    title: "Mensaje Importante",
-                    text: "Debes rellenar los campos requeridos",
-                    icon: "warning",
-                    confirmButtonText: "De acuerdo",
-                })
-            } else {
-                Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-            }
+export const setTareaInventario = async(idMaterial,caracteristica,cantidad,lugarOrigen,lugarDestino,idTarea) => {
+    try{
+  
+      if(idMaterial === '' || lugarOrigen === '' || lugarDestino === null || idTarea === '' || cantidad === '' || caracteristica === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
         }
-        else {
-
-
-            const objeto = {
-                idMaterial,
-                cantidad,
-                lugarOrigen,
-                lugarDestino,
-                idTarea
-            }
-
-            await addDoc(collection(db, 'Tarea-Inventario'), {
-                ...objeto
-            })
+      }
+      else{
+  
+  
+        const objeto = {
+          idMaterial,
+          caracteristica,
+          cantidad,
+          lugarOrigen,
+          lugarDestino,
+          idTarea
         }
-    } catch (error) {
-        console.log(error);
-    }
-}
+
+        console.log(objeto);
+        
+        await addDoc(collection(db,'Tarea-Inventario'),{
+          ...objeto
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }  
+  }
 
 
 // PRUEBA REALIZADA. FUNCIONA
-export const setMaterial = async (foto, nombre, stock) => {
-    try {
-
-        if (nombre === '' || foto === '' || stock === '') {
-            if (Platform.OS === "web") {
-                Swal.fire({
-                    title: "Mensaje Importante",
-                    text: "Debes rellenar los campos requeridos",
-                    icon: "warning",
-                    confirmButtonText: "De acuerdo",
-                })
-            } else {
-                Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
-            }
+export const setMaterial = async (nombreMaterial, fotoMaterial, stockMaterial, caracteristicasMaterial)=> {
+    try{
+  
+      if(nombreMaterial === '' || fotoMaterial === '' || stockMaterial === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
         }
-        else {
-
-            const objeto = {
-                nombre,
-                foto,
-                stock
-            }
-
-            // Necesitamos poner setDoc para especificar el ID del documento
-            await addDoc(collection(db, 'Material'), {
-                ...objeto
-            });
+      }
+      else{
+  
+        const objeto = {
+          nombre: nombreMaterial,
+          foto: fotoMaterial,
+          stock: stockMaterial,
+          caracteristicas: caracteristicasMaterial,
         }
-    } catch (error) {
+        
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await addDoc(collection(db,'Material'),{
+          ...objeto
+        }); 
+      }       
+    }catch(error){
         console.log(error);
-    }
-}
+      } 
+};
 
 
 // FUNCION QUE DEVUELVE EL MATERIAL QUE COINCIDE CON EL NOMBRE DADO
@@ -3260,25 +3591,38 @@ export const getMaterial = async (nombre) => {
 
 // FUNCION QUE DEVUELVE LOS DATOS DE UN MATERIAL CORRESPONDIENTE A UN ID
 // PRUEBA REALIZADA. FUNCIONA
-export const getMaterialId = async (id) => {
-    try {
-        const materialQuery = query(collection(db, 'Material'), where('id', '==', id));
-        const querySnapshot = await getDocs(materialQuery);
+export const getMaterialId = async(id) => {
+  try {
+    if(id == ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }else{
+      const docRef = doc(db, 'Material', id);
+      const docSnapshot = await getDoc(docRef);
+      
+      if (docSnapshot.exists()) {
+        const materialDatos = docSnapshot.data();
 
-        const docs = [];
-
-        querySnapshot.forEach((docu) => {
-            const materialDatos = docu.data();
-            console.log(materialDatos);
-
-            docs.push(materialDatos);
-        });
-
-        return docs;
-    } catch (error) {
-        console.log(error);
-        throw error; // Lanza el error para que pueda ser manejado por el llamador
-    }
+        // Agrega el ID del documento al objeto
+        return [{id:docSnapshot.id, ...materialDatos}];
+      } else {
+        // Manejar el caso en que el documento no existe
+        console.log("No se encontró ningún documento con ese ID");
+        return []; // Retorna un array vacío o lo que consideres apropiado
+      }
+  }
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
 }
 
 
@@ -3292,12 +3636,11 @@ export const getMateriales = async () => {
 
         const docs = [];
 
-        querySnapshot.forEach((docu) => {
-            const materialDatos = docu.data();
-            console.log(materialDatos);
-
-            docs.push(materialDatos);
-        });
+  querySnapshot.forEach((docu) => {
+    const materialDatos = docu.data();
+    const id = docu.id;
+    docs.push({id, ...materialDatos});
+  });
 
         return docs;
     } catch (error) {
@@ -3306,6 +3649,135 @@ export const getMateriales = async () => {
     }
 }
 
+export async function deleteMaterial(id) {
+  try {
+      const docu = doc(db, "Material", id);
+      const docSnapshot = await getDoc(docu);
+
+      if (docSnapshot.exists()) {
+          await deleteDoc(docSnapshot.ref);
+          console.log("Se ha borrado el material correctamente");
+      }
+      else {
+          console.log("No existe el material");
+      }
+  } catch(error) {
+      console.log("Error al borrar material", error);
+  }
+}
+
+export async function updateMaterial(id, nombreMaterial, fotoMaterial, stockMaterial, caracteristicasMaterial) {
+  
+  let editaMaterial = {
+      caracteristicas:  caracteristicasMaterial,
+      foto: fotoMaterial,
+      nombre: nombreMaterial, 
+      stock: stockMaterial, 
+  };
+
+  try {
+      let docMaterial = doc(db, "Material", id);
+      const docSnapshot = await getDoc(docMaterial);
+      
+      if (docSnapshot.exists()) {
+          await updateDoc(docMaterial, {
+              ...editaMaterial
+          })
+      }
+  } catch (error) {
+      console.log("Hubo un error al actualizar datos del material ", error);
+  }
+}
+
+export const setTipoMaterial = async (nombreTipoMaterial)=> {
+  try{
+
+    if(nombreTipoMaterial === ''){
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Mensaje Importante",
+          text: "Debes rellenar los campos requeridos",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+      }
+    }
+    else{
+
+      const objeto = {
+        nombre: nombreTipoMaterial,
+      }
+      
+      // Necesitamos poner setDoc para especificar el ID del documento
+      await addDoc(collection(db,'Tipo_Material'),{
+        ...objeto
+      });
+    }
+  }catch(error){
+    console.log(error);
+  }  
+}
+
+// FUNCION QUE DEVUELVE TODOS LOS TIPOS DE MATERIALES QUE TENEMOS EN LA BASE DE DATOS
+// PRUEBA REALIZADA. FUNCIONA
+export const getTipoMateriales = async() => {
+  try {
+    const materialQuery = query(collection(db, 'Tipo_Material'));
+    const querySnapshot = await getDocs(materialQuery);
+  
+    const docs = [];
+  
+    querySnapshot.forEach((docu) => {
+      const materialDatos = docu.data();
+      const id = docu.id;
+      docs.push({id, ...materialDatos});
+    });
+  
+    return docs;
+  } catch (error) {
+    console.log(error);
+    throw error; // Lanza el error para que pueda ser manejado por el llamador
+  }
+  }
+  
+  export async function deleteTipoMaterial(id) {
+    try {
+        const docu = doc(db, "Tipo_Material", id);
+        const docSnapshot = await getDoc(docu);
+  
+        if (docSnapshot.exists()) {
+            await deleteDoc(docSnapshot.ref);
+            console.log("Se ha borrado el material correctamente");
+        }
+        else {
+            console.log("No existe el material");
+        }
+    } catch(error) {
+        console.log("Error al borrar material", error);
+    }
+  }
+  
+  export async function updateTipoMaterial(id, nombreTipo) {
+    
+    let editaMaterial = {
+        nombre:  nombreTipo, 
+    };
+  
+    try {
+        let docMaterial = doc(db, "Tipo_Material", id);
+        const docSnapshot = await getDoc(docMaterial);
+        
+        if (docSnapshot.exists()) {
+            await updateDoc(docMaterial, {
+                ...editaMaterial
+            })
+        }
+    } catch (error) {
+        console.log("Hubo un error al actualizar datos del material ", error);
+    }
+  }
 
 // FUNCION QUE DEVULEVE TODAS LAS TAREAS DEL INVENTARIO
 // PRUEBA REALIZADA. FUNCIONA
@@ -3345,6 +3817,101 @@ export const getPictogramasNumero = async () => {
         console.log(error);
     }
 }
+
+// PRUEBA REALIZADA. FUNCIONA
+export const setVideo = async (nombreVideo, urlVideo)=> {
+    try{
+  
+      if(nombreVideo === '' || urlVideo === ''){
+        if (Platform.OS === "web"){
+          Swal.fire({
+            title: "Mensaje Importante",
+            text: "Debes rellenar los campos requeridos",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+          })
+        }else{
+          Alert.alert('Mensaje importante,', 'Debes rellenar los campos requeridos');
+        }
+      }
+      else{
+  
+        const objeto = {
+          nombreVideo,
+          urlVideo,
+        }
+        
+        // Necesitamos poner setDoc para especificar el ID del documento
+        await addDoc(collection(db,'Videos'),{
+          ...objeto
+        });
+      }
+    }catch(error){
+      console.log(error);
+    }  
+  }
+
+// FUNCION QUE DEVULEVE LAS TAREAS DEL INVENTARIO CON UN ID DE TAREA ESPECIFICO
+// PRUEBA REALIZADA. FUNCIONA
+export const getTareaIdTareasInventario = async(id) => {
+    try {
+      
+      const InventarioQuery = query(collection(db, 'Tarea-Inventario'), where('idTarea', '==', id));
+      const querySnapshot = await getDocs(InventarioQuery);
+  
+      const docs=[];
+    
+      for (const docu of querySnapshot.docs) {
+        const tareaActividadDatos = docu.data();
+        const id = docu.id;
+        docs.push({id, ...tareaActividadDatos});
+        }
+    
+        return docs;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  
+    export async function updateLugaresNoAulas(id, nombre, foto) {
+    
+      let editaLugar = {
+          foto:  foto,
+          nombre: nombre,
+      };
+    
+      try {
+          let docLugar = doc(db, COL_LUGAR_NO_AULA, id);
+          const docSnapshot = await getDoc(docLugar);
+          
+          if (docSnapshot.exists()) {
+              await updateDoc(docLugar, {
+                  ...editaLugar
+              })
+          }
+      } catch (error) {
+          console.log("Hubo un error al actualizar datos del material ", error);
+      }
+    }
+  
+    export const getLugaresNoAulas = async() => {
+      try {
+        
+        const InventarioQuery = query(collection(db, COL_LUGAR_NO_AULA));
+        const querySnapshot = await getDocs(InventarioQuery);
+    
+        const docs=[];
+      
+        for (const docu of querySnapshot.docs) {
+          const datosLugares = docu.data();
+          const id = docu.id;
+          docs.push({id, ...datosLugares});
+          }
+          return docs;
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
 export const setPedido = async (idTarea, idMenu, idProf, aula, nPedidos) => {
     console.log("idTarea: " + idTarea);
@@ -3475,26 +4042,6 @@ export async function getPedidosTarea(idTarea) {
     }
 }
 
-export async function terminarTarea(idTarea){
-
-    try {
-        const docRef = doc(collection(db,'Tarea'),idTarea);
-        const docSnapshot = await getDoc(docRef);
-        
-        if(docSnapshot.exists()){
-            console.log("docSnapShot existe");
-            // Actualizar el documento existente
-            await updateDoc(docRef, {
-            completado: "true",
-            // Otros campos que deseas actualizar
-            });
-        }
-    
-    } catch (error) {
-        console.log("Problema al actualizar datos de mensaje " + error);
-    }
-}
-
 export const getTareasInventarioId = async (idTarea) => {
     try {
       const q = query(collection(db, 'Tarea-Inventario'), where('idTarea', '==', idTarea));
@@ -3608,3 +4155,26 @@ export const getVideoId = async (idVideo) => {
         console.log(error);
     }
 };
+
+  
+export async function terminarTarea(idTarea){
+
+    try {
+        const docRef = doc(collection(db,'Tarea'),idTarea);
+        const docSnapshot = await getDoc(docRef);
+        
+        if(docSnapshot.exists()){
+            console.log("docSnapShot existe");
+            // Actualizar el documento existente
+            await updateDoc(docRef, {
+            completado: "true",
+            // Otros campos que deseas actualizar
+            });
+        }
+    
+    }catch (error) {
+        console.log("Problema al actualizar datos de mensaje " + error);
+    }
+  };
+
+

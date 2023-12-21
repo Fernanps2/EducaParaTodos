@@ -15,6 +15,8 @@ import { setVideo } from "../Modelo/firebase";
 import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { anadeVideo } from "../Controlador/tareas";
+import { almacenaVideo, openGallery } from "../Controlador/multimedia";
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
@@ -148,20 +150,37 @@ export default function GestionItemActividad() {
     //setPictogramas(await descargaPictogramas());
   }
 
-  const handleAñadir = () => {
+  // Función para añadie video a la base de datos.
+  const handleAñadirVideo = async () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {
-        almacenaVideo(urlVideo, nombreVideo);
+        await almacenaVideo(urlVideo, nombreVideo + ".mp4");
+        if (Platform.OS === "web") {
+          Swal.fire({
+            title: "Subida completada",
+            text: "El video se ha añadido con éxito",
+            icon: "success",
+            confirmButtonText: "De acuerdo",
+          });
+        } else {
+          Alert.alert("Subida completada", "El video se ha añadido con éxito");
+        }
+        setViewVideo(false);
+        setnombreVideo("");
+        setUrlVideo("");
       } else {
-        if (Platform.OS === "web"){
+        if (Platform.OS === "web") {
           Swal.fire({
             title: "Campos Incompletos",
             text: "Debes rellenar los campos requeridos",
             icon: "warning",
             confirmButtonText: "De acuerdo",
-          })
-        }else{
-          Alert.alert('Campos Incompletos,', 'Debes rellenar los campos requeridos');
+          });
+        } else {
+          Alert.alert(
+            "Campos Incompletos,",
+            "Debes rellenar los campos requeridos"
+          );
         }
       }
     }
@@ -186,9 +205,6 @@ export default function GestionItemActividad() {
       }
     }
   };
-
-
-
 
   const handleAñadirImagen = async () => {
     if (viewImagen) {
@@ -475,17 +491,23 @@ export default function GestionItemActividad() {
         )}
       </View>
       {viewVideo && (
-        <View>
-          <Text style={[styles.text]}>Introduzca URL:</Text>
-
+        <View style={styles.container}>
           <View style={styles.separador} />
 
-          <TextInput
-            style={[styles.input]}
-            placeholder="URL"
-            value={urlVideo}
-            onChangeText={setUrlVideo}
-          />
+          <TouchableOpacity
+            style={styles.buttonAñadir}
+            onPress={async () => {
+              setUrlVideo(await openGallery());
+            }}
+          >
+            {urlVideo == "" ? (
+              <Text style={styles.textoNoSeleccionado}>
+                Pulsa el botón para elegir Video
+              </Text>
+            ) : (
+              <Text style={styles.textoSeleccionado}>Video Seleccionado </Text>
+            )}
+          </TouchableOpacity>
 
           <View style={styles.separador} />
           <View style={styles.separador} />
@@ -496,7 +518,7 @@ export default function GestionItemActividad() {
 
           <TextInput
             style={[styles.input]}
-            placeholder="Elija Nombre"
+            placeholder="Elija nombre para el video"
             value={nombreVideo}
             onChangeText={setnombreVideo}
           />
@@ -504,7 +526,7 @@ export default function GestionItemActividad() {
           <View style={styles.separador5} />
           <View style={styles.separador5} />
 
-          <TouchableOpacity style={styles.addButton} onPress={handleAñadir}>
+          <TouchableOpacity style={styles.addButton} onPress={handleAñadirVideo}>
             <Text style={styles.addButtonText}>Añadir</Text>
           </TouchableOpacity>
         </View>
@@ -580,37 +602,37 @@ export default function GestionItemActividad() {
       </ScrollView>
       )}
       {viewImagen && (
-        <ScrollView>
+        <View>
+
         <View style={styles.separador} />
 
-        <Text style={styles.text}>Selecciona las imágenes a eliminar:</Text>
-
-        <View style={styles.separador}/>
-        <View style={styles.separador}/>
-
-        <View style={styles.container}>
-        
-          <FlatList
-            data={imagenes}
-            renderItem={renderImage}
-            keyExtractor={(item) => item.name}
-            numColumns={3}
-            contentContainerStyle={styles.imageGrid}
-          />
-          <View style={styles.selectedImagesContainer}>
-            <Text>Imágenes seleccionadas:</Text>
-            {imagenesSeleccionadas.map((selectedId) => (
-              <Text key={selectedId}>{imagenes.find(item => item.nombre == selectedId).nombre}</Text>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.separador}/>
-
-        <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
-          <Text style={styles.buttonText}>Eliminar</Text>
+        <TouchableOpacity style={styles.buttonAñadir} onPress={()  => abrirGaleria()}>
+          <Text>Pulsa el botón para elegir Imagen</Text>
         </TouchableOpacity>
-      </ScrollView>
+
+
+
+        <View style={styles.separador} />
+        <View style={styles.separador} />
+
+        <Text style={[styles.text]}>Introduzca Nombre:</Text>
+
+        <View style={styles.separador} />
+
+        <TextInput
+          style={[styles.input]}
+          placeholder="Elija Nombre"
+          value={nombreImagen}
+          onChangeText={setNombreImagen}
+        />
+        
+        <View style={styles.separador5} />
+        <View style={styles.separador5} />
+
+        <TouchableOpacity style={styles.addButton} onPress={handleAñadirImagen}>
+          <Text style={styles.addButtonText}>Añadir</Text>
+        </TouchableOpacity>
+      </View>
       )}
       {viewEliminarImagen && (
         <ScrollView>
@@ -748,6 +770,24 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  buttonAñadir: {
+    backgroundColor: "#e0e0e0", // Un color gris claro para los botones
+    padding: 5,
+    marginVertical: 1,
+    width: 250,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#d0d0d0", // Un borde ligeramente más oscuro que el fondo del botón
+    marginHorizontal: Platform.OS === "web" ? 10 : 3,
+  },
+  textoSeleccionado: {
+    color: "green",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  textoNoSeleccionado: {
+    textAlign: "center",
   },
   row: {
     flexDirection: "row",

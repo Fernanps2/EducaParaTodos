@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,15 +7,21 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
+  Platform,
 } from "react-native";
+import Swal from "sweetalert2";
 import { useRoute } from "@react-navigation/native";
 import * as lista from "./VarGlobal";
-
+import {modificarReduciendoStock_materialesBD} from "./VarGlobal";
 
 export default function VerTodosMateriales({ navigation }) {
+
   const route = useRoute();
+  // Se guarda los materiales seleccionados
   const [materialesTarea, setMaterialesTarea] = useState([]);
 
+  // Se añade el nuevo material.
   useEffect(() => {
     if (route.params !== undefined) {
       // Añades el objeto al array
@@ -24,15 +30,55 @@ export default function VerTodosMateriales({ navigation }) {
     }
   }, [route.params]);
 
+  // Actualiza los materiales cada vez que se renderiza la pantalla
   useEffect(() => {
     setMaterialesTarea(lista.get);
-  }, );
+  });
 
-  const deleteItem = (id) => {
-    lista.filtrar(id);
-    setMaterialesTarea(lista.get)
+  // Muestra un mensaje de confirmación para eliminar un material de la lista
+  const deleteItem = (item) => {
+    if (Platform.OS === "web") {
+      Swal.fire({
+        title: "¿Estás seguro que quieres eliminarlo?",
+        text: "¡No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Borrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          lista.filtrar(item.id);
+          setMaterialesTarea(lista.get);
+          // Se modifica el stock en la lista de materiales total
+          modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
+        }
+      });
+    } else {
+      Alert.alert(
+        "¿Quiere borrar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar" },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              lista.filtrar(item.id);
+              setMaterialesTarea(lista.get);
+              // Se modifica el stock en la lista de materiales total
+              modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
+            },
+          },
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
+  /* El renderizado de la lista de materiales junto con el nombre, cantidad, caracteristicas, 
+  * lugar destino y origen e imagen de eliminar
+  */
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
@@ -41,6 +87,9 @@ export default function VerTodosMateriales({ navigation }) {
         <View style={styles.separador} />
         <Text style={styles.label}>Cantidad</Text>
         <Text style={styles.itemText}>{item.cantidad}</Text>
+        <View style={styles.separador} />
+        <Text style={styles.label}>Característica</Text>
+        <Text style={styles.itemText}>{item.caracteristica}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.label}>Lugar destino</Text>
@@ -50,7 +99,7 @@ export default function VerTodosMateriales({ navigation }) {
         <Text style={styles.itemText}>{item.origen}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => deleteItem(item.id)}
+        onPress={() => deleteItem(item)}
         style={styles.deleteButton}
       >
         <Image
@@ -68,14 +117,6 @@ export default function VerTodosMateriales({ navigation }) {
 
       <View style={[{ flexDirection: "row" }, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Materiales en Tarea</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("tareaMateriales")}
-        >
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.separador} />
@@ -83,7 +124,7 @@ export default function VerTodosMateriales({ navigation }) {
 
       <FlatList
         data={materialesTarea}
-        keyExtractor={(item, index) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
       />
     </SafeAreaView>
@@ -130,7 +171,6 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 16, // Tamaño de fuente mediano para buena legibilidad
     color: "#333", // Color oscuro para el texto para alto contraste
-    fontWeight: "bold", // Peso de la fuente normal; puede ser 'bold' si es necesario
     marginVertical: 8,
   },
   deleteButton: {

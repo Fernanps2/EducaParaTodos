@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
@@ -10,27 +10,71 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
 import {
-  setTarea,
-  setTareaActividad,
-  setPasoActividad,
-} from "../Modelo/firebase";
+  aniadeTarea,
+  aniadeTareaActividad,
+  aniadePasoActividad,
+  obtenerProfesores,
+} from "../Controlador/tareas";
 import { getPasos, inicializarPasos, isVaciaPasos } from "./VarGlobal";
+import { descargaTipoTareas } from "../Controlador/multimedia";
 
 export default function TareaActividad({ navigation }) {
   // Variables para guardar nombre de la actividad
   const [nombreTarea, setNombreTarea] = useState("");
+
   // Variables para guardar fecha y hora
   const [inicioFecha, setInicioFecha] = useState("");
   const [inicioHora, setInicioHora] = useState("");
   const [finFecha, setFinFecha] = useState("");
   const [finHora, setFinHora] = useState("");
+
   // Variable para guardar el lugar
   const [lugar, setLugar] = useState("");
+  const [lugares, setLugares] = useState([]);
+
   //Variable para periocidad
   const [periocidad, setPeriocidad] = useState("Diario");
+
+  // Variable para la foto
+  const [fotostipo, setFotosTipo] = useState([]);
+  const [foto, setFoto] = useState("");
+
+  // Variable para carga
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+
+    // Obtiene las aulas de los profesores y fotos que serán asginadas a la tarea.
+    async function descargarDatos() {
+      const datos = await obtenerProfesores();
+
+      let aulas = await Promise.all(
+        datos.map(async ({ aula }) => {
+          return aula;
+        })
+      );
+
+      // Ordenamos las aulas
+      aulas = aulas.filter((aula) => aula !== null).sort();
+
+      // Agregar "Ninguno" al principio del array
+      aulas.unshift("Ninguno");
+
+      setLugares(aulas);
+
+      const data = await descargaTipoTareas();
+      data.unshift("Ninguno");
+      setFotosTipo(data);
+
+      setCargando(false);
+    }
+
+    descargarDatos();
+  }, []);
 
   // Borramos toda la información cuando pulsamos borrar
   const handleDeleteInformation = () => {
@@ -44,11 +88,13 @@ export default function TareaActividad({ navigation }) {
     inicializarPasos();
   };
 
-  //Validamos las horas
+  //Expresión regular de la hora
   const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/;
 
+  // Valida la hora
   const validateTime = (time) => timeRegex.test(time);
 
+  // Confirma si la hora está con el corecto formato y que haya coherencia entre ellas.
   const saveTimes = () => {
     if (!validateTime(inicioHora) || !validateTime(finHora)) {
       if (Platform.OS === "web") {
@@ -97,11 +143,13 @@ export default function TareaActividad({ navigation }) {
     return true;
   };
 
-  //Validamos las fechas
+  //Expresión regular de la fecha.
   const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
+  // Valida la fecha
   const validateDate = (date) => dateRegex.test(date);
 
+  // Confirma si la fecha está con el corecto formato y que haya coherencia entre ellas.
   const saveDates = () => {
     if (validateDate(inicioFecha) && validateDate(finFecha)) {
       // Aquí podrías añadir lógica adicional para comparar las fechas
@@ -143,31 +191,33 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Se guarda la tarea con comprobación de errores. Se almacenan los pasos de la tarea y de añade la tarea actividad
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
-        const idTarea = await setTarea(
+        const idTarea = await aniadeTarea(
           nombreTarea,
           inicioFecha + "//" + inicioHora,
           finFecha + "//" + finHora,
-          "Actividad",
-          periocidad
+          "actividad",
+          periocidad,
+          foto
         );
         const pasos = getPasos();
         const idPaso = [];
         for (const item of pasos) {
-          const pasoId = await setPasoActividad(
-            item.audio.id,
-            item.imagen.id,
-            item.pictograma.id,
-            item.video.id,
+          const pasoId = await aniadePasoActividad(
+            item.audio.nombre,
+            item.imagen.nombre,
+            item.pictograma.nombre,
+            item.video.nombre,
             item.texto,
             item.nombre,
             idTarea
           );
           idPaso.push(pasoId);
         }
-        await setTareaActividad(lugar, idPaso, idTarea);
+        await aniadeTareaActividad(lugar, idPaso, idTarea);
 
         // Borrar lista de pasos
         inicializarPasos();
@@ -179,6 +229,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Se borrar la tarea actividad con mensajes de confirmación.
   const showAlertDelete = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -208,6 +259,10 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  /*
+  * Se realiza mensaje de confirmación para proceder a guardar la tarea actividad. y manda avisos de error 
+  * en el caso de equivocaciones.
+  */
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -229,14 +284,20 @@ export default function TareaActividad({ navigation }) {
               confirmButtonText: "De acuerdo",
             });
           } else {
-            if (nombreTarea === '' || lugar === ''){
+            if (
+              nombreTarea === "" ||
+              lugar === "" ||
+              lugar === "Ninguno" ||
+              foto === "" ||
+              foto === "Ninguno"
+            ) {
               Swal.fire({
                 title: "Campo incompletos.",
-                text: "Pon nombre a la tarea y su lugar.",
+                text: "Pon nombre a la tarea, su lugar y foto.",
                 icon: "warning",
                 confirmButtonText: "De acuerdo",
               });
-            }else{
+            } else {
               guardarDatos();
             }
           }
@@ -258,13 +319,19 @@ export default function TareaActividad({ navigation }) {
                   [{ text: "De acuerdo" }]
                 );
               } else {
-                if (nombreTarea === '' || lugar === ''){
+                if (
+                  nombreTarea === "" ||
+                  lugar === "" ||
+                  lugar === "Ninguno" ||
+                  foto === "" ||
+                  foto === "Ninguno"
+                ) {
                   Alert.alert(
                     "Campo incompletos", // Título
-                    "Pon nombre a la tarea y su lugar.", // Mensaje
+                    "Pon nombre a la tarea, su lugar y foto.", // Mensaje
                     [{ text: "De acuerdo" }]
                   );
-                }else{
+                } else {
                   guardarDatos();
                 }
               }
@@ -278,152 +345,181 @@ export default function TareaActividad({ navigation }) {
 
   return (
     <>
-      <View style={styles.separador} />
-      <View style={styles.separador} />
+      {cargando ? (
+        <Text style={styles.textoCargando}>Cargando...</Text>
+      ) : (
+        <ScrollView>
+          <View style={styles.separador} />
+          <View style={styles.separador} />
 
-      <View style={[styles.row, { justifyContent: "center" }]}>
-        {Platform.OS === "web" && (
-          <>
-            <Text style={[styles.title]}>Actividad</Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("gestionTareas")}
-            >
-              <Image
-                source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                style={[styles.Image, { marginLeft: 40 }]}
+          <View style={[styles.row, { justifyContent: "center" }]}>
+            {Platform.OS === "web" && (
+              <>
+                <Text style={[styles.title]}>Actividad</Text>
+              </>
+            )}
+          </View>
+          <View style={styles.container}>
+            <View style={[styles.row, { justifyContent: "center" }]}>
+              {Platform.OS !== "web" && (
+                <>
+                  <Text style={[styles.title]}>Actividad</Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("gestionTareas")}
+                  >
+                    <Image
+                      source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+                      style={[styles.Image, { marginLeft: 40 }]}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+            <View style={styles.separador} />
+            <Text style={styles.text}>Nombre Tarea</Text>
+            <View style={styles.separador} />
+            <TextInput
+              style={[styles.input]}
+              placeholder="Elija Nombre"
+              value={nombreTarea}
+              onChangeText={setNombreTarea}
+            />
+            <View style={styles.separador} />
+            <Text style={styles.text}>Inicio Tarea </Text>
+            <View style={styles.separador} />
+
+            <View style={[styles.row]}>
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="aaaa-mm-dd"
+                value={inicioFecha}
+                onChangeText={setInicioFecha}
               />
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
-      <View style={styles.container}>
-        <View style={[styles.row, { justifyContent: "center" }]}>
-          {Platform.OS !== "web" && (
-            <>
-              <Text style={[styles.title]}>Actividad</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("gestionTareas")}
-              >
-                <Image
-                  source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-                  style={[styles.Image, { marginLeft: 40 }]}
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="hh:mm"
+                value={inicioHora}
+                onChangeText={setInicioHora}
+              />
+            </View>
+            <View style={styles.separador} />
+            <Text style={styles.text}>Fin Tarea </Text>
+            <View style={styles.separador} />
+            <View style={[styles.row]}>
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="aaaa-mm-dd"
+                value={finFecha}
+                onChangeText={setFinFecha}
+              />
+              <TextInput
+                style={[styles.inputFechaHora]}
+                placeholder="hh:mm"
+                value={finHora}
+                onChangeText={setFinHora}
+              />
+            </View>
+            <View style={styles.separador} />
+            <Text style={styles.text}>Lugar </Text>
+            <View style={styles.separador} />
+
+            <Picker
+              selectedValue={lugar}
+              onValueChange={(itemValue, itemIndex) => setLugar(itemValue)}
+              style={styles.picker}
+            >
+              {lugares.map((aula, index) => (
+                <Picker.Item
+                  key={index}
+                  label={aula === "Ninguno" ? "Ninguno" : `Aula ${aula}`}
+                  value={aula}
                 />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-        <View style={styles.separador} />
-        <Text style={styles.text}>Nombre Tarea</Text>
-        <View style={styles.separador} />
-        <TextInput
-          style={[styles.input]}
-          placeholder="Elija Nombre"
-          value={nombreTarea}
-          onChangeText={setNombreTarea}
-        />
-        <View style={styles.separador} />
-        <Text style={styles.text}>Inicio Tarea </Text>
-        <View style={styles.separador} />
+              ))}
+            </Picker>
 
-        <View style={[styles.row]}>
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="aaaa-mm-dd"
-            value={inicioFecha}
-            onChangeText={setInicioFecha}
-          />
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="hh:mm"
-            value={inicioHora}
-            onChangeText={setInicioHora}
-          />
-        </View>
-        <View style={styles.separador} />
-        <Text style={styles.text}>Fin Tarea </Text>
-        <View style={styles.separador} />
-        <View style={[styles.row]}>
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="aaaa-mm-dd"
-            value={finFecha}
-            onChangeText={setFinFecha}
-          />
-          <TextInput
-            style={[styles.inputFechaHora]}
-            placeholder="hh:mm"
-            value={finHora}
-            onChangeText={setFinHora}
-          />
-        </View>
-        <View style={styles.separador} />
-        <Text style={styles.text}>Lugar </Text>
-        <View style={styles.separador} />
-        <TextInput
-          style={[styles.input]}
-          placeholder="Elija Lugar"
-          value={lugar}
-          onChangeText={setLugar}
-        />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
 
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
+            <View style={styles.row}>
+              <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
+              <Picker
+                selectedValue={periocidad}
+                onValueChange={(itemValue, itemIndex) =>
+                  setPeriocidad(itemValue)
+                }
+                style={styles.picker}
+              >
+                <Picker.Item label="Diario" value="diario" />
+                <Picker.Item label="Semanal" value="semanal" />
+                <Picker.Item label="Mensual" value="mensual" />
+              </Picker>
+            </View>
 
-        <View style={styles.row}>
-          <Text style={[styles.text, { marginRight: 5 }]}>Periocidad </Text>
-          <Picker
-            selectedValue={periocidad}
-            onValueChange={(itemValue, itemIndex) => setPeriocidad(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Diario" value="diario" />
-            <Picker.Item label="Semanal" value="semanal" />
-            <Picker.Item label="Mensual" value="mensual" />
-          </Picker>
-        </View>
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
 
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
+            <View style={styles.row}>
+              <Text style={[styles.text, { marginRight: 5 }]}>Foto </Text>
+              <Picker
+                selectedValue={foto}
+                onValueChange={(itemValue, itemIndex) => setFoto(itemValue)}
+                style={styles.pickerFoto}
+              >
+                {fotostipo.map((foto, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={foto === "Ninguno" ? "Ninguno" : `${foto.nombre}`}
+                    value={foto.nombre}
+                  />
+                ))}
+              </Picker>
+            </View>
 
-        <Button
-          title="Añadir Paso"
-          onPress={() => navigation.navigate("pasoActividad")}
-          color="#D3D3D3"
-        />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <Button
-          title="Ver todos los pasos"
-          onPress={() => navigation.navigate("verPasosActividad")}
-          color="#90EE90"
-        />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={styles.separador} />
-        <View style={[styles.buttonContainer]}>
-          <View style={[styles.button]}>
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+
             <Button
-              title="Borrar"
-              onPress={() => showAlertDelete()}
-              color="#FF0000"
+              title="Añadir Paso"
+              onPress={() => navigation.navigate("pasoActividad")}
+              color="#D3D3D3"
             />
-          </View>
-
-          <View style={[styles.button]}>
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
             <Button
-              title="Guardar"
-              onPress={() => showAlertStore()}
-              color="#0000FF"
+              title="Ver todos los pasos"
+              onPress={() => navigation.navigate("verPasosActividad")}
+              color="#90EE90"
             />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={styles.separador} />
+            <View style={[styles.buttonContainer]}>
+              <View style={[styles.button]}>
+                <Button
+                  title="Borrar"
+                  onPress={() => showAlertDelete()}
+                  color="#FF0000"
+                />
+              </View>
+
+              <View style={[styles.button]}>
+                <Button
+                  title="Guardar"
+                  onPress={() => showAlertStore()}
+                  color="#0000FF"
+                />
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      )}
     </>
   );
 }
@@ -464,6 +560,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 15,
   },
+  textoCargando: {
+    textAlign: "center",
+    fontSize: 15,
+  },
   buttonContainer: {
     marginBottom: 10,
     flexDirection: "row",
@@ -481,5 +581,11 @@ const styles = StyleSheet.create({
   picker: {
     height: 25,
     width: Platform.OS === "web" ? 150 : 200,
+    borderWidth: 1,
+  },
+  pickerFoto: {
+    height: 25,
+    width: Platform.OS === "web" ? 200 : 250,
+    borderWidth: 1,
   },
 });

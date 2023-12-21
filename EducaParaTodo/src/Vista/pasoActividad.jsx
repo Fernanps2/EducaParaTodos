@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Button,
   Platform,
-  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -14,11 +13,13 @@ import {
 } from "react-native";
 import Swal from "sweetalert2";
 import {
-  cargarPictogramasBD,
-  cargarVideosBD,
-  cargarImagenesBD,
   cargarAudiosBD,
 } from "../Controlador/tareas";
+import {
+  descargaPictogramas,
+  descargaImagenes,
+  descargaVideos,
+} from "../Controlador/multimedia"
 
 export default function PasoActividad({ navigation }) {
   // Variables para añadir items
@@ -67,21 +68,21 @@ export default function PasoActividad({ navigation }) {
   //Cargamos pictogramas
   const cargarPictogramas = async () => {
     setIsLoadindPicto(true); // Iniciar la carga
-    setDataPicto(await cargarPictogramasBD());
+    setDataPicto(await descargaPictogramas());
     setIsLoadindPicto(false);
   };
 
   //Cargamos videos
   const cargarVideos = async () => {
     setIsLoadindVideo(true); // Iniciar la carga
-    setDataVideo(await cargarVideosBD());
+    setDataVideo(await descargaVideos());
     setIsLoadindVideo(false);
   };
 
   //Cargamos imagenes
   const cargarImagenes = async () => {
     setIsLoadindIma(true); // Iniciar la carga
-    setDataImagen(await cargarImagenesBD());
+    setDataImagen(await descargaImagenes());
     setIsLoadindIma(false);
   };
 
@@ -219,6 +220,7 @@ export default function PasoActividad({ navigation }) {
     setStoreTexto("");
   };
 
+  // Guardamos el paso pasándo sus valores a la pantalla verPasosActividad
   const guardarDatos = () => {
     navigation.navigate("verPasosActividad", {
       nombre: nombrePaso,
@@ -230,6 +232,7 @@ export default function PasoActividad({ navigation }) {
     });
   };
 
+  // Muestra alerta informativa para confirmar el guardado y comprueba posibles fallos con mensaje de error.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -413,7 +416,7 @@ export default function PasoActividad({ navigation }) {
                     >
                       <Image
                         key={index}
-                        source={{ uri: picto.URL }}
+                        source={{ uri: picto.uri }}
                         style={styles.image}
                       />
                     </TouchableOpacity>
@@ -448,7 +451,7 @@ export default function PasoActividad({ navigation }) {
                       key={index}
                       onPress={() => handleVideoPress(video)}
                     >
-                      <Text style={styles.videos}>{video.Titulo}</Text>
+                      <Text style={styles.videos}>{video.nombre}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -481,7 +484,7 @@ export default function PasoActividad({ navigation }) {
                     >
                       <Image
                         key={index}
-                        source={{ uri: imagen.URL }}
+                        source={{ uri: imagen.uri }}
                         style={styles.image}
                       />
                     </TouchableOpacity>
@@ -505,7 +508,7 @@ export default function PasoActividad({ navigation }) {
           <View>
             <View style={styles.rectangleOthers}>
               {isLoadingAudio ? (
-                <Text>Cargando_Videos... </Text>
+                <Text>Cargando_Audios... </Text>
               ) : (
                 <ScrollView
                   horizontal={true}
@@ -516,7 +519,7 @@ export default function PasoActividad({ navigation }) {
                       key={index}
                       onPress={() => handleAudioPress(audio)}
                     >
-                      <Text style={styles.videos}>{audio.Titulo}</Text>
+                      <Text style={styles.videos}>{audio.nombre}</Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -574,7 +577,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStorePicto ? (
-            <Image source={{ uri: storePictograma.URL }} style={styles.image} />
+            <Image source={{ uri: storePictograma.uri }} style={styles.image} />
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -595,7 +598,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreVideo ? (
-            <Text style={styles.videos}>{storeVideo.Titulo} </Text>
+            <Text style={styles.videos}>{storeVideo.nombre} </Text>
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -616,7 +619,7 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreIma ? (
-            <Image source={{ uri: storeImagen.URL }} style={styles.image} />
+            <Image source={{ uri: storeImagen.uri }} style={styles.image} />
           ) : (
             <Text>Ninguno </Text>
           )}
@@ -637,13 +640,11 @@ export default function PasoActividad({ navigation }) {
 
         <View style={styles.rectangleChoose}>
           {isStoreAudio ? (
-            <Text style={styles.videos}>{storeAudio.Titulo} </Text>
+            <Text style={styles.videos}>{storeAudio.nombre} </Text>
           ) : (
             <Text>Ninguno </Text>
           )}
         </View>
-
-        <View style={styles.separador}></View>
 
         <View style={[styles.addButtonGuardar]}>
           <Button
@@ -722,7 +723,7 @@ const styles = StyleSheet.create({
     width: Platform.OS === "web" ? 80 : 90,
     position: "absolute",
     left: 150,
-    top: 800,
+    top: 825,
   },
   addButtonAñadirPaso: {
     backgroundColor: "#808080",

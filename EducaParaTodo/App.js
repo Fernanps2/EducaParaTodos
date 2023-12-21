@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
 import GestionMateriales from './src/Vista/gestionMaterialesAdmin.jsx';
 import GestionItemActividad from './src/Vista/gestionItemsActividadAdmin.jsx';
+import GestionItemMaterial from './src/Vista/gestionItemsMateriales.jsx';
+import GestionFotoTarea from './src/Vista/gestionFotoTarea.jsx';
+import GestionFotoLugar from './src/Vista/gestionFotoLugar.jsx';
 import GestionTareas from './src/Vista/gestionTareas.jsx';
 import AniadirAlumno from './src/Vista/aniadirAlumno.jsx';
 import TareaActividad from './src/Vista/tareaActividad.jsx';
@@ -35,6 +38,9 @@ import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
 import AvisoMaterial from './src/Vista/avisoMaterial.jsx';
 import VerAvisosMaterial from './src/Vista/verAvisosMaterial.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
+import VerTareaMaterial from './src/Vista/verTareaMaterial.jsx';
+import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
+import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
@@ -49,8 +55,8 @@ import mostrarResumen from './src/Vista/mostrarResumen.jsx';
 import PantallaFelicitacion from './src/Vista/pantallaFelicitacion.jsx';
 import GestionMenus from './src/Vista/gestionMenus.jsx';
 import AniadirMenu from './src/Vista/aniadirMenu.jsx';
-import { aniadeMenu } from './src/Controlador/tareas.js';
 import eliminarMenu from './src/Vista/eliminarMenu.jsx';
+//import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -73,6 +79,9 @@ export default function App() {
           <Stack.Screen name="aniadirAlumno" component={AniadirAlumno} />
           <Stack.Screen name="gestionMateriales" component={GestionMateriales} />
           <Stack.Screen name="gestionItemActividad" component={GestionItemActividad} />
+          <Stack.Screen name="gestionItemMaterial" component={GestionItemMaterial} />
+          <Stack.Screen name="gestionFotoTarea" component={GestionFotoTarea} />
+          <Stack.Screen name="gestionFotoLugar" component={GestionFotoLugar} />
           <Stack.Screen name="gestionTareas" component={GestionTareas} />
           <Stack.Screen name="tareaActividad" component={TareaActividad} />
           <Stack.Screen name="pasoActividad" component={PasoActividad} />
@@ -97,12 +106,13 @@ export default function App() {
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />
           {/* <Stack.Screen name="pantallaProfesores" component={ListaProfesores} /> */}
 
-
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="EliminarTareaAlumno" component={EliminarTareaAlumno}/>
           <Stack.Screen name= "FeedbackAlumno" component={FeedbackAlumno}/>
           <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
+          <Stack.Screen name="verTareaMaterial" component={VerTareaMaterial}/>
+          <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="modDatosProfesor" component={ModificarDatosProfesor} />
           <Stack.Screen name="modDatosAdmin" component={ModificarDatosAdmin} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
