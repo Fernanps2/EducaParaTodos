@@ -40,8 +40,8 @@ export default function GestionTareas ({ navigation }) {
 
       <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-            <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
+            onPress={() => navigation.navigate('eliminarTarea')}>
+            <Text style={styles.buttonText}>Eliminar tarea</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

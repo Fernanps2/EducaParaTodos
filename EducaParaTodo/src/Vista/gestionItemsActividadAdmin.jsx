@@ -9,14 +9,16 @@ import {
   Alert,
   FlatList,
   Image,
-  ScrollView
+  ScrollView,
+  ActivityIndicator,
+  Video,
+  ResizeMode,
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
 import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 import { anadeVideo } from "../Controlador/tareas";
-import { almacenaVideo, openGallery } from "../Controlador/multimedia";
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
