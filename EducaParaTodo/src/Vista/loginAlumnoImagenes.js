@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import useUser from '../Controlador/useUser';
-import { buscaAlumnoNombre, obtenerImagenesLoginAlumno, obtenerIdAlumnoPorNombre } from '../Controlador/alumnos.js';
+import { buscaAlumnoNombre, obtenerIdAlumnoPorNombre } from '../Controlador/alumnos.js';
 import { descargaImagenLogin, obtenerNombresImagenesAlumno } from '../Controlador/multimedia.js';
 
 

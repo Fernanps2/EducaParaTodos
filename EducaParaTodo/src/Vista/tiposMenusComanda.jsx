@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import {
   Alert,
@@ -13,22 +13,38 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
-
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
+import { getMenus, setMenu } from "../Modelo/firebase";
+import * as global from "./VarGlobal";
 
 export default function TiposMenusComanda({ navigation }) {
   // Variables para tipo de menu
-  const [selectedMenuType, setSelectedMenuType] = useState("");
+  const [selectedMenuType, setSelectedMenuType] = useState("Ninguno");
   const [menuList, setMenuList] = useState([]);
+  const [menuTypes, setMenuTypes] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
-  const menuTypes = ["Menu Carne", "Menu Verdura", "Menu Pescado"];
+  useEffect(() => {
+    const cargarMenus = async () => {
+      try {
+        const datos = await getMenus();
+        const menusConNinguno = [...datos.map((item) => item)];
+        setMenuTypes(menusConNinguno); // Guardamos los datos en la variable de estado
+        setCargando(false);
+      } catch (error) {
+        console.error("Error al obtener menus:", error);
+        setCargando(false);
+      }
+    };
+    cargarMenus(); // Llamamos a la función al montar el componente
+    setMenuList(global.getSoloMenus);
+  }, []);
 
   const addItem = () => {
-    if (selectedMenuType) {
-      setMenuList([...menuList, selectedMenuType]);
+    if (
+      selectedMenuType !== "Ninguno" &&
+      !menuList.some((menuItem) => menuItem === selectedMenuType)
+    ) {
+      setMenuList([selectedMenuType, ...menuList]);
     }
   };
 
@@ -51,7 +67,9 @@ export default function TiposMenusComanda({ navigation }) {
   );
 
   const guardarDatos = () => {
-    navigation.navigate("tareaComanda");
+    global.setSoloMenus(menuList); // LLevamos la cuenta de los menus para que no se pierden información
+    global.setMenusObjetos(menuTypes, menuList); // Llevamos la cuenta de los objetos de los menus elegidos
+    navigation.navigate("alimentosMenusComanda");
   };
 
   const showAlertStore = () => {
@@ -107,15 +125,29 @@ export default function TiposMenusComanda({ navigation }) {
       <View style={styles.separador} />
 
       <View style={[styles.row]}>
-        <Picker
-          selectedValue={selectedMenuType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedMenuType(itemValue)}
-        >
-          {menuTypes.map((menuType, index) => (
-            <Picker.Item key={index} label={menuType} value={menuType} />
-          ))}
-        </Picker>
+        {cargando && (
+          <View style={styles.text}>
+            <Text>Cargando...</Text>
+          </View>
+        )}
+        {!cargando && (
+          <Picker
+            selectedValue={selectedMenuType}
+            style={styles.picker}
+            onValueChange={(itemValue) => {
+              setSelectedMenuType(itemValue);
+            }}
+          >
+            <Picker.Item key={"Ninguno"} label={"Ninguno"} value={"Ninguno"} />
+            {menuTypes.map((menuType) => (
+              <Picker.Item
+                key={menuType.id}
+                label={menuType.Nombre}
+                value={menuType.Nombre}
+              />
+            ))}
+          </Picker>
+        )}
 
         <TouchableOpacity style={styles.button} onPress={() => addItem()}>
           <Text style={styles.buttonText}>Añadir </Text>

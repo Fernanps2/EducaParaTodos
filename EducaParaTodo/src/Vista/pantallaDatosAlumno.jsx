@@ -1,12 +1,28 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 // import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
+import { borraAlumno } from '../Controlador/alumnos';
+import BotonModificarAlumno from './botonModificarAlumno';
 
 const PantallaDatosAlumno = ({route, navigation}) => {
+  const {alumno} = route.params;
 
-    const {alumno} =route.params;
+  const showAlertStore = () => {
+    Alert.alert(
+      "¿Quiere eliminar el alumno?", // Título
+      "Pulsa una opción", // Mensaje
+      [
+        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+        { text: "Confirmar", onPress: () =>{
+            borraAlumno(alumno.id);
+            navigation.navigate('pantallaDatosAlumnos');
+          }
+        }
+      ],
+      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+    );
+  };
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -14,14 +30,23 @@ const PantallaDatosAlumno = ({route, navigation}) => {
             </View>
             <Text style={styles.input}> Nombre: {alumno.nombre} </Text>
             <Text style={styles.input}> Apellidos: {alumno.apellidos} </Text>
-            <Text style={styles.input}> Visualización preferente: </Text>
+            <Text style={styles.input}> Visualización preferente: 
+              {alumno.visualizacionPreferente.map((item, index) => (
+                <Text key={index} style={styles.input}>
+                  {index > 0 && ', '}{index == 0 && ' '}{item}
+                </Text>
+              ))}
+            </Text>
 
+            {/* <Text style={styles.input}> Visualización preferente: {alumno.visualizacionPreferente} </Text> */}
 
+          
         <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Modificar Alumno</Text>
-      </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
+        <BotonModificarAlumno texto={"Modificar alumno"} alumno={alumno} navigation={navigation} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}
+        onPress={()=>{ showAlertStore()}}>
         <Text style={styles.buttonText}>Eliminar Alumno</Text>
       </TouchableOpacity>
         </View>
@@ -47,6 +72,13 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     input: {
+      borderWidth: 1,
+      borderColor: 'grey',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    input2: {
       borderWidth: 1,
       borderColor: 'grey',
       borderRadius: 5,

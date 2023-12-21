@@ -13,11 +13,12 @@ import {
   ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
-
-// Uso base de datos
-import appFirebase from "../Modelo/firebase";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-const db = getFirestore(appFirebase);
+import {
+  cargarPictogramasBD,
+  cargarVideosBD,
+  cargarImagenesBD,
+  cargarAudiosBD,
+} from "../Controlador/tareas";
 
 export default function PasoActividad({ navigation }) {
   // Variables para añadir items
@@ -44,50 +45,51 @@ export default function PasoActividad({ navigation }) {
   const [storeVideo, setStoreVideo] = useState("");
   const [isStoreVideo, setIsStoreVideo] = useState(false);
 
-  // Funcion para mostrar los pictogramas de la base de datos
-  const cargarPictogramas = () => {
+  // Variables para Imagenes
+  const [dataImagen, setDataImagen] = useState([]);
+  const [isLoadingIma, setIsLoadindIma] = useState(false);
+  const [selectedImagen, setSelectedImagen] = useState("");
+  const [storeImagen, setStoreImagen] = useState("");
+  const [isStoreIma, setIsStoreIma] = useState(false);
+
+  // Variables para Audio
+  const [dataAudio, setDataAudio] = useState([]);
+  const [isLoadingAudio, setIsLoadindAudio] = useState(false);
+  const [selectedAudio, setSelectedAudio] = useState("");
+  const [storeAudio, setStoreAudio] = useState("");
+  const [isStoreAudio, setIsStoreAudio] = useState(false);
+
+  // Variables para texto
+  const [storeTexto, setStoreTexto] = useState("");
+  const [isStoreTexto, setIsStoreTexto] = useState(false);
+  const [selectedTexto, setSelectedTexto] = useState("");
+
+  //Cargamos pictogramas
+  const cargarPictogramas = async () => {
     setIsLoadindPicto(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Pictogramas");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataPicto(
-            res.docs.map((picto) => ({ id: picto.id, ...picto.data() }))
-          );
-          setIsLoadindPicto(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindPicto(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindPicto(false);
-      });
+    setDataPicto(await cargarPictogramasBD());
+    setIsLoadindPicto(false);
   };
 
-  // Funcion para mostrar los pictogramas de la base de datos
-  const cargarVideos = () => {
+  //Cargamos videos
+  const cargarVideos = async () => {
     setIsLoadindVideo(true); // Iniciar la carga
-    const querybd = getFirestore(appFirebase);
-    const queryCollection = collection(querybd, "Videos");
-    getDocs(queryCollection)
-      .then((res) => {
-        if (res.docs.length > 0) {
-          setDataVideo(
-            res.docs.map((video) => ({ id: video.id, ...video.data() }))
-          );
-          setIsLoadindVideo(false);
-        } else {
-          console.log("No se encontraron documentos en la colección.");
-          setIsLoadindVideo(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al obtener los documentos: ", error);
-        setIsLoadindVideo(false);
-      });
+    setDataVideo(await cargarVideosBD());
+    setIsLoadindVideo(false);
+  };
+
+  //Cargamos imagenes
+  const cargarImagenes = async () => {
+    setIsLoadindIma(true); // Iniciar la carga
+    setDataImagen(await cargarImagenesBD());
+    setIsLoadindIma(false);
+  };
+
+  //Cargamos audios
+  const cargarAudios = async () => {
+    setIsLoadindAudio(true); // Iniciar la carga
+    setDataAudio(await cargarAudiosBD());
+    setIsLoadindAudio(false);
   };
 
   // Pulsamos boton añadir texto en añadir paso
@@ -123,6 +125,7 @@ export default function PasoActividad({ navigation }) {
     setShowAddStepAddVideo(false);
     setShowAddStepAddImage(true);
     setShowAddStepAddAudio(false);
+    cargarImagenes();
   };
 
   // Pulsamos boton añadir audio en añadir paso
@@ -132,6 +135,7 @@ export default function PasoActividad({ navigation }) {
     setShowAddStepAddVideo(false);
     setShowAddStepAddImage(false);
     setShowAddStepAddAudio(true);
+    cargarAudios();
   };
 
   // Pulsamos un pictogramaentre los elegidos
@@ -168,8 +172,62 @@ export default function PasoActividad({ navigation }) {
     setStoreVideo("");
   };
 
+  // Pulsamos un Imagen entre los elegidos
+  const handleImagenPress = (item) => {
+    setSelectedImagen(item);
+  };
+
+  // elegimos un Imagen
+  const handleGuardarImagen = () => {
+    setStoreImagen(selectedImagen);
+    setIsStoreIma(true);
+  };
+
+  // Borramos Imagen
+  const handletrashImagen = () => {
+    setIsStoreIma(false);
+    setStoreImagen("");
+  };
+
+  // Pulsamos un Audio entre los elegidos
+  const handleAudioPress = (item) => {
+    setSelectedAudio(item);
+  };
+
+  // elegimos un Audio
+  const handleGuardarAudio = () => {
+    setStoreAudio(selectedAudio);
+    setIsStoreAudio(true);
+  };
+
+  // Borramos Audio
+  const handletrashAudio = () => {
+    setIsStoreAudio(false);
+    setStoreAudio("");
+  };
+
+  // guardamos un Texto
+  const handleGuardarTexto = () => {
+    setIsStoreTexto(true);
+    setStoreTexto(selectedTexto);
+    setSelectedTexto("");
+  };
+
+  // Borramos Texto
+  const handletrashTexto = () => {
+    setIsStoreTexto(false);
+    setStoreTexto("");
+  };
+
   const guardarDatos = () => {
-    navigation.navigate("tareaActividad");
+    navigation.navigate("verPasosActividad", {
+      nombre: nombrePaso,
+      texto: storeTexto,
+      imagen: storeImagen,
+      pictograma: storePictograma,
+      video: storeVideo,
+      audio: storeAudio,
+    });
   };
 
   const showAlertStore = () => {
@@ -185,7 +243,23 @@ export default function PasoActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          guardarDatos();
+          if (
+            nombrePaso !== "" &&
+            (storeAudio !== "" ||
+              storeImagen !== "" ||
+              storePictograma !== "" ||
+              storeTexto !== "" ||
+              storeVideo !== "")
+          ) {
+            guardarDatos();
+          } else {
+            Swal.fire({
+              title: "Campo Incorrectos",
+              text: "Verifica que has puesto nombre al paso y que se haya elegido algún item.",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+            });
+          }
         }
       });
     } else {
@@ -194,7 +268,28 @@ export default function PasoActividad({ navigation }) {
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (
+                nombrePaso !== "" &&
+                (storeAudio !== "" ||
+                  storeImagen !== "" ||
+                  storePictograma !== "" ||
+                  storeTexto !== "" ||
+                  storeVideo !== "")
+              ) {
+                guardarDatos();
+              } else {
+                Alert.alert(
+                  "Campo Incorrectos",
+                  "Verifica que has puesto nombre al paso y que se haya elegido algún item."[
+                    { text: "De acuerdo" }
+                  ]
+                );
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -207,7 +302,7 @@ export default function PasoActividad({ navigation }) {
         <View style={styles.separador} />
         <View style={styles.separador} />
 
-        <View style={[{flexDirection:'row'}]}>
+        <View style={[{ flexDirection: "row" }]}>
           <Text style={[styles.title]}>Paso de Actividad</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate("tareaActividad")}
@@ -287,10 +382,15 @@ export default function PasoActividad({ navigation }) {
                 textAlignVertical="top"
                 style={styles.inputTexto}
                 placeholder="Escribe aquí..."
+                onChangeText={(text) => setSelectedTexto(text)}
+                value={selectedTexto}
               />
             </View>
 
-            <TouchableOpacity style={styles.addButtonGuardarItem}>
+            <TouchableOpacity
+              style={styles.addButtonGuardarItem}
+              onPress={() => handleGuardarTexto()}
+            >
               <Text style={styles.addButtonGuardarItemText}>Guardar Texto</Text>
             </TouchableOpacity>
           </View>
@@ -367,21 +467,33 @@ export default function PasoActividad({ navigation }) {
         {showAddStepAddImage && (
           <View>
             <View style={styles.rectangleOthers}>
-              <TouchableOpacity>
-                <Image
-                  source={require("../../Imagenes/CrearTarea/fregarSuelo.png")}
-                  style={styles.image}
-                ></Image>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image
-                  source={require("../../Imagenes/CrearTarea/habitacionOrdenada.png")}
-                  style={styles.image}
-                ></Image>
-              </TouchableOpacity>
+              {isLoadingIma ? (
+                <Text>Cargando_Imagenes... </Text>
+              ) : (
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={true}
+                >
+                  {dataImagen.map((imagen, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => handleImagenPress(imagen)}
+                    >
+                      <Image
+                        key={index}
+                        source={{ uri: imagen.URL }}
+                        style={styles.image}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
             </View>
 
-            <TouchableOpacity style={styles.addButtonGuardarItem}>
+            <TouchableOpacity
+              style={styles.addButtonGuardarItem}
+              onPress={() => handleGuardarImagen()}
+            >
               <Text style={styles.addButtonGuardarItemText}>
                 Guardar Imagen
               </Text>
@@ -392,15 +504,29 @@ export default function PasoActividad({ navigation }) {
         {showAddStepAddAudio && (
           <View>
             <View style={styles.rectangleOthers}>
-              <TouchableOpacity>
-                <Image
-                  source={require("../../Imagenes/CrearTarea/Audio1.png")}
-                  style={styles.image}
-                ></Image>
-              </TouchableOpacity>
+              {isLoadingAudio ? (
+                <Text>Cargando_Videos... </Text>
+              ) : (
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={true}
+                >
+                  {dataAudio.map((audio, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => handleAudioPress(audio)}
+                    >
+                      <Text style={styles.videos}>{audio.Titulo}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
             </View>
 
-            <TouchableOpacity style={styles.addButtonGuardarItem}>
+            <TouchableOpacity
+              style={styles.addButtonGuardarItem}
+              onPress={() => handleGuardarAudio()}
+            >
               <Text style={styles.addButtonGuardarItemText}>Guardar Audio</Text>
             </TouchableOpacity>
           </View>
@@ -408,7 +534,10 @@ export default function PasoActividad({ navigation }) {
 
         <View style={[styles.row, { marginBottom: 12 }]}>
           <Text style={styles.textItemAnadido}>Texto_Añadido </Text>
-          <TouchableOpacity style={styles.imageTrashWrapper}>
+          <TouchableOpacity
+            style={styles.imageTrashWrapper}
+            onPress={() => handletrashTexto()}
+          >
             <Image
               source={require("../../Imagenes/CrearTarea/iconoBasura.png")}
               style={styles.imageTrash}
@@ -417,7 +546,17 @@ export default function PasoActividad({ navigation }) {
         </View>
 
         <View style={styles.rectangleChoose}>
-          <Text>Ninguno </Text>
+          {isStoreTexto ? (
+            <TextInput
+              multiline
+              textAlignVertical="top"
+              style={styles.textoChoose}
+              placeholder={storeTexto}
+              editable={false}
+            />
+          ) : (
+            <Text>Ninguno </Text>
+          )}
         </View>
 
         <View style={[styles.row, { marginBottom: 12 }]}>
@@ -464,7 +603,10 @@ export default function PasoActividad({ navigation }) {
 
         <View style={[styles.row, { marginBottom: 12 }]}>
           <Text style={styles.textItemAnadido}>Imagen_Añadido </Text>
-          <TouchableOpacity style={styles.imageTrashWrapper}>
+          <TouchableOpacity
+            style={styles.imageTrashWrapper}
+            onPress={() => handletrashImagen()}
+          >
             <Image
               source={require("../../Imagenes/CrearTarea/iconoBasura.png")}
               style={styles.imageTrash}
@@ -473,12 +615,19 @@ export default function PasoActividad({ navigation }) {
         </View>
 
         <View style={styles.rectangleChoose}>
-          <Text>Ninguno </Text>
+          {isStoreIma ? (
+            <Image source={{ uri: storeImagen.URL }} style={styles.image} />
+          ) : (
+            <Text>Ninguno </Text>
+          )}
         </View>
 
         <View style={[styles.row, { marginBottom: 12 }]}>
           <Text style={styles.textItemAnadido}>Audio_Añadido </Text>
-          <TouchableOpacity style={styles.imageTrashWrapper}>
+          <TouchableOpacity
+            style={styles.imageTrashWrapper}
+            onPress={() => handletrashAudio()}
+          >
             <Image
               source={require("../../Imagenes/CrearTarea/iconoBasura.png")}
               style={styles.imageTrash}
@@ -487,7 +636,11 @@ export default function PasoActividad({ navigation }) {
         </View>
 
         <View style={styles.rectangleChoose}>
-          <Text>Ninguno </Text>
+          {isStoreAudio ? (
+            <Text style={styles.videos}>{storeAudio.Titulo} </Text>
+          ) : (
+            <Text>Ninguno </Text>
+          )}
         </View>
 
         <View style={styles.separador}></View>
@@ -533,9 +686,16 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     borderRadius: 5,
     marginBottom: 10,
-    width: 190,
+    width: 220,
     height: 60,
-    fontSize: 10,
+    fontSize: 12,
+    maxHeight: 200,
+    padding: 10,
+  },
+  textoChoose: {
+    width: 180,
+    height: 50,
+    fontSize: 12,
     maxHeight: 200,
   },
   row: {
@@ -586,8 +746,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     backgroundColor: "blue",
-    transform: [{ translateY: -36 }, { translateX: 150 }],
-    height: 20,
+    transform: [{ translateY: -31 }, { translateX: 150 }],
+    height: 15,
     width: 100,
   },
   addButtonGuardarItemText: {
@@ -595,8 +755,8 @@ const styles = StyleSheet.create({
     fontSize: 9,
   },
   rectangleTexto: {
-    width: Platform.OS === "web" ? 264 : 278,
-    height: 100, // Altura del rectángulo
+    width: Platform.OS === "web" ? 265 : 278,
+    height: 110, // Altura del rectángulo
     backgroundColor: "white", // Color de fondo del rectángulo
     justifyContent: "center", // Centra el texto verticalmente
     alignItems: "center", // Centra el texto horizontalmente
@@ -605,8 +765,8 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -4 }],
   },
   rectangleOthers: {
-    width: 278, // Ancho del rectángulo
-    height: 100, // Altura del rectángulo
+    width: Platform.OS === "web" ? 265 : 278, // Ancho del rectángulo
+    height: 110, // Altura del rectángulo
     backgroundColor: "white", // Color de fondo del rectángulo
     justifyContent: "space-around", // Centra el texto verticalmente
     alignItems: "center", // Centra el texto horizontalmente

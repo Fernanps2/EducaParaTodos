@@ -2,9 +2,15 @@ import React, { useState, useEffect} from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import tareas from '../Modelo/tareas';
+import { getPasos, getTareasActividadId } from '../Modelo/firebase';
 import { Entypo } from '@expo/vector-icons';
 
-export function VerTarea (){
+export function VerTarea ({route, navigation}){
+
+    // Este es el id de la tarea en la que hemos pinchado
+    const {id} = route.params;
+    console.log(id);
+
     const [checkedStates, setCheckedStates] = useState([]);
     const [pasoActual, setPasoActual] = useState(0);
 
@@ -13,6 +19,43 @@ export function VerTarea (){
         const initialCheckedStates = Array(datos[2].length).fill(false);
         setCheckedStates(initialCheckedStates);
     }, []);
+
+
+    // Solo una tareaActividad va a estar asociada a un idTarea en concreto
+    const [tareasL, setTareas] = useState([]);
+
+    useEffect(() => {
+        const listaTareas = async () => {
+            try {
+                const Tareas = await getTareasActividadId(id);
+                setTareas(Tareas);
+
+                // Como esta función solo nos va a devolver un documeno, es decir, una tarea no hay problema en asignar el id
+                const idTarea = tareasL.id;
+                console.log(idTarea);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaTareas();
+    }, []);
+
+
+    const [pasos,setPasos] = useState();
+
+    useEffect(() => {
+        const listaPasos = async () => {
+            try {
+                const Tareas = await getPasos(id);
+                setTareas(Tareas);
+                await console.log(Tareas);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaPasos();
+    }, []);
+
 
     const datos = tareas();
 
