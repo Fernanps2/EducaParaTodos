@@ -27,8 +27,14 @@ export default function GestionMateriales ({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('gestionFotoLugar')}>
+        onPress={() => navigation.navigate('gestionFotoTarea')}>
         <Text style={styles.buttonText}>Gestión Fotos Tareas</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('gestionFotoLugar')}>
+        <Text style={styles.buttonText}>Gestión Fotos Lugares</Text>
       </TouchableOpacity>
       </View>
 

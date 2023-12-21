@@ -19,7 +19,7 @@ import {
   eliminaTipoTarea,
 } from "../Controlador/multimedia";
 
-export default function GestionFotoLugar() {
+export default function GestionFotoTarea() {
   const [urlFoto, setUrlFoto] = useState("");
   const [nombreFoto, setnombrefoto] = useState("");
   const [viewAnadirFoto, setViewAnadirFoto] = useState(false);

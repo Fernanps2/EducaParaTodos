@@ -1,4 +1,4 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea } from "../Modelo/firebase";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
@@ -196,6 +196,20 @@ export async function buscarTareaIdTareasInventario(id){
     tareasInventario = await getTareaIdTareasInventario(id);
 
     return tareasInventario;
+}
+
+// Esta función actualiza un lugar
+export async function modificarLugarNoAula(id, nombre, foto){
+    await updateLugaresNoAulas (id, nombre, foto);
+}
+
+//Esta función devuelve los lugares que no son aulas.
+export async function buscarLugaresNoAulas(){
+    let lugares = null;
+
+    lugares = await getLugaresNoAulas();
+
+    return lugares;
 }
 
 export async function anadeVideo (nombreVideo, urlVideo){

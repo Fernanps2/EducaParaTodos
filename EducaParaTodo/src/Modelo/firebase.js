@@ -44,6 +44,7 @@ const COL_PROFESORES_TAREAS = 'profesoresTareas';
 const COL_ALUMNOS_TAREAS = 'alumnosTareas';
 const COL_MENSAJES = 'mensajes';
 const COL_TAREAS = 'Tarea';
+const COL_LUGAR_NO_AULA='Lugares-No-Aulas';
 
 //valores para las carpetas de archivos
 const IMAGENES = 'Imagenes/';
@@ -1823,6 +1824,36 @@ export async function almacenarTipoTarea(imagen, nombreImagen) {
   }
 }
 
+export async function almacenarFotoLugar(imagen, nombreImagen) {
+  
+  try {
+      if (descargarTipoTarea(nombreImagen) != null) {
+        const refImagenes = ref(storage, LUGAR_NO_AULAS+nombreImagen)
+          const file = await(await fetch(imagen)).blob();
+          uploadBytes(refImagenes, file).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+              console.log('URL de descarga disponible en', downloadURL);
+              // Aquí puedes usar downloadURL para mostrar la vista previa
+          });
+          });
+      } else {
+          if (Platform.OS === "web") {
+              Swal.fire({
+              title: "ERROR",
+              text: "El nombre del archivo ya existe, elija uno diferente",
+              icon: "warning",
+              confirmButtonText: "De acuerdo",
+              });
+          } else {
+              Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+          }
+      }
+  } catch(error) {
+      console.log(error);
+  }
+}
+
+
 export async function descargarImagen(nombreImagen) {
   let imagenUri = {
       uri: null,
@@ -2410,6 +2441,16 @@ export async function eliminarTipoMaterial(nombreArchivo) {
 
 export async function eliminarTipoTarea(nombreArchivo) {
   const refArchivo = ref(storage, TIPO_TAREAS+nombreArchivo);
+
+  await deleteObject(refArchivo).then(() => {
+      console.log("Se ha borrado el archivo correctamente")
+  }).catch((error) => {
+      console.log(error);
+  });
+}
+
+export async function eliminarFotoLugar(nombreArchivo) {
+  const refArchivo = ref(storage, LUGAR_NO_AULAS+nombreArchivo);
 
   await deleteObject(refArchivo).then(() => {
       console.log("Se ha borrado el archivo correctamente")
@@ -3495,6 +3536,47 @@ export const getTareaIdTareasInventario = async(id) => {
       console.log(error);
     }
   }
+
+  export async function updateLugaresNoAulas(id, nombre, foto) {
+  
+    let editaLugar = {
+        foto:  foto,
+        nombre: nombre,
+    };
+  
+    try {
+        let docLugar = doc(db, COL_LUGAR_NO_AULA, id);
+        const docSnapshot = await getDoc(docLugar);
+        
+        if (docSnapshot.exists()) {
+            await updateDoc(docLugar, {
+                ...editaLugar
+            })
+        }
+    } catch (error) {
+        console.log("Hubo un error al actualizar datos del material ", error);
+    }
+  }
+
+  export const getLugaresNoAulas = async() => {
+    try {
+      
+      const InventarioQuery = query(collection(db, COL_LUGAR_NO_AULA));
+      const querySnapshot = await getDocs(InventarioQuery);
+  
+      const docs=[];
+    
+      for (const docu of querySnapshot.docs) {
+        const datosLugares = docu.data();
+        const id = docu.id;
+        docs.push({id, ...datosLugares});
+        }
+        return docs;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  
 
 // PRUEBA REALIZADA. FUNCIONA
 export const setVideo = async (nombreVideo, urlVideo)=> {

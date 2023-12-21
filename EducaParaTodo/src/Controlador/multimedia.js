@@ -1,7 +1,7 @@
-import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial, almacenarTipoTarea} from "../Modelo/firebase";
+import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial, almacenarTipoMaterial, almacenarTipoTarea, almacenarFotoLugar} from "../Modelo/firebase";
 import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial, descargarTipoMaterial, descargarTipoTarea, descargarLugarNoAula} from "../Modelo/firebase";
 import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales, descargarTipoMateriales, descargarTipoTareas, descargarLugaresNoAulas  } from "../Modelo/firebase";
-import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial, eliminarTipoTarea } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial, eliminarTipoMaterial, eliminarTipoTarea, eliminarFotoLugar } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -204,6 +204,33 @@ export async function almacenaTipoMaterial(imagen, nombre) {
 export async function almacenaTipoTarea(imagen, nombre) {
     if (imagen != '' && nombre != '')
     await almacenarTipoTarea(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}almacenarFotoLugar
+
+/**
+ * @name almacenaFotoLugar
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del lugar a subir
+ * @param {String} nombre nombre de la imagen del lugar
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaFotoLugar(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+    await almacenarFotoLugar(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -563,8 +590,8 @@ export async function descargaTipoTarea(imagen) {
  *                          "nombre": nombre del archivo
  *          vacía si no hay
  */
-export async function descargaLugarNoAula() {
-    const array = await descargarLugarNoAula();
+export async function descargaLugarNoAula(nombre) {
+    const array = await descargarLugarNoAula(nombre);
 
     return array;
 }
@@ -691,6 +718,19 @@ export async function eliminaTipoMaterial(nombreArchivo) {
 export async function eliminaTipoTarea(nombreArchivo) {
     if (nombreArchivo != null && nombreArchivo != '') {
         await eliminarTipoTarea(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaFotoLugar
+ * 
+ * @description Borra la imagen para el lugar con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaFotoLugar(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarFotoLugar(nombreArchivo);
     }
 }
 
