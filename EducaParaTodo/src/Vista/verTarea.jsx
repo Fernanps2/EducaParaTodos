@@ -12,30 +12,30 @@ import { Video, ResizeMode } from 'expo-av';
 export function VerTarea ({route, navigation}){
     const {id, idAlumno} = route.params;
     
+    //Variables que almacenan los datos sacados de la base de datos
     const [tareaAct, setTareaAct] = useState([]);
     const [pasos, setPasos] = useState([]);
     const [tarea, setTarea] = useState([]); 
     const [profesor, setProfesor] = useState([]);
-    const [alumno, setAlumno] = useState([]);
     const [visualizacion, setVisualizacion] = useState();
     const [imagen, setImagen] = useState([]);
     const [pictograma, setPictograma] = useState([]);
     const [video, setVideo] = useState([]);
-    //const [imagenCargada, setImagenCargada] = useState(false);
     const [foto, setFoto] = useState([]);
 
+    //Variables para poder reproducir los videos
     const vid = React.useRef(null);
     const [status, setStatus] = React.useState({});
 
+    //Variable para almacenar temporalmente el profesor y poder sacar información de la base de datos
     const profesorRef = useRef(profesor);
 
+    //Función que obtiene la tarea a partir del id que se pasa en la routa de navegación
     useEffect(() => {
         const listaTarea = async () => {
             try {
                 const Tarea = await buscarTareaId(id);
                 setTarea(Tarea);
-
-                //console.log("tarea: " + JSON.stringify(Tarea));
             } catch (error) {
                 console.log(error);
             }
@@ -43,13 +43,12 @@ export function VerTarea ({route, navigation}){
         listaTarea();
     }, []);     
 
+    //Función que busca en la bd una tarea de tipo actividad con el id de la tarea
     useEffect(() => {
         const listaTareas = async () => {
             try {
                 const Tareas = await buscarTareaActividad(id);
                 setTareaAct(Tareas);
-
-                //console.log("tareasL: " + JSON.stringify(Tareas));
             } catch (error) {
                 console.log(error);
             }
@@ -57,13 +56,12 @@ export function VerTarea ({route, navigation}){
         listaTareas();
     }, []);    
 
+    //Función que obtiene los distintos pasos de una tarea de tipo actividad
     useEffect(() => {
         const listaPasos = async () => {
             try {
                 const Pasos = await buscarPasos(id);
-                setPasos(Pasos);
-
-                //console.log("Pasos: " + JSON.stringify(Pasos)); 
+                setPasos(Pasos); 
             } catch (error) {
                 console.log(error);
             }
@@ -73,13 +71,13 @@ export function VerTarea ({route, navigation}){
 
     const tareaActvidad = tareaAct[0];
 
+    //Función que obtiene un profesor a partir del aula que tiene asignada
     useEffect(() => {
         const listaProf = async () => {
             try {
                 const Profe = await buscaProfesorAula(tareaActvidad.aula);
                 setProfesor(Profe);
-                profesorRef.current = Profe;
-                //console.log("Profesor: " + JSON.stringify(Profe)); 
+                profesorRef.current = Profe; //Guardamos el estado actual para usarlo en la siguiente función
             } catch (error) {
                 console.log(error);
             }
@@ -87,55 +85,34 @@ export function VerTarea ({route, navigation}){
         listaProf(); 
     }, [tareaActvidad]);
 
+    //Función que obtiene y descarga la foto del profesor
     useEffect(() => {
         const getFoto = async () => {
             try {
                 const currentProfesor = profesorRef.current;
-                //console.log("CurrentProfesor: ", currentProfesor);
      
                 if (Array.isArray(currentProfesor) && currentProfesor.length > 0) {
                     const primerProfesor = currentProfesor[0];
                     
                     if (primerProfesor.foto && typeof primerProfesor.foto === "string" && primerProfesor.foto.trim() !== "") {
-                        //console.log("foto profesor: ", primerProfesor.foto);
                         const fotoDescargada = await descargaFotoPersona(primerProfesor.foto);
                         setFoto(fotoDescargada);
-                        //console.log("foto descargada: ", fotoDescargada);
-                    } else {
-                        //console.log("La propiedad 'foto' en el primer profesor no es una cadena válida o está vacía.");
                     }
-                } else {
-                    //console.log("currentProfesor es un array vacío o no es un array.");
                 }
             } catch (error) {
-                //console.log("Error al obtener la foto: ", error);
+                console.log("Error al obtener la foto: ", error);
             }
         };
     
         getFoto();
     }, [profesor]);     
 
-    useEffect(() => {
-        const listaAlum = async () => {
-            try {
-                const Alumn = await buscaAlumnoId(idAlumno);
-                setAlumno(Alumn);
- 
-                //console.log("Alumno: " + JSON.stringify(Alumn)); 
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        listaAlum();
-    }, []);
-
+    //Función que obtiene la visualización que tiene una tarea
     useEffect(() => {
         const listaVis = async () => {
             try {
                 const Visuali = await buscaVisualizacion(id);
                 setVisualizacion(Visuali);
-
-                //console.log("Visualizacion: " + JSON.stringify(Visuali)); 
             } catch (error) {
                 console.log(error);
             }
@@ -143,6 +120,7 @@ export function VerTarea ({route, navigation}){
         listaVis();
     }, []);
 
+    //Varibles para gestionar los pasos de una tarea
     const [checkedStates, setCheckedStates] = useState([]);
     const [pasoActual, setPasoActual] = useState(0);
 
@@ -159,10 +137,12 @@ export function VerTarea ({route, navigation}){
         setCheckedStates(updatedCheckedStates);
     };
 
+    //Pasa al siguiente paso al pulsar el botón siguiente
     const handleSiguiente = () => {
         if (pasoActual < pasos.length - 1) setPasoActual(pasoActual + 1);
     };
 
+    //Vuelve al paso anterior al pulsar el botón anterior
     const handleAnterior = () => {
         if (pasoActual > 0) setPasoActual(pasoActual - 1);
     };
@@ -170,6 +150,7 @@ export function VerTarea ({route, navigation}){
     const pasosTarea = pasos;
     const pasoActualData = pasosTarea[pasoActual];
 
+    //Descarga la imagen del paso actual de una tarea
     useEffect(() => {
         const listaImagen = async () => {
             try {
@@ -178,7 +159,6 @@ export function VerTarea ({route, navigation}){
                     const Imagen = await descargaImagen(pasoActualData.imagen);
                     setImagen(Imagen);
                     setImagenCargada(true);
-                    //console.log("Imagen: " + JSON.stringify(Imagen)); 
                 }
             } catch (error) {
                 console.log(error);
@@ -187,6 +167,7 @@ export function VerTarea ({route, navigation}){
         listaImagen();  
     }, [pasoActualData]); 
 
+    //Descarga el pictograma del paso actual de una tarea
     useEffect(() => {
         const listaPictograma = async () => {
             try {
@@ -194,7 +175,6 @@ export function VerTarea ({route, navigation}){
                 if(pasoActualData && pasoActualData.pictograma){
                     const Pictograma = await descargaPictograma(pasoActualData.pictograma);
                     setPictograma(Pictograma);
-                    //console.log("Pictograma: " + JSON.stringify(Pictograma)); 
                 }
             } catch (error) {
                 console.log(error);
@@ -203,14 +183,14 @@ export function VerTarea ({route, navigation}){
         listaPictograma();  
     }, [pasoActualData]);
 
+    //Descarga el video del paso actual de una tarea
     useEffect(() => {
         const listaVideo = async () => {
             try {
                 
                 if(pasoActualData && pasoActualData.video){
                     const Video = await descargaVideo(pasoActualData.video);
-                    setVideo(Video);
-                    //console.log("Video: " + JSON.stringify(Video)); 
+                    setVideo(Video); 
                 }
             } catch (error) {
                 console.log(error);
@@ -238,6 +218,7 @@ export function VerTarea ({route, navigation}){
             <Image style={styles.fotoProfe} source={{uri: foto.uri}} accessibilityLabel={profesor.nombre}/>
     
             <View style={styles.pasos}>
+                {/*En función de la visualización, se muestra una cosa u otra*/}
                 {pasoActualData && pasoActualData.imagen && pasoActualData.imagen !== "Ninguno" && 
                 visualizacion == "imagenes" && (
                     <Image source={{uri: imagen.uri}} style={styles.foto} accessibilityLabel={pasoActualData.texto}/>
@@ -255,7 +236,8 @@ export function VerTarea ({route, navigation}){
                     useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
                     onPlaybackStatusUpdate={status => setStatus(() => status)}/>
                 )} 
-    
+
+                {/*El texto se muestra siempre*/}
                 {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
 
                 <View style={styles.botonesContainer}>
@@ -284,7 +266,6 @@ export function VerTarea ({route, navigation}){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //marginTop: Constants.statusBarHeight,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -297,12 +278,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: RFValue(13), 
-        //marginTop: 0
     },
     pasos: {
         flex:1,
-        alignItems: 'center',
-        
+        alignItems: 'center',        
     },
     texto:{
         fontSize: RFValue(15),
@@ -311,7 +290,6 @@ const styles = StyleSheet.create({
     botonesContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-       // marginTop: 0,
         paddingHorizontal: RFValue(40)
     },
     botonAnterior: {

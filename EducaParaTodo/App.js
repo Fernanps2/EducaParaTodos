@@ -31,8 +31,6 @@ import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
 import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
-import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
-import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
@@ -88,7 +86,6 @@ export default function App() {
           <Stack.Screen name= "FeedbackAlumno" component={FeedbackAlumno}/>
           <Stack.Screen name= "aniadirPictograma" component={AniadirPictograma}/>
           <Stack.Screen name="verTarea" component={VerTarea}/>
-          <Stack.Screen name="gestionarEstadoTareas" component={GestionarEstadoTareas} />
           <Stack.Screen name="modDatosProfesor" component={ModificarDatosProfesor} />
           <Stack.Screen name="asignarTarea" component={AsignarTarea} />
           <Stack.Screen name="modificarAlumno" component={ModificarAlumno} />
