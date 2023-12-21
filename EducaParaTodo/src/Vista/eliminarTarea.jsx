@@ -19,7 +19,7 @@ const EliminarTarea = () => {
     navigation.navigate('EliminarTareaAlumno', {item});
   };*/
 
-
+  // guardan los alumnos que estan en la base de datos 
   useEffect(() => {
     const mostrarAlumnos = async () => {
       setIsLoading(true); // Iniciar la carga
