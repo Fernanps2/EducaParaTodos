@@ -9,7 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { CerrarSesion } from "./cerrarSesion";
-import { buscarTarea } from "../Controlador/tareas";
+import { buscarTareaid } from "../Controlador/tareas";
 import { RFValue } from "react-native-responsive-fontsize";
 import { descargaTipoTarea } from "../Controlador/multimedia";
 
@@ -29,8 +29,8 @@ export default function Tareas({ route, navigation }) {
 
       try {
         // Obtener tareas asociadas al ID del usuario actual.
-        const tareas = await buscarTarea(usuario.id);
-
+        const tareas = await buscarTareaid(usuario.id);
+console.log('tareas: ', tareas)
         // Procesa cada tarea para descargar la imagen si existe una URL de foto.
         const datos = await Promise.all(
           tareas.map(async ({ id, tipo, fotoURL, titulo }) => {

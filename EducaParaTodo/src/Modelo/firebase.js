@@ -2760,7 +2760,7 @@ export const getTareaId = async (idAlumno) => {
         const docs = [];
 
         for (const tareaDoc of querySnapshot.docs) {
-            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, fotoURL } = tareaDoc.data();
 
             docs.push({
                 id: tareaDoc.id,
@@ -2770,6 +2770,7 @@ export const getTareaId = async (idAlumno) => {
                 fechaFin,
                 tipo,
                 idAlumno,
+                fotoURL: fotoURL,
             });
         }
         console.log(docs);
@@ -2827,7 +2828,7 @@ export const getTareaIdCompletada = async (idAlumno) => {
     }
 };
 
-export const getTarea = async (idTarea) => {
+export const getTarea = async (idAlumno) => {
 
   console.log(idAlumno);
   
@@ -2839,7 +2840,7 @@ export const getTarea = async (idTarea) => {
     const docs = [];
   
     for (const tareaDoc of querySnapshot.docs) {
-      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+      const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, foto } = tareaDoc.data();
   
       docs.push({
         id: tareaDoc.id,
@@ -2849,7 +2850,7 @@ export const getTarea = async (idTarea) => {
         fechaFin,
         tipo,
         idAlumno,
-        fotoURL,
+        fotoURL: foto,
       });
     }
 } catch (error) {
@@ -3113,11 +3114,6 @@ export const getPasos = async (idActividad) => {
 // PRUEBA REALIZADA. FUNCIONA
 export const setPasoActividad = async (audio, imagen, pictograma, video, texto, nombre, idTarea) => {
     try {
-
-        console.log('AudioID:', idAudioRef)
-        console.log('ImaID:', idImagenRef)
-        console.log('PictoID:', idPictogramaRef)
-        console.log('VieoID:', idVideoRef)
 
         if (audio === '' || imagen === '' || pictograma === '' || video === '' || texto === '' || nombre === '' || idTarea === '') {
             if (Platform.OS === "web") {
