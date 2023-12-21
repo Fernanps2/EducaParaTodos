@@ -20,7 +20,6 @@ import {
 } from "../Controlador/multimedia";
 
 export default function GestionFotoTarea() {
-
   // Variables para guardar datos
   const [urlFoto, setUrlFoto] = useState("");
   const [nombreFoto, setnombrefoto] = useState("");
@@ -125,15 +124,28 @@ export default function GestionFotoTarea() {
         cancelButtonText: "Cancelar",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await eliminaTipoTarea(fotoSeleccionada);
-          Swal.fire({
-            title: "Eliminación completada",
-            text: "La imagen se ha eliminado con éxito",
-            icon: "success",
-            confirmButtonText: "De acuerdo",
-          });
-          setFotoSeleccionada(null);
-          setActualizar(actualizar + 1);
+          if (fotoSeleccionada === null) {
+            Swal.fire({
+              title: "Imagen no escogida",
+              text: "Debes de escoger antes una imagen",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "blue",
+              cancelButtonColor: "red",
+              confirmButtonText: "De acuerdo",
+              cancelButtonText: "Cancelar",
+            });
+          } else {
+            await eliminaTipoTarea(fotoSeleccionada);
+            Swal.fire({
+              title: "Eliminación completada",
+              text: "La imagen se ha eliminado con éxito",
+              icon: "success",
+              confirmButtonText: "De acuerdo",
+            });
+            setFotoSeleccionada(null);
+            setActualizar(actualizar + 1);
+          }
         }
       });
     } else {
@@ -145,13 +157,25 @@ export default function GestionFotoTarea() {
           {
             text: "Confirmar",
             onPress: async () => {
-              await eliminaTipoTarea(fotoSeleccionada);
-              Alert.alert(
-                "Eliminación completada",
-                "La imagen se ha eliminado con éxito"
-              );
-              setFotoSeleccionada(null);
-              setActualizar(actualizar + 1);
+              if (fotoSeleccionada === null) {
+                Alert.alert(
+                  "Eliminación completada",
+                  "Debes de escoger antes una imagen",
+                  [
+                    { text: "Cancelar" },
+                    {
+                      text: "Confirmar"},
+                  ]
+                );
+              } else {
+                await eliminaTipoTarea(fotoSeleccionada);
+                Alert.alert(
+                  "Eliminación completada",
+                  "La imagen se ha eliminado con éxito"
+                );
+                setFotoSeleccionada(null);
+                setActualizar(actualizar + 1);
+              }
             },
           },
         ],
