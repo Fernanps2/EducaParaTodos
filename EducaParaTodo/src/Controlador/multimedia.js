@@ -333,6 +333,16 @@ export async function descargaImagenLogin(imagen) {
     return imagenCargada;
 }
 
+/**
+ * @name obtenerNombresImagenesAlumno
+ *
+ * @description Accede a la base de datos y obtiene los nombres de las imagenes correspondientes al
+ * login con imágenes del alumno mediante el ID del mismo
+ *
+ * @param {string} alumnoId ID del alumno que contiene las imagenes de su login
+ *
+ * @returns array con nombres de las imágenes del login del alumno
+ */
 export async function obtenerNombresImagenesAlumno(alumnoId) {
   try {
     const alumno = await getAlumnoID(alumnoId); // Función para obtener alumno por su ID
