@@ -605,11 +605,12 @@ export async function getAdministradoresNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter)
 
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto } = doc.data();
+            const { nombre, apellidos, password, foto } = doc.data();
             docs.push({
                 id: doc.id,
                 nombre,
                 apellidos,
+                password,
                 foto,
             });
         }
@@ -728,12 +729,12 @@ export async function addAdministrador(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateAdministrador(id, nombre, apellidos, password, foto) {
+export async function updateAdministrador(id, nombre, apellidos, password/*, foto*/) {
     let editaAdministrador = {
         nombre: nombre,
         apellidos: apellidos,
         password: password,
-        foto: foto
+        /*foto: foto*/
     };
     let Administrador = null;
 
@@ -746,7 +747,7 @@ export async function updateAdministrador(id, nombre, apellidos, password, foto)
             editaAdministrador.nombre = editaAdministrador.nombre == '' ? Administrador.nombre : editaAdministrador.nombre;
             editaAdministrador.apellidos = editaAdministrador.apellidos == '' ? Administrador.apellidos : editaAdministrador.apellidos;
             editaAdministrador.password = editaAdministrador.password == '' ? Administrador.password : editaAdministrador.password;
-            editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
+            //editaAdministrador.foto = editaAdministrador.foto == '' ? Administrador.foto : editaAdministrador.foto;
 
             await updateDoc(docAdministrador, {
                 ...editaAdministrador
@@ -1177,6 +1178,61 @@ export async function updateAlumnoTarea(id, alumno, tarea) {
         }
     } catch (error) {
         console.log("Problema al actualizar datos de alumnoTarea");
+    }
+}
+
+export async function getAlumnoIdPorNombre(nombre) {
+    let alumnoId = null;
+    try {
+        const queryFilter = query(collection(db, COL_ALUMNOS), where('nombre', '==', nombre));
+        const querySnapshot = await getDocs(queryFilter)
+
+        if (!querySnapshot.empty) {
+            // Obtener el ID del primer alumno que coincide con el nombre
+            alumnoId = querySnapshot.docs[0].id;
+        }
+    } catch (error) {
+        console.log("Ha habido un error al recoger los datos del alumno", error);
+    }
+
+    return alumnoId;
+}
+
+export async function getVisualizacionesPreferentesAlumno(alumnoId) {
+  let visualizacionesPreferentes = null;
+  try {
+    const docRef = doc(db, COL_ALUMNOS, alumnoId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      visualizacionesPreferentes = data.visualizacionPreferente || [];
+    } else {
+      console.log("No se encontró el alumno con el ID proporcionado");
+    }
+  } catch (error) {
+    console.log("Ha habido un error al obtener las visualizaciones preferentes del alumno", error);
+  }
+
+  return visualizacionesPreferentes;
+}
+
+export async function asignarTarea(idTarea, idAlumno, visualizacion) {
+    const tareaRef = doc(db, 'Tarea', idTarea);
+
+    try {
+        const docSnapshot = await getDoc(tareaRef);
+        if (docSnapshot.exists()) {
+            await updateDoc(tareaRef, {
+                idAlumno: idAlumno,
+                visualizacion: visualizacion
+            });
+            console.log('ID de alumno y visualización actualizados con éxito');
+        } else {
+            console.log('La tarea con el ID proporcionado no existe');
+        }
+    } catch (error) {
+        console.error('Error al actualizar ID de alumno y visualización:', error);
     }
 }
 
