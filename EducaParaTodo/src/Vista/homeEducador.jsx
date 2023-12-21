@@ -7,7 +7,7 @@ import { descargaFotoPersona } from '../Controlador/multimedia';
 
 export default function HomeEducador ({ route, navigation }) {
 
-    const {nombreUsuario} = route.params;
+    const {nombreProf} = route.params;
     const {jwt} = useUser();
     const [profesor, setProfesor] = useState('');
     const [imagen, setImagen] = useState([]);
@@ -34,10 +34,10 @@ export default function HomeEducador ({ route, navigation }) {
 
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: imagen.uri }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: nombreProf.foto }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
-        <Text style={styles.roleText}>{nombreUsuario}</Text>
+        <Text style={styles.roleText}>{nombreProf}</Text>
       </View>
 
       <TouchableOpacity
@@ -54,7 +54,7 @@ export default function HomeEducador ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('modDatosProfesor', { nombreUsuario, navigation })}>
+        onPress={() => navigation.navigate('modDatosProfesor', { nombreProf, navigation })}>
         <Text style={styles.buttonText}>Modificar mis datos</Text>
       </TouchableOpacity>
 

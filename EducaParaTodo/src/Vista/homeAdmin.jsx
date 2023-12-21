@@ -3,8 +3,9 @@ import { View, Text, Image, StyleSheet, Button, TouchableOpacity, ScrollView } f
 import { CerrarSesion } from './cerrarSesion';
 import useUser from '../Controlador/useUser';
 
-export default function HomeAdmin ({ navigation }) {
+export default function HomeAdmin ({ route, navigation }) {
     const {jwt} = useUser();
+    const { nombreAdm } = route.params;
 
     return (
       <ScrollView>
@@ -17,7 +18,7 @@ export default function HomeAdmin ({ navigation }) {
             source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
             style={styles.profileImage}
           />
-          <Text style={styles.roleText}>Administrador</Text>
+          <Text style={styles.roleText}>{ nombreAdm }</Text>
         </View>
 
           <TouchableOpacity
@@ -48,6 +49,12 @@ export default function HomeAdmin ({ navigation }) {
             style={styles.button}
             onPress={() => navigation.navigate('gestionMenus')}>
             <Text style={styles.buttonText}>Gestión menús</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('modDatosAdmin', { nombreAdm, navigation })}>
+            <Text style={styles.buttonText}>Modificar mis datos</Text>
           </TouchableOpacity>
 
 
