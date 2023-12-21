@@ -9,7 +9,6 @@ import {
     almacenarTipoMaterial,
     almacenarTipoTarea,
     almacenarFotoLugar,
-    getAlumnoID
 } from "../Modelo/firebase";
 
 import { 
