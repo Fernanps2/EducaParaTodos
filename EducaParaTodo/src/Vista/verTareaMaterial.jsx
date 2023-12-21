@@ -12,7 +12,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import {
   buscarTareaIdTareasInventario,
   obtenerProfesores,
-  getMaterialIdBD,
+  buscarMaterialId,
   getvisualizacion,
   completarTarea,
   buscarLugaresNoAulas,
@@ -228,7 +228,7 @@ export default function VerTareaMaterial({ route, navigation }) {
         const ids = tareas[lugarOrigenNow].map((item) => item.idMaterial);
 
         // Creamos un array de promesas
-        const promesas = ids.map(async (id) => await getMaterialIdBD(id));
+        const promesas = ids.map(async (id) => await buscarMaterialId(id));
 
         try {
           // Esperamos a que todas las promesas se resuelvan

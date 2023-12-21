@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion} from '../Controlador/tareas';
+import { buscarPasos, buscarTareaId, buscarTareaActividad, getvisualizacion} from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
 import { descargaFotoPersona, descargaImagen, descargaPictograma, descargaVideo } from '../Controlador/multimedia';
@@ -111,7 +111,7 @@ export function VerTarea ({route, navigation}){
     useEffect(() => {
         const listaVis = async () => {
             try {
-                const Visuali = await buscaVisualizacion(id);
+                const Visuali = await getvisualizacion(id);
                 setVisualizacion(Visuali);
             } catch (error) {
                 console.log(error);
