@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { Video, ResizeMode } from 'expo-av';
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
@@ -29,6 +30,8 @@ export default function GestionItemActividad() {
   const [viewImagen, setViewImagen] = useState(false);
 
   //Sección de variables para eliminar un item
+  const vid = React.useRef(null);
+  const [status, setStatus] = React.useState({});
   const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
   const [videos, setVideos] = useState([]);
   const [videosSeleccionados, setVideosSeleccionados] = useState([]);
@@ -260,10 +263,10 @@ export default function GestionItemActividad() {
         style={isSelected ? styles.selectedImage : styles.image}
         onPress={() => toggleSelectionVideo(item.nombre)}
       >
-        <Image
+        <Video ref={vid}
           source={{uri: item.uri}}
-          style={styles.imageStyle}
-        />
+          useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
+          onPlaybackStatusUpdate={status => setStatus(() => status)}/>
       </TouchableOpacity>
     );
   };
