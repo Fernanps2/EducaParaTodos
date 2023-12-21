@@ -48,7 +48,7 @@ export default function HomeEducador ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaDatosAlumno')}>
+        onPress={() => navigation.navigate('listaAlumnos')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
       </TouchableOpacity>
 
