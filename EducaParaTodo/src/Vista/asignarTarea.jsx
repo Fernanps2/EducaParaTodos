@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
 import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { getTareas , getAlumnos, addAlumnoTarea, getVisualizacionesPreferentesAlumno, asignarTarea } from '../Modelo/firebase';
+import { buscarTareas, asignarUnaTarea } from '../Controlador/tareas.js';
+import { buscaAlumno, buscaVisualizacionesPreferentesAlumno } from '../Controlador/alumnos.js';
 
 
 export function AsignarTarea ({props, navigation}){
@@ -22,7 +23,7 @@ export function AsignarTarea ({props, navigation}){
    useEffect(() => {
      const cargarTareas = async () => {
        try {
-         const tareas = await getTareas();
+         const tareas = await buscarTareas();
          setTareas(tareas);
        } catch (error) {
          console.log(error);
@@ -34,7 +35,7 @@ export function AsignarTarea ({props, navigation}){
 
      const cargarAlumnos = async () => {
        try {
-         const alumnos = await getAlumnos();
+         const alumnos = await buscaAlumno();
          const alumnosConAsignado = alumnos.map(alumno => ({ ...alumno, asignado: false }));
          setAlumnos(alumnosConAsignado);
        } catch (error) {
@@ -59,7 +60,7 @@ export function AsignarTarea ({props, navigation}){
         setAlumnos(updatedAlumnos);
 
         // Obtener las visualizaciones preferentes del alumno seleccionado
-        const fetchedVisualizaciones = await getVisualizacionesPreferentesAlumno(alumnoId);
+        const fetchedVisualizaciones = await buscaVisualizacionesPreferentesAlumno(alumnoId);
         setVisualizacionesPreferentes(fetchedVisualizaciones);
       };
 
@@ -71,11 +72,11 @@ export function AsignarTarea ({props, navigation}){
         try {
             const alumnosAsignados = alumnos.filter((alumno) => alumno.asignado);
             const promises = alumnosAsignados.map((alumno) =>
-                alumno.asignado ? asignarTarea(selectedValue, alumno.id, selectedVisualization) : null
+                alumno.asignado ? asignarUnaTarea(selectedValue, alumno.id, selectedVisualization) : null
             );
             await Promise.all(promises); // Espera a que todas las asignaciones se completen
             Alert.alert('Tareas asignadas con éxito');
-            navigation.navigate('HomeAdmin');
+            navigation.navigate('pantallaPrincipal');
         } catch (error) {
             console.log(error);
             Alert.alert('Error al asignar las tareas');
