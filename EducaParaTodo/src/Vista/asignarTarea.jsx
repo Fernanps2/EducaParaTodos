@@ -2,19 +2,28 @@ import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
 import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { getTareas , getAlumnos, addAlumnoTarea } from '../Modelo/firebase';
+import { buscarTareas, asignarUnaTarea } from '../Controlador/tareas.js';
+import { buscaAlumno, buscaVisualizacionesPreferentesAlumno } from '../Controlador/alumnos.js';
+
 
 export function AsignarTarea ({props, navigation}){
 
     const [selectedValue, setSelectedValue] = useState('');
+    const [visualizaciones, setVisualizaciones] = useState([]);
+    const [selectedVisualization, setSelectedVisualization] = useState('');
+    const [visualizacionesPreferentes, setVisualizacionesPreferentes] = useState([]);
+    const [selectedVisualizationType, setSelectedVisualizationType] = useState('');
     const [alumnos, setAlumnos] = useState([]);
     const [tareas, setTareas] = useState([]);
 
+    const handleVisualizationSelection = (id) => {
+      setSelectedVisualization(id);
+    };
 
    useEffect(() => {
      const cargarTareas = async () => {
        try {
-         const tareas = await getTareas();
+         const tareas = await buscarTareas();
          setTareas(tareas);
        } catch (error) {
          console.log(error);
@@ -26,7 +35,7 @@ export function AsignarTarea ({props, navigation}){
 
      const cargarAlumnos = async () => {
        try {
-         const alumnos = await getAlumnos();
+         const alumnos = await buscaAlumno();
          const alumnosConAsignado = alumnos.map(alumno => ({ ...alumno, asignado: false }));
          setAlumnos(alumnosConAsignado);
        } catch (error) {
@@ -42,21 +51,32 @@ export function AsignarTarea ({props, navigation}){
       setItemValue(itemValue);
     };
 
-  const handleAlumnoSelection = (id) => {
-    const updatedAlumnos = alumnos.map((alumno) =>
-      alumno.id === id ? { ...alumno, asignado: !alumno.asignado } : alumno
-    );
-    setAlumnos(updatedAlumnos);
-  };
+    const handleAlumnoSelection = async (id) => {
+      const updateAlumnos = async (alumnoId) => {
+        const updatedAlumnos = alumnos.map((alumno) => ({
+          ...alumno,
+          asignado: alumno.id === alumnoId,
+        }));
+        setAlumnos(updatedAlumnos);
+
+        // Obtener las visualizaciones preferentes del alumno seleccionado
+        const fetchedVisualizaciones = await buscaVisualizacionesPreferentesAlumno(alumnoId);
+        setVisualizacionesPreferentes(fetchedVisualizaciones);
+      };
+
+      updateAlumnos(id);
+    };
+
+
     const handleGuardar = async () => {
         try {
             const alumnosAsignados = alumnos.filter((alumno) => alumno.asignado);
             const promises = alumnosAsignados.map((alumno) =>
-                alumno.asignado ? addAlumnoTarea(alumno.id, selectedValue) : null
+                alumno.asignado ? asignarUnaTarea(selectedValue, alumno.id, selectedVisualization) : null
             );
             await Promise.all(promises); // Espera a que todas las asignaciones se completen
             Alert.alert('Tareas asignadas con éxito');
-            navigation.navigate('HomeAdmin');
+            navigation.navigate('pantallaPrincipal');
         } catch (error) {
             console.log(error);
             Alert.alert('Error al asignar las tareas');
@@ -79,6 +99,25 @@ export function AsignarTarea ({props, navigation}){
             </View>
         </View>
     );
+
+    const renderVisualizacionItem = ({ item }) => (
+      <View style={styles.visualizacionItem} key={item}>
+        <View style={styles.checkboxContainer}>
+          <CheckBox
+            value={selectedVisualizationType === item}
+            onValueChange={() => {
+              setSelectedVisualizationType(item === selectedVisualizationType ? '' : item);
+              handleVisualizationSelection(item);
+            }}
+          />
+        </View>
+        <View style={styles.textContainer}>
+          <Text>{item}</Text>
+        </View>
+      </View>
+    );
+
+
 
     return(
 
@@ -106,12 +145,22 @@ export function AsignarTarea ({props, navigation}){
                 keyExtractor={(item) => item.id}
             />
 
+            <Text style={styles.titulo}> Visualización preferente: </Text>
+
+            <FlatList
+              data={visualizacionesPreferentes}
+              renderItem={renderVisualizacionItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+
+
             <View style={styles.boton}>
                 <Button
-                    title="Guardar"
-                    onPress={handleGuardar}
+                   title="Guardar"
+                   onPress={handleGuardar}
                 />
             </View>
+
         </View>
     )
 
@@ -154,6 +203,11 @@ const styles = StyleSheet.create({
         padding: 75,
     },
     alumnoItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    visualizacionItem: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 10,

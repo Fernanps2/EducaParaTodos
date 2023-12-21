@@ -22,7 +22,14 @@ const DatosAlumnos = ({ alumno, navigation }) => {
 
     return (
             <View>
-                <TouchableOpacity onPress={() => navigation.navigate('LoginAlumno', { alumno: alumno })}>
+                <TouchableOpacity onPress={() => {
+                                              if (alumno.tipoLogin == 'texto')
+                                                navigation.navigate('LoginAlumno', { alumno: alumno });
+                                              else if (alumno.tipoLogin == 'imagen')
+                                                navigation.navigate('LoginAlumnoImagenes', {alumno: alumno});
+                                              else
+                                                console.log("No está definido tipoLogin");
+                                          }}>
                     {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
                     <Image style={styles.image} source={{uri: imagen.uri}} />
