@@ -1,12 +1,29 @@
 import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoID} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
+/**
+ * @name aniadeAlumno
+ * 
+ * @description Añade un alumno a la base de datos 
+ * 
+ * @param {String} nombre Nombre del alumno
+ * @param {String} apellidos Apellidos del alumno
+ * @param {String} password Contraseña del alumno
+ * @param {String} foto Nombre de la foto del alumno
+ * @param {String[]} visualizacion Array de visualizaciones disponibles del alumno
+ * @param {String} tipoLogin Tipo de login para el alumno
+ * 
+ * @return @true si se ha añadido, @false si no
+ */
 export async function aniadeAlumno(nombre, apellidos, password, foto, visualizacion, tipoLogin) {
     if (nombre != '' && apellidos != '' && password != '' && visualizacion != null && tipoLogin != '') {
         //let id_imagen = almacenaImagen(foto);
         await addAlumno(nombre, apellidos, password, foto, visualizacion, tipoLogin);
-    }
+        return true;
+    } else
+        return false;
 }
+
 
 export async function buscaAlumno() {
     let alumnos = null;
