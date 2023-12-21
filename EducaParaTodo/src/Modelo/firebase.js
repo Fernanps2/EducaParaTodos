@@ -3095,7 +3095,7 @@ export const getTareasActividadId = async (idTarea) => {
 export const getPasos = async (idActividad) => {
     try {
 
-        const q = query(collection(db, "PasosActividad"), where("idActividad", "==", idActividad));
+        const q = query(collection(db, "PasosActividad"), where("idTarea", "==", idActividad));
         const querySnapshot = await getDocs(q);
         const docs = [];
 
