@@ -6,7 +6,7 @@ import { buscaAlumnoNombre, obtenerImagenesLoginAlumno, obtenerIdAlumnoPorNombre
 import { descargaImagenLogin, obtenerNombresImagenesAlumno } from '../Controlador/multimedia.js';
 
 
-const LoginScreenAlumno = ({ route, navigation }) => {
+const LoginScreenAlumnoImagenes = ({ route, navigation }) => {
 
 
   const [alumnoImagenes, setAlumnoImagenes] = useState([]);
@@ -328,4 +328,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default LoginScreenAlumno;
+export default LoginScreenAlumnoImagenes;

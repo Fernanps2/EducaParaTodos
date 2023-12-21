@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 //import profesores from '../Modelo/profesor';
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
 import { updateProfesor } from '../Modelo/firebase';
 import { buscaProfesorNombre } from '../Controlador/profesores';
 
@@ -10,48 +9,23 @@ import { buscaProfesorNombre } from '../Controlador/profesores';
 
 export default function ModificarDatosProfesor ({ route, navigation }) {
       const { nombreUsuario } = route.params;
-========
-import { getProfesorPorId, updateProfesor } from '../Modelo/firebase';
-import { buscaProfesorId } from '../Controlador/profesores';
-
-export default function DatosProfesor ({ profesor, navigation }) {
-
-    const idProf = profesor.id;
-    const nombreProf = profesor.nombre
-    console.log(' id profesor ' + idProf);
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
 
       const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+      const [profesorId, setProfesorId] = useState('');
       const [nombre, setNombre] = useState('');
       const [apellidos, setApellidos] = useState('');
       const [contrasenia, setContrasenia] = useState('');
       const [email, setEmail] = useState('');
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
-========
-      const [info, setInfo] = useState('');
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
+      const [aula, setAula] = useState('');
+
 
       useEffect(() => {
         // Obtener datos del profesor al cargar el componente
         const obtenerDatosProfesor = async () => {
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
           const datosProfesor = await buscaProfesorNombre(nombreUsuario);
           setProfesorData(datosProfesor);
           setProfesorId(datosProfesor[0].id);
           // }
-========
-          const datosProfesor = await buscaProfesorId(idProf);
-          console.log('datosProf: ' + datosProfesor);
-          setProfesorData(datosProfesor);
-          // Asignar los valores iniciales para la edición
-        //   if (datosProfesor) {
-        //     setNombre(datosProfesor.nombre);
-        //     setApellidos(datosProfesor.apellidos);
-        //     setContrasenia(datosProfesor.password);
-        //     setEmail(datosProfesor.email);
-        //     setInfo(datosProfesor.info);
-        //   }
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
         };
         obtenerDatosProfesor();
       }, []);
@@ -60,12 +34,7 @@ export default function DatosProfesor ({ profesor, navigation }) {
       // Función para actualizar los datos del profesor
       const guardarCambios = async () => {
         // Lógica para guardar los cambios en la base de datos usando updateProfesor
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
-
-        await updateProfesor(profesorId,nombre, apellidos, contrasenia, email);
-========
-        await updateProfesor(idProf, nombre, apellidos, contrasenia, email, info);
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
+        await updateProfesor(profesorId,nombre, apellidos, contrasenia, email, aula);
         // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
       };
 
@@ -91,20 +60,13 @@ export default function DatosProfesor ({ profesor, navigation }) {
 
           <Text style={styles.title}> Modificar mis datos </Text>
 
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
         <ScrollView>
-========
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
           <View style={styles.profileContainer}>
             <Image
               source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
               style={styles.profileImage}
             />
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
             <Text style={styles.roleText}>{nombreUsuario}</Text>
-========
-            <Text style={styles.roleText}>{nombreProf}</Text>
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
           </View>
                 <TextInput
                   style={styles.input}
@@ -132,22 +94,24 @@ export default function DatosProfesor ({ profesor, navigation }) {
                   value={email}
                   onChangeText={(text) => setEmail(text)}
                 />
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
+
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Aula "
+                  value={aula}
+                  onChangeText={(text) => setAula(text)}
+                />
+
+
+                
 
                 {/* <TextInput
-========
-{/* 
-                <TextInput
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
                   style={styles.input}
                   placeholder="Información adicional"
                   value={info}
                   onChangeText={(text) => setInfo(text)}
                 /> */}
-<<<<<<<< HEAD:EducaParaTodo/src/Vista/ModificarDatosProfesor.jsx
-========
-
->>>>>>>> Manu:EducaParaTodo/src/Vista/datosProfesor.jsx
 
           <Text style={styles.roleText}>Foto</Text>
           <Image
