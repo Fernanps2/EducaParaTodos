@@ -117,6 +117,32 @@ const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
       }
 };
 
+const showAlertStore = (id,emoticonoSeleccionado) =>{
+  if (Platform.OS ===   "web"){
+    Swal.fire({
+      title: "¿Estás seguro de cambiar/Asignar feedback a la tarea?",
+      showCancelButton: true,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: "Cancelar",
+      icon: "warning",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        añadirFeedback(id,emoticonoSeleccionado);
+      }
+    });
+  }else{
+    Alert.alert(
+      "¿Estas seguro de borrar la tarea?",
+      "Pulsa una opcion",
+      [
+        {text: "Cancelar",},
+        {text: "Confirmar", onPress: () => añadirFeedback(id,emoticonoSeleccionado) }
+      ],
+      { cancelable: true}
+    );
+  }
+};
+
 
   return (    
   <ScrollView style={styles.datos}>
@@ -128,7 +154,8 @@ const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
         <View style={styles.contentContainer}>
           <Text style={{ fontSize: 20,paddingRight: 10, }} >{tareas.titulo}</Text>
 
-          <TouchableOpacity onPress={() => añadirFeedback(tareas.id,emoticonoSeleccionado)}>
+          <TouchableOpacity onPress={() => showAlertStore(tareas.id,emoticonoSeleccionado)}>
+            
             <View style={{ padding: 10, backgroundColor: 'blue', borderRadius: 5, marginTop: 10, marginLeft: 10, }}>
               <Text style={{ color: 'white', textAlign: 'center' }}>Enviar Feedback</Text>
             </View>
@@ -289,7 +316,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     overflow: 'hidden',
-    borderWidth: 2,
+    borderWidth: 4,
     borderColor: 'green',
   },
   imageStyle: {

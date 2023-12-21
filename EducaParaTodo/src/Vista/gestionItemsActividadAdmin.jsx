@@ -15,9 +15,13 @@ import { setVideo } from "../Modelo/firebase";
 import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { ActivityIndicator } from "react-native-web";
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [urlVideo, setUrlVideo] = useState("");
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
@@ -101,7 +105,14 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false);
     setViewEliminarImagen(true); //
 
-    setImagenes(await descargaImagenes());
+    setIsLoading(true);
+    try{
+      setImagenes(await descargaImagenes());
+    }catch {
+      console.log('Error al descargar las imagenes');
+    } finally {
+      setIsLoading(false);
+    }
   }
   const handleEliminarAudio = () => {
     setViewPictograma(false);
@@ -121,7 +132,15 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(true); //
     setViewEliminarImagen(false);
 
-    setPictogramas(await descargaPictogramas());
+    setIsLoading(true);
+    try{
+      setPictogramas(await descargaPictogramas());
+    }catch {
+      console.log('Error al descargar los pictogramas');
+    } finally {
+      setIsLoading(false);
+    }
+    //setPictogramas(await descargaPictogramas());
   }
 
   const handleAñadir = () => {
@@ -467,8 +486,10 @@ export default function GestionItemActividad() {
 
         <View style={styles.separador}/>
         <View style={styles.separador}/>
-
-        <View style={styles.container}>
+        {isLoading ? (
+          <ActivityIndicator size = "large" color="black" />
+        ) : (
+          <View style={styles.container}>
         
           <FlatList
             data={pictogramas}
@@ -484,6 +505,8 @@ export default function GestionItemActividad() {
             ))}
           </View>
         </View>
+        )}
+       
 
         <View style={styles.separador}/>
 
@@ -534,7 +557,11 @@ export default function GestionItemActividad() {
           <View style={styles.separador}/>
           <View style={styles.separador}/>
 
-          <View style={styles.container}>
+          {isLoading ? (
+            <ActivityIndicator size = "large" color="black"/>
+          ) : (
+
+            <View style={styles.container}>
           
             <FlatList
               data={imagenes}
@@ -550,6 +577,7 @@ export default function GestionItemActividad() {
               ))}
             </View>
           </View>
+          )}
 
           <View style={styles.separador}/>
 
