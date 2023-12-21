@@ -1,4 +1,4 @@
-import {getProfesoresLogin, getProfesores, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, updateProfesorAdmin, deleteProfesor, getProfesorID} from '../Modelo/firebase'
+import {getProfesoresLogin, getProfesores, getProfesorAula, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, updateProfesorAdmin, deleteProfesor, getProfesorID} from '../Modelo/firebase'
 
 /**
  * @name aniadeProfesor
@@ -56,13 +56,19 @@ export async function buscaProfesor() {
  *                  - foto : String
  *                  - aula : String
  */
+export async function buscaProfesorAula(aula) {
+    let profesores = null;
+
+    profesores = await getProfesorAula(aula);
+
+    return profesores;
+}
+
 export async function buscaProfesorNombre (nombre) {
     let profesores = null;
 
     if (nombre != null) {
-        console.log('buscando profesores con nombre: ' + nombre);
         profesores = await getProfesoresNombre(nombre);
-        console.log('se han encontrado: ' + JSON.stringify(profesores));
     }
 
     return profesores;

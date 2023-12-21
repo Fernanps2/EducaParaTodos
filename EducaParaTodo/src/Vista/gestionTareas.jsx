@@ -17,19 +17,25 @@ export default function GestionTareas ({ navigation }) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('tareaActividad')}>
-        <Text style={styles.buttonText}>Actividad </Text>
+        <Text style={styles.buttonText}>Crear actividad </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('tareaComanda')}>
-        <Text style={styles.buttonText}>Comanda </Text>
+        <Text style={styles.buttonText}>Crear tarea comanda </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('tareaMateriales')}>
-        <Text style={styles.buttonText}>Materiales </Text>
+        <Text style={styles.buttonText}>Crear recogida materiales </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('comandasCreadas',{navigation})}>
+        <Text style={styles.buttonText}>Consultar datos comandas </Text>
       </TouchableOpacity>
 
       <TouchableOpacity

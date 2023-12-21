@@ -1,17 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, Dimensions } from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
+import { useEffect, useState } from 'react';
 import { buscaProfesorId } from '../Controlador/profesores';
 import { borraMensaje } from '../Controlador/mensajes';
 
 const DatosMensajeLista = ({ mensaje, navigation }) => {
 
-    const profesor = buscaProfesorId(mensaje.profesor);
-    const nombreProfesor = "Carlos";
+    //Obtenemos datos profesor
+  const [profesor, setProfesor] = useState('');
+
+  useEffect(() => {
+    const loadData = async() => {
+      try {
+        const profesorEntidad = await buscaProfesorId(mensaje.profesor);
+        setProfesor(profesorEntidad); 
+      } catch(error) {
+        console.log(error);
+      }
+    }
+    loadData();
+  }, []);
 
     return (
             <View style={styles.container}> 
-                    <Text style={styles.input}> Nombre: {nombreProfesor} </Text>
+                    <Text style={styles.input}> Nombre: {profesor.nombre} </Text>
                     <Text style={styles.input}> Aula: {mensaje.aula} </Text>
                     <Text style={styles.input}> Fecha Necesidad de Material: {mensaje.fecha} </Text>
                     <Text style={styles.input}> Hora Necesidad de Material: {mensaje.hora} </Text>

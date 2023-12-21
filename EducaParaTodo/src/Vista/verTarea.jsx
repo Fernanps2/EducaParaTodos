@@ -1,63 +1,134 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import tareas from '../Modelo/tareas';
-import { getPasos, getTareasActividadId } from '../Modelo/firebase';
+import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion} from '../Controlador/tareas';
+import {buscaProfesorAula} from '../Controlador/profesores';
+import {buscaAlumnoId} from '../Controlador/alumnos';
+import { descargaFotoPersona, descargaImagen, descargaPictograma, descargaVideo } from '../Controlador/multimedia';
 import { Entypo } from '@expo/vector-icons';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { Video, ResizeMode } from 'expo-av';
 
 export function VerTarea ({route, navigation}){
+    const {id, idAlumno} = route.params;
+    
+    //Variables que almacenan los datos sacados de la base de datos
+    const [tareaAct, setTareaAct] = useState([]);
+    const [pasos, setPasos] = useState([]);
+    const [tarea, setTarea] = useState([]); 
+    const [profesor, setProfesor] = useState([]);
+    const [visualizacion, setVisualizacion] = useState();
+    const [imagen, setImagen] = useState([]);
+    const [pictograma, setPictograma] = useState([]);
+    const [video, setVideo] = useState([]);
+    const [foto, setFoto] = useState([]);
 
-    // Este es el id de la tarea en la que hemos pinchado
-    const {id} = route.params;
-    console.log(id);
+    //Variables para poder reproducir los videos
+    const vid = React.useRef(null);
+    const [status, setStatus] = React.useState({});
 
-    const [checkedStates, setCheckedStates] = useState([]);
-    const [pasoActual, setPasoActual] = useState(0);
+    //Variable para almacenar temporalmente el profesor y poder sacar información de la base de datos
+    const profesorRef = useRef(profesor);
 
+    //Función que obtiene la tarea a partir del id que se pasa en la routa de navegación
     useEffect(() => {
-        // Inicializar los estados de los pasos
-        const initialCheckedStates = Array(datos[2].length).fill(false);
-        setCheckedStates(initialCheckedStates);
-    }, []);
+        const listaTarea = async () => {
+            try {
+                const Tarea = await buscarTareaId(id);
+                setTarea(Tarea);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaTarea();
+    }, []);     
 
-
-    // Solo una tareaActividad va a estar asociada a un idTarea en concreto
-    const [tareasL, setTareas] = useState([]);
-
+    //Función que busca en la bd una tarea de tipo actividad con el id de la tarea
     useEffect(() => {
         const listaTareas = async () => {
             try {
-                const Tareas = await getTareasActividadId(id);
-                setTareas(Tareas);
-
-                // Como esta función solo nos va a devolver un documeno, es decir, una tarea no hay problema en asignar el id
-                const idTarea = tareasL.id;
-                console.log(idTarea);
+                const Tareas = await buscarTareaActividad(id);
+                setTareaAct(Tareas);
             } catch (error) {
                 console.log(error);
             }
         };
         listaTareas();
-    }, []);
+    }, []);    
 
-
-    const [pasos,setPasos] = useState();
-
+    //Función que obtiene los distintos pasos de una tarea de tipo actividad
     useEffect(() => {
         const listaPasos = async () => {
             try {
-                const Tareas = await getPasos(id);
-                setTareas(Tareas);
-                await console.log(Tareas);
+                const Pasos = await buscarPasos(id);
+                setPasos(Pasos); 
             } catch (error) {
                 console.log(error);
             }
         };
-        listaPasos();
+        listaPasos(); 
+    }, []); 
+
+    const tareaActvidad = tareaAct[0];
+
+    //Función que obtiene un profesor a partir del aula que tiene asignada
+    useEffect(() => {
+        const listaProf = async () => {
+            try {
+                const Profe = await buscaProfesorAula(tareaActvidad.aula);
+                setProfesor(Profe);
+                profesorRef.current = Profe; //Guardamos el estado actual para usarlo en la siguiente función
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaProf(); 
+    }, [tareaActvidad]);
+
+    //Función que obtiene y descarga la foto del profesor
+    useEffect(() => {
+        const getFoto = async () => {
+            try {
+                const currentProfesor = profesorRef.current;
+     
+                if (Array.isArray(currentProfesor) && currentProfesor.length > 0) {
+                    const primerProfesor = currentProfesor[0];
+                    
+                    if (primerProfesor.foto && typeof primerProfesor.foto === "string" && primerProfesor.foto.trim() !== "") {
+                        const fotoDescargada = await descargaFotoPersona(primerProfesor.foto);
+                        setFoto(fotoDescargada);
+                    }
+                }
+            } catch (error) {
+                console.log("Error al obtener la foto: ", error);
+            }
+        };
+    
+        getFoto();
+    }, [profesor]);     
+
+    //Función que obtiene la visualización que tiene una tarea
+    useEffect(() => {
+        const listaVis = async () => {
+            try {
+                const Visuali = await buscaVisualizacion(id);
+                setVisualizacion(Visuali);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        listaVis();
     }, []);
 
+    //Varibles para gestionar los pasos de una tarea
+    const [checkedStates, setCheckedStates] = useState([]);
+    const [pasoActual, setPasoActual] = useState(0);
 
-    const datos = tareas();
+    useEffect(() => {
+        // Inicializar los estados de los pasos
+        const initialCheckedStates = Array(pasos.length).fill(false);
+        setCheckedStates(initialCheckedStates);
+    }, []);
 
     const handlePress = () => {
         // Actualizar el estado del paso actual al hacer clic en el botón de check
@@ -66,38 +137,121 @@ export function VerTarea ({route, navigation}){
         setCheckedStates(updatedCheckedStates);
     };
 
+    //Pasa al siguiente paso al pulsar el botón siguiente
     const handleSiguiente = () => {
-        if (pasoActual < datos[2].length - 1) setPasoActual(pasoActual + 1);
+        if (pasoActual < pasos.length - 1) setPasoActual(pasoActual + 1);
     };
 
+    //Vuelve al paso anterior al pulsar el botón anterior
     const handleAnterior = () => {
         if (pasoActual > 0) setPasoActual(pasoActual - 1);
     };
 
-    const pasosTarea = datos[2];
+    const pasosTarea = pasos;
     const pasoActualData = pasosTarea[pasoActual];
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.tarea}>{datos[0]}</Text>
+    //Descarga la imagen del paso actual de una tarea
+    useEffect(() => {
+        const listaImagen = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.imagen){
+                    const Imagen = await descargaImagen(pasoActualData.imagen);
+                    setImagen(Imagen);
+                    setImagenCargada(true);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaImagen();  
+    }, [pasoActualData]); 
 
+    //Descarga el pictograma del paso actual de una tarea
+    useEffect(() => {
+        const listaPictograma = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.pictograma){
+                    const Pictograma = await descargaPictograma(pasoActualData.pictograma);
+                    setPictograma(Pictograma);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaPictograma();  
+    }, [pasoActualData]);
+
+    //Descarga el video del paso actual de una tarea
+    useEffect(() => {
+        const listaVideo = async () => {
+            try {
+                
+                if(pasoActualData && pasoActualData.video){
+                    const Video = await descargaVideo(pasoActualData.video);
+                    setVideo(Video); 
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }; 
+        listaVideo();  
+    }, [pasoActualData]);
+
+    useEffect(() => {
+        // Función para reproducir el video automáticamente
+        const playVideo = async () => {
+          if (vid.current) {
+            await vid.current.playAsync();
+          }
+        };
+    
+        playVideo();
+      }, [video]);
+    
+    
+    return (
+        <View style={styles.container}> 
+            <Text style={styles.tarea}>{tarea.titulo}</Text>
+            <Text style={styles.aula}>Aula {tareaActvidad && tareaActvidad.aula}</Text> 
+            <Image style={styles.fotoProfe} source={{uri: foto.uri}} accessibilityLabel={profesor.nombre}/>
+    
             <View style={styles.pasos}>
-                <Text style={styles.texto}>{pasoActualData.title}</Text>
-                <Image source={pasoActualData.imagen} style={{ width: 300, height: 300 }} />
-                <Text style={styles.texto}>{pasoActualData.data[0]}</Text>
+                {/*En función de la visualización, se muestra una cosa u otra*/}
+                {pasoActualData && pasoActualData.imagen && pasoActualData.imagen !== "Ninguno" && 
+                visualizacion == "imagenes" && (
+                    <Image source={{uri: imagen.uri}} style={styles.foto} accessibilityLabel={pasoActualData.texto}/>
+                )} 
+
+                {pasoActualData && pasoActualData.pictograma && pasoActualData.pictograma !== "Ninguno" && 
+                visualizacion == "pictogramas" && (
+                    <Image source={{uri: pictograma.uri}} style={styles.foto} />
+                )}  
+
+                {pasoActualData && pasoActualData.video && pasoActualData.video !== "Ninguno" && 
+                visualizacion == "video" && (
+                    <Video ref={vid} style={styles.video}
+                    source={{uri: video.uri}}
+                    useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
+                    onPlaybackStatusUpdate={status => setStatus(() => status)}/>
+                )} 
+
+                {/*El texto se muestra siempre*/}
+                {pasoActualData && pasoActualData.texto && (<Text style={styles.texto}>{pasoActualData.texto}</Text>)}
 
                 <View style={styles.botonesContainer}>
                         {pasoActual > 0 && (
                             <TouchableOpacity onPress={handleAnterior} style={styles.botonAnterior}>
-                                <Entypo name="arrow-long-left" size={36} color="black" />
-                                <Text style={styles.botonTexto}>Anterior        </Text>
-                            </TouchableOpacity>
+                                <Entypo name="arrow-long-left" size={120} color="black" />
+                                <Text style={styles.botonTexto}>Anterior</Text>
+                            </TouchableOpacity> 
                         )}
                         <TouchableOpacity onPress={handleSiguiente} style={styles.botonSiguiente}>
-                            <Entypo name="arrow-long-right" size={36} color="black" />
-                            <Text style={styles.botonTexto}>        Siguiente</Text>
+                            <Entypo name="arrow-long-right" size={120} color="black" />
+                            <Text style={styles.botonTexto}>Siguiente</Text> 
                         </TouchableOpacity>
-                    </View>
+                </View> 
             </View>
 
             <View style={{margin: 20}}>
@@ -105,112 +259,85 @@ export function VerTarea ({route, navigation}){
                     {checkedStates[pasoActual] ? <Text style={styles.check}>✔️</Text> : null}
                 </TouchableOpacity>
             </View>
-
-            <View style={{ alignItems: 'center' }}>
-                <Text style={styles.opciones}>Opciones:</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap' }}>
-                    <View style={{marginHorizontal: 1}}>
-                        <Button
-                            // onPress={onPressLearnMore}
-                            title="Texto"
-                            color="#509594"
-                        />
-                    </View>
-                    <View style={{marginHorizontal: 1}}>
-                        <Button
-                            // onPress={onPressLearnMore}
-                            title="Imágenes"
-                            color="#509594"
-                        />
-                    </View>
-                    <View style={{marginHorizontal: 1}}>
-                        <Button
-                            // onPress={onPressLearnMore}
-                            title="Vídeo"
-                            color="#509594"
-                        />
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 10 }}>
-                    <View style={{marginHorizontal: 1}}>
-                        <Button
-                            // onPress={onPressLearnMore}
-                            title="Pictogramas"
-                            color="#509594"
-                        />
-                    </View>
-                    <View style={{marginHorizontal: 1}}>
-                        <Button
-                            // onPress={onPressLearnMore}
-                            title="Audio"
-                            color="#509594"
-                        />
-                    </View>
-                </View>
-            </View>
-        </View>
+    </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        //marginTop: Constants.statusBarHeight,
+        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     tarea: {
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 40
+        fontSize: RFValue(20)
+    },
+    aula: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: RFValue(13), 
     },
     pasos: {
-        alignItems: 'center',
+        flex:1,
+        alignItems: 'center',        
     },
     texto:{
-        fontSize: 20,
-        //marginTop: Constants.statusBarHeight
-    },
+        fontSize: RFValue(15),
+        margin: RFValue(10)
+    }, 
     botonesContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 20,
+        paddingHorizontal: RFValue(40)
     },
     botonAnterior: {
+        flex: 1,
         alignItems: 'flex-start',
-        marginRight: 'auto'
     },
     botonSiguiente: {
+        flex: 1,
         alignItems: 'flex-end',
-        marginLeft: 'auto'
     },
     botonTexto: {
         textAlign: 'center',
-    },
-    opciones: {
-        fontSize: 30,
-        textAlign: 'center',
-        marginBottom: 10
-    },
-    descripcion: {
-        fontSize: 17,
-        padding: 20,
-        textAlign: 'center'
-    },
-    title: {
-        fontSize: 20,
-        textDecorationLine: 'underline'
-    },
-    data: {
-        fontSize: 17, padding: 20
+        fontSize: RFValue(19)
     },
     check: {
         alignSelf: 'center',
-        fontSize: 25
+        fontSize: RFValue(30)
     },
     checkBox: {
-        width: 40,
-        height: 40,
-        borderWidth: 2,
+        width: RFValue(50),
+        height: RFValue(50),
+        borderWidth: RFValue(2),
         borderColor: 'green'
+    },
+    fotoProfe: {
+        width: RFValue(55),
+        height: RFValue(55),
+        borderRadius: RFValue(10),
+        overflow: 'hidden',
+        borderWidth: RFValue(1),
+        borderColor: 'black',
+    },
+    foto: {
+        marginTop: RFValue(15),
+        width: RFValue(240),
+        height: RFValue(140),
+        borderRadius: RFValue(5),
+        overflow: 'hidden',
+        borderWidth: RFValue(1),
+        borderColor: 'black',
+    },
+    video: {
+        marginTop: RFValue(15),
+        width: RFValue(240),
+        height: RFValue(120),
+        borderRadius: RFValue(5),
+        overflow: 'hidden',
+        borderWidth: RFValue(1),
+        borderColor: 'black',
     }
 })

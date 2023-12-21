@@ -44,6 +44,13 @@ export default function HomeAdmin ({ navigation }) {
             <Text style={styles.buttonText}>Gestión Materiales</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('gestionMenus')}>
+            <Text style={styles.buttonText}>Gestión menús</Text>
+          </TouchableOpacity>
+
+
       </View>
       </ScrollView>
 

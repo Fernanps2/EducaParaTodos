@@ -5,14 +5,16 @@ import { aniadeProfesor } from '../Controlador/profesores';
 import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';
 
 export default function AniadirProfesor ({navigation }) {
-  const [datosProfesor, setDatosProfesor] = useState({
+  const [datosProfesor, setDatosProfesor] = useState({ //Datos profesor
     nombre: "",
     apellidos: "",
     contrasenia: "",
+    aula: "",
   });
 
   const [imageUri, setImageUri] = useState("");
 
+  //Funcion para modificar datos del profesor
   const handeChangeText = (value, name) => {
     setDatosProfesor(prevState => ({
       ...prevState,
@@ -29,7 +31,7 @@ export default function AniadirProfesor ({navigation }) {
         { text: "Confirmar", onPress: () =>{
             almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
             aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
-              "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+              "Profesor"+datosProfesor.nombre+datosProfesor.apellidos, datosProfesor.aula);
             navigation.navigate('listaProfesores');
           }
         }
@@ -59,6 +61,13 @@ export default function AniadirProfesor ({navigation }) {
         placeholder="Apellidos"
         value={datosProfesor.apellidos}
         onChangeText={(value)=>handeChangeText(value,'apellidos')}
+        />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Aula"
+        value={datosProfesor.aula}
+        onChangeText={(value)=>handeChangeText(value,'aula')}
         />
 
       <TextInput

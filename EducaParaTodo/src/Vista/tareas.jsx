@@ -1,16 +1,28 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useCallback} from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
 import { getTarea,AppFirebase, storage, getTareaId } from '../Modelo/firebase';
+import { useFocusEffect } from '@react-navigation/native';
+import { buscarTareaAlumno } from '../Controlador/tareas';
 
+const manejoPresionarBoton = (tarea, navigation) => {
+    
+    const id = tarea.id;
 
+    if (tarea.tipo == "comanda"){
+        const id = tarea.id;
+        navigation.navigate('seleccionAula', {id,navigation});
+    } else if(tarea.tipo == "actividad"){
+        navigation.navigate('verTarea',{id:tarea.id,navigation});
+    }
+}
 
 // Componente que muestra los datos de las tareas
-const DatosTareas = ({ tarea, navigation }) => {
+const DatosTareas = ({ tarea, usuario, navigation }) => {
     return (
         <View>
-            <TouchableOpacity onPress={() => navigation.navigate('verTarea',  {id:tarea.id})}>
+            <TouchableOpacity onPress={() => manejoPresionarBoton(tarea,navigation)}>
                 {/* Esto es muy importante mirarlo ya que aquí está cogiendo la ruta de una foto de internet no sé como hacer 
                  para que la ruta sea de una foto que tenemos en una carpeta no se me muestra por pantalla */}
                 <Image style={styles.foto} source={{ uri: tarea.fotoURL }} />
@@ -23,21 +35,24 @@ const DatosTareas = ({ tarea, navigation }) => {
 const Tareas = ({ route, navigation }) => {
 
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
-
+    
     const [tareas, setTareas] = useState([]);
 
-    useEffect(() => {
-        const listaTareas = async () => {
-            try {
-                const Tareas = await getTareaId(usuario.id);
-                setTareas(Tareas);
-                console.log(tareas);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        listaTareas();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            const listaTareas = async () => {
+                try {
+                    const Tareas = await buscarTareaAlumno(usuario.id);
+                    setTareas(Tareas);
+                    console.log(tareas);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            listaTareas();
+        }, [])
+    );
+
     return (
         <View style={styles.container}>
             <CerrarSesion />
@@ -47,7 +62,7 @@ const Tareas = ({ route, navigation }) => {
             <ScrollView contentContainerStyle={styles.datos}>
                 {tareas.map((tarea, index) => (
                     <View key={index} style={styles.contenedor_tareas}>
-                        <DatosTareas tarea={tarea} navigation={navigation} />
+                        <DatosTareas tarea={tarea} usuario={usuario} navigation={navigation} />
                     </View>
                 ))}
 
