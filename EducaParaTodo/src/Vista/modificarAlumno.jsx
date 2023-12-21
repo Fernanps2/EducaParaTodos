@@ -1,8 +1,5 @@
 import {React, useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
 import { actualizaAlumno } from '../Controlador/alumnos';
 
 const ModificarAlumno = ({route, navigation}) => {

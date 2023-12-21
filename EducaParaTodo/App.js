@@ -30,13 +30,14 @@ import EliminarTareaAlumno from './src/Vista/EliminarTareaAlumno.jsx';
 import ModificarAlumno from './src/Vista/modificarAlumno.jsx';
 import ModificarProfesor from './src/Vista/modificarProfesor.jsx';
 import ModificarDatosProfesor from './src/Vista/ModificarDatosProfesor.jsx';
+import AvisoMaterial from './src/Vista/avisoMaterial.jsx';
+import VerAvisosMaterial from './src/Vista/verAvisosMaterial.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 //Contexto
 import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
-import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -68,13 +69,14 @@ export default function App() {
           <Stack.Screen name="tareaMateriales" component={TareaMateriales} />
           <Stack.Screen name="verTodosMateriales" component={VerTodosMateriales}/>
           <Stack.Screen name="anadirMaterial" component={AnadirMaterial} />
+          <Stack.Screen name="avisarMaterial" component={AvisoMaterial} />
+          <Stack.Screen name="verAvisosMaterial" component={VerAvisosMaterial} />
           <Stack.Screen name="HomeEducador" component={HomeEducador} />
           <Stack.Screen name="aniadirProfesor" component={AniadirProfesor} />
           <Stack.Screen name="HomeAdmin" component={HomeAdmin} />
           <Stack.Screen name="listaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
-          <Stack.Screen name="datosProfesor" component={DatosProfesor} />
 
 
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />

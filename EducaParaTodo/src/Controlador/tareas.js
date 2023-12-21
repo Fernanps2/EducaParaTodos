@@ -4,21 +4,13 @@ import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMat
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
 }
-
+/*
 export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
 }
-
-export async function buscaVisualizacion(idTarea){
-    let visualizacion = null;
-
-    visualizacion = getVisualizacion(idTarea);
-
-    return visualizacion;
-}
-
-// Esta función busca la tarea con ese ID de alumno
-export async function buscarTarea(idAlumno){
+*/
+// Esta función busca la tarea con ese ID
+export async function buscarTarea(idTarea){
     let tarea = null;
 
     tarea = await getTareaId(idAlumno);

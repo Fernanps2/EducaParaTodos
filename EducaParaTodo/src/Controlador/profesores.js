@@ -1,8 +1,8 @@
 import {getProfesoresLogin, getProfesores, getProfesorAula, getProfesoresApellidos, getProfesoresNombre, addProfesor, updateProfesor, updateProfesorAdmin, deleteProfesor, getProfesorID} from '../Modelo/firebase'
 
-export async function aniadeProfesor(nombre, apellidos, password, foto) {
+export async function aniadeProfesor(nombre, apellidos, password, foto, aula) {
     if (nombre != '' && apellidos != '' && password != '')
-        await addProfesor(nombre, apellidos, password, foto)
+        await addProfesor(nombre, apellidos, password, foto, aula)
 }
 
 export async function buscaProfesor() {
@@ -57,20 +57,21 @@ export async function loginProfesor (nombre, password) {
 export async function buscaProfesorId (id) {
     let instancia = null;
 
-    if (id != null)
+    if (id != null){
         instancia = await getProfesorID(id);
-
+        //console.log(instancia);
+    }
     return instancia;
 }
 
-export async function actualizaProfesor(id, nombre, apellidos, password, foto) {
+export async function actualizaProfesor(id, nombre, apellidos, password, foto, aula) {
     if (nombre != '' && apellidos != '' && password != '')
-        await updateProfesor(id, nombre, apellidos, password, foto);
+        await updateProfesor(id, nombre, apellidos, password, foto, aula);
 }
 
-export async function actualizaProfesorAdmin(id, nombre, apellidos, foto) {
+export async function actualizaProfesorAdmin(id, nombre, apellidos, foto, aula) {
     if (nombre != '' && apellidos != '')
-        await updateProfesorAdmin(id, nombre, apellidos, foto);
+        await updateProfesorAdmin(id, nombre, apellidos, foto, aula);
 }
 
 export async function borraProfesor(id) {

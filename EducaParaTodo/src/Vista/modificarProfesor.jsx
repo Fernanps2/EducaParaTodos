@@ -1,8 +1,5 @@
 import {React, useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
-// import datosAlumnos from '../datosPruebas/datosAlumnos';
-import Tareas from './tareas';
-import alumnos from '../Modelo/alumno';
 import { actualizaProfesorAdmin } from '../Controlador/profesores';
 import { buscaProfesorNombre } from '../Controlador/profesores';
 

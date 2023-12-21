@@ -1,41 +1,77 @@
- import React, { useState } from 'react';
- import { Text, View, TextInput, Button, StyleSheet } from 'react-native';
+ import React, { useState, useEffect } from 'react';
+ import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+ import { descargaFotoPersona } from '../Controlador/multimedia';
  import useUser from '../Controlador/useUser';
+ import Swal from "sweetalert2";
 
 
  const LoginScreenAlumno = ({ route, navigation }) => {
    const { alumno } = route.params;
    const [password, setPassword] = useState('');
+   const [imageUri, setImageUri] = useState([]);
    //const username = route.params.nombreAlumno;
    const {login} = useUser();
    let logueado = false;
 
-   async function handleLogin(username, password) {
+   async function handleLogin() {
      //console.log(username);
-     logueado = await login(username, password, 'alumno');
+     logueado = await login(alumno.nombre, password, 'alumno');
     if (logueado)
       navigation.navigate('Tareas', {usuario:alumno})
      else
-       alert('No está identificado');
+      if (Platform.OS === "web"){
+        Swal.fire({
+          title: "Cuidado",
+          text: "La contraseña no es correcta, prueba con otra",
+          icon: "warning",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Cuidado', 'La contraseña no es correcta, prueba con otra');
+      }
    };
+
+   useEffect(() => {
+    const loadData = async() => {
+      try {
+        setImageUri(await descargaFotoPersona(alumno.foto));
+      } catch(error) {
+        console.log(error);
+      }
+    }
+    loadData();
+  }, []);
+
    return (
      <View style={styles.container}>
        <Text style={styles.title}>EducaParaTodos</Text>
        
-       <View style={styles.container}>
-         <Text style={styles.text}>Usuario</Text>
-         <Text style={styles.usuario}>{alumno.nombre}</Text>
-         <Text style={styles.text}>Contraseña</Text>
-         <TextInput
-           style={styles.input}
-           placeholder="Introduzca aquí su contraseña"
-           secureTextEntry
-           onChangeText={text => setPassword(text)}
-         />
-         <Button title="Entrar" onPress={() =>{
-             handleLogin(alumno.nombre, password);
-             //navigation.navigate('Tareas', {usuario:alumno})
-         }} />
+       <View style={[styles.box, styles.container]}>
+        <View style={styles.spaceBetween}>
+            <Image style={styles.image} source={{uri:imageUri.uri}} />
+            <Text style={styles.usuario}>{alumno.nombre}</Text>
+        </View>
+        <View style={styles.box}>
+          <Text style={styles.text}>Contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Introduzca aquí su contraseña"
+            secureTextEntry
+            onChangeText={text => setPassword(text)}
+          />
+        </View>
+         <View style={[styles.box, styles.row]}>
+          <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
+                    {/*<Emoji emoji="check-mark" name="check-mark" style={{fontSize: 50}} />*/}
+                    <Image tintColor="green" style={styles.image} source={{uri:"https://pluspng.com/img-png/enter-png-enter-icon-1600.png"}} />
+                    <Text style={styles.texto}> {"ENTRAR"} </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+                    {/*<Emoji emoji="cross-mark" name="cross-mark" style={{fontSize: 50}}/>*/}
+                    <Image tintColor="red" style={styles.image} source={{uri:"https://cdn.icon-icons.com/icons2/1769/PNG/512/4115235-exit-logout-sign-out_114030.png"}} />
+                    <Text style={styles.texto}> {"SALIR"} </Text>
+          </TouchableOpacity>
+        </View>
        </View>
      </View>
    );
@@ -55,8 +91,11 @@
      marginBottom: 10,
      paddingLeft: 10,
    },
+   text: {
+    fontSize: 18,
+   },
    texto: {
-     alignItems: 'left',
+     fontSize: 20,
    },
    usuario: {
      fontWeight: 'bold',
@@ -65,7 +104,31 @@
    title: {
      fontSize: 26,
      textAlign: 'center',
-   }
+   },
+   image: {
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'black',
+  },
+   row: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  box: {
+    marginBottom: 20,
+  },
+  spaceBetween: {
+    marginBottom: 50,
+  }
  });
 
  export default LoginScreenAlumno;

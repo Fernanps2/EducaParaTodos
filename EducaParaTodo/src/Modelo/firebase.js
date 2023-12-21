@@ -2,7 +2,9 @@ import React, {useEffect, useState} from 'react';
 
 import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { addDoc } from 'firebase/firestore';
-import {getStorage, ref, uploadBytes, getDownloadURL, listAll} from 'firebase/storage';
+import {getStorage, ref, uploadBytes, getDownloadURL, listAll, deleteObject} from 'firebase/storage';
+import { Platform } from 'react-native';
+import Swal from "sweetalert2";
 
 //import {v4} from 'uuid';
 // import {getStorage, ref, uploadFile} from '@react-native-firebase/storage'
@@ -46,6 +48,7 @@ const VIDEOS = 'Videos/';
 const EMOTICONOS = 'Emoticonos/';
 const PERSONAS = 'Personas/';
 const LOGIN = 'ImagenesLogin/';
+const MATERIALES = 'materiales/';
 
 
 /**********  INICIO FUNCIONES ALUMNO ********/
@@ -57,13 +60,14 @@ export async function getAlumnos() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -80,13 +84,14 @@ export async function getAlumnosNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -103,13 +108,14 @@ export async function getAlumnosApellidos(apellidos) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -126,13 +132,14 @@ export async function getAlumnosContrasenia(contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -149,13 +156,14 @@ export async function getAlumnosVisualizacionPredefinida(visualizacion) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -172,13 +180,14 @@ export async function getAlumnosLogin(nombre, contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, visualizacionPreferente, foto} = doc.data();
+            const { nombre, apellidos, visualizacionPreferente, foto, tipoLogin} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               visualizacionPreferente,
               foto,
+              tipoLogin
             });
         }        
     } catch (error) {
@@ -220,9 +229,9 @@ export async function getAlumnoID(id) {
     
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS, id);
-        const docSnapshot = await getDoc(doc);
-        
+        const docAlumno = doc(db, COL_ALUMNOS, id);
+        const docSnapshot = await getDoc(docAlumno);
+
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
             console.log("Se ha recibido la información");
@@ -236,13 +245,14 @@ export async function getAlumnoID(id) {
     return instancia;
 }
 
-export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion) {
+export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizacion, tipoLog) {
     let alumno = {
         nombre: nombre,
         apellidos: apellidos,
         password: contrasenia,
         foto: foto,
         visualizacionPreferente: visualizacion,
+        tipoLogin: tipoLog
     }
 
     let identificacion = null;
@@ -262,12 +272,13 @@ export async function addAlumno(nombre, apellidos, contrasenia, foto, visualizac
     return identificacion;
 }
 
-export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente) {
+export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPreferente, tipoLogin) {
     let editaAlumno = {
         nombre: nombre, 
         apellidos: apellidos, 
         visualizacionPreferente: visualizacionPreferente.split(',').map((item) => item.trim()), 
-        foto: foto
+        foto: foto,
+        tipoLogin: tipoLogin
     };
     let alumno = null;
 
@@ -285,6 +296,7 @@ export async function updateAlumno(id, nombre, apellidos, foto, visualizacionPre
             editaAlumno.apellidos = editaAlumno.apellidos == '' ? alumno.apellidos : editaAlumno.apellidos;
             editaAlumno.visualizacionPreferente = editaAlumno.visualizacionPreferente == '' ? alumno.visualizacionPreferente : editaAlumno.visualizacionPreferente;
             editaAlumno.foto = editaAlumno.foto == '' ? alumno.foto : editaAlumno.foto;
+            editaAlumno.tipoLogin = editaAlumno.tipoLogin == '' ? alumno.tipoLogin : editaAlumno.tipoLogin;
 
 
             await updateDoc(docAlumno, {
@@ -324,12 +336,13 @@ export async function getProfesores() {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -346,12 +359,13 @@ export async function getProfesoresNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -368,12 +382,13 @@ export async function getProfesoresApellidos(apellidos) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -390,12 +405,13 @@ export async function getProfesoresContrasenia(contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -412,12 +428,13 @@ export async function getProfesoresLogin(nombre, contrasenia) {
         const querySnapshot = await getDocs(queryFilter)
         
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto} = doc.data();
+            const { nombre, apellidos, foto, aula} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
+              aula
             });
         }        
     } catch (error) {
@@ -430,8 +447,8 @@ export async function getProfesoresLogin(nombre, contrasenia) {
 export async function getProfesorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -440,18 +457,19 @@ export async function getProfesorID(id) {
             console.log("No existe la instancia");
         }
     } catch (error) {
-        console.log(error);
+        console.log("Error en profesorID", error);
     }
 
     return instancia;
 }
 
-export async function addProfesor(nombre, apellidos, contrasenia, foto) {
+export async function addProfesor(nombre, apellidos, contrasenia, foto, aula) {
     let profesor = {
         nombre: nombre,
         apellidos: apellidos,
         password: contrasenia,
-        foto: foto
+        foto: foto,
+        aula: aula
     }
 
     let identificacion = null;
@@ -469,12 +487,13 @@ export async function addProfesor(nombre, apellidos, contrasenia, foto) {
     return identificacion;
 }
 
-export async function updateProfesor(id, nombre, apellidos, password, foto) {
+export async function updateProfesor(id, nombre, apellidos, password, foto, aula) {
     let editaProfesor = {
         nombre: nombre, 
         apellidos: apellidos, 
         password: password, 
-        foto: foto
+        foto: foto,
+        aula: aula
     };
     let profesor = null;
 
@@ -489,6 +508,7 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.password = editaProfesor.password == '' ? profesor.password : editaProfesor.password;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
@@ -499,11 +519,12 @@ export async function updateProfesor(id, nombre, apellidos, password, foto) {
     }
 }
 
-export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
+export async function updateProfesorAdmin(id, nombre, apellidos, foto, aula) {
     let editaProfesor = {
         nombre: nombre, 
         apellidos: apellidos, 
-        foto: foto
+        foto: foto,
+        aula: aula
     };
     let profesor = null;
 
@@ -517,6 +538,7 @@ export async function updateProfesorAdmin(id, nombre, apellidos, foto) {
             editaProfesor.nombre = editaProfesor.nombre == '' ? profesor.nombre : editaProfesor.nombre;
             editaProfesor.apellidos = editaProfesor.apellidos == '' ? profesor.apellidos : editaProfesor.apellidos;
             editaProfesor.foto = editaProfesor.foto == '' ? profesor.foto : editaProfesor.foto;
+            editaProfesor.aula = editaProfesor.aula == '' ? profesor.aula : editaProfesor.aula;
 
             await updateDoc(docProfesor, {
                 ...editaProfesor
@@ -661,8 +683,8 @@ export async function getAdministradoresLogin(nombre, contrasenia) {
 export async function getAdministradorID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ADMINISTRADORES, id);
-        const docSnapshot = await getDoc(doc);
+        const docAdmin = doc(db, COL_ADMINISTRADORES, id);
+        const docSnapshot = await getDoc(docAdmin);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -793,8 +815,8 @@ export async function getForosNombre(nombre) {
 export async function getForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docForo = doc(db, COL_FOROS, id);
+        const docSnapshot = await getDoc(docForo);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -941,8 +963,8 @@ export async function getProfesorTarea_Tarea(id_tarea) {
 export async function getProfesorTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_TAREAS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1090,8 +1112,8 @@ export async function getAlumnoTarea_Tarea(id_tarea) {
 export async function getAlumnoTareaID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_TAREAS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_TAREAS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1242,8 +1264,8 @@ export async function getProfesoresForo_Profesores(id_profesores) {
 export async function getProfesorForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_PROFESORES_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docProfesor = doc(db, COL_PROFESORES_FOROS, id);
+        const docSnapshot = await getDoc(docProfesor);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1391,8 +1413,8 @@ export async function getAlumnosForo_Alumnos(id_alumnos) {
 export async function getAlumnoForoID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_ALUMNOS_FOROS, id);
-        const docSnapshot = await getDoc(doc);
+        const docAlumno = doc(db, COL_ALUMNOS_FOROS, id);
+        const docSnapshot = await getDoc(docAlumno);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1501,8 +1523,8 @@ export async function getMensajes() {
 export async function getMensajeID(id) {
     let instancia = null;
     try {
-        const doc = doc(db, COL_MENSAJES, id);
-        const docSnapshot = await getDoc(doc);
+        const docMensaje = doc(db, COL_MENSAJES, id);
+        const docSnapshot = await getDoc(docMensaje);
 
         if (docSnapshot.exists()) {
             instancia = docSnapshot.data();
@@ -1599,13 +1621,14 @@ export async function almacenarImagen(imagen, nombreImagen) {
     
     try {
         //Comprobamos si existe la imagen
-        if (descargarImagen(nombreImagen) != null) {
+        if ((await descargarImagen(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, IMAGENES+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
                 console.log('Se ha subido la imagen');
             });
         } else {
+            console.log("El nombre de archivo ya existe");
             if (Platform.OS === "web") {
                 Swal.fire({
                   title: "ERROR",
@@ -1626,7 +1649,7 @@ export async function almacenarPictograma(imagen, nombreImagen) {
 
     try {
         //Comprobamos si existe el pictograma
-        if (descargarPictograma(nombreImagen) != null) {
+        if ((await descargarPictograma(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, PICTOGRAMAS+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
@@ -1652,7 +1675,7 @@ export async function almacenarPictograma(imagen, nombreImagen) {
 export async function almacenarVideo(video, nombreVideo) {
 
     try {
-        if (descargarVideo(nombreVideo) != null ) {
+        if ((await descargarVideo(nombreVideo)).nombre == null ) {
             const refImagenes = ref(storage, VIDEOS+nombreVideo)
             const file = await(await fetch(video)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
@@ -1677,10 +1700,10 @@ export async function almacenarVideo(video, nombreVideo) {
 
 export async function almacenarFotoPersona(foto, nombreFoto) {
     //Si no tiene un nombre, se coge el nombre de la propia uri de la foto
-    if (nombreFoto == null || nombreFoto.equals('')) nombreFoto = video.split('/')[video.split('/').length-1];
+    if (nombreFoto == null || nombreFoto == '') nombreFoto = foto.split('/')[foto.split('/').length-1];
 
     try {
-        if (descargarFotoPersona(nombreFoto) != null) {
+        if ((await descargarFotoPersona(nombreFoto)).nombre == null) {
             const refFoto = ref(storage, PERSONAS+nombreFoto)
             const file = await(await fetch(foto)).blob();
             uploadBytes(refFoto, file).then((snapshot) => {
@@ -1706,11 +1729,37 @@ export async function almacenarFotoPersona(foto, nombreFoto) {
 export async function almacenarImagenLogin(imagen, nombreImagen) {
     
     try {
-        if (descargarImagenLogin(nombreImagen) != null) {
+        if ((await descargarImagenLogin(nombreImagen)).nombre == null) {
             const refImagenes = ref(storage, LOGIN+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
                 console.log('Se ha subido la imagen para login');
+            });
+        } else {
+            if (Platform.OS === "web") {
+                Swal.fire({
+                title: "ERROR",
+                text: "El nombre del archivo ya existe, elija uno diferente",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+                });
+            } else {
+                Alert.alert('Mensaje importante,', 'El nombre del archivo ya existe, elija uno diferente');
+            }
+        }
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+export async function almacenarMaterial(imagen, nombreImagen) {
+    
+    try {
+        if ((await descargarMaterial(nombreImagen)).nombre == null) {
+            const refImagenes = ref(storage, MATERIALES+nombreImagen)
+            const file = await(await fetch(imagen)).blob();
+            uploadBytes(refImagenes, file).then((snapshot) => {
+                console.log('Se ha subido el material');
             });
         } else {
             if (Platform.OS === "web") {
@@ -1767,7 +1816,7 @@ export async function descargarImagenes() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1820,7 +1869,7 @@ export async function descargarPictogramas() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1873,7 +1922,7 @@ export async function descargarVideos() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1926,7 +1975,7 @@ export async function descargarEmoticonos() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -1979,7 +2028,7 @@ export async function descargarFotosPersonas() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -2032,7 +2081,7 @@ export async function descargarImagenesLogin() {
     for (let i = 0; i < resultado.items.length; i++) {
         await getDownloadURL(resultado.items[i])
         .then((url) => {
-            imagenUri = {
+            let imagenUri = {
                 uri: url,
                 nombre: resultado.items[i].name
             };
@@ -2045,6 +2094,119 @@ export async function descargarImagenesLogin() {
     }
 
     return entidad;
+}
+
+export async function descargarMaterial(nombreImagen) {
+    let imagenUri = {
+        uri: null,
+        nombre: null
+    };
+
+    const refImagen = ref(storage, MATERIALES+nombreImagen);
+
+    await getDownloadURL(refImagen)
+        .then((url) => {
+            imagenUri = {
+                uri: url,
+                nombre: refImagen.name
+            };
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar el material");
+        });
+
+    return imagenUri;
+}
+
+export async function descargarMateriales() {
+    let entidad = [];
+    let resultado;
+
+    const listRef = ref(storage, MATERIALES);
+
+    await listAll(listRef)
+        .then((res) => {
+            resultado = res;
+        }).catch((error) => {
+            console.log("Error en el listado de base de datos, " + error);
+        });
+    
+    for (let i = 0; i < resultado.items.length; i++) {
+        await getDownloadURL(resultado.items[i])
+        .then((url) => {
+            let imagenUri = {
+                uri: url,
+                nombre: resultado.items[i].name
+            };
+
+            entidad.push(imagenUri);
+        })
+        .catch((error) => {
+            console.log("No se ha podido descargar los materiales");
+        });
+    }
+
+    return entidad;
+}
+
+export async function eliminarImagen(nombreArchivo) {
+    const refArchivo = ref(storage, IMAGENES+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarPictograma(nombreArchivo) {
+    const refArchivo = ref(storage, PICTOGRAMAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarVideo(nombreArchivo) {
+    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarFotoPersona(nombreArchivo) {
+    const refArchivo = ref(storage, PERSONAS+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarImagenLogin(nombreArchivo) {
+    const refArchivo = ref(storage, LOGIN+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+export async function eliminarMaterial(nombreArchivo) {
+    const refArchivo = ref(storage, MATERIALES+nombreArchivo);
+
+    await deleteObject(refArchivo).then(() => {
+        console.log("Se ha borrado el archivo correctamente")
+    }).catch((error) => {
+        console.log(error);
+    });
 }
 
 /******** FINAL FUNCIONES PARA MULTIMEDIA ********/

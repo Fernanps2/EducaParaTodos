@@ -11,9 +11,8 @@ import {
   Image,
   ScrollView
 } from "react-native";
-import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
-import { Video, ResizeMode } from 'expo-av';
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item

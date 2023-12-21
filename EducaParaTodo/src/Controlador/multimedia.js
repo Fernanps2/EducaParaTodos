@@ -1,6 +1,7 @@
-import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin} from "../Modelo/firebase";
-import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin } from "../Modelo/firebase";
-import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin } from "../Modelo/firebase";
+import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial} from "../Modelo/firebase";
+import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial } from "../Modelo/firebase";
+import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -16,7 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
  */
 export async function almacenaImagen(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagen(imagen);
+        almacenarImagen(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -42,7 +43,7 @@ export async function almacenaImagen(imagen, nombre) {
  */
 export async function almacenaPictograma(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarPictograma(imagen);
+        almacenarPictograma(imagen, nombre);
     else 
         if (Platform.OS === "web") {
             Swal.fire({
@@ -68,7 +69,7 @@ export async function almacenaPictograma(imagen, nombre) {
  */
 export async function almacenaVideo(video, nombre) {
     if (video != '' && nombre != '')
-        almacenarVideo(video);
+        almacenarVideo(video, nombre);
     else
         if (Platform.OS === "web") {
             Swal.fire({
@@ -94,7 +95,7 @@ export async function almacenaVideo(video, nombre) {
  */
 export async function almacenaFotoPersona(foto, nombre) {
     if (foto != '')
-        almacenarFotoPersona(foto);
+        almacenarFotoPersona(foto, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -121,7 +122,34 @@ export async function almacenaFotoPersona(foto, nombre) {
  */
 export async function almacenaImagenLogin(imagen, nombre) {
     if (imagen != '' && nombre != '')
-        almacenarImagenLogin(imagen);
+        almacenarImagenLogin(imagen, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío o sin nombre",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío o sin nombre');
+        }
+    }
+}
+
+/**
+ * @name almacenaMaterial
+ * 
+ * @description Almacena en la base de datos una imagen con un nombre
+ * 
+ * @param {String} imagen uri de la imagen del material a subir
+ * @param {String} nombre nombre de la imagen del material
+ * 
+ * @warning Si el nombre es idéntico a otro de la base de datos saltará una alerta
+ */
+export async function almacenaMaterial(imagen, nombre) {
+    if (imagen != '' && nombre != '')
+        almacenarMaterial(imagen, nombre);
     else {
         if (Platform.OS === "web") {
             Swal.fire({
@@ -146,6 +174,7 @@ export async function almacenaImagenLogin(imagen, nombre) {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaImagen(imagen) {
     let imagenCargada = null;
@@ -166,6 +195,7 @@ export async function descargaImagen(imagen) {
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacío si no hay
  */
 export async function descargaImagenes() {
     const array = await descargarImagenes();
@@ -183,6 +213,7 @@ export async function descargaImagenes() {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaPictograma(imagen) {
     let imagenCargada = null;
@@ -201,6 +232,7 @@ export async function descargaPictograma(imagen) {
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacía si no hay
  */
 export async function descargaPictogramas() {
     const array = await descargarPictogramas();
@@ -218,6 +250,7 @@ export async function descargaPictogramas() {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaVideo(video) {
     let videoCargada = null;
@@ -236,6 +269,7 @@ export async function descargaVideo(video) {
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacía si no hay
  */
 export async function descargaVideos() {
     const array = await descargarVideos();
@@ -253,6 +287,7 @@ export async function descargaVideos() {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaEmoticono(emoticono) {
     let emoticCargada = null;
@@ -271,6 +306,7 @@ export async function descargaEmoticono(emoticono) {
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacía si no hay
  */
 export async function descargaEmoticonos() {
     const array = await descargarEmoticonos();
@@ -288,6 +324,7 @@ export async function descargaEmoticonos() {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaFotoPersona(foto) {
     let fotoCargada = null;
@@ -302,9 +339,11 @@ export async function descargaFotoPersona(foto) {
  * @name descargaFotosPersonas
  * 
  * @description Accede a la base de datos y descarga todas las fotos de la carpeta
+ * 
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacía si no hay
  */
 export async function descargaFotosPersonas() {
     const array = await descargarFotosPersonas();
@@ -322,6 +361,7 @@ export async function descargaFotosPersonas() {
  * @returns array con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          null si no existe
  */
 export async function descargaImagenLogin(imagen) {
     let imagenCargada = null;
@@ -340,11 +380,127 @@ export async function descargaImagenLogin(imagen) {
  * @returns array de arrays con etiqueta (JSON): 
  *                          "uri": url del archivo
  *                          "nombre": nombre del archivo
+ *          vacía si no hay
  */
 export async function descargaImagenesLogin() {
     const array = await descargarImagenesLogin();
 
     return array;
+}
+
+/**
+ * @name descargaMaterial
+ * 
+ * @description Accede a la base de datos y descarga la imagen por el nombre dado
+ * 
+ * @param {string} imagen nombre de la imagen para material a buscar
+ * 
+ * @returns array con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          null si no existe
+ */
+export async function descargaMaterial(imagen) {
+    let imagenCargada = null;
+
+    if (imagen != '')
+        imagenCargada = await descargarMaterial(imagen);
+
+    return imagenCargada;
+}
+
+/**
+ * @name descargaMateriales
+ * 
+ * @description Accede a la base de datos y descarga todas las imágenes de la carpeta
+ * 
+ * @returns array de arrays con etiqueta (JSON): 
+ *                          "uri": url del archivo
+ *                          "nombre": nombre del archivo
+ *          vacía si no hay
+ */
+export async function descargaMateriales() {
+    const array = await descargarMateriales();
+
+    return array;
+}
+
+/**
+ * @name eliminaImagen
+ * 
+ * @description Borra la imagen con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagen(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagen(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaVideo  
+ * 
+ * @description Borra el video con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaVideo(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarVideo(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaPictograma
+ * 
+ * @description Borra el pictograma con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaPictograma(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarPictograma(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaFotoPersona
+ * 
+ * @description Borra la foto con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaFotoPersona(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarFotoPersona(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaImagenLogin
+ * 
+ * @description Borra la imagen para el login con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaImagenLogin(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarImagenLogin(nombreArchivo);
+    }
+}
+
+/**
+ * @name eliminaMaterial
+ * 
+ * @description Borra la imagen para el material con el nombre del archivo
+ * 
+ * @param {string} nombreArchivo El nombre del archivo a eliminar
+ */
+export async function eliminaMaterial(nombreArchivo) {
+    if (nombreArchivo != null && nombreArchivo != '') {
+        await eliminarMaterial(nombreArchivo);
+    }
 }
 
 /**
@@ -367,7 +523,7 @@ export const openGallery = async () => {
     if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         //console.log(imageUri);
-        //almacenaImagen(imageUri);
+        //almacenaPictograma(imageUri, "imagenDePrueba");
         return imageUri;
     }
 
