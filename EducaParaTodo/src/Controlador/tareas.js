@@ -1,4 +1,4 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
+import { setTarea,asignarFeedback, asignarTarea, getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -23,8 +23,31 @@ export async function buscarTarea(idTarea){
     return tarea;
 }
 
-// Esta función busca todas las tareas
-export async function buscarTareas(){
+/**
+ * @name asignarUnaTarea
+ *
+ * @description Asigna un alumno y su visualización a una tarea determinada
+ *
+ * @param {string} idTarea tarea a actualizar
+ *                 idAlumno alumno a asignar la tarea
+ *                 visualizacion tipo de visualizacion del alumno para dicha tarea
+ *
+ * @returns
+ */
+export async function asignarUnaTarea(idTarea, idAlumno, visualizacion) {
+
+    await asignarTarea(idTarea, idAlumno, visualizacion);
+}
+
+/**
+ * @name buscarTareas
+ *
+ * @description Busca todas las tareas disponibles
+ *
+ * @param
+ *
+ * @returns array con todas las tareas disponibles
+ */export async function buscarTareas(){
     let tareas = null;
 
     tareas = await getTareas();

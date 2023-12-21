@@ -8,6 +8,15 @@ export async function aniadeAlumno(nombre, apellidos, password, foto, visualizac
     }
 }
 
+/**
+ * @name buscaAlumno
+ *
+ * @description Busca todos los alumnos disponibles
+ *
+ * @param
+ *
+ * @returns array de todos los alumnos disponibles
+ */
 export async function buscaAlumno() {
     let alumnos = null;
 
@@ -17,6 +26,15 @@ export async function buscaAlumno() {
     return alumnos;
 }
 
+/**
+ * @name buscaVisualizacionesPreferentesAlumno
+ *
+ * @description Consulta los tipos de visualización del alumno
+ *
+ * @param {string} alumniId ID del alumno a consultar sus tipos de visualización
+ *
+ * @returns array de los tipos de visualización del alumno
+ */
 export async function buscaVisualizacionesPreferentesAlumno(alumnoId) {
   let visualizacionesPreferentes = null;
 
@@ -25,6 +43,15 @@ export async function buscaVisualizacionesPreferentesAlumno(alumnoId) {
   return visualizacionesPreferentes;
 }
 
+/**
+ * @name buscaAlumnoNombre
+ *
+ * @description Accede a los alumnos de la base de datos que tengan ese nombre
+ *
+ * @param {string} nombre Nombre del alumno a devolver
+ *
+ * @returns array de alumnos con el nombre pasado como argumento
+ */
 export async function buscaAlumnoNombre(nombre) {
     let alumnos = null;
 
@@ -63,16 +90,15 @@ export async function loginAlumno (nombre, password) {
     return id;
 }
 
-export async function obtenerImagenesLoginAlumno(idAlumno) {
-  try {
-    const imagenes = await getAlumnoImagenesLogin(idAlumno);
-    return imagenes;
-  } catch (error) {
-    console.error('Error al obtener imágenes del alumno:', error);
-    throw error;
-  }
-}
-
+/**
+ * @name obtenerIdAlumnoPorNombre
+ *
+ * @description Obtiene el ID del alumno de la base de datos a partir de su nombre
+ *
+ * @param {string} nombre Nombre del alumno a buscar
+ *
+ * @returns ID del alumno
+ */
 export async function obtenerIdAlumnoPorNombre(nombre) {
   try {
     const idAlumno = await getAlumnoIdPorNombre(nombre);
