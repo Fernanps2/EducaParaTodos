@@ -9,14 +9,15 @@ import {
   Alert,
   FlatList,
   Image,
-  ScrollView
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
 import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 import { anadeVideo } from "../Controlador/tareas";
-import { almacenaVideo, openGallery } from "../Controlador/multimedia";
+import { Video, ResizeMode } from 'expo-av'; 
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
@@ -52,7 +53,7 @@ export default function GestionItemActividad() {
   const [imagenes, setImagenes] = useState([]);
   const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]);
 
-  //Sección de funciones
+  //Sección de funciones de visibilidad
   const handleVideo = () => {
     setViewVideo(true); //
     setViewPictograma(false);
@@ -185,7 +186,7 @@ export default function GestionItemActividad() {
       }
     }
   };
-
+  // funcion para añadir pictogramas
   const handleAñadirPictograma = async () => {
     if (viewPictograma) {
       if (nombrePictograma !== "" && urlPictograma !== "") {
@@ -205,7 +206,7 @@ export default function GestionItemActividad() {
       }
     }
   };
-
+  // funcion para añadir imagen
   const handleAñadirImagen = async () => {
     if (viewImagen) {
       if (nombreImagen !== "" && urlImagen !== "") {
@@ -283,9 +284,9 @@ export default function GestionItemActividad() {
     }
   }
 
-  
-
   //FIN FUNCIONES ELIMINAR IMAGEN
+
+
 
   // FUNCIONES PARA ELIMINAR PICTOGRAMAS
 
@@ -319,7 +320,7 @@ export default function GestionItemActividad() {
       </TouchableOpacity>
     );
   };
-
+  // funcion para eliminar los pictogramas seleccionados
   const EliminarPictograma = async () => {
     if (viewEliminarPictograma) {
       pictogramasSeleccionados.map((selectedId) => {
@@ -407,6 +408,7 @@ export default function GestionItemActividad() {
 
   //FIN FUNCIONES ELIMINAR VIDEO
 
+  // Funcion para abrir la galeria
   const abrirGaleria = async() => {
     if(viewPictograma) setUrlPictograma(await openGallery());
     else if (viewImagen) setUrlImagen(await openGallery());
@@ -646,7 +648,6 @@ export default function GestionItemActividad() {
           {isLoading ? (
             <ActivityIndicator size = "large" color="black"/>
           ) : (
-
             <View style={styles.container}>
           
             <FlatList
