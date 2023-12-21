@@ -25,14 +25,6 @@ export default function AniadirAlumno ({ navigation }) {
     imagen4: null,
   });
 
-  //Vector con nombres de las imagenes de la contraseña
-  const [imagenesNombreContrasenia, setImagenesNombreContrasenia] = useState({
-    imagenNombre1: "",
-    imagenNombre2: "",
-    imagenNombre3: "",
-    imagenNombre4: "",
-  });
-
 
   //Vector con datos del alumno
   const [datosAlumno, setDatosAlumno] = useState({
@@ -59,12 +51,6 @@ export default function AniadirAlumno ({ navigation }) {
     }));
   }
 
-  const handleChangeImagenNombreLogin = (value, name) => {
-    setImagenesNombreContrasenia(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  }
 
   const handleImage = async() => {
     setImageUri(await openGallery());
@@ -91,52 +77,27 @@ export default function AniadirAlumno ({ navigation }) {
       [
         { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
         { text: "Confirmar", onPress: () =>{
-            //almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+            almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
             if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
-              /*
-              //Asociamos los nombres a las imagenes
-              handleChangeImagenNombreLogin("Imagen1"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre1');
-              handleChangeImagenNombreLogin("Imagen2"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre2');
-              handleChangeImagenNombreLogin("Imagen3"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre3');
-              handleChangeImagenNombreLogin("Imagen4"+datosAlumno.nombre+datosAlumno.apellidos, 'imagenNombre4');
               
-              //Establecemos un breve retraso para asegurar que se actualiza el estado
-              setTimeout(() => {
-                const nombresContrasenia = [
-                  imagenesNombreContrasenia.imagenNombre1,
-                  imagenesNombreContrasenia.imagenNombre2,
-                  imagenesNombreContrasenia.imagenNombre3,
-                  imagenesNombreContrasenia.imagenNombre4
-                ];
-                handeChangeText(nombresContrasenia.join(','), 'contrasenia');
-              }, 0);
-              */
-              // Concatena los nombres de las imágenes para establecer la contraseña
-              const contrasenia = `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`;
-              handeChangeText(contrasenia, 'contrasenia');
+              //Asociamos los nombres a las imagenes y la contraseña
               //Almacenamos las imagenes
               almacenaImagenLogin(imagenesContrasenia.imagen1, "Imagen1"+datosAlumno.nombre+datosAlumno.apellidos);
               almacenaImagenLogin(imagenesContrasenia.imagen2, "Imagen2"+datosAlumno.nombre+datosAlumno.apellidos);
               almacenaImagenLogin(imagenesContrasenia.imagen3, "Imagen3"+datosAlumno.nombre+datosAlumno.apellidos);
               almacenaImagenLogin(imagenesContrasenia.imagen4, "Imagen4"+datosAlumno.nombre+datosAlumno.apellidos);
               
-              console.log(imagenesContrasenia.imagen1);
-              console.log(imagenesContrasenia.imagen2);
-              console.log(imagenesContrasenia.imagen3);
-              console.log(imagenesContrasenia.imagen4);
- 
-              console.log(imagenesNombreContrasenia.imagen1);
-              console.log(imagenesNombreContrasenia.imagen2);
-              console.log(imagenesNombreContrasenia.imagen3);
-              console.log(imagenesNombreContrasenia.imagen4);
- 
-              console.log(datosAlumno.contrasenia);
+              //Añadimos alumno
+              aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, 
+                `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`, 
+              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
              
 
             }
-
-            //aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
-              //"Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+            else { //Añadimos alumno
+              aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+                "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+            }
             
               navigation.navigate('listaAlumnos');
           }

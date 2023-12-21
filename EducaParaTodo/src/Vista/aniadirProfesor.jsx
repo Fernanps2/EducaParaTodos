@@ -5,7 +5,7 @@ import { aniadeProfesor } from '../Controlador/profesores';
 import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';
 
 export default function AniadirProfesor ({navigation }) {
-  const [datosProfesor, setDatosProfesor] = useState({
+  const [datosProfesor, setDatosProfesor] = useState({ //Datos profesor
     nombre: "",
     apellidos: "",
     contrasenia: "",
@@ -14,6 +14,7 @@ export default function AniadirProfesor ({navigation }) {
 
   const [imageUri, setImageUri] = useState("");
 
+  //Funcion para modificar datos del profesor
   const handeChangeText = (value, name) => {
     setDatosProfesor(prevState => ({
       ...prevState,
