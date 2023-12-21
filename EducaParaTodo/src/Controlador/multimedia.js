@@ -1,4 +1,5 @@
 import { 
+    getAlumnoID,
     almacenarImagen, 
     almacenarPictograma, 
     almacenarVideo, 
