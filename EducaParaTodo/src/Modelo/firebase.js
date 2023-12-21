@@ -4177,4 +4177,31 @@ export async function terminarTarea(idTarea){
     }
   };
 
+   // Funcion para mostrar los pictogramas de la base de datos
+   export const cargarAudios = async () => {
+
+    try {
+    const AudioQuery = collection(db, "Audio");
+    const querySnapshot = await getDocs(AudioQuery);
+    const datos = [];
+    querySnapshot.forEach((docu) => {
+      const audioDatos = docu.data(); 
+      const id = audioDatos.id; // Extraemos el ID del documento
+      datos.push({id, ...audioDatos});
+    });
+
+    return datos;
+  }catch(error){
+    if (Platform.OS === "web"){
+      Swal.fire({
+        title: "Fallo de carga",
+        text: "Intentelo de nuevo.",
+        icon: "warning",
+        confirmButtonText: "De acuerdo",
+      })
+    }else{
+      Alert.alert('Fallo de carga,', 'Intentelo de nuevo.');
+    }
+  }  
+  }
 

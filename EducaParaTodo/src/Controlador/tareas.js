@@ -2,7 +2,7 @@ import { Alert } from "react-native";
 import { getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
 //import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
 //import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
+import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarAudios,getAlumnoVisualizacionTarea, getProfesores} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
     return await getProfesores();
