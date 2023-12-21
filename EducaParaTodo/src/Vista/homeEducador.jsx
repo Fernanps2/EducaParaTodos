@@ -34,7 +34,7 @@ export default function HomeEducador ({ route, navigation }) {
 
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: nombreProf.foto }} // Deberías reemplazar esto con la imagen real
+          source={{ uri: imagen }} // Deberías reemplazar esto con la imagen real
           style={styles.profileImage}
         />
         <Text style={styles.roleText}>{nombreProf}</Text>
