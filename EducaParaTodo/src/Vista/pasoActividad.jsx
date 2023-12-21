@@ -12,14 +12,12 @@ import {
   ScrollView,
 } from "react-native";
 import Swal from "sweetalert2";
-import {
-  cargarAudiosBD,
-} from "../Controlador/tareas";
+import { cargarAudiosBD } from "../Controlador/tareas";
 import {
   descargaPictogramas,
   descargaImagenes,
   descargaVideos,
-} from "../Controlador/multimedia"
+} from "../Controlador/multimedia";
 
 export default function PasoActividad({ navigation }) {
   // Variables para añadir items
@@ -646,18 +644,12 @@ export default function PasoActividad({ navigation }) {
           )}
         </View>
 
-        <View style={[styles.addButtonGuardar]}>
-          <Button
-            title="Guardar"
-            onPress={() => showAlertStore()}
-            style={styles.addButtonText}
-          />
-        </View>
-
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
-        <View style={styles.separador}></View>
+        <TouchableOpacity
+          style={styles.addButtonGuardar}
+          onPress={() => showAlertStore()}
+        >
+          <Text style={styles.addButtonText}>GUARDAR</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -720,10 +712,12 @@ const styles = StyleSheet.create({
   addButtonGuardar: {
     alignItems: "center",
     borderRadius: 4,
-    width: Platform.OS === "web" ? 80 : 90,
+    width: Platform.OS === "web" ? 100 : 90,
+    padding: 5,
     position: "absolute",
     left: 150,
-    top: 825,
+    top: 800,
+    backgroundColor: 'blue',
   },
   addButtonAñadirPaso: {
     backgroundColor: "#808080",
@@ -740,7 +734,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 10,
+    fontSize: 15,
   },
   addButtonGuardarItem: {
     padding: 2,

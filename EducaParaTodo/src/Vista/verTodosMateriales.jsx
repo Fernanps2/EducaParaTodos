@@ -13,10 +13,9 @@ import {
 import Swal from "sweetalert2";
 import { useRoute } from "@react-navigation/native";
 import * as lista from "./VarGlobal";
-import {modificarReduciendoStock_materialesBD} from "./VarGlobal";
+import { modificarReduciendoStock_materialesBD } from "./VarGlobal";
 
 export default function VerTodosMateriales({ navigation }) {
-
   const route = useRoute();
   // Se guarda los materiales seleccionados
   const [materialesTarea, setMaterialesTarea] = useState([]);
@@ -52,7 +51,11 @@ export default function VerTodosMateriales({ navigation }) {
           lista.filtrar(item.id);
           setMaterialesTarea(lista.get);
           // Se modifica el stock en la lista de materiales total
-          modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
+          modificarReduciendoStock_materialesBD(
+            item.id,
+            item.cantidad,
+            item.caracteristica
+          );
         }
       });
     } else {
@@ -67,7 +70,11 @@ export default function VerTodosMateriales({ navigation }) {
               lista.filtrar(item.id);
               setMaterialesTarea(lista.get);
               // Se modifica el stock en la lista de materiales total
-              modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
+              modificarReduciendoStock_materialesBD(
+                item.id,
+                item.cantidad,
+                item.caracteristica
+              );
             },
           },
         ],
@@ -76,9 +83,9 @@ export default function VerTodosMateriales({ navigation }) {
     }
   };
 
-  /* El renderizado de la lista de materiales junto con el nombre, cantidad, caracteristicas, 
-  * lugar destino y origen e imagen de eliminar
-  */
+  /* El renderizado de la lista de materiales junto con el nombre, cantidad, caracteristicas,
+   * lugar destino y origen e imagen de eliminar
+   */
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>
@@ -115,8 +122,16 @@ export default function VerTodosMateriales({ navigation }) {
       <View style={styles.separador} />
       <View style={styles.separador} />
 
-      <View style={[{ flexDirection: "row" }, { justifyContent: "center" }]}>
+      <View style={[{ flexDirection: "row", justifyContent: "center" }]}>
         <Text style={[styles.title]}>Materiales en Tarea</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("tareaMateriales")}
+        >
+          <Image
+            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
+            style={[styles.Image, { marginLeft: 40 }]}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.separador} />

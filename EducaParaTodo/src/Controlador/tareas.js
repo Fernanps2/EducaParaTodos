@@ -29,7 +29,7 @@ export async function buscarTareaAlumno(idAlumno){
 
 // Esta función busca la tarea con ese ID
 export async function buscarTareaid(usuarioId){
-    tarea = await getTareaId(usuarioId);    
+    let tarea = await getTareaId(usuarioId);    
     return tarea;
 }
 
