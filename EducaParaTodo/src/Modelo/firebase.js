@@ -1593,7 +1593,7 @@ export async function almacenarImagen(imagen, nombreImagen) {
             const refImagenes = ref(storage, IMAGENES+nombreImagen)
             const file = await(await fetch(imagen)).blob();
             uploadBytes(refImagenes, file).then((snapshot) => {
-                console.log('Se ha subido la imagen');
+                console.log('Se ha feedsubido la imagen');
             });
         } else {
             console.log("El nombre de archivo ya existe");
@@ -2309,6 +2309,38 @@ export const getTareaId = async (idAlumno) => {
     
     try {
       const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno));
+      const querySnapshot = await getDocs(q);
+      // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+    
+      const docs = [];
+    
+      for (const tareaDoc of querySnapshot.docs) {
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+    
+        docs.push({
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
+        });
+      }
+    
+      return docs;
+    } catch (error) {
+      console.log(error);
+      Alert.alert(error);
+    }
+};
+
+export const getTareaIdCompletada = async (idAlumno) => {
+
+    console.log(idAlumno);
+    
+    try {
+      const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno),where("completado", "==", "true"));
       const querySnapshot = await getDocs(q);
       // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
     

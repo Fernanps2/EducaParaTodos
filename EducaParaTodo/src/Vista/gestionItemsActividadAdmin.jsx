@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,14 +11,21 @@ import {
   Image,
   ScrollView
 } from "react-native";
+import { setVideo } from "../Modelo/firebase";
+import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { ActivityIndicator } from "react-native-web";
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [urlVideo, setUrlVideo] = useState("");
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
+
 
   const [urlPictograma, setUrlPictograma] = useState("");
   const [nombrePictograma, setnombrePictograma] = useState("");
@@ -32,6 +39,9 @@ export default function GestionItemActividad() {
   const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
 
   const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
+  const [pictogramas,setPictogramas] = useState([]);
+  const [pictogramasSeleccionados, setPictogramasSeleccionados] = useState([]);
+
 
   const [viewEliminarImagen, setViewEliminarImagen] = useState(false);
   const [imagenes, setImagenes] = useState([]);
@@ -65,9 +75,11 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false);
     setViewEliminarImagen(false);
   };
+
   const handlePictograma = () => {
     setViewPictograma(true); //
     setViewVideo(false);
+    setViewEliminarPictograma(false);
     setViewImagen(false);
 
     setViewEliminarVideo(false);
@@ -93,7 +105,14 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false);
     setViewEliminarImagen(true); //
 
-    setImagenes(await descargaImagenes());
+    setIsLoading(true);
+    try{
+      setImagenes(await descargaImagenes());
+    }catch {
+      console.log('Error al descargar las imagenes');
+    } finally {
+      setIsLoading(false);
+    }
   }
   const handleEliminarAudio = () => {
     setViewPictograma(false);
@@ -104,7 +123,7 @@ export default function GestionItemActividad() {
     setViewEliminarPictograma(false);
     setViewEliminarImagen(false);
   }
-  const handleEliminarPictograma = () => {
+  const handleEliminarPictograma = async () => {
     setViewPictograma(false);
     setViewVideo(false);
     setViewImagen(false);
@@ -112,6 +131,16 @@ export default function GestionItemActividad() {
     setViewEliminarVideo(false);
     setViewEliminarPictograma(true); //
     setViewEliminarImagen(false);
+
+    setIsLoading(true);
+    try{
+      setPictogramas(await descargaPictogramas());
+    }catch {
+      console.log('Error al descargar los pictogramas');
+    } finally {
+      setIsLoading(false);
+    }
+    //setPictogramas(await descargaPictogramas());
   }
 
   const handleAñadir = () => {
@@ -152,6 +181,9 @@ export default function GestionItemActividad() {
       }
     }
   };
+
+
+
 
   const handleAñadirImagen = async () => {
     if (viewImagen) {
@@ -230,7 +262,70 @@ export default function GestionItemActividad() {
     }
   }
 
+  
+
   //FIN FUNCIONES ELIMINAR IMAGEN
+
+  // FUNCIONES PARA ELIMINAR PICTOGRAMAS
+
+   //Para seleccionar y deseleccionar una imagen
+   const toggleSelectionPictograma = (pictogramaid) => {
+    const index = pictogramasSeleccionados.indexOf(pictogramaid);
+
+    if (index == -1) {
+      setPictogramasSeleccionados([...pictogramasSeleccionados, pictogramaid]);
+    } else {
+      const updatedSelection = [...pictogramasSeleccionados];
+      updatedSelection.splice(index,1);
+      setPictogramasSeleccionados(updatedSelection);
+    }
+  };
+  
+  //Renderizar la imagen
+  const renderPictograma = ({item}) => {
+    const isSelected = pictogramasSeleccionados.includes(item.nombre);
+    //console.log(item.uri);
+
+    return (
+      <TouchableOpacity
+        style={isSelected ? styles.selectedImage : styles.image}
+        onPress={() => toggleSelectionPictograma(item.nombre)}
+      >
+        <Image
+          source={{uri: item.uri}}
+          style={styles.imageStyle}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const EliminarPictograma = async () => {
+    if (viewEliminarPictograma) {
+      pictogramasSeleccionados.map((selectedId) => {
+        eliminaPictograma(selectedId);
+      })
+      setPictogramasSeleccionados([]);
+
+      console.log("Pictogramas eliminados");
+
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "Listo",
+          text: "Pictogramas borrados correctamente",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Listo', 'Pictogramas borrados correctamente');
+      }
+
+      //Actualizamos de nuevo los pictogramas
+      setPictogramas(await descargaPictogramas());
+    }
+  }
+
+  // FIN DE FUNCIONES PARA ELIMINAR PICTOGRAMAS
+
 
   const abrirGaleria = async() => {
     if(viewPictograma) setUrlPictograma(await openGallery());
@@ -383,38 +478,75 @@ export default function GestionItemActividad() {
           </TouchableOpacity>
         </View>
       )}
-      {viewImagen && (
-        <View>
+      {viewEliminarPictograma && (
+        <ScrollView>
+        <View style={styles.separador} />
 
-          <View style={styles.separador} />
+        <Text style={styles.text}>Selecciona los pictogramas a eliminar:</Text>
 
-          <TouchableOpacity style={styles.buttonAñadir} onPress={()  => abrirGaleria()}>
-            {urlImagen=="" ? (<Text>Pulsa el botón para elegir Imagen</Text>) : (<Text style={styles.textoSeleccionado}>Imagen Seleccionada </Text>)}
-          </TouchableOpacity>
-
-
-
-          <View style={styles.separador} />
-          <View style={styles.separador} />
-
-          <Text style={[styles.text]}>Introduzca Nombre:</Text>
-
-          <View style={styles.separador} />
-
-          <TextInput
-            style={[styles.input]}
-            placeholder="Elija Nombre"
-            value={nombreImagen}
-            onChangeText={setNombreImagen}
+        <View style={styles.separador}/>
+        <View style={styles.separador}/>
+        {isLoading ? (
+          <ActivityIndicator size = "large" color="black" />
+        ) : (
+          <View style={styles.container}>
+        
+          <FlatList
+            data={pictogramas}
+            renderItem={renderPictograma}
+            keyExtractor={(item) => item.name}
+            numColumns={3}
+            contentContainerStyle={styles.imageGrid}
           />
-          
-          <View style={styles.separador5} />
-          <View style={styles.separador5} />
-
-          <TouchableOpacity style={styles.addButton} onPress={handleAñadirImagen}>
-            <Text style={styles.addButtonText}>Añadir</Text>
-          </TouchableOpacity>
+          <View style={styles.selectedImagesContainer}>
+            <Text>Pictogramas seleccionados:</Text>
+            {pictogramasSeleccionados.map((selectedId) => (
+              <Text key={selectedId}>{pictogramas.find(item => item.nombre == selectedId).nombre}</Text>
+            ))}
+          </View>
         </View>
+        )}
+       
+
+        <View style={styles.separador}/>
+
+        <TouchableOpacity style={styles.buttonDelete} onPress={EliminarPictograma}>
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      )}
+      {viewImagen && (
+        <ScrollView>
+        <View style={styles.separador} />
+
+        <Text style={styles.text}>Selecciona las imágenes a eliminar:</Text>
+
+        <View style={styles.separador}/>
+        <View style={styles.separador}/>
+
+        <View style={styles.container}>
+        
+          <FlatList
+            data={imagenes}
+            renderItem={renderImage}
+            keyExtractor={(item) => item.name}
+            numColumns={3}
+            contentContainerStyle={styles.imageGrid}
+          />
+          <View style={styles.selectedImagesContainer}>
+            <Text>Imágenes seleccionadas:</Text>
+            {imagenesSeleccionadas.map((selectedId) => (
+              <Text key={selectedId}>{imagenes.find(item => item.nombre == selectedId).nombre}</Text>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.separador}/>
+
+        <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </ScrollView>
       )}
       {viewEliminarImagen && (
         <ScrollView>
@@ -425,7 +557,11 @@ export default function GestionItemActividad() {
           <View style={styles.separador}/>
           <View style={styles.separador}/>
 
-          <View style={styles.container}>
+          {isLoading ? (
+            <ActivityIndicator size = "large" color="black"/>
+          ) : (
+
+            <View style={styles.container}>
           
             <FlatList
               data={imagenes}
@@ -441,6 +577,7 @@ export default function GestionItemActividad() {
               ))}
             </View>
           </View>
+          )}
 
           <View style={styles.separador}/>
 

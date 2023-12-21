@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity ,ActivityIndicator, Alert} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity ,ActivityIndicator, Alert, Platform} from 'react-native';
 import appFirebase, { deleteTareaId, getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
+import Swal from "sweetalert2";
 //import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const EliminarTareaAlumno = ({route}) => {
@@ -39,37 +40,57 @@ const EliminarTareaAlumno = ({route}) => {
   };
 
   const showAlertStore = (id) =>{
-    Alert.alert(
-      "¿Estas seguro de borrar la tarea?",
-      "Pulsa una opcion",
-      [
-        {text: "Cancelar",},
-        {text: "Confirmar", onPress: () => deleteTarea(id)}
-      ],
-      { cancelable: true}
-    );
+    if (Platform.OS ===   "web"){
+      Swal.fire({
+        title: "¿Estás seguro de borrar la tarea?",
+        showCancelButton: true,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteTarea(id);
+        }
+      });
+    }else{
+      Alert.alert(
+        "¿Estas seguro de borrar la tarea?",
+        "Pulsa una opcion",
+        [
+          {text: "Cancelar",},
+          {text: "Confirmar", onPress: () => deleteTarea(id)}
+        ],
+        { cancelable: true}
+      );
+    }
   };
 
 
   return (
-    <View>
-      {isLoading ? (
-        <ActivityIndicator size="large" color="black" />
-      ) : (
-        <ScrollView contentContainerStyle={styles.datos}>
-          {Tareas.map((tarea) => (
+   <View>
+    {isLoading ? (
+      <ActivityIndicator size="large" color="black" />
+    ) : (
+      <ScrollView contentContainerStyle={styles.datos}>
+        {Tareas.length === 0 ? (
+        <Text style={{fontSize: 20,}}>No hay tareas para eliminar</Text>
+        ) : (
+          Tareas.map((tarea) => (
             <View key={tarea.id} style={styles.cardWithImage}>
               <Text>{tarea.titulo}</Text>
               <TouchableOpacity style={styles.deleteButton} onPress={() => showAlertStore(tarea.id)}>
                 <Text style={{ color: 'black', textAlign: 'center' }}>Eliminar Tarea</Text>
               </TouchableOpacity>
             </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+          ))
+        )}
+      </ScrollView>
+    )}
+  </View>
+  
   );
 };
+
 const styles = StyleSheet.create({
   cardWithImage: {
     flexDirection: 'row',

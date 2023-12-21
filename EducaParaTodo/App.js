@@ -40,6 +40,8 @@ import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 import {UserContextProvider} from './src/Controlador/userContext';
 import AsignarTarea from './src/Vista/asignarTarea.jsx';
 import AniadirPictograma from './src/Vista/aniadirPictograma.jsx';
+//import DatosProfesor from './src/Vista/datosProfesor.jsx';
+import SeguimientoAlumno from './src/Vista/SeguimientoAlumno.jsx';
 // import DatosProfesor from './src/Vista/datosProfesor.jsx';
 // import AsignarTarea from './src/Vista/asignarTarea.jsx';
 
@@ -79,6 +81,7 @@ export default function App() {
           <Stack.Screen name="listaAlumnos" component={ListaAlumnos} />
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
+          <Stack.Screen name="seguimientoAlumno" component={SeguimientoAlumno}/>
 
 
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />

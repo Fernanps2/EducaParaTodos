@@ -51,6 +51,7 @@ const EliminarTarea = () => {
     >
       <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
       <TouchableOpacity onPress={() => navigation.navigate('FeedbackAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('seguimientoAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Seguimiento Alumno</Text></TouchableOpacity>
     </TouchableOpacity>
       ))}
     </ScrollView>
