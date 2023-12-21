@@ -529,16 +529,3 @@ export const openGallery = async () => {
 
     return null;
 }
-
-/**
- * @name eliminaVideo  
- * 
- * @description Borra el video con el nombre del archivo
- * 
- * @param {string} nombreArchivo El nombre del archivo a eliminar
- */
-export async function eliminaVideo(nombreArchivo) {
-    if (nombreArchivo != null && nombreArchivo != '') {
-        await eliminarVideo(nombreArchivo);
-    }
-}

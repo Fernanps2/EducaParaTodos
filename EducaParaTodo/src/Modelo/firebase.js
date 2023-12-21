@@ -3149,13 +3149,3 @@ export const getVideoId = async (idVideo) => {
         console.log(error);
     }
 };
-
-export async function eliminarVideo(nombreArchivo) {
-    const refArchivo = ref(storage, VIDEOS+nombreArchivo);
-
-    await deleteObject(refArchivo).then(() => {
-        console.log("Se ha borrado el archivo correctamente")
-    }).catch((error) => {
-        console.log(error);
-    });
-}

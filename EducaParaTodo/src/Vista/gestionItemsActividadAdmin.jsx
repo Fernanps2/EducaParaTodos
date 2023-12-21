@@ -11,8 +11,9 @@ import {
   Image,
   ScrollView
 } from "react-native";
-import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
+import { Video, ResizeMode } from 'expo-av';
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
@@ -256,7 +257,6 @@ export default function GestionItemActividad() {
   const renderVideo = ({item}) => {
     const isSelected = videosSeleccionados.includes(item.nombre);
     //console.log(item.uri);
-
     return (
       <TouchableOpacity
         style={isSelected ? styles.selectedImage : styles.image}
@@ -265,7 +265,8 @@ export default function GestionItemActividad() {
         <Video ref={vid}
           source={{uri: item.uri}}
           useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
-          onPlaybackStatusUpdate={status => setStatus(() => status)}/>
+          onPlaybackStatusUpdate={status => setStatus(() => status)}
+        />
       </TouchableOpacity>
     );
   };
