@@ -15,6 +15,7 @@ import {
   getMaterialIdBD,
   getvisualizacion,
   completarTarea,
+  buscarLugaresNoAulas,
 } from "../Controlador/tareas";
 import {
   mostrarNumeroRecogidas,
@@ -24,7 +25,7 @@ import {
   descargaFotoPersona,
   descargaMaterial,
   descargaTipoMaterial,
-  descargaLugaresNoAulas,
+  descargaLugarNoAula,
 } from "../Controlador/multimedia";
 
 export default function VerTareaMaterial({ route, navigation }) {
@@ -113,9 +114,8 @@ export default function VerTareaMaterial({ route, navigation }) {
       setVisualizacion(visu);
       // Obtenemos las tareas
       const datos = await buscarTareaIdTareasInventario(id);
-      // Obtenemos a los aulas de los profesores y lugares
+      // Obtenemos a los aulas de los profesores
       const datosProfesores = await obtenerProfesores();
-      const lugares = await descargaLugaresNoAulas();
       // Procesamos los datos de los profesores
       const aulas = await Promise.all(
         datosProfesores.map(async ({ nombre, aula, foto }) => {
@@ -127,16 +127,24 @@ export default function VerTareaMaterial({ route, navigation }) {
         })
       ).then((resultados) => resultados.filter((aula) => aula !== null)); // Filtramos los nulos después de resolver todas las promesas
 
+      // Descargamos los lugares
+      const lugares = await buscarLugaresNoAulas();
+      const lug = await Promise.all(
+        lugares.map(async ({ nombre, foto }) => {
+          if (foto !== "") {
+            const fotoDescargada = await descargaLugarNoAula(foto);
+            return { nombre: nombre, aula: nombre, foto: fotoDescargada };
+          }
+          return null; // Retornar null para los casos donde no hay foto
+        })
+      ).then((resultados) => resultados.filter((aula) => aula !== null));
+
       // procesamos datos de lugares
-      lugares.forEach((lugar) => {
-        const nombreSinExtension = lugar.nombre.split(".")[0]; // Quedarse con la parte antes del punto
-        const nombreConMayuscula = capitalizarPrimeraLetra(nombreSinExtension); // Convertir la primera letra a mayúscula
-        aulas.push({
-          nombre: nombreConMayuscula,
-          aula: nombreConMayuscula,
-          foto: lugar,
-        });
+      lug.forEach((lugar) => {
+        aulas.push(lugar);
       });
+      console.log('aulas: ', aulas)
+      console.log('lugares: ', lug);
 
       setAulas(aulas);
 
