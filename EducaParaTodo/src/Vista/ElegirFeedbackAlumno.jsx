@@ -19,7 +19,7 @@ const EliminarTarea = () => {
     navigation.navigate('EliminarTareaAlumno', {item});
   };*/
 
-  // guardan los alumnos que estan en la base de datos 
+
   useEffect(() => {
     const mostrarAlumnos = async () => {
       setIsLoading(true); // Iniciar la carga
@@ -44,17 +44,27 @@ const EliminarTarea = () => {
       ) : (
         <ScrollView contentContainerStyle={styles.datos}>
       {data.map((item, index) => (
+    <View style={styles.cardWithImage} >
+        <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
         <TouchableOpacity
       key={index}
-      onPress={() => navigation.navigate('EliminarTareaAlumno', {idAlumno: item.id})} 
+      onPress={() => navigation.navigate('FeedbackAlumno', {idAlumno: item.id})} 
       style={styles.cardWithImage}
     >
-      <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
+        <Text>Añadir Feedback</Text>
     </TouchableOpacity>
+    <TouchableOpacity
+    key={index}
+    onPress={() => navigation.navigate('seguimientoAlumno', {idAlumno: item.id})} 
+    style={styles.cardWithImage}
+  >
+            <Text>Seguimiento Alumno</Text>
+  </TouchableOpacity>
+  </View>
+    
       ))}
     </ScrollView>
       )}
-
     </View>
   );
 };

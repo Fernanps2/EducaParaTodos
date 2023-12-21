@@ -12,7 +12,7 @@ const SeguimientoAlumno = ({route}) => {
   const [Pasos, setPasos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-
+  // obtiene las tareas de la base de datos segun el id del alumno
   useEffect(() => {
     const fetchTareasNombres = async () => {
       try{
@@ -25,7 +25,7 @@ const SeguimientoAlumno = ({route}) => {
     };
     fetchTareasNombres();
   }, [idAlumno]);
-/*
+/* 
   const mostrarpasos = async (Idtarea) => {
         try {
           const pasos = await buscarPasos(Idtarea);

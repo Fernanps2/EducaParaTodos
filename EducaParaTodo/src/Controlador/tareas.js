@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
+//import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
+//import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
 import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
 
 export async function obtenerProfesores (){
@@ -28,7 +28,7 @@ export async function buscarTareaAlumno(idAlumno){
 
 
 // Esta función busca la tarea con ese ID
-export async function buscarTarea(usuarioId){
+export async function buscarTareaid(usuarioId){
     tarea = await getTareaId(usuarioId);    
     return tarea;
 }
@@ -374,9 +374,6 @@ export async function buscarPedidosTarea (idTarea){
     return pedidos;
 }
 
-export async function completarTarea(idTarea){
-    await terminarTarea(idTarea);
-}
 
 export async function eliminarMenu(nombre){
     await deleteMenu(nombre);

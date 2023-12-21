@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity, Alert, FlatList,Platform, ActivityIndicator  } from 'react-native';
 import appFirebase, { descargarImagenes, getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
@@ -21,7 +21,7 @@ const FeedbackAlumno = ({route}) => {
   const [isLoading, setIsLoading] = useState(false);
 
 
-
+ // Carga las tareas completadas de un alumno en especifico
   useEffect(() => {
     const cargarTareas = async () => {
       try {
@@ -38,6 +38,7 @@ const FeedbackAlumno = ({route}) => {
     cargarTareas();
   }, [idAlumno]);
 
+  // Descarga los emoticonos de la base de datos
   useEffect(() => {
     const descargaEmoticono = async() => {
       setIsLoading(true);
@@ -57,29 +58,19 @@ const FeedbackAlumno = ({route}) => {
 
   // Para seleccionar y deseleccionar un pictograma
   const toggleSelection = (imageId) => {
-    if (emoticonoSeleccionado.length === 0) {
-      const index = emoticonoSeleccionado.indexOf(imageId);
-  
-      if (index === -1) {
-        setEmoticonoSeleccionado([...emoticonoSeleccionado, imageId]);
-      } else {
-        const updatedSelection = [...emoticonoSeleccionado];
-        updatedSelection.splice(index, 1);
-        setEmoticonoSeleccionado(updatedSelection);
-      }
+
+    const index = emoticonoSeleccionado.indexOf(imageId);
+
+    const UnEmoticonoSeleccionado = emoticonoSeleccionado.length = 0;
+
+    if (index === -1 && !UnEmoticonoSeleccionado) {
+      setEmoticonoSeleccionado([...emoticonoSeleccionado, imageId]);
     } else {
-      setEmoticonoSeleccionado([]);
-      if (Platform.OS ===   "web"){
-        Swal.fire({
-          title: "Error",
-          text: "No puedes seleccionar mas de un emoticono",
-          icon: "error",
-          confirmButtonText: "De acuerdo",
-        })
-      }else{
-        Alert.alert('Listo', 'No puedes seleccionar mas de un emoticono');
-      }
+      const updatedSelection = [...emoticonoSeleccionado];
+      updatedSelection.splice(index, 1);
+      setEmoticonoSeleccionado(updatedSelection);
     }
+
   };
   
   //Renderizar el emoticono
@@ -100,7 +91,7 @@ const FeedbackAlumno = ({route}) => {
     );
   };
 
-
+// Asignar el feedback salta la notificacion para aceptar o negar
 const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
 
   asignarFeedback(Idtarea,emoticonoSeleccionado);
@@ -116,7 +107,7 @@ const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
         Alert.alert('Listo', 'Feedback asignado correctamente');
       }
 };
-
+// funcion notificacion para asegurarse de que quiere mandar el feedback
 const showAlertStore = (id,emoticonoSeleccionado) =>{
   if (Platform.OS ===   "web"){
     Swal.fire({

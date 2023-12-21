@@ -48,7 +48,7 @@ export default function HomeEducador ({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('pantallaDatosAlumnos')}>
+        onPress={() => navigation.navigate('pantallaDatosAlumno')}>
         <Text style={styles.buttonText}>Ver datos de alumnos</Text>
       </TouchableOpacity>
 
@@ -63,6 +63,14 @@ export default function HomeEducador ({ route, navigation }) {
         onPress={() => navigation.navigate('avisarMaterial')}>
         <Text style={styles.buttonText}>Mandar Aviso Material</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ElegirFeedbackAlumno')}>
+        <Text style={styles.buttonText}>Elegir alumno para feedback o seguimiento de tareas</Text>
+      </TouchableOpacity>
+
+      
 
       </View>
 
