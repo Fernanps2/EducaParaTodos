@@ -53,12 +53,20 @@ export async function buscaAdministrador() {
  *                  - foto : String
  */
 export async function buscaAdministradorNombre(nombre) {
-    let administradores = null;
+    let administrador = null;
 
-    if (nombre != null)
-        administradores = await getAdministradoresNombre(nombre);
+    if(nombre != null) {
+        console.log('buscando administradores con nombre: ' + nombre);
+        const administradores = await getAdministradoresNombre(nombre);
+        console.log('se han encontrado: ' + JSON.stringify(administradores));
 
-    return administradores;
+        if( administradores.length > 0 ){
+            // si se encontro al menos un administrador, devolvemos el primero
+            administrador = administradores[0];
+        }
+    }
+
+    return administrador;
 }
 
 /**
@@ -140,7 +148,7 @@ export async function buscaAdministradorId (id) {
  * @param {String} password Contraseña del admin para cambiar
  * @param {String} foto Foto del admin a cambiar
  */
-export async function actualizaAdministrador(id, nombre, apellidos, password, foto) {
+export async function actualizaAdministrador(id, nombre, apellidos, password/*, foto*/) {
     if (nombre != '' && apellidos != '' && password != '')
         await updateAdministrador(id, datos);
 }

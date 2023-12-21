@@ -1,7 +1,7 @@
 import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin,almacenarFotoMenu,almacenarMaterial} from "../Modelo/firebase";
 import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin,descargarMaterial} from "../Modelo/firebase";
 import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin,descargarMateriales } from "../Modelo/firebase";
-import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin,eliminarMaterial } from "../Modelo/firebase";
+import { getAlumnoID, eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin,eliminarMaterial } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -420,6 +420,38 @@ export async function descargaImagenesLogin() {
     const array = await descargarImagenesLogin();
 
     return array;
+}
+
+/**
+ * @name obtenerNombresImagenesAlumno
+ *
+ * @description Accede a la base de datos y obtiene los nombres de las imagenes correspondientes al
+ * login con imágenes del alumno mediante el ID del mismo
+ *
+ * @param {string} alumnoId ID del alumno que contiene las imagenes de su login
+ *
+ * @returns array con nombres de las imágenes del login del alumno
+ */
+export async function obtenerNombresImagenesAlumno(alumnoId) {
+  try {
+    const alumno = await getAlumnoID(alumnoId); // Función para obtener alumno por su ID
+
+    if (alumno && alumno.password) {
+      const nombresImagenes = alumno.password.split(','); // Separar el string en un array usando la coma como separador
+
+      // Verificar si se obtuvieron exactamente 4 nombres de imágenes
+      if (nombresImagenes.length === 4) {
+        return nombresImagenes; // Devuelve el array de nombres de las imágenes
+      } else {
+        throw new Error('La contraseña no contiene 4 nombres de imágenes');
+      }
+    } else {
+      throw new Error('La contraseña no tiene el formato esperado');
+    }
+  } catch (error) {
+    console.log('Error al obtener los nombres de imágenes del alumno:', error);
+    return [];
+  }
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { getTareaById, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
+import { getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
 import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -27,6 +27,22 @@ export async function buscarTareaId(idTarea){
     tarea = await getTareaById(idAlumno);
 
     return tarea;
+}
+
+/**
+ * @name asignarUnaTarea
+ *
+ * @description Asigna un alumno y su visualización a una tarea determinada
+ *
+ * @param {string} idTarea tarea a actualizar
+ *                 idAlumno alumno a asignar la tarea
+ *                 visualizacion tipo de visualizacion del alumno para dicha tarea
+ *
+ * @returns
+ */
+export async function asignarUnaTarea(idTarea, idAlumno, visualizacion) {
+
+    await asignarTarea(idTarea, idAlumno, visualizacion);
 }
 
 // Esta función busca todas las tareas
@@ -108,13 +124,6 @@ export async function buscarTareasComandasId(idTarea){
     return tareas;
 }
 
-export async function buscarTareasComandasId(idTarea){
-    let tareas = null;
-
-    tareas = await getTareasComandaId(idTarea);
-
-    return tareas;
-}
 
 // Esta función muestra todas las tareas de tipo comanda en la colección tarea que están completadas por lo que esto incluye también que esté asignada a un alumno
 export async function buscarTComandas(){
