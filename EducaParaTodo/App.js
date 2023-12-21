@@ -10,6 +10,7 @@ import TareaActividad from './src/Vista/tareaActividad.jsx';
 import PasoActividad from './src/Vista/pasoActividad.jsx';
 import VerPasosActividad from './src/Vista/VerPasosActividad.jsx';
 import TareaComanda from './src/Vista/tareaComanda.jsx';
+import ElegirFeedbackAlumno from './src/Vista/ElegirFeedbackAlumno';
 import AlimentosMenusComanda from './src/Vista/alimentosMenusComanda.jsx';
 import TiposMenusComanda from './src/Vista/tiposMenusComanda.jsx';
 import TareaMateriales from './src/Vista/tareaMateriales.jsx';
@@ -39,7 +40,7 @@ import AvisoMaterial from './src/Vista/avisoMaterial.jsx';
 import VerAvisosMaterial from './src/Vista/verAvisosMaterial.jsx';
 import { VerTarea } from './src/Vista/verTarea.jsx';
 import VerTareaMaterial from './src/Vista/verTareaMaterial.jsx';
-import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
+//import { VerTareaPictogramas } from './src/Vista/verTareaPictogramas.jsx';
 import { GestionarEstadoTareas } from './src/Vista/GestionarEstadoTareas.jsx';
 import FeedbackAlumno from './src/Vista/FeedbackAlumno.jsx';
 //Contexto
@@ -101,10 +102,11 @@ export default function App() {
           <Stack.Screen name="pantallaDatosAlumno" component={PantallaDatosAlumno} />
           <Stack.Screen name="pantallaDatosProfesor" component={PantallaDatosProfesor} />
           <Stack.Screen name="seguimientoAlumno" component={SeguimientoAlumno}/>
+          <Stack.Screen name="ElegirFeedbackAlumno" component={ElegirFeedbackAlumno}/>
 
 
           <Stack.Screen name="listaProfesores" component={ListaProfesores} />
-          {/* <Stack.Screen name="pantallaProfesores" component={ListaProfesores} /> */}
+          { /*<Stack.Screen name="pantallaProfesores" component={ListaProfesores} />*/ }
 
           <Stack.Screen name="eliminarTarea" component={EliminarTarea} />
           <Stack.Screen name="EliminarTareaAlumno" component={EliminarTareaAlumno}/>

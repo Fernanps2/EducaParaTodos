@@ -6,12 +6,6 @@ export default function GestionTareas ({ navigation }) {
       <View style={styles.container}>
       <View style={[{flexDirection: 'row'}, { justifyContent: "center" }]}>
         <Text style={[styles.title]}>Gestión Tareas</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("HomeAdmin")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
       </View>
 
       <TouchableOpacity
@@ -40,8 +34,8 @@ export default function GestionTareas ({ navigation }) {
 
       <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-            <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
+            onPress={() => navigation.navigate('eliminarTarea')}>
+            <Text style={styles.buttonText}>Eliminar tarea</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

@@ -8,6 +8,7 @@ const EliminarTareaAlumno = ({route}) => {
   const {idAlumno} = route.params;
    const [Tareas, setTareasNombres] = useState([]);
 
+   // obtiene las tareas del alumno con el id que manda
   useEffect(() => {
     const fetchTareasNombres = async () => {
       try{
@@ -38,7 +39,7 @@ const EliminarTareaAlumno = ({route}) => {
       setIsLoading(false);
     }
   };
-
+  // Alerta para asegurarse de que el usuario quiere borrar la tarea
   const showAlertStore = (id) =>{
     if (Platform.OS ===   "web"){
       Swal.fire({

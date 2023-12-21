@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Constants from 'expo-constants';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import { buscarPasos, buscarTareaId, buscarTareaActividad, buscaVisualizacion} from '../Controlador/tareas';
+import { buscarPasos, buscarTareaId, buscarTareaActividad, getvisualizacion} from '../Controlador/tareas';
 import {buscaProfesorAula} from '../Controlador/profesores';
 import {buscaAlumnoId} from '../Controlador/alumnos';
 import { descargaFotoPersona, descargaImagen, descargaPictograma, descargaVideo } from '../Controlador/multimedia';
@@ -10,7 +10,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { Video, ResizeMode } from 'expo-av';
 
 export function VerTarea ({route, navigation}){
-    const {id, idAlumno} = route.params;
+    const {id, idAlumno} = route.params; 
     
     //Variables que almacenan los datos sacados de la base de datos
     const [tareaAct, setTareaAct] = useState([]);
@@ -31,11 +31,12 @@ export function VerTarea ({route, navigation}){
     const profesorRef = useRef(profesor);
 
     //Función que obtiene la tarea a partir del id que se pasa en la routa de navegación
-    useEffect(() => {
+    useEffect(() => { 
         const listaTarea = async () => {
             try {
                 const Tarea = await buscarTareaId(id);
                 setTarea(Tarea);
+                //console.log("Tarea: " + JSON.stringify(Tarea));
             } catch (error) {
                 console.log(error);
             }
@@ -49,6 +50,7 @@ export function VerTarea ({route, navigation}){
             try {
                 const Tareas = await buscarTareaActividad(id);
                 setTareaAct(Tareas);
+                //console.log("Tareas: " + JSON.stringify(Tareas));
             } catch (error) {
                 console.log(error);
             }
@@ -62,6 +64,7 @@ export function VerTarea ({route, navigation}){
             try {
                 const Pasos = await buscarPasos(id);
                 setPasos(Pasos); 
+                //console.log("Pasos: " + JSON.stringify(Pasos));
             } catch (error) {
                 console.log(error);
             }
@@ -73,11 +76,12 @@ export function VerTarea ({route, navigation}){
 
     //Función que obtiene un profesor a partir del aula que tiene asignada
     useEffect(() => {
-        const listaProf = async () => {
+        const listaProf = async () => { 
             try {
                 const Profe = await buscaProfesorAula(tareaActvidad.aula);
                 setProfesor(Profe);
                 profesorRef.current = Profe; //Guardamos el estado actual para usarlo en la siguiente función
+                //console.log("Profe: " + JSON.stringify(Profe));
             } catch (error) {
                 console.log(error);
             }
@@ -111,7 +115,7 @@ export function VerTarea ({route, navigation}){
     useEffect(() => {
         const listaVis = async () => {
             try {
-                const Visuali = await buscaVisualizacion(id);
+                const Visuali = await getvisualizacion(id);
                 setVisualizacion(Visuali);
             } catch (error) {
                 console.log(error);
@@ -158,7 +162,6 @@ export function VerTarea ({route, navigation}){
                 if(pasoActualData && pasoActualData.imagen){
                     const Imagen = await descargaImagen(pasoActualData.imagen);
                     setImagen(Imagen);
-                    setImagenCargada(true);
                 }
             } catch (error) {
                 console.log(error);
@@ -175,12 +178,13 @@ export function VerTarea ({route, navigation}){
                 if(pasoActualData && pasoActualData.pictograma){
                     const Pictograma = await descargaPictograma(pasoActualData.pictograma);
                     setPictograma(Pictograma);
+                    //console.log("Pictograma: " + JSON.stringify(Pictograma));
                 }
             } catch (error) {
                 console.log(error);
             }
         }; 
-        listaPictograma();  
+        listaPictograma();   
     }, [pasoActualData]);
 
     //Descarga el video del paso actual de una tarea
@@ -196,7 +200,7 @@ export function VerTarea ({route, navigation}){
                 console.log(error);
             }
         }; 
-        listaVideo();  
+        listaVideo();    
     }, [pasoActualData]);
 
     useEffect(() => {

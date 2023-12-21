@@ -1,8 +1,11 @@
 import { Alert } from "react-native";
-import { getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
-import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId,getProfesores, terminarTarea, getLugaresNoAulas, updateLugaresNoAulas } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,deleteMaterial,updateMaterial,setTipoMaterial,getTipoMateriales,deleteTipoMaterial,updateTipoMaterial,getTareasInventario,getTareaIdTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios,getAlumnoVisualizacionTarea} from "../Modelo/firebase";
+import { 
+    getTareaById, asignarTarea, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea, asignarFeedback, getTareaId, getTareas, deleteTareaId, setTareaActividad, getTareasActividad, getPasos, setPasoActividad, setTareaComanda, getTareasComanda, setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea,
+    getMenus, getMenu, setAlimento, getAlimento, setTareaInventario, setMaterial, getMaterial, getMaterialId, getMateriales, setPedido, getPedido, getPedidoProfesor, deleteMenu, getMenusComanda, 
+    getProfesores, updateLugaresNoAulas, 
+    deleteMaterial, updateMaterial, setTipoMaterial, getTipoMateriales, deleteTipoMaterial, updateTipoMaterial, getTareaIdTareasInventario, cargarAudios, getAlumnoVisualizacionTarea, getLugaresNoAulas, getAlimentos 
+} from "../Modelo/firebase";
+
 
 export async function obtenerProfesores (){
     return await getProfesores();
@@ -28,8 +31,8 @@ export async function buscarTareaAlumno(idAlumno){
 
 
 // Esta función busca la tarea con ese ID
-export async function buscarTarea(usuarioId){
-    tarea = await getTareaId(usuarioId);    
+export async function buscarTareaid(usuarioId){
+    let tarea = await getTareaId(usuarioId);    
     return tarea;
 }
 
@@ -310,24 +313,6 @@ export async function anadeVideo (nombreVideo, urlVideo){
     await setVideo(nombreVideo, urlVideo);
 }
 
-export async function cargarPictogramasBD (){
-    let pictogramas = null;
-    pictogramas = await cargarPictogramas();
-    return pictogramas;
-}
-
-export async function cargarVideosBD (){
-    let videos = null;
-    videos = await cargarVideos();
-    return videos;
-}
-
-export async function cargarImagenesBD (){
-    let imagenes = null;
-    imagenes = await cargarImagenes();
-    return imagenes;
-}
-
 export async function cargarAudiosBD (){
     let audios = null;
     audios = await cargarAudios();
@@ -374,9 +359,6 @@ export async function buscarPedidosTarea (idTarea){
     return pedidos;
 }
 
-export async function completarTarea(idTarea){
-    await terminarTarea(idTarea);
-}
 
 export async function eliminarMenu(nombre){
     await deleteMenu(nombre);

@@ -1,4 +1,5 @@
 import { 
+    getAlumnoID,
     almacenarImagen, 
     almacenarPictograma, 
     almacenarVideo, 
@@ -7,7 +8,7 @@ import {
     almacenarMaterial,
     almacenarTipoMaterial,
     almacenarTipoTarea,
-    almacenarFotoLugar
+    almacenarFotoLugar,
 } from "../Modelo/firebase";
 
 import { 
