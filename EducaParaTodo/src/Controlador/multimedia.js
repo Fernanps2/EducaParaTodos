@@ -338,14 +338,14 @@ export async function obtenerNombresImagenesAlumno(alumnoId) {
     const alumno = await getAlumnoID(alumnoId); // Función para obtener alumno por su ID
 
     if (alumno && alumno.password) {
-      const nombresImagenes = [
-        alumno.password[0],
-        alumno.password[1],
-        alumno.password[2],
-        alumno.password[3]
-      ];
+      const nombresImagenes = alumno.password.split(','); // Separar el string en un array usando la coma como separador
 
-      return nombresImagenes; // Devuelve el array de nombres de las imágenes
+      // Verificar si se obtuvieron exactamente 4 nombres de imágenes
+      if (nombresImagenes.length === 4) {
+        return nombresImagenes; // Devuelve el array de nombres de las imágenes
+      } else {
+        throw new Error('La contraseña no contiene 4 nombres de imágenes');
+      }
     } else {
       throw new Error('La contraseña no tiene el formato esperado');
     }
