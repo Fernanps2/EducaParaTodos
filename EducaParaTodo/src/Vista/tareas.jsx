@@ -76,7 +76,7 @@ console.log('tareas: ', tareas)
   const manejoPresionarBoton = (tarea, navigation, usuario) => {
     const id = tarea.id;
     if (tarea.tipo == "comanda") {
-      navigation.navigate("paginaAulas", { id, usuario });
+      navigation.navigate("seleccionAula", { id, usuario });
     } else if (tarea.tipo === "actividad") {
       navigation.navigate("verTarea", { id, usuario });
     } else if (tarea.tipo === "material") {

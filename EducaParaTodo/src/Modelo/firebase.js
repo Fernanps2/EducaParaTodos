@@ -2853,6 +2853,8 @@ export const getTarea = async (idAlumno) => {
         fotoURL: foto,
       });
     }
+
+    return docs;
 } catch (error) {
     console.error(error);
     // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
