@@ -17,7 +17,7 @@ import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multime
 import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
 import { anadeVideo } from "../Controlador/tareas";
-import { Video, ResizeMode } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av'; 
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
