@@ -21,7 +21,7 @@ const FeedbackAlumno = ({route}) => {
   const [isLoading, setIsLoading] = useState(false);
 
 
-
+ // Carga las tareas completadas de un alumno en especifico
   useEffect(() => {
     const cargarTareas = async () => {
       try {
@@ -38,6 +38,7 @@ const FeedbackAlumno = ({route}) => {
     cargarTareas();
   }, [idAlumno]);
 
+  // Descarga los emoticonos de la base de datos
   useEffect(() => {
     const descargaEmoticono = async() => {
       setIsLoading(true);
@@ -90,7 +91,7 @@ const FeedbackAlumno = ({route}) => {
     );
   };
 
-
+// Asignar el feedback salta la notificacion para aceptar o negar
 const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
 
   asignarFeedback(Idtarea,emoticonoSeleccionado);
@@ -106,7 +107,7 @@ const añadirFeedback = async (Idtarea,emoticonoSeleccionado) =>{
         Alert.alert('Listo', 'Feedback asignado correctamente');
       }
 };
-
+// funcion notificacion para asegurarse de que quiere mandar el feedback
 const showAlertStore = (id,emoticonoSeleccionado) =>{
   if (Platform.OS ===   "web"){
     Swal.fire({
