@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-n
 import tareas from '../Modelo/tareas';
 import { getPasos, getTareasActividadId } from '../Modelo/firebase';
 import { Entypo } from '@expo/vector-icons';
+import { buscarTareaActividad } from '../Controlador/tareas';
 
 export function VerTarea ({route, navigation}){
 
@@ -27,12 +28,13 @@ export function VerTarea ({route, navigation}){
     useEffect(() => {
         const listaTareas = async () => {
             try {
-                const Tareas = await getTareasActividadId(id);
+                const Tareas = await buscarTareaActividad(id);
                 setTareas(Tareas);
+                console.log("pagina tareas: " + JSON.stringify(Tareas));
 
                 // Como esta función solo nos va a devolver un documeno, es decir, una tarea no hay problema en asignar el id
-                const idTarea = tareasL.id;
-                console.log(idTarea);
+                const idTare = Tareas.idTarea
+                console.log("id::" + idTare);
             } catch (error) {
                 console.log(error);
             }
@@ -48,7 +50,7 @@ export function VerTarea ({route, navigation}){
             try {
                 const Tareas = await getPasos(id);
                 setTareas(Tareas);
-                await console.log(Tareas);
+                await console.log("tareasdfaf: " + Tareas);
             } catch (error) {
                 console.log(error);
             }

@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, Button, FlatList,ScrollView } from 'react-nativ
 import DatosAlumnos from './DatosAlumnos';
 //import alumnos from '../Modelo/alumno';
 import { buscaAlumno } from '../Controlador/alumnos';
+import { buscarTareaActividad } from '../Controlador/tareas';
 
 export default function PantallaPrincipal({ navigation }) {
 
   const [alumnosArray, setAlumnosArray] = useState([]);
+  const [tareasL, setTareasL] = useState([]);
+
 
   useEffect(() => {
     const loadData = async() => {

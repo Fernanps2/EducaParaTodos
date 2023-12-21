@@ -1,7 +1,7 @@
-import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin, almacenarMaterial} from "../Modelo/firebase";
-import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin, descargarMaterial } from "../Modelo/firebase";
-import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin, descargarMateriales } from "../Modelo/firebase";
-import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin, eliminarMaterial } from "../Modelo/firebase";
+import { almacenarImagen, almacenarPictograma, almacenarVideo, almacenarFotoPersona, almacenarImagenLogin,almacenarFotoMenu,almacenarMaterial} from "../Modelo/firebase";
+import { descargarImagen, descargarPictograma, descargarVideo, descargarEmoticono, descargarFotoPersona, descargarImagenLogin,descargarMaterial} from "../Modelo/firebase";
+import { descargarImagenes, descargarPictogramas, descargarVideos, descargarEmoticonos, descargarFotosPersonas, descargarImagenesLogin,descargarMateriales } from "../Modelo/firebase";
+import { eliminarImagen, eliminarPictograma, eliminarVideo, eliminarFotoPersona, eliminarImagenLogin,eliminarMaterial } from "../Modelo/firebase";
 // import { PermissionsAndroid } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -84,7 +84,23 @@ export async function almacenaVideo(video, nombre) {
 }
 
 /**
- * @name almacenaFotoPersona
+ * @name almacenaFotoPersonaexport async function almacenaFotoPersona(foto, nombre) {
+    if (foto != '')
+        almacenarFotoPersona(foto, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío');
+        }
+    }
+}
+
  * 
  * @description Almacena la foto de una persona en la base de datos
  * 
@@ -109,6 +125,24 @@ export async function almacenaFotoPersona(foto, nombre) {
         }
     }
 }
+
+export async function almacenaFotoMenu(foto, nombre) {
+    if (foto != '')
+        almacenarFotoMenu(foto, nombre);
+    else {
+        if (Platform.OS === "web") {
+            Swal.fire({
+            title: "ERROR",
+            text: "No puede subirse un archivo vacío",
+            icon: "warning",
+            confirmButtonText: "De acuerdo",
+            });
+        } else {
+            Alert.alert('Mensaje importante,', 'No puede subirse un archivo vacío');
+        }
+    }
+}
+
 
 /**
  * @name almacenaImagenLogin

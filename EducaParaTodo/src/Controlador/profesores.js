@@ -17,9 +17,7 @@ export async function buscaProfesorNombre (nombre) {
     let profesores = null;
 
     if (nombre != null) {
-        console.log('buscando profesores con nombre: ' + nombre);
         profesores = await getProfesoresNombre(nombre);
-        console.log('se han encontrado: ' + JSON.stringify(profesores));
     }
 
     return profesores;

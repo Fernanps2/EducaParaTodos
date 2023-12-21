@@ -1,5 +1,6 @@
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId } from "../Modelo/firebase";
-import { getMenus,setAlimento,getAlimento,getAlimentos,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario,cargarPictogramas,cargarVideos,cargarImagenes,cargarAudios} from "../Modelo/firebase";
+import { Alert } from "react-native";
+import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
+import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
         await setTarea(titulo,fechaInicio,fechaFin,tipo,periocidad);
@@ -9,11 +10,13 @@ export async function asignarFeedbackBD (idTarea, feedBack){
         await asignarFeedback(idTarea, feedBack);
 }
 */
-// Esta función busca la tarea con ese ID
-export async function buscarTarea(idTarea){
+// Esta función busca las tareas asociadas a un alumno
+// Busca las que idAlumno sea igual al parámetro idAlumno
+export async function buscarTareaAlumno(idAlumno){
     let tarea = null;
+    console.log("el id es: " + idAlumno);
 
-    tarea = await getTareaId(idTarea);
+    tarea = await getTareaId(idAlumno);
 
     return tarea;
 }
@@ -25,6 +28,15 @@ export async function buscarTareas(){
     tareas = await getTareas();
 
     return tareas;
+}
+
+// Funcion que busca una tarea cuyo id del documento sea igual a idTarea
+export async function buscarTarea(idTarea){
+    let tarea = null;
+
+    tarea = await getTarea(idTarea);
+
+    return tarea;
 }
 
 export async function borrarTarea (idTarea){
@@ -49,6 +61,7 @@ export async function buscarTareaActividad(idTarea){
     let tarea = null;
 
     tarea = await getTareasActividadId(idTarea);
+    console.log("COntorlaodr: " + JSON.stringify(tarea));
 
     return tarea;
 }
@@ -70,7 +83,7 @@ export async function aniadeTareaComanda(idTarea,menus){
     await setTareaComanda(idTarea, menus);
 }
 
-// Esta función muestra todas las tareas de tipo comanda
+// Esta función muestra todas las tareas de tipo comanda en la colección tarea-comanda
 export async function buscarTareasComandas(){
     let tareas = null;
 
@@ -79,8 +92,19 @@ export async function buscarTareasComandas(){
     return tareas;
 }
 
-export async function aniadeMenu(idTarea,idMenu, idAlimentos){
-    await setMenu(idTarea,idMenu,idAlimentos);
+// Esta función muestra todas las tareas de tipo comanda en la colección tarea que están completadas por lo que esto incluye también que esté asignada a un alumno
+export async function buscarTComandas(){
+    let tareas = null;
+
+    tareas = await getTComanda();
+
+    return tareas;
+}
+
+
+export async function aniadeMenu(nombre,foto){
+    console.log("añadimos menu en controlador");
+    await setMenu(nombre,foto);
 }
 
 // Esta función muestra todos los menús
@@ -92,10 +116,30 @@ export async function buscarMenus(){
     return menus;
 }
 
+// Devolvemos todos los menús (el campo menus del documento) asociados a una tarea comanda en concreto
+
+export async function buscarMenusComanda(idTarea){
+    let menus = null;
+    menus = await getMenusComanda(idTarea);
+    return menus;
+}
+
+// Esta función muestra el menú con ese id
+// PROBADO FUNCIONA
+export async function buscarMenu(idMenu){
+    let menu = null;
+
+    menu = await getMenu(idMenu);
+
+    return menu;
+}
+
+
 export async function aniadeAlimento(nombreAlimento,imagen){
     await setAlimento(nombreAlimento, imagen);
 }
 
+// Devuelve el alimento con ese nombre
 export async function buscarAlimento(nombre){
     let alimento = null;
 
@@ -104,12 +148,13 @@ export async function buscarAlimento(nombre){
     return alimento;
 }
 
+// Devuelve todos los alimentos
 export async function buscarAlimentos(){
-    let alimento = null;
+    let alimentos = null;
 
-    alimento = await getAlimentos();
+    alimentos = await getAlimentos();
 
-    return alimento;
+    return alimentos;
 }
 
 export async function aniadeTareaInventario(idMaterial,cantidad,lugarOrigen,lugarDestino,idTarea){
@@ -130,7 +175,7 @@ export async function buscarMaterial(nombre){
 }
 
 // Esta función devuelve el material con ese id
-export async function getMaterialIdBD(id){
+export async function buscarMaterialId(id){
     let material = null;
 
     material = await getMaterialId(id);
@@ -183,3 +228,54 @@ export async function cargarAudiosBD (){
     audios = await cargarAudios();
     return audios;
 }
+
+export async function buscarPictogramasNumero(){
+    let pictogramas = null;
+
+    pictogramas = await getPictogramasNumero();
+
+    return pictogramas;
+}
+
+export async function aniadirPedido(idTarea,idMenu,idProf,aula,nPedidos){
+    await setPedido(idTarea,idMenu,idProf,aula,nPedidos);
+}
+
+export async function buscarPedido (idMenu, idProf, idTarea){
+    let pedidos = null;
+
+    pedidos = await getPedido(idMenu,idProf, idTarea);
+    
+    return pedidos;
+}
+
+export async function buscarPedidoProfesor (idProf, idTarea){
+    let pedidos = null;
+
+    pedidos = await getPedidoProfesor(idProf, idTarea);
+    
+    return pedidos;
+}
+
+export async function actualizarPedido(id,idMenu,idProf,aula,pedidos){
+    await updatePedido(id,idMenu,idProf,aula,pedidos);
+}
+
+export async function buscarPedidosTarea (idTarea){
+    let pedidos = null;
+
+    pedidos = await getPedidosTarea(idTarea);
+    
+    return pedidos;
+}
+
+export async function completarTarea(idTarea){
+    await terminarTarea(idTarea);
+}
+
+export async function eliminarMenu(nombre){
+    await deleteMenu(nombre);
+}
+
+
+
