@@ -48,7 +48,7 @@ export async function loginAlumno (nombre, password) {
     let id = null;
 
     if (nombre != '' && password != '') {
-        let alumno = await getAlumnosLogin(nombre, password);
+        const alumno = await getAlumnosLogin(nombre, password);
         if (alumno.length>0) id = alumno[0].id;
     }
 
