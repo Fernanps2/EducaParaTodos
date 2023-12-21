@@ -220,6 +220,7 @@ export default function PasoActividad({ navigation }) {
     setStoreTexto("");
   };
 
+  // Guardamos el paso pasándo sus valores a la pantalla verPasosActividad
   const guardarDatos = () => {
     navigation.navigate("verPasosActividad", {
       nombre: nombrePaso,
@@ -231,6 +232,7 @@ export default function PasoActividad({ navigation }) {
     });
   };
 
+  // Muestra alerta informativa para confirmar el guardado y comprueba posibles fallos con mensaje de error.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({

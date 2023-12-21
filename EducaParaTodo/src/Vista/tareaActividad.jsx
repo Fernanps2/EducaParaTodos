@@ -47,6 +47,8 @@ export default function TareaActividad({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+
+    // Obtiene las aulas de los profesores y fotos que serán asginadas a la tarea.
     async function descargarDatos() {
       const datos = await obtenerProfesores();
 
@@ -86,11 +88,13 @@ export default function TareaActividad({ navigation }) {
     inicializarPasos();
   };
 
-  //Validamos las horas
+  //Expresión regular de la hora
   const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/;
 
+  // Valida la hora
   const validateTime = (time) => timeRegex.test(time);
 
+  // Confirma si la hora está con el corecto formato y que haya coherencia entre ellas.
   const saveTimes = () => {
     if (!validateTime(inicioHora) || !validateTime(finHora)) {
       if (Platform.OS === "web") {
@@ -139,11 +143,13 @@ export default function TareaActividad({ navigation }) {
     return true;
   };
 
-  //Validamos las fechas
+  //Expresión regular de la fecha.
   const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
+  // Valida la fecha
   const validateDate = (date) => dateRegex.test(date);
 
+  // Confirma si la fecha está con el corecto formato y que haya coherencia entre ellas.
   const saveDates = () => {
     if (validateDate(inicioFecha) && validateDate(finFecha)) {
       // Aquí podrías añadir lógica adicional para comparar las fechas
@@ -185,6 +191,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Se guarda la tarea con comprobación de errores. Se almacenan los pasos de la tarea y de añade la tarea actividad
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
@@ -222,6 +229,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Se borrar la tarea actividad con mensajes de confirmación.
   const showAlertDelete = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -251,6 +259,10 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  /*
+  * Se realiza mensaje de confirmación para proceder a guardar la tarea actividad. y manda avisos de error 
+  * en el caso de equivocaciones.
+  */
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({

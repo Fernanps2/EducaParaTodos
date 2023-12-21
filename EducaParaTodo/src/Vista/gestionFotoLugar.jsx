@@ -54,6 +54,11 @@ export default function GestionFotoLugar() {
   const [actualizar, setActualizar] = useState(0);
 
   useEffect(() => {
+    /**
+     * La función descargar se descarga datos, modificandolo con un objeto adicional
+     * al principio del array, actualiza el estado con el dato modificado, descarga imágenes, y 
+     * pone un estado de carga a falso.
+     */
     const descargar = async () => {
       const datosOriginales = await buscarLugaresNoAulas();
 
@@ -79,7 +84,7 @@ export default function GestionFotoLugar() {
     descargar();
   }, [actualizar]);
 
-  // Funcion para eliminar foto
+  // Funcion para eliminar foto con alertas de fallos y avisos
   const handleEliminarImagen = () => {
     if (nombreEliminar === "") {
       if (Platform.OS === "web") {
@@ -141,8 +146,7 @@ export default function GestionFotoLugar() {
     }
   };
 
-  // Funciones para añadir foto
-
+  // Funciones para relacionar foto junto con el lugar, se dan avisos y se compruba posibles fallos
   const handleIntercambiarImagen = () => {
     if (fotoSeleccionada === "") {
       if (Platform.OS === "web") {
@@ -211,10 +215,19 @@ export default function GestionFotoLugar() {
     }
   };
 
+  
+  /**
+   * La función establece el estado de la variable viewFotos a verdadero.
+   * Se usa esta función cuando se quiere modificar la imagen de un lugar.
+   */
   const handleCambiarImagen = () => {
     setViewFotos(true);
   };
 
+  /**
+   * La función  `handleElegirImagen` es usada para gestionar la selección de un lugar
+   * para ver su foto, y alerta de posibles fallos cuando el lugar escogido en Ninguno.
+   */
   const handleElegirImagen = async () => {
     if (lugar !== "" && lugar !== "Ninguno") {
       setViewFotos(false);
@@ -237,25 +250,27 @@ export default function GestionFotoLugar() {
     }
   };
 
-  // Funciones para eliminar foto
-
+  // Función que selecciona una foto
   const seleccionarFoto = (nombre) => {
     setFotoSeleccionada(nombre);
     // Aquí puedes agregar lógica adicional para eliminar la foto si lo deseas
   };
 
+  // Función que cambia el estilo de una imagen si es seleccionada
   const estilosImagen = (nombre) => {
     return nombre === fotoSeleccionada
       ? styles.imagenSeleccionada
       : styles.imagen;
   };
 
+  // Función que cambia el estilo de una imagen cuando es seleccionada
   const estilosImagenEliminar = (nombre) => {
     return nombre === nombreEliminar
       ? styles.imagenSeleccionada
       : styles.imagen;
   };
 
+  // Función para reestablecer el valor de todas las variables para almacenar datos.
   const borrarTodo = () => {
     setNombreFoto("");
     setUrlFoto("");
@@ -265,6 +280,7 @@ export default function GestionFotoLugar() {
     setFotoSeleccionada("");
   }
 
+  // Renderiza la vista cuando se elije la opción de añadir foto
   const handleAnadir = () => {
     setViewGestionarFoto(false);
     setViewAnadirFoto(true);
@@ -274,6 +290,7 @@ export default function GestionFotoLugar() {
     borrarTodo();
   };
 
+  // Renderiza la vista cuando se elije la opción de gestionar foto
   const handleGestionar = () => {
     setViewGestionarFoto(true);
     setViewAnadirFoto(false);
@@ -283,6 +300,7 @@ export default function GestionFotoLugar() {
     borrarTodo();
   };
 
+    // Renderiza la vista cuando se elije la opción de eliminar foto
   const handleEliminar = () => {
     setViewGestionarFoto(false);
     setViewAnadirFoto(false);
@@ -292,6 +310,10 @@ export default function GestionFotoLugar() {
     borrarTodo();
   };
 
+  /* 
+  * Función para añadir una foto a la colección de lugar, sin asignarlo a nadie. Tiene mensajes de avisos, 
+  * de fallo y informativos
+  */ 
   const handleAñadirImagen = async () => {
     if (nombreFoto !== "" && urlFoto !== "") {
       await almacenaFotoLugar(urlFoto, nombreFoto + ".png");

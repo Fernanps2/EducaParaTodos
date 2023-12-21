@@ -14,42 +14,49 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { descargaTipoTarea } from "../Controlador/multimedia";
 
 export default function Tareas({ route, navigation }) {
+  const { usuario } = route.params; // Obtiene el usuario que accedió a la pantalla
 
-  const { usuario } = route.params;
+  const [tareas, setTareas] = useState([]); // Las tareas de ese usuario
+  const [indiceActual, setIndiceActual] = useState(0); // El indice actual que recorre las tareas
+  const [cargando, setCargando] = useState(true); // Renderiza la pantalla cuando se haya descargado la información de al base de datos.
 
-  const [tareas, setTareas] = useState([]);
-  const [indiceActual, setIndiceActual] = useState(0);
-  const [cargando, setCargando] = useState(true);
-
+  // useEffect se usa para cargar y procesar datos de tareas cuando el componente se monta o cuando cambian
+  // las dependencias especificadas (usuario, route.params.refresh).
   useEffect(() => {
+    // Función asíncrona para cargar la lista de tareas.
     const listaTareas = async () => {
-      setCargando(true);
+      setCargando(true); // Establece el estado 'cargando' a true al inicio de la carga de datos.
+
       try {
+        // Obtener tareas asociadas al ID del usuario actual.
         const tareas = await buscarTarea(usuario.id);
-        console.log("sus tareas: ", tareas);
+
+        // Procesa cada tarea para descargar la imagen si existe una URL de foto.
         const datos = await Promise.all(
           tareas.map(async ({ id, tipo, fotoURL, titulo }) => {
             if (fotoURL !== "") {
+              // Descarga la imagen si la URL de la foto no está vacía.
               const fotoDescargada = await descargaTipoTarea(fotoURL);
               return { id, tipo, titulo, fotoURL: fotoDescargada };
             }
-            return null; // Retornar null para los casos donde no hay foto
+            return null; // Retornar null para los casos donde no hay foto.
           })
         );
+
+        // Filtra los datos para eliminar los elementos nulos (tareas sin foto).
         const datosFiltrados = datos.filter((tarea) => tarea !== null);
 
-        console.log("datos son estos: ", datosFiltrados);
-
-        setIndiceActual(0);
-        setTareas(datosFiltrados);
-        setCargando(false);
+        // Actualiza el estado con los datos de las tareas procesadas.
+        setIndiceActual(0); // Reinicia el índice actual a 0.
+        setTareas(datosFiltrados); // Establece el nuevo conjunto de tareas.
+        setCargando(false); // Establece el estado 'cargando' a false al finalizar la carga.
       } catch (error) {
-        console.log(error);
+        console.log(error); // Manejo de errores en caso de fallo en la carga o procesamiento.
       }
     };
-    console.log("hecho");
-    listaTareas();
-  }, [usuario, route.params.refresh]);
+
+    listaTareas(); // Llama a la función listaTareas para ejecutar la carga y procesamiento de datos.
+  }, [usuario, route.params.refresh]); // Dependencias del useEffect.
 
   // Función para avanzar a la siguiente tarea
   const siguienteTarea = () => {
@@ -65,6 +72,7 @@ export default function Tareas({ route, navigation }) {
     }
   };
 
+  // Cuando presiona una tarea, en función de que tipo sea se renderiza una pantalla u otra.
   const manejoPresionarBoton = (tarea, navigation, usuario) => {
     const id = tarea.id;
     if (tarea.tipo == "comanda") {

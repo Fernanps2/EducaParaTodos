@@ -16,9 +16,12 @@ import * as lista from "./VarGlobal";
 import {modificarReduciendoStock_materialesBD} from "./VarGlobal";
 
 export default function VerTodosMateriales({ navigation }) {
+
   const route = useRoute();
+  // Se guarda los materiales seleccionados
   const [materialesTarea, setMaterialesTarea] = useState([]);
 
+  // Se añade el nuevo material.
   useEffect(() => {
     if (route.params !== undefined) {
       // Añades el objeto al array
@@ -27,10 +30,12 @@ export default function VerTodosMateriales({ navigation }) {
     }
   }, [route.params]);
 
+  // Actualiza los materiales cada vez que se renderiza la pantalla
   useEffect(() => {
     setMaterialesTarea(lista.get);
   });
 
+  // Muestra un mensaje de confirmación para eliminar un material de la lista
   const deleteItem = (item) => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -46,6 +51,7 @@ export default function VerTodosMateriales({ navigation }) {
         if (result.isConfirmed) {
           lista.filtrar(item.id);
           setMaterialesTarea(lista.get);
+          // Se modifica el stock en la lista de materiales total
           modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
         }
       });
@@ -60,6 +66,7 @@ export default function VerTodosMateriales({ navigation }) {
             onPress: () => {
               lista.filtrar(item.id);
               setMaterialesTarea(lista.get);
+              // Se modifica el stock en la lista de materiales total
               modificarReduciendoStock_materialesBD(item.id, item.cantidad, item.caracteristica);
             },
           },
@@ -69,6 +76,9 @@ export default function VerTodosMateriales({ navigation }) {
     }
   };
 
+  /* El renderizado de la lista de materiales junto con el nombre, cantidad, caracteristicas, 
+  * lugar destino y origen e imagen de eliminar
+  */
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>

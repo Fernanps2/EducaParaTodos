@@ -20,18 +20,26 @@ import {
 } from "../Controlador/multimedia";
 
 export default function GestionFotoTarea() {
+
+  // Variables para guardar datos
   const [urlFoto, setUrlFoto] = useState("");
   const [nombreFoto, setnombrefoto] = useState("");
-  const [viewAnadirFoto, setViewAnadirFoto] = useState(false);
-  const [viewEliminarFoto, setViewEliminarFoto] = useState(false);
-
   const [imagenes, setImagenes] = useState([]);
   const [fotoSeleccionada, setFotoSeleccionada] = useState(null);
+
+  // Variables para renderizar el contenido
+  const [viewAnadirFoto, setViewAnadirFoto] = useState(false);
+  const [viewEliminarFoto, setViewEliminarFoto] = useState(false);
   const [cargando, setCargando] = useState(true);
 
+  // Variable para actualizar las variables con la información actualizada de la base de datos
   const [actualizar, setActualizar] = useState(0);
 
   useEffect(() => {
+    /**
+     * La función descarga es una asíncrona que descarga las fotos de la base de datos para su posterior uso.
+     * Además cambia el estado de carga a false.
+     */
     const descargar = async () => {
       const datos = await descargaTipoTareas();
       setImagenes(datos);
@@ -41,14 +49,14 @@ export default function GestionFotoTarea() {
     descargar();
   }, [actualizar]);
 
-  // Funciones para añadir foto
-
+  // Función para cuando se seleccionada la opción de añadir foto
   const handleanadir = () => {
     setViewAnadirFoto(true);
     setViewEliminarFoto(false);
     setFotoSeleccionada(null);
   };
 
+  // Función que renderiza contenido cuando se seleccióna la opción de eliminar foto
   const handleEliminar = () => {
     setViewAnadirFoto(false);
     setViewEliminarFoto(true);
@@ -56,6 +64,7 @@ export default function GestionFotoTarea() {
     setActualizar(actualizar + 1);
   };
 
+  // añade una imagen a la base de datos, lleva consigo mensajes de aviso de error e informativos
   const handleAñadirImagen = async () => {
     if (nombreFoto !== "" && urlFoto !== "") {
       await almacenaTipoTarea(urlFoto, nombreFoto + ".png");
@@ -90,19 +99,19 @@ export default function GestionFotoTarea() {
     }
   };
 
-  // Funciones para eliminar foto
-
+  // Cuando se selcciona una foto se guarda su nombre en la variable fotoSeleccionada
   const seleccionarFoto = (nombre) => {
     setFotoSeleccionada(nombre);
-    // Aquí puedes agregar lógica adicional para eliminar la foto si lo deseas
   };
 
+  // Cambia el estilo según ese foto ha sido seleccionada o no.
   const estilosImagen = (nombre) => {
     return nombre === fotoSeleccionada
       ? styles.imagenSeleccionada
       : styles.imagen;
   };
 
+  // Elimina una foto de la base de datos, hace pregunta de confirmación, de información (cuando esta borrada).
   const handleEliminarImagen = async () => {
     if (Platform.OS === "web") {
       Swal.fire({

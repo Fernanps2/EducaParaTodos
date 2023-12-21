@@ -72,6 +72,7 @@ export default function AnadirMaterial({ navigation }) {
   const [material, setMaterial] = useState([]);
   const [stockComparar, setStockComparar] = useState("");
 
+  // Hace una búsquedad de materiales
   const searchMaterials = () => {
     if (searchQuery) {
       setMaterials(
@@ -82,25 +83,31 @@ export default function AnadirMaterial({ navigation }) {
     }
   };
 
+  /**
+   * The function "showAllMaterials" resets the materials state and clears the search query.
+   */
   const showAllMaterials = () => {
     setMaterials(initialMaterials);
     setSearchQuery("");
   };
 
+  // Selecciona un material y actualiza el estado de las variables con la información del objeto elegido
   const selectMaterial = (item) => {
+    // Set the selected material ID, name, and object
     setSelectedMaterialId(item.id);
     setNombreMaterial(item.nombre);
     setMaterial(item);
 
-    // escogemos el valor del picker que tiene esa celda
+    // Find the current value of the picker for this material
     const valorActualPicker = item.caracteristicas.find(
       (carac) => carac.tipo === caracteristica
     );
     if (valorActualPicker) {
+      // If a value is found, set the default characteristic and stock to the value of the picker
       setCaracDef(valorActualPicker.tipo);
       setStockComparar(valorActualPicker.cantidad);
     } else {
-      // Sino tiene elección será Ninguno.
+      // If no value is found, set the default characteristic to "None" and the stock to the material's total stock
       setCaracDef("Ninguno");
       setStockComparar(item.stock);
     }
@@ -119,6 +126,10 @@ export default function AnadirMaterial({ navigation }) {
     return caracteristica ? caracteristica.cantidad : stock;
   };
 
+  /**
+   * La función "seleccionTipo" establece el estado "caracteristica" y actualiza el estado
+   * "stockComparar" en función de los parámetros "tipo" e "item" seleccionados.
+   */
   const seleccionTipo = (tipo, item) => {
     setCaracteristica(tipo);
     if (selectedMaterialId === item.id) {
@@ -128,6 +139,11 @@ export default function AnadirMaterial({ navigation }) {
     }
   };
 
+  /**
+   * La función renderItem es un componente de React en JavaScript que renderiza un elemento de
+   * lista con información sobre un material, un selector para elegir una característica y
+   * una casilla de verificación para seleccionar el elemento. Retorna un elemento JSX.
+   */
   const renderItem = ({ item }) => {
     return (
       <View style={styles.listItem}>
@@ -172,6 +188,10 @@ export default function AnadirMaterial({ navigation }) {
     );
   };
 
+  /**
+   * La función guardarDatos verifica si ya se ha añadido un material con las mismas características,
+   * y si no es así, actualiza la cantidad total en stock y navega hacia una nueva pantalla.
+   */
   const guardarDatos = () => {
     // que no pueda introducir un material con la misma característica dos veces.
     if (
@@ -204,6 +224,7 @@ export default function AnadirMaterial({ navigation }) {
     }
   };
 
+  // comprueba que estén rellanados todos los campos antes de guardar el material nuevo añadido
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({

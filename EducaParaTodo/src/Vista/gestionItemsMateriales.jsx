@@ -70,6 +70,10 @@ export default function gestionItemMaterial() {
   const [cargarFotoTipoBD, setCargarFotoTipoBD] = useState(true);
 
   useEffect(() => {
+    /*
+    * Se descarga los tipos de materiales(fino, gordo..) y añade la opción de ninguno a la cabeza. Además
+    * se descarga las fotos de estos tipos desde la base de datos.
+    */
     const cargarTipos = async () => {
       const datosTipos = await buscarTipoMateriales();
       // Crear el objeto con nombre 'Ninguno' y índice 0
@@ -86,7 +90,10 @@ export default function gestionItemMaterial() {
     cargarTipos();
   }, []);
 
-  // Se actualizará el valor de materiales cuando tengamos que modificar uno y estemos en la interfaz de elegir material.
+  /* 
+  * Se actualizará el valor de materiales cuando tengamos que modificar uno y estemos en la interfaz 
+  * de elegir material.
+  */
   useEffect(() => {
     if (viewModificarMaterial) {
       const cargarMateriales = async () => {
@@ -104,6 +111,7 @@ export default function gestionItemMaterial() {
     }
   }, [viewModificarMaterial]);
 
+  // Renderiza el contenido cuando se elije la opción de crear material y se actualiza los estodos de las variables
   const handleCrearMaterial = () => {
     setViewCrearMaterial(true);
     setViewModificarMaterial(false);
@@ -115,6 +123,7 @@ export default function gestionItemMaterial() {
     setViewTipos(false);
   };
 
+    // Renderiza el contenido cuando se elije la opción de modificar material y se actualiza los estodos de las variables
   const handleModificarMaterial = () => {
     setViewCrearMaterial(false);
     setViewModificarMaterial(true);
@@ -126,6 +135,7 @@ export default function gestionItemMaterial() {
     borrarTodo();
   };
 
+  // Inicializa el valor de todas las variables
   const borrarTodo = () => {
     setNombre("");
     setNuevoNombre("");
@@ -142,6 +152,10 @@ export default function gestionItemMaterial() {
     setNuevaFotoUri("");
   };
 
+  /* 
+  * Añade un nuevo tipo a la base de datos tanto cuando se añade un material como cuando se modifica un 
+  * material. se comprueba posibles errores con avisos, 
+  */
   const handleAnadirTipo = () => {
     if (
       tipo.trim() !== "" &&
@@ -210,6 +224,7 @@ export default function gestionItemMaterial() {
     }
   };
 
+  // Cuando se pulsa el boton cancelar se manda un mensaje de confirmación para borrar toda la información.
   const handleCancelar = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -266,6 +281,7 @@ export default function gestionItemMaterial() {
     }
   };
 
+  // Elimina un material, se realiza mensajes de confirmación.
   const handleEliminar = async () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -308,6 +324,7 @@ export default function gestionItemMaterial() {
     }
   };
 
+  // Borrar un material de la base de datos y actualiza el renderizado actualizando los estados de las variables
   const borrarMaterial = async () => {
     await eliminarMaterial(seleccionado.id);
     setSeleccionado([]);
@@ -316,6 +333,7 @@ export default function gestionItemMaterial() {
     setViewCrearMaterial(false);
   };
 
+  // Se añade un material a la base de datos con comprobaciones de errores, y mensajes de confirmación.
   const handleAnadirMaterial = async () => {
     if (
       nombre.trim() === "" ||
@@ -438,6 +456,10 @@ export default function gestionItemMaterial() {
     }
   };
 
+  /*
+  * Asegura que no haya errores, es decir que esten rellenos los campos de nombre, foto y stock. Tiene mensajes 
+  * de aviso
+  */
   const sinErrores = () => {
     if (
       nuevoNombre.trim() === "" ||
@@ -463,6 +485,7 @@ export default function gestionItemMaterial() {
     } else return true;
   };
 
+  // función que modifica un material con mensajes de confirmación e información.
   const handleModificar = async () => {
     if (sinErrores()) {
       if (Platform.OS === "web") {
@@ -720,22 +743,29 @@ export default function gestionItemMaterial() {
     }
   };
 
-  const handleStockInput = (dato) => {
-    if (!isNaN(dato) && dato.trim() !== "") {
-      if (isSeleccionado) {
-        setNuevoStock(dato);
-      } else {
-        setStock(dato);
-      }
-    } else if (dato.trim() === "") {
-      if (isSeleccionado) {
-        setNuevoStock("");
-      } else {
-        setStock("");
-      }
-    }
-  };
 
+// Esta función actualiza el stock dado un input
+const handleStockInput = (dato) => {
+  // Chequea si el input no es un número o si esta vacío
+  if (!isNaN(dato) && dato.trim() !== "") {
+    // Si el producto lo estamos modificando, actualiza el nuevo stock
+    if (isSeleccionado) {
+      setNuevoStock(dato);
+    } else {
+      // Sino, actualiza el stock actual
+      setStock(dato);
+    }
+  } else if (dato.trim() === "") {
+    // Si el input esta vacío limpia el stock
+    if (isSeleccionado) {
+      setNuevoStock("");
+    } else {
+      setStock("");
+    }
+  }
+};
+
+  // Elimina un tipo de material, lleva mensajes de confirmación.
   const deleteItem = (id) => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -749,11 +779,14 @@ export default function gestionItemMaterial() {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
+          // si estamos modificando un material se elimina de su variable
           if (isSeleccionado) {
+            // Eliminamos el tipo filtrando
             setNuevasCaracteristicas(
               nuevasCaracteristicas.filter((item) => item.id !== id)
             );
           } else {
+            // Eliminamos el tipo filtrando
             setCaracteristicas(
               caracteristicas.filter((item) => item.id !== id)
             );
@@ -769,11 +802,14 @@ export default function gestionItemMaterial() {
           {
             text: "Confirmar",
             onPress: () => {
+              // si estamos modificando un material se elimina de su variable
               if (isSeleccionado) {
+                // Eliminamos el tipo filtrando
                 setNuevasCaracteristicas(
                   nuevasCaracteristicas.filter((item) => item.id !== id)
                 );
               } else {
+                // Eliminamos el tipo filtrando
                 setCaracteristicas(
                   caracteristicas.filter((item) => item.id !== id)
                 );
@@ -786,6 +822,7 @@ export default function gestionItemMaterial() {
     }
   };
 
+  // Renderiza los tipos de un material mostrando su nombre, cantidad, foto, y icono de eliminar.
   const renderItem = ({ item }) => (
     <View style={styles.itemContainerTipo}>
       <View style={styles.leftColumn}>
@@ -813,15 +850,19 @@ export default function gestionItemMaterial() {
 
   // %%%%%%%%%%%%%% Funciones para mostrar los materiales %%%%%%%%%%%%%%%%%
 
+  // Busca un material por el nombre.
   const handleBuscar = () => {
+    // Si se busca por un nombre, se filtra por ese nombre
     if (buscar) {
       const newData = materiales.filter((item) => item.nombre.includes(buscar));
       setFiltrar(newData);
     } else {
+      // Sino se puso nada en buscar entonces aparece todo
       setFiltrar(materiales);
     }
   };
 
+  // Muestra todos los materiales.
   const handleMostrarTodo = () => {
     setFiltrar(materiales);
     setBuscar("");
@@ -838,6 +879,7 @@ export default function gestionItemMaterial() {
     setViewPregunta(false);
   };
 
+  // Renderiza todos los materiales que hay con su nombre, stock y icono para modificar
   const renderItemMateriales = ({ item }) => (
     <View style={styles.itemContainerListar}>
       <View style={styles.materialInfo}>
@@ -861,7 +903,6 @@ export default function gestionItemMaterial() {
   // Cuando eligamos al material a modificar obtenemos sus valores.
   // actualizamos nuevas caracteristicas con esos campos para que se adapte a las funciones ya creada para
   // añadir caracteristicas a un nuevo material.
-
   useEffect(() => {
     if (
       seleccionado !== null &&

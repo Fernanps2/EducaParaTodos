@@ -46,9 +46,10 @@ export default function TareaActividad({ navigation }) {
   // Variable para carga
   const [cargando, setCargando] = useState(true);
 
-  // Actualizamos la variable que indica que hemos entrado a la pantalla de crear tarea materiales
   useEffect(() => {
+      // Actualizamos la variable que indica que hemos entrado a la pantalla de crear tarea materiales
     setInicioPantalla(true);
+    // Decarga las fotos que será asignadas a la tarea.
     async function descargarDatos() {
       const data = await descargaTipoTareas();
       data.unshift("Ninguno");
@@ -71,11 +72,13 @@ export default function TareaActividad({ navigation }) {
     inicializarmateriales();
   };
 
-  //Validamos las horas
+  // Expresión regular de hora
   const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/;
 
+  // Valida la hora
   const validateTime = (time) => timeRegex.test(time);
 
+  // Se asegura que la hora tenga el formato correcto y haya coherencias entre ellas.
   const saveTimes = () => {
     if (!validateTime(inicioHora) || !validateTime(finHora)) {
       if (Platform.OS === "web") {
@@ -128,11 +131,13 @@ export default function TareaActividad({ navigation }) {
     return true;
   };
 
-  //Validamos las fechas
+  // Expresión regular de la fecha
   const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
+  // Valida la fecha
   const validateDate = (date) => dateRegex.test(date);
 
+  // Se asegura que la fecha tenga el formato correcto y haya coherencia entre fechas.
   const saveDates = () => {
     if (validateDate(inicioFecha) && validateDate(finFecha)) {
       // Aquí podrías añadir lógica adicional para comparar las fechas
@@ -178,6 +183,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // se guarda la tarea materiales y se modifica el stock de los materiales en la base de datos.
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
@@ -213,7 +219,6 @@ export default function TareaActividad({ navigation }) {
             item.caracteristicas
           );
         }
-        //await modificarMaterial();
 
         // Reiniciamos los materiales
         inicializarmateriales();
@@ -226,6 +231,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Muestra alerta de confirmación de eliminar una tarea de materiales.
   const showAlertDelete = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -255,6 +261,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Muestra confirmación para guardar una tarea. Además tiene alertas cuando se comete un error.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -268,6 +275,7 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
+          // Debe de haber algún material en la lista para que la tarea sea guardada
           if (isVaciaListaMateriales()) {
             Swal.fire({
               title: "Ningún Material elegido",
@@ -298,6 +306,7 @@ export default function TareaActividad({ navigation }) {
           {
             text: "Confirmar",
             onPress: () => {
+              // Debe de haber algún material en la lista para que la tarea sea guardada
               if (isVaciaListaMateriales()) {
                 Alert.alert(
                   "Ningún Material elegido", // Título

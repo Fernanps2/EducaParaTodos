@@ -48,6 +48,7 @@ export default function TareaActividad({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    // Se dascarga las fotos que serán asignada a la tarea comanda.
     async function descargarDatos() {
       const data = await descargaTipoTareas();
       data.unshift("Ninguno");
@@ -70,11 +71,13 @@ export default function TareaActividad({ navigation }) {
     inicializarMenus();
   };
 
-  //Validamos las horas
+  // Expresión regular
   const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/;
 
+  // Valida la hora
   const validateTime = (time) => timeRegex.test(time);
 
+  // Comprueba que la hora tenga el formato correcto y haya coherencia entre ellas
   const saveTimes = () => {
     if (!validateTime(inicioHora) || !validateTime(finHora)) {
       if (Platform.OS === "web") {
@@ -123,11 +126,13 @@ export default function TareaActividad({ navigation }) {
     return true;
   };
 
-  //Validamos las fechas
+  //Expresión regular de la fecha
   const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 
+  // Valida la fecha
   const validateDate = (date) => dateRegex.test(date);
 
+  // Comprueba que la fecha tenga el formato correcto y haya coherencia entre ellas
   const saveDates = () => {
     if (validateDate(inicioFecha) && validateDate(finFecha)) {
       // Aquí podrías añadir lógica adicional para comparar las fechas
@@ -173,6 +178,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Guardamos la tarea comanda y se añade el menú junto con sus alimentos.
   const guardarDatos = async () => {
     try {
       if (saveDates() && saveTimes()) {
@@ -206,6 +212,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Muestra alerta de confirmación para cuando se quiere eliminar la tarea comanda.
   const showAlertDelete = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -235,6 +242,7 @@ export default function TareaActividad({ navigation }) {
     }
   };
 
+  // Muestra mensaje de confirmación cuando se quiere guardar una tarea, además de tener mensajes de aviso de errores.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -248,6 +256,7 @@ export default function TareaActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
+          // Todos los menus deben de tener al menos un alimento
           if (isVaciaAlgunListaMenus()) {
             Swal.fire({
               title: "Menu Vacio",
@@ -279,6 +288,7 @@ export default function TareaActividad({ navigation }) {
           {
             text: "Confirmar",
             onPress: () => {
+              // Todos los menus deben tener al menos un alimento
               if (isVaciaAlgunListaMenus()) {
                 Alert.alert(
                   "Menu Vacio", // Título

@@ -17,6 +17,7 @@ import * as global from "./VarGlobal";
 import {buscarAlimentos} from "../Controlador/tareas"
 
 export default function TiposMenusComanda({ navigation }) {
+  
   // Variables para los alimentos del menu
   const [selectedMenu, setSelectedMenu] = useState("");
   const [menus, setMenus] = useState([]);
@@ -34,6 +35,10 @@ export default function TiposMenusComanda({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    /**
+     * La función cargarAlimentos es una función asíncrona que recupera datos de una fuente, 
+     * los almacena en un arreglo y establece variables de estado con los datos recuperados.
+     */
     const cargarAlimentos = async () => {
       try {
         const datos = await buscarAlimentos();
@@ -50,6 +55,10 @@ export default function TiposMenusComanda({ navigation }) {
     cargarAlimentos(); // Llamamos a la función al montar el componente
   }, []);
 
+/**
+* La función addFood verifica si tanto selectedAlimento como selectedMenu no están vacíos o son "Ninguno"
+* , y si es así, añade selectedAlimento al selectedMenu en el objeto menus.
+ */
   const addFood = () => {
     if (
       selectedAlimento &&
@@ -68,6 +77,7 @@ export default function TiposMenusComanda({ navigation }) {
     }
   };
 
+  // Elimina un alimento de los menus
   const deleteFood = (food) => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -117,6 +127,7 @@ export default function TiposMenusComanda({ navigation }) {
     navigation.navigate("tareaComanda");
   };
 
+  //Envía una alerta antes de guardar
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({

@@ -17,6 +17,7 @@ export default function GestionItemActividad() {
   const [nombreVideo, setnombreVideo] = useState("");
   const [viewVideo, setViewVideo] = useState(false);
 
+  // Renderiza el contenido cuando se pulsa la opción de añadir video.
   const handleVideo = () => {
     setViewVideo(true);
   };
@@ -35,6 +36,8 @@ export default function GestionItemActividad() {
     setnombreVideo("");
     setUrlVideo("");
   };
+
+  // Función para añadie video a la base de datos.
   const handleAñadirVideo = async () => {
     if (viewVideo) {
       if (nombreVideo !== "" && urlVideo !== "") {

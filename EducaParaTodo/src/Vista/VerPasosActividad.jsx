@@ -15,24 +15,28 @@ import * as global from "./VarGlobal";
 import { useRoute } from "@react-navigation/native";
 
 export default function VerPasosActividad({ navigation }) {
-  // Variables para los alimentos del menu
+
+  // Variables para los pasos de la actividad
   const [data, setData] = useState([]);
 
   const route = useRoute();
 
+  // se realiza solo cuando cambia los parámetros route.
   useEffect(() => {
     if (route.params !== undefined) {
-      // Añades el objeto al array
+      // Añades el paso nuevo al array y a la variable data
       const { nombre, texto, imagen, pictograma, video, audio } = route.params;
       global.pushPasos(nombre, texto, imagen, pictograma, video, audio);
       setData(global.getPasos);
     }
   }, [route.params]);
 
+  // se realiza cada vez que se renderiza esta pantalla
   useEffect(() => {
     setData(global.getPasos);
   });
 
+  // Da un aviso para confirmar la eliminación de un pas
   const deleteItem = (id) => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -46,6 +50,7 @@ export default function VerPasosActividad({ navigation }) {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
+          // Actualiza la variables global que lleva cuenta de los pasos y la variable data.
           global.filtrarPasos(id);
           setData(global.getPasos);
         }
@@ -59,6 +64,7 @@ export default function VerPasosActividad({ navigation }) {
           {
             text: "Confirmar",
             onPress: () => {
+              // Actualiza la variables global que lleva cuenta de los pasos y la variable data.
               global.filtrarPasos(id);
               setData(global.getPasos);
             },
@@ -69,6 +75,7 @@ export default function VerPasosActividad({ navigation }) {
     }
   };
 
+  // renderiza la lista de pasos creados con su nombre, e items. Además de un botón de eliminar.
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftColumn}>

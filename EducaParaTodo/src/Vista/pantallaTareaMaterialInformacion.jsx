@@ -12,15 +12,27 @@ export const mostrarNumeroRecogidas = (
   aulas,
   indice
 ) => {
-  const resultado = lugaresOrigen.map((lugar) => {
+
+// Mapea los lugares de origen a sus correspondientes aulas.
+const resultado = lugaresOrigen.map((lugar) => {
+    // Encuentra la aula correspondiente al lugar actual.
+    // Se compara el 'id' del lugar con la propiedad 'aula' de cada aula en el arreglo 'aulas'.
     const aulaCorrespondiente = aulas.find((aula) => aula.aula === lugar.id);
+
+    // Si existe una aula correspondiente, retorna un objeto con las propiedades 'aula' y 'foto'.
+    // En caso contrario, retorna 'null'.
     return aulaCorrespondiente
       ? { aula: aulaCorrespondiente.aula, foto: aulaCorrespondiente.foto }
       : null;
-  });
-  const resultadoFinal = resultado.filter((elemento, index) => {
+});
+
+// Filtra los resultados para obtener aquellos a partir del índice especificado.
+// 'indice' es una variable que define desde qué posición del arreglo se quieren los elementos.
+const resultadoFinal = resultado.filter((elemento, index) => {
+    // Retorna solo los elementos cuyo índice sea mayor o igual al 'indice' especificado.
     return index >= indice;
-  });
+});
+
 
   return (
     <View style={estilos.container}>

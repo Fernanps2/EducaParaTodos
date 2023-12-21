@@ -18,6 +18,7 @@ import { buscarMenus } from "../Controlador/tareas";
 import * as global from "./VarGlobal";
 
 export default function TiposMenusComanda({ navigation }) {
+
   // Variables para tipo de menu
   const [selectedMenuType, setSelectedMenuType] = useState("Ninguno");
   const [menuList, setMenuList] = useState([]);
@@ -25,6 +26,7 @@ export default function TiposMenusComanda({ navigation }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    // Se carga los menús desde la base de datos y se añade 
     const cargarMenus = async () => {
       try {
         const datos = await buscarMenus();
@@ -37,18 +39,21 @@ export default function TiposMenusComanda({ navigation }) {
       }
     };
     cargarMenus(); // Llamamos a la función al montar el componente
-    setMenuList(global.getSoloMenus);
+    setMenuList(global.getSoloMenus); // Actualiza la lista de menus con la variable global.
   }, []);
 
+  // Se añade un neuvo menu a la lista de menús.
   const addItem = () => {
     if (
       selectedMenuType !== "Ninguno" &&
       !menuList.some((menuItem) => menuItem === selectedMenuType)
     ) {
+      // Se añade solo cuando no esta ya en la lista o este no sea ninguno
       setMenuList([selectedMenuType, ...menuList]);
     }
   };
 
+  // Se elimina un menú de la lista de menús, tiene mensajes de confirmación.
   const deleteItem = (index) => {
     if (Platform.OS === "web") {
       Swal.fire({
@@ -87,6 +92,7 @@ export default function TiposMenusComanda({ navigation }) {
     }
   };
 
+  // Renderiza el contenido de los menús elegidos junto con su botón de eliminar.
   const renderItem = ({ item, index }) => (
     <View style={styles.listItem}>
       <Text style={styles.itemText}>{item}</Text>
@@ -99,12 +105,14 @@ export default function TiposMenusComanda({ navigation }) {
     </View>
   );
 
+  // Se guardar la lista de menús en la variables global. Y pasamos a la pantalla donde se elijen los alimentos.
   const guardarDatos = () => {
     global.setSoloMenus(menuList); // LLevamos la cuenta de los menus para que no se pierden información
     global.setMenusObjetos(menuTypes, menuList); // Llevamos la cuenta de los objetos de los menus elegidos
     navigation.navigate("alimentosMenusComanda");
   };
 
+  // Muestra mensaje de confirmación de guardar la lista de menús.
   const showAlertStore = () => {
     if (Platform.OS === "web") {
       Swal.fire({
