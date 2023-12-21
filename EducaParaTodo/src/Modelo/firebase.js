@@ -199,7 +199,36 @@ export async function getAlumnosLogin(nombre, contrasenia) {
     return docs;
 }
 
+export const getAlumnoId = async (id) => {
+    try {
+      const q = query(collection(db, 'alumnos'), where('__name__', '==', id));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const alumnoDoc = querySnapshot.docs[0];
+        const { nombre, apellidos, foto, password, visualizacionPreferente } = alumnoDoc.data();
+  
+        return {
+          id: alumnoDoc.id,
+          nombre,
+          apellidos,
+          foto,
+          password,
+          visualizacionPreferente,
+        };
+      } else {
+        // Si el documento no existe
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
+      throw error;
+    }
+  };
+
 export async function getAlumnoID(id) {
+    
     let instancia = null;
     try {
         const docAlumno = doc(db, COL_ALUMNOS, id);
@@ -1167,6 +1196,9 @@ export async function deleteAlumnoTarea(id) {
         console.log("Error al borrar alumnoTarea", error);
     }
 }
+
+
+
 
 /**********  FINAL FUNCIONES ALUMNO_TAREA ********/
 
@@ -2444,6 +2476,35 @@ export const getTarea = async (idTarea) => {
 
 
 
+export const getTareaById = async (tareaId) => {
+    try {
+      const q = query(collection(db, 'Tarea'), where('__name__', '==', tareaId));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty) {
+        const tareaDoc = querySnapshot.docs[0];
+        const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+  
+        return {
+          id: tareaDoc.id,
+          titulo,
+          completado,
+          fechaInicio,
+          fechaFin,
+          tipo,
+          idAlumno,
+        };
+      } else {
+        // Si el documento no existe
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
+      throw error;
+    }
+  };
+  
 
 // Obtener todas las tareas
 export const getTareas = async () => {
@@ -2788,6 +2849,25 @@ export const getTComanda = async () => {
         console.log(error);
     }
 }
+
+export const getTareasComandaId = async (idTarea) => {
+    try {
+      const q = query(collection(db, 'Tarea-Comanda'), where('idTarea', '==', idTarea));
+      const querySnapshot = await getDocs(q);
+  
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const tareaComandaDatos = docu.data();
+        docs.push(tareaComandaDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
 
 
@@ -3359,6 +3439,116 @@ export async function terminarTarea(idTarea){
     }
 }
 
+export const getTareasInventarioId = async (idTarea) => {
+    try {
+      const q = query(collection(db, 'Tarea-Inventario'), where('idTarea', '==', idTarea));
+      const querySnapshot = await getDocs(q);
+      
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const tareaInventarioDatos = docu.data();
+        docs.push(tareaInventarioDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  // Funciones offtopic
 
+  export const getProfesorAula = async (aula) => {
+    try {
+      const q = query(collection(db, 'profesores'), where('aula', '==', aula));
+      const querySnapshot = await getDocs(q);
+      
+      const docs = [];
+  
+      for (const docu of querySnapshot.docs) {
+        const ProfesoroDatos = docu.data();
+        docs.push(ProfesoroDatos);
+      }
+  
+      return docs;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  export const getVisualizacion = async (idTarea) => {
+    try {
+        const q = query(collection(db, 'Tarea'), where('__name__', '==', idTarea));
+        const querySnapshot = await getDocs(q);
+
+        const visualizaciones = [];
+
+        for (const docu of querySnapshot.docs) {
+            const alumnoTareaDatos = docu.data();
+            const visualizacion = alumnoTareaDatos.visualizacion;
+
+            if (visualizacion) {
+                visualizaciones.push(visualizacion);
+            }
+        }
+
+        return visualizaciones;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getImagenId = async (idImagen) => {
+    try {
+        const q = query(collection(db, 'Imagen'), where('__name__', '==', idImagen));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const imagenDatos = doc.data();
+            return imagenDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idImagen);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getPictogramaId = async (idPictograma) => {
+    try {
+        const q = query(collection(db, 'Pictogramas'), where('__name__', '==', idPictograma));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const pictoDatos = doc.data();
+            return pictoDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idPictograma);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+  
+export const getVideoId = async (idVideo) => {
+    try {
+        const q = query(collection(db, 'Videos'), where('__name__', '==', idVideo));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const videoDatos = doc.data();
+            return videoDatos;
+        } else {
+            console.log('No se encontró ninguna imagen con el id:', idVideo);
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};

@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
+import { getTareaById, getVisualizacion, getTareasInventarioId, getTareasComandaId, setTarea,asignarFeedback,getTareaId,getTareas, deleteTareaId,setTareaActividad,getTareasActividad,getPasos,setPasoActividad,setTareaComanda,getTareasComanda,setMenu, getTareasActividadId, getPictogramasNumero, getTComanda, updatePedido, getPedidosTarea, terminarTarea, getTarea} from "../Modelo/firebase";
 import { getMenus,getMenu,setAlimento,getAlimento,setTareaInventario,setMaterial,getMaterial,getMaterialId,getMateriales,getTareasInventario, setPedido, getPedido, getPedidoProfesor,deleteMenu,getMenusComanda} from "../Modelo/firebase";
 
 export async function aniadeTarea(titulo, fechaInicio, fechaFin, tipo, periodicidad){
@@ -17,6 +17,14 @@ export async function buscarTareaAlumno(idAlumno){
     console.log("el id es: " + idAlumno);
 
     tarea = await getTareaId(idAlumno);
+
+    return tarea;
+}
+
+export async function buscarTareaId(idTarea){
+    let tarea = null;
+
+    tarea = await getTareaById(idAlumno);
 
     return tarea;
 }
@@ -88,6 +96,22 @@ export async function buscarTareasComandas(){
     let tareas = null;
 
     tareas = await getTareasComanda();
+
+    return tareas;
+}
+
+export async function buscarTareasComandasId(idTarea){
+    let tareas = null;
+
+    tareas = await getTareasComandaId(idTarea);
+
+    return tareas;
+}
+
+export async function buscarTareasComandasId(idTarea){
+    let tareas = null;
+
+    tareas = await getTareasComandaId(idTarea);
 
     return tareas;
 }
@@ -197,6 +221,14 @@ export async function buscarTareasInventario(){
     let tareasInventario = null;
 
     tareasInventario = await getTareasInventario();
+
+    return tareasInventario;
+}
+
+export async function buscarTareasInventarioId(idTarea){
+    let tareasInventario = null;
+
+    tareasInventario = await getTareasInventarioId(idTarea);
 
     return tareasInventario;
 }

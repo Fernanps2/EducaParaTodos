@@ -19,7 +19,7 @@ const manejoPresionarBoton = (tarea, navigation) => {
 }
 
 // Componente que muestra los datos de las tareas
-const DatosTareas = ({ tarea, navigation }) => {
+const DatosTareas = ({ tarea, usuario, navigation }) => {
     return (
         <View>
             <TouchableOpacity onPress={() => manejoPresionarBoton(tarea,navigation)}>
@@ -35,7 +35,7 @@ const DatosTareas = ({ tarea, navigation }) => {
 const Tareas = ({ route, navigation }) => {
 
     const { usuario } = route.params; // obtenemos los datos del usuario pasados en la navegación
-
+    
     const [tareas, setTareas] = useState([]);
 
     useFocusEffect(
@@ -62,7 +62,7 @@ const Tareas = ({ route, navigation }) => {
             <ScrollView contentContainerStyle={styles.datos}>
                 {tareas.map((tarea, index) => (
                     <View key={index} style={styles.contenedor_tareas}>
-                        <DatosTareas tarea={tarea} navigation={navigation} />
+                        <DatosTareas tarea={tarea} usuario={usuario} navigation={navigation} />
                     </View>
                 ))}
 

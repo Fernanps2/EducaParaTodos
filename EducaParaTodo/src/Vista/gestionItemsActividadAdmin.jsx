@@ -13,9 +13,8 @@ import {
 } from "react-native";
 import { setVideo } from "../Modelo/firebase";
 import {   descargaPictogramas, eliminaPictograma } from "../Controlador/multimedia";
-import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, eliminaImagen, openGallery } from "../Controlador/multimedia";
+import { almacenaImagen, almacenaPictograma, almacenaVideo, descargaImagenes, descargaVideos, eliminaImagen, eliminaVideo, openGallery } from "../Controlador/multimedia";
 import Swal from "sweetalert2";
-import { ActivityIndicator } from "react-native-web";
 
 export default function GestionItemActividad() {
   //Sección de variables para añadir item
@@ -36,7 +35,11 @@ export default function GestionItemActividad() {
   const [viewImagen, setViewImagen] = useState(false);
 
   //Sección de variables para eliminar un item
+  const vid = React.useRef(null);
+  const [status, setStatus] = React.useState({});
   const [viewEliminarVideo, setViewEliminarVideo] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [videosSeleccionados, setVideosSeleccionados] = useState([]);
 
   const [viewEliminarPictograma, setViewEliminarPictograma] = useState(false);
   const [pictogramas,setPictogramas] = useState([]);
@@ -87,7 +90,7 @@ export default function GestionItemActividad() {
     setViewEliminarImagen(false);
   };
 
-  const handleEliminarVideo = () => {
+  const handleEliminarVideo = async () => {
     setViewPictograma(false);
     setViewVideo(false);
     setViewImagen(false);
@@ -95,6 +98,8 @@ export default function GestionItemActividad() {
     setViewEliminarVideo(true); //
     setViewEliminarPictograma(false); 
     setViewEliminarImagen(false);
+
+    setVideos(await descargaVideos());
   }
   const handleEliminarImagen = async () => {
     setViewPictograma(false);
@@ -326,6 +331,65 @@ export default function GestionItemActividad() {
 
   // FIN DE FUNCIONES PARA ELIMINAR PICTOGRAMAS
 
+
+  //FUNCIONES PARA ELIMINAR VIDEO
+  //Para seleccionar y deseleccionar un video
+  const toggleSelectionVideo = (videoId) => {
+    const index = videosSeleccionados.indexOf(videoId);
+
+    if (index == -1) {
+      setVideosSeleccionados([...videosSeleccionados, videoId]);
+    } else {
+      const updatedSelection = [...videosSeleccionados];
+      updatedSelection.splice(index,1);
+      setVideosSeleccionados(updatedSelection);
+    }
+  };
+  
+  //Renderizar el video
+  const renderVideo = ({item}) => {
+    const isSelected = videosSeleccionados.includes(item.nombre);
+    //console.log(item.uri);
+    return (
+      <TouchableOpacity
+        style={isSelected ? styles.selectedImage : styles.image}
+        onPress={() => toggleSelectionVideo(item.nombre)}
+      >
+        <Video ref={vid}
+          source={{uri: item.uri}}
+          useNativeControls resizeMode={ResizeMode.CONTAIN} isLooping
+          onPlaybackStatusUpdate={status => setStatus(() => status)}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const eliminarVideos = async () => {
+    if (viewEliminarVideo) {
+      videosSeleccionados.map((selectedId) => {
+        eliminaVideo(selectedId);
+      });
+      setVideosSeleccionados([]);
+
+      console.log("Videos eliminados");
+
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "Listo",
+          text: "Videos borrados correctamente",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        })
+      }else{
+        Alert.alert('Listo', 'Videos borrados correctamente');
+      }
+
+      //Actualizamos de nuevo las imágenes
+      setVideos(await descargaVideos());
+    }
+  }
+
+  //FIN FUNCIONES ELIMINAR VIDEO
 
   const abrirGaleria = async() => {
     if(viewPictograma) setUrlPictograma(await openGallery());
@@ -582,6 +646,39 @@ export default function GestionItemActividad() {
           <View style={styles.separador}/>
 
           <TouchableOpacity style={styles.buttonDelete} onPress={eliminarImagenes}>
+            <Text style={styles.buttonText}>Eliminar</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
+      {viewEliminarVideo && (
+        <ScrollView>
+          <View style={styles.separador} />
+
+          <Text style={styles.text}>Selecciona los vídeos a eliminar:</Text>
+
+          <View style={styles.separador}/>
+          <View style={styles.separador}/>
+
+          <View style={styles.container}>
+          
+            <FlatList
+              data={videos}
+              renderItem={renderVideo}
+              keyExtractor={(item) => item.name}
+              numColumns={3}
+              contentContainerStyle={styles.imageGrid}
+            />
+            <View style={styles.selectedImagesContainer}>
+              <Text>Videos seleccionadas:</Text>
+              {videosSeleccionados.map((selectedId) => (
+                <Text key={selectedId}>{videos.find(item => item.nombre == selectedId).nombre}</Text>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.separador}/>
+
+          <TouchableOpacity style={styles.buttonDelete} onPress={eliminarVideos}>
             <Text style={styles.buttonText}>Eliminar</Text>
           </TouchableOpacity>
         </ScrollView>
