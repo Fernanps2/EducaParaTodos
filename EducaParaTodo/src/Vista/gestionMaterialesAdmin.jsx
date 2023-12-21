@@ -1,51 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { CerrarSesion } from './cerrarSesion';
 
-export default function GestionTareas ({ navigation }) {
+export default function GestionMateriales ({ navigation }) {
     return (
       <View style={styles.container}>
-      <View style={[{flexDirection: 'row'}, { justifyContent: "center" }]}>
-        <Text style={[styles.title]}>Gestión Tareas</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("HomeAdmin")}>
-          <Image
-            source={require("../../Imagenes/CrearTarea/Flecha_atras.png")}
-            style={[styles.Image, { marginLeft: 40 }]}
-          />
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.title}>Gestión Materiales</Text>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('tareaActividad')}>
-        <Text style={styles.buttonText}>Actividad </Text>
+        onPress={() => navigation.navigate('gestionItemActividad')}>
+        <Text style={styles.buttonText}>Gestión Items Actividad</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('tareaComanda')}>
-        <Text style={styles.buttonText}>Comanda </Text>
+        onPress={() => navigation.navigate('')}>
+        <Text style={styles.buttonText}>Gestión Items Comanda</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('tareaMateriales')}>
-        <Text style={styles.buttonText}>Materiales </Text>
+        onPress={() => navigation.navigate('')}>
+        <Text style={styles.buttonText}>Gestión Items Materiales</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('gestionarEstadoTareas')}>
-            <Text style={styles.buttonText}>Gestionar Estado Tareas</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('asignarTarea')}>
-        <Text style={styles.buttonText}>Asignar Tarea </Text>
-      </TouchableOpacity>
-
-
-
       </View>
 
     )};
@@ -90,8 +68,4 @@ export default function GestionTareas ({ navigation }) {
         color: 'white',
         fontSize: 18,
       },
-      Image: {
-        width: 20,
-        height: 20,
-      }
     });

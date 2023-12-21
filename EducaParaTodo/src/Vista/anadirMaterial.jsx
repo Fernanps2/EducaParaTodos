@@ -13,12 +13,11 @@ import {
   Platform,
 } from "react-native";
 import Swal from "sweetalert2";
-import { getMateriales } from "../Modelo/modelo";
-import VerTodosMateriales from './verTodosMateriales';
+import { buscarMateriales } from "../Controlador/tareas";
 
 //import { DataContextMateriales } from "./DataContextMateriales";
 
-export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, navigation }) {
+export default function AnadirMaterial({ navigation }) {
   // Variables para elegir material
   const [initialMaterials, setInitialMaterials] = useState([]);
   const [materials, setMaterials] = useState([]);
@@ -28,7 +27,7 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
     // Función para llamar a getMateriales y almacenar la respuesta
     const cargarMateriales = async () => {
       try {
-        const datosMateriales = await getMateriales();
+        const datosMateriales = await buscarMateriales();
         setMaterials(datosMateriales); // Guardamos los datos en la variable de estado
         setInitialMaterials(datosMateriales);
         setCargando(false);
@@ -47,18 +46,8 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
   const [searchQuery, setSearchQuery] = useState("");
   const [labelQty, setLabelQty] = useState("");
   const [selectedMaterialId, setSelectedMaterialId] = useState(null);
-  const [nombreMaterial, setNombreMaterial] = useState('');
-
-  const enviarDatos = () => {
-    const datoNuevo = [selectedMaterialId, pickupLocation, dropoffLocation, labelQty, nombreMaterial];
-    if (AnadirMaterial === undefined){
-
-      setMaterialesTarea([datoNuevo]);
-    }else{
-
-      setMaterialesTarea([...AnadirMaterial, datoNuevo]);
-    }
-  };
+  const [nombreMaterial, setNombreMaterial] = useState("");
+  const [material, setMaterial] = useState([]);
 
   const searchMaterials = () => {
     if (searchQuery) {
@@ -78,10 +67,12 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
   const selectMaterial = (item) => {
     if (selectedMaterialId === item.id) {
       setSelectedMaterialId(null);
-      setNombreMaterial('');
+      setNombreMaterial("");
+      setMaterial([]);
     } else {
       setSelectedMaterialId(item.id);
       setNombreMaterial(item.nombre);
+      setMaterial(item);
     }
   };
 
@@ -110,8 +101,13 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
   );
 
   const guardarDatos = () => {
-    enviarDatos();
-    navigation.navigate("tareaMateriales");
+    navigation.navigate("verTodosMateriales", {
+      id: selectedMaterialId,
+      origen: pickupLocation,
+      destino: dropoffLocation,
+      cantidad: labelQty,
+      nombre: nombreMaterial,
+    });
   };
 
   const showAlertStore = () => {
@@ -142,7 +138,16 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
               confirmButtonText: "De acuerdo",
             });
           } else {
-            guardarDatos();
+            if (labelQty > material.stock) {
+              Swal.fire({
+                title: "Cantidad incorrecta",
+                text: "La cantidad a recoger no debe ser superior al stock total.",
+                icon: "warning",
+                confirmButtonText: "De acuerdo",
+              });
+            } else {
+              guardarDatos();
+            }
           }
         }
       });
@@ -152,7 +157,39 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
         "Pulsa una opción", // Mensaje
         [
           { text: "Cancelar" },
-          { text: "Confirmar", onPress: () => guardarDatos() },
+          {
+            text: "Confirmar",
+            onPress: () => {
+              if (
+                pickupLocation == "" ||
+                dropoffLocation == "" ||
+                isNaN(labelQty) ||
+                labelQty.trim() === "" ||
+                labelQty == 0 ||
+                selectedMaterialId === null
+              ) {
+                Alert.alert(
+                  "Campos rellenados incorrectamente", // Título
+                  "Comprueba que todos los campos estan rellanados correctamente.", // Mensaje
+                  [
+                    { text: "De acuerdo" },
+                  ],
+                );
+              } else {
+                if (labelQty > material.stock) {
+                  Alert.alert(
+                    "Cantidad incorrecta", // Título
+                    "La cantidad a recoger no debe ser superior al stock total.", // Mensaje
+                    [
+                      { text: "De acuerdo" },
+                    ],
+                  );
+                } else {
+                  guardarDatos();
+                }
+              }
+            },
+          },
         ],
         { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
       );
@@ -261,7 +298,6 @@ export default function AnadirMaterial({ AnadirMaterial, setMaterialesTarea, nav
           />
         </View>
       </View>
-      <VerTodosMateriales enviarDatos/>
     </SafeAreaView>
   );
 }

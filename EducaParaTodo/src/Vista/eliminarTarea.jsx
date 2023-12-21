@@ -1,89 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import {Alert, View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+//import EliminarTareaAlumno from './EliminarTareaAlumno';
+//import aniadirPictograma from './aniadirPictograma';
+//import feedbackAlumno from './feedbackAlumno';
+//import DatosAlumnos from './DatosAlumnos';
+//import alumnos from '../Modelo/alumno';
+
+const EliminarTarea = () => {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
+  /*
+  const handleItemPress = (item) =>  {
+    console.log('Elemento presionado:', item);
+    navigation.navigate('EliminarTareaAlumno', {item});
+  };*/
 
 
-// Simulación de datos de tareas
-const mockTasks = [
-  { id: 1, title: 'Recoger la mesa' },
-  { id: 2, title: 'Hacer la comanda' },
-  { id: 3, title: 'Atarse los cordones' },
-];
-
-export default function EliminarTarea() {
-    const [tasks, setTasks] = useState(mockTasks);
-
-    const eliminarTarea = (id) => {
-      const updatedTasks = tasks.filter(task => task.id !== id);
-      setTasks(updatedTasks);
+  useEffect(() => {
+    const mostrarAlumnos = async () => {
+      setIsLoading(true); // Iniciar la carga
+      try {
+        const alumnos = await getAlumnos();
+        setData(alumnos);
+        console.log(alumnos);
+      } catch (error) {
+        console.error('Error al obtener los documentos: ', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-  
-    const MostrarTarea = ({ item }) => (
-      <View style={styles.taskItem}>
-        <Text>{item.title}</Text>
+
+    mostrarAlumnos();
+  }, []);
+
+  return (
+    <View>
+      {isLoading ? (
+        <Text>Cargando...</Text>
+      ) : (
+        <ScrollView contentContainerStyle={styles.datos}>
+      {data.map((item, index) => (
         <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => showAlertStore(item.id)}
-        >
-          <Text style={styles.deleteButtonText}>Eliminar</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  
-
-    const showAlertStore = (id) =>{
-      Alert.alert(
-        "¿Estas seguro de eliminar la tarea?",
-        "Pulsa una opcion",
-        [
-          {text: "Cancelar"},
-          {text: "Confirmar", onPress: () =>  eliminarTarea(id)}
-        ],
-        { cancelable: true}
-      );
-    };
-
-  
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Eliminar Tareas</Text>
-        </View>
-          <FlatList
-            data={tasks}
-            renderItem={ MostrarTarea } 
-            KeyExtractor = {task => task.id.toString()}   
-          />
-      </View>
-    );
-  }
+      key={index}
+      onPress={() => navigation.navigate('EliminarTareaAlumno', {idAlumno: item.id})} 
+      style={styles.cardWithImage}
+    >
+      <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('FeedbackAlumno',{idAlumno: item.id})} style={styles.cardWithImage}><Text>Añadir feedback</Text></TouchableOpacity>
+    </TouchableOpacity>
+      ))}
+    </ScrollView>
+      )}
+      <TouchableOpacity onPress={() => navigation.navigate('aniadirPictograma')} style={styles.cardWithImage}><Text>Añadir Pictograma</Text></TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
+  cardWithImage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 20,
+    marginVertical: 8,
+    marginLeft: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 20,
+  },
+  datos: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 10,
+    marginLeft: 10,
+  },
   container: {
     flex: 1,
     padding: 20,
   },
-  header: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  taskItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: 'lightgrey',
-    paddingVertical: 10,
-  },
-  deleteButton: {
-    backgroundColor: 'red',
-    padding: 8,
-    borderRadius: 5,
-  },
-  deleteButtonText: {
-    color: 'white',
-  },
 });
+
+export default EliminarTarea;
