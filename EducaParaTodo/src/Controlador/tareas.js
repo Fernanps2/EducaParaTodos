@@ -108,14 +108,6 @@ export async function buscarTareasComandasId(idTarea){
     return tareas;
 }
 
-export async function buscarTareasComandasId(idTarea){
-    let tareas = null;
-
-    tareas = await getTareasComandaId(idTarea);
-
-    return tareas;
-}
-
 // Esta función muestra todas las tareas de tipo comanda en la colección tarea que están completadas por lo que esto incluye también que esté asignada a un alumno
 export async function buscarTComandas(){
     let tareas = null;
