@@ -2951,7 +2951,7 @@ export const getTareas = async () => {
       fotoURL,
     });
   }
-
+console.log('esto:', docs)
         return docs;
     } catch (error) {
         console.log(error);

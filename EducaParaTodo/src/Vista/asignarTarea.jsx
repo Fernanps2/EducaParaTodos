@@ -23,6 +23,8 @@ export function AsignarTarea ({props, navigation}){
      const cargarTareas = async () => {
        try {
          const tareas = await buscarTareas();
+         
+         console.log('tareas:', tareas)
          setTareas(tareas);
        } catch (error) {
          console.log(error);
