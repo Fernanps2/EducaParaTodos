@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, ScrollView } from 'react-native';
-import {almacenaFotoPersona, almacenaImagenLogin, openGallery} from '../Controlador/multimedia' 
+import {almacenaFotoPersona, almacenaImagenLogin, openGallery} from '../Controlador/multimedia'
+import Swal from 'sweetalert2';
 
 
 // ESTA SECCIÓN DE CÓDIGO HAY QUE PONERLA EN TODAS LAS PAGINAS QUE VAYAIS A HACER USO DE LA BASE DE DATOS
@@ -71,40 +72,76 @@ export default function AniadirAlumno ({ navigation }) {
   };
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{
-            almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
-            if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
-              
-              //Asociamos los nombres a las imagenes y la contraseña
-              //Almacenamos las imagenes
-              almacenaImagenLogin(imagenesContrasenia.imagen1, "Imagen1"+datosAlumno.nombre+datosAlumno.apellidos);
-              almacenaImagenLogin(imagenesContrasenia.imagen2, "Imagen2"+datosAlumno.nombre+datosAlumno.apellidos);
-              almacenaImagenLogin(imagenesContrasenia.imagen3, "Imagen3"+datosAlumno.nombre+datosAlumno.apellidos);
-              almacenaImagenLogin(imagenesContrasenia.imagen4, "Imagen4"+datosAlumno.nombre+datosAlumno.apellidos);
-              
-              //Añadimos alumno
-              aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, 
-                `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`, 
-              "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
-             
-
-            }
-            else { //Añadimos alumno
-              aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+    if (Platform.OS ===   "web"){
+      Swal.fire({
+        title: "¿Quieres guardar?",
+        showCancelButton: true,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+              if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
+                
+                //Asociamos los nombres a las imagenes y la contraseña
+                //Almacenamos las imagenes
+                almacenaImagenLogin(imagenesContrasenia.imagen1, "Imagen1"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen2, "Imagen2"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen3, "Imagen3"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen4, "Imagen4"+datosAlumno.nombre+datosAlumno.apellidos);
+                
+                //Añadimos alumno
+                aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, 
+                  `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`, 
                 "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
-            }
-            
-              navigation.navigate('listaAlumnos');
-          }
+              
+
+              }
+              else { //Añadimos alumno
+                aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+                  "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+              }
+              
+                navigation.navigate('listaAlumnos');
         }
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+      });
+    }else{
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              almacenaFotoPersona(imageUri, "Alumno"+datosAlumno.nombre+datosAlumno.apellidos);
+              if (tipoContrasenia == 'imagen') { //Si el tipo es imagen añadimos las contraseñas a la BD
+                
+                //Asociamos los nombres a las imagenes y la contraseña
+                //Almacenamos las imagenes
+                almacenaImagenLogin(imagenesContrasenia.imagen1, "Imagen1"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen2, "Imagen2"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen3, "Imagen3"+datosAlumno.nombre+datosAlumno.apellidos);
+                almacenaImagenLogin(imagenesContrasenia.imagen4, "Imagen4"+datosAlumno.nombre+datosAlumno.apellidos);
+                
+                //Añadimos alumno
+                aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, 
+                  `Imagen1${datosAlumno.nombre}${datosAlumno.apellidos},Imagen2${datosAlumno.nombre}${datosAlumno.apellidos},Imagen3${datosAlumno.nombre}${datosAlumno.apellidos},Imagen4${datosAlumno.nombre}${datosAlumno.apellidos}`, 
+                "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+              
+
+              }
+              else { //Añadimos alumno
+                aniadeAlumno(datosAlumno.nombre, datosAlumno.apellidos, datosAlumno.contrasenia, 
+                  "Alumno"+datosAlumno.nombre+datosAlumno.apellidos, selectedOptions, tipoContrasenia);
+              }
+              
+                navigation.navigate('listaAlumnos');
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
     return (

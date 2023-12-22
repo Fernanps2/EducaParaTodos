@@ -3,6 +3,7 @@ import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-nat
 import { borraProfesor } from '../Controlador/profesores';
 import { useEffect, useState } from 'react';
 import { descargaFotoPersona } from '../Controlador/multimedia';
+import Swal from 'sweetalert2';
 
 
 const PantallaDatosProfesor = ({route, navigation}) => {
@@ -26,19 +27,34 @@ useEffect(() => {
   }, []);
 
     const showAlertStore = () => {
-      Alert.alert(
-        "¿Quiere eliminar el Profesor?", // Título
-        "Pulsa una opción", // Mensaje
-        [
-          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-          { text: "Confirmar", onPress: () =>{
-              borraProfesor(profesor.id);
-              navigation.navigate('listaProfesores');
-            }
+      if (Platform.OS ===   "web"){
+        Swal.fire({
+          title: "¿Quieres guardar?",
+          showCancelButton: true,
+          confirmButtonText: "Aceptar",
+          cancelButtonText: "Cancelar",
+          icon: "warning",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            borraProfesor(profesor.id);
+            navigation.navigate('listaProfesores');
           }
-        ],
-        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-      );
+        });
+      }else{
+        Alert.alert(
+          "¿Quiere eliminar el Profesor?", // Título
+          "Pulsa una opción", // Mensaje
+          [
+            { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+            { text: "Confirmar", onPress: () =>{
+                borraProfesor(profesor.id);
+                navigation.navigate('listaProfesores');
+              }
+            }
+          ],
+          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+        );
+      }
     };
 
     return(

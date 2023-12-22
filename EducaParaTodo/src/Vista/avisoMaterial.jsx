@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { buscaProfesorId } from '../Controlador/profesores';
 import { aniadeMensaje } from '../Controlador/mensajes';
 import useUser from '../Controlador/useUser';
+import Swal from 'sweetalert2';
 
 
 
@@ -69,20 +70,36 @@ export default function AvisoMaterial ({ navigation }) {
 
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{
-            //Añadimos el mensaje a la base de datos
-            aniadeMensaje(jwt, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
-            navigation.navigate('HomeEducador', profesor.nombre );
-          }
+    if (Platform.OS ===   "web"){
+      Swal.fire({
+        title: "¿Quieres guardar?",
+        showCancelButton: true,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //Añadimos el mensaje a la base de datos
+          aniadeMensaje(jwt, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
+          navigation.navigate('HomeEducador', profesor.nombre );
         }
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+      });
+    }else{
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              //Añadimos el mensaje a la base de datos
+              aniadeMensaje(jwt, datosMensaje.mensaje, datosMensaje.aula, format(datosMensaje.fecha, 'dd/MM/yyyy'), format(datosMensaje.hora, 'HH:mm'));
+              navigation.navigate('HomeEducador', profesor.nombre );
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
     return (

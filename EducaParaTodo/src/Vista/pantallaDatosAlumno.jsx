@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { descargaFotoPersona } from '../Controlador/multimedia';
 import { borraAlumno } from '../Controlador/alumnos';
 import BotonModificarAlumno from './botonModificarAlumno';
+import Swal from 'sweetalert2';
 
 const PantallaDatosAlumno = ({route, navigation}) => {
   const {alumno} = route.params;
@@ -25,19 +26,34 @@ const PantallaDatosAlumno = ({route, navigation}) => {
   }, []);
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere eliminar el alumno?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{
-            borraAlumno(alumno.id);
-            navigation.navigate('listaAlumnos');
-          }
+    if (Platform.OS ===   "web"){
+      Swal.fire({
+        title: "¿Quieres guardar?",
+        showCancelButton: true,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          borraAlumno(alumno.id);
+          navigation.navigate('listaAlumnos');
         }
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+      });
+    }else{
+      Alert.alert(
+        "¿Quiere eliminar el alumno?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              borraAlumno(alumno.id);
+              navigation.navigate('listaAlumnos');
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
     return(

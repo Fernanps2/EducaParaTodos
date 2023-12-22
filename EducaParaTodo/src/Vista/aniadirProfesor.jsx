@@ -3,6 +3,7 @@ import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Ima
 import { useEffect, useState } from 'react';
 import { aniadeProfesor } from '../Controlador/profesores';
 import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';
+import Swal from 'sweetalert2';
 
 export default function AniadirProfesor ({navigation }) {
   const [datosProfesor, setDatosProfesor] = useState({ //Datos profesor
@@ -23,21 +24,38 @@ export default function AniadirProfesor ({navigation }) {
   }
 
   const showAlertStore = () => {
-    Alert.alert(
-      "¿Quiere guardar?", // Título
-      "Pulsa una opción", // Mensaje
-      [
-        { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-        { text: "Confirmar", onPress: () =>{
-            almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
-            aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
-              "Profesor"+datosProfesor.nombre+datosProfesor.apellidos, datosProfesor.aula);
-            navigation.navigate('listaProfesores');
-          }
+    if (Platform.OS ===   "web"){
+      Swal.fire({
+        title: "¿Quieres guardar?",
+        showCancelButton: true,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+              aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
+                "Profesor"+datosProfesor.nombre+datosProfesor.apellidos, datosProfesor.aula);
+              navigation.navigate('listaProfesores');
         }
-      ],
-      { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-    );
+      });
+    }else{
+      Alert.alert(
+        "¿Quiere guardar?", // Título
+        "Pulsa una opción", // Mensaje
+        [
+          { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
+          { text: "Confirmar", onPress: () =>{
+              almacenaFotoPersona(imageUri, "Profesor"+datosProfesor.nombre+datosProfesor.apellidos);
+              aniadeProfesor(datosProfesor.nombre, datosProfesor.apellidos, datosProfesor.contrasenia,
+                "Profesor"+datosProfesor.nombre+datosProfesor.apellidos, datosProfesor.aula);
+              navigation.navigate('listaProfesores');
+            }
+          }
+        ],
+        { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
+      );
+    }
   };
 
   const handleImage = async() => {
