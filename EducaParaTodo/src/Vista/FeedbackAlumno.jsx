@@ -1,5 +1,5 @@
  import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity, Alert, FlatList,Platform, ActivityIndicator  } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity, Alert, FlatList,Platform, ActivityIndicator } from 'react-native';
 import appFirebase, { descargarImagenes, getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';

@@ -4,8 +4,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 
 
 const PantallaFelicitacion = ({route,navigation}) => {
-    const alumno = route.params;
-    console.log("el alumno es: " + JSON.stringify(alumno));
+    const {alumno} = route.params;
+    console.log("el alumno en pantalla felicitacion es: " + JSON.stringify(alumno));
 
     return (
         <ScrollView contentContainerStyle={styles.datos}>
@@ -15,7 +15,7 @@ const PantallaFelicitacion = ({route,navigation}) => {
                 <Image style={styles.fotoGrande} source={{ uri: "https://globalsymbols.com/uploads/production/image/imagefile/14767/17_14768_802f22db-240c-489d-91e8-abab8d3b6992.png" }} />
                 <View style={styles.fotos}>
                 {/* Tick verde */}
-                    <TouchableOpacity onPress={() => navigation.navigate('Tareas',{alumno})}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Tareas', {usuario: alumno})}>
                         <Image style={styles.foto} source={{uri:"https://us.123rf.com/450wm/alonastep/alonastep1608/alonastep160800258/61775461-tick-elemento-de-se%C3%B1al-icono-de-marca-de-verificaci%C3%B3n-verde-aislado-en-el-fondo-blanco-simple.jpg"}}/>
                     </TouchableOpacity>
                     {/* Cruz roja */}
@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
         marginLeft:200,        
     },
     fotoGrande:{
-        width: RFValue(300),
-        height: RFValue(300),
+        width: RFValue(200),
+        height: RFValue(200),
         borderRadius: 20,
         overflow: 'hidden',
         borderWidth: 2,

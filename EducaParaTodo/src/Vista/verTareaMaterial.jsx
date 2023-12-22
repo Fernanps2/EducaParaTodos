@@ -1194,7 +1194,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             </Text>
             <View style={[{ height: RFValue(2) }]} />
             <Image source={{ uri: aula.foto.uri }} style={styles.image} />
-            <Text style={[styles.text, { flex: 1 }]}>
+            <Text style={[styles.text, {flex: 1}]}>
               {lugarDestinoNow === "Almacen"
                 ? `Estoy en el ${lugarDestinoNow} `
                 : `Estoy en el aula ${lugarDestinoNow} `}
@@ -1226,17 +1226,17 @@ export default function VerTareaMaterial({ route, navigation }) {
             )}
             { // Si tiene caractersiticas el material entonces se muestra esta información
             caractersiticaMaterialLlevar !== "Ninguno" ? (
-              <View style={styles.container}>
-                <Text style={styles.text}>
+              <View style={[styles.container]}>
+                <Text style={[styles.text, {flex: 1}]}>
                   Dejo {stockMaterialLlevar} {nombreMaterialLlevar}
                   {stockMaterialLlevar > 1 ? "s" : ""}{" "}
                   {caractersiticaMaterialLlevar}
                 </Text>
               </View>
             ) : (
-              <View style={styles.container}>
-                <Text style={styles.text}>
-                  Dejamos {stockMaterialLlevar} {nombreMaterialLlevar}
+              <View style={[styles.container]}>
+                <Text style={[styles.text, {flex: 1}]}>
+                  Dejo {stockMaterialLlevar} {nombreMaterialLlevar}
                   {stockMaterialLlevar > 1 ? "s" : ""}
                 </Text>
               </View>
@@ -1257,7 +1257,7 @@ export default function VerTareaMaterial({ route, navigation }) {
                   ]}
                 />
                 <TouchableOpacity
-                  style={[styles.imagePulsar, { flex: 1 }]}
+                  style={[styles.imagePulsar, {flex: 1}]}
                   onPress={() => {
                     handleNextMaterialLlevar(); // Pasamos al siguiente material,
                   }}
@@ -1500,8 +1500,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
   },
   image: {
-    width: Platform.OS === "web" ? RFValue(60) : RFValue(100),
-    height: Platform.OS === "web" ? RFValue(60) : RFValue(100),
+    width: Platform.OS === "web" ? RFValue(50) : RFValue(100),
+    height: Platform.OS === "web" ? RFValue(50) : RFValue(100),
   },
   imageVeryLarge: {
     width: Platform.OS === "web" ? RFValue(180) : RFValue(300),
@@ -1516,8 +1516,8 @@ const styles = StyleSheet.create({
     height: Platform.OS === "web" ? RFValue(90) : RFValue(150),
   },
   imageSmall: {
-    width: Platform.OS === "web" ? RFValue(50) : RFValue(90),
-    height: Platform.OS === "web" ? RFValue(50) : RFValue(90),
+    width: Platform.OS === "web" ? RFValue(40) : RFValue(90),
+    height: Platform.OS === "web" ? RFValue(40) : RFValue(90),
   },
   imageRetroceder: {
     width: Platform.OS === "web" ? RFValue(20) : RFValue(40),
@@ -1550,7 +1550,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   text: {
-    fontSize: Platform.OS === "web" ? RFValue(10) : RFValue(20),
+    fontSize: Platform.OS === "web" ? RFValue(8) : RFValue(20),
   },
   textBoton: {
     fontSize: Platform.OS === "web" ? RFValue(10) : RFValue(20),

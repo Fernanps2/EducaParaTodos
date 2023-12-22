@@ -42,26 +42,29 @@ const EliminarTarea = () => {
       {isLoading ? (
         <Text>Cargando...</Text>
       ) : (
-        <ScrollView contentContainerStyle={styles.datos}>
+        <ScrollView >
       {data.map((item, index) => (
-    <View style={styles.cardWithImage} >
+        <View style={styles.container}>
+    <View  >
         <Text style={{ fontSize: 18 }}>{item.nombre} {item.apellidos}</Text>
-        <TouchableOpacity
-      key={index}
-      onPress={() => navigation.navigate('FeedbackAlumno', {idAlumno: item.id})} 
-      style={styles.cardWithImage}
-    >
-        <Text>Añadir Feedback</Text>
-    </TouchableOpacity>
+  </View>
+  <View contentContainerStyle={styles.datos}>
     <TouchableOpacity
     key={index}
-    onPress={() => navigation.navigate('seguimientoAlumno', {idAlumno: item.id})} 
+    onPress={() => navigation.navigate('FeedbackAlumno', {idAlumno: item.id})} 
     style={styles.cardWithImage}
   >
-            <Text>Seguimiento Alumno</Text>
+      <Text>Añadir Feedback</Text>
   </TouchableOpacity>
-  </View>
-    
+  <TouchableOpacity
+  key={index}
+  onPress={() => navigation.navigate('seguimientoAlumno', {idAlumno: item.id})} 
+  style={styles.cardWithImage}
+>
+          <Text>Seguimiento Alumno</Text>
+</TouchableOpacity>
+    </View>
+    </View>
       ))}
     </ScrollView>
       )}
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
+    flex: 1,
     borderRadius: 8,
     padding: 20,
     marginVertical: 8,
@@ -102,6 +106,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  separador: {
+    height: 10,
   },
 });
 

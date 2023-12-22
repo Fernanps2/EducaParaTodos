@@ -2773,7 +2773,41 @@ export const getTareaId = async (idAlumno) => {
                 fotoURL: fotoURL,
             });
         }
-        console.log(docs);
+        console.log("las tareas getTareaId en firebase son: " + JSON.stringify(docs));
+        return docs;
+    } catch (error) {
+        console.log(error);
+        Alert.alert(error);
+    }
+};
+
+// PROBADA Y FUNCIONA. 
+// Obtenemos todas las tareas asociadas a un alumno
+export const getTareaIdTodas = async (idAlumno) => {
+
+    console.log("fire base id: " + idAlumno);
+    try {
+        const q = query(collection(db, "Tarea"), where("idAlumno", "==", idAlumno));
+        const querySnapshot = await getDocs(q);
+        // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+
+        const docs = [];
+
+        for (const tareaDoc of querySnapshot.docs) {
+            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, fotoURL } = tareaDoc.data();
+
+            docs.push({
+                id: tareaDoc.id,
+                titulo,
+                completado,
+                fechaInicio,
+                fechaFin,
+                tipo,
+                idAlumno,
+                fotoURL: fotoURL,
+            });
+        }
+        console.log("las tareas getTareaId en firebase son: " + JSON.stringify(docs));
         return docs;
     } catch (error) {
         console.log(error);
@@ -2782,8 +2816,6 @@ export const getTareaId = async (idAlumno) => {
 };
 
 export const getTareaIdCompletada = async (idAlumno) => {
-
-    console.log(idAlumno);
     
     try {
       if(idAlumno === ''){
@@ -2830,10 +2862,10 @@ export const getTareaIdCompletada = async (idAlumno) => {
 
 export const getTarea = async (idAlumno) => {
 
-  console.log(idAlumno);
+    console.log("el id alumno en firebase es: " + idAlumno);
   
   try {
-    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "false"));
     const querySnapshot = await getDocs(q);
     // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
   
@@ -2853,6 +2885,9 @@ export const getTarea = async (idAlumno) => {
         fotoURL: foto,
       });
     }
+
+    console.log("las tareas en firebase son: " + JSON.stringify(docs));
+    return docs;
 } catch (error) {
     console.error(error);
     // Manejo del error, lanzar o manejar de acuerdo a tu aplicación
@@ -3095,7 +3130,7 @@ export const getTareasActividadId = async (idTarea) => {
 export const getPasos = async (idActividad) => {
     try {
 
-        const q = query(collection(db, "PasosActividad"), where("idActividad", "==", idActividad));
+        const q = query(collection(db, "PasosActividad"), where("idTarea", "==", idActividad));
         const querySnapshot = await getDocs(q);
         const docs = [];
 
