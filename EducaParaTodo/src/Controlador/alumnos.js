@@ -1,4 +1,4 @@
-import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId} from '../Modelo/firebase'
+import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId, getAlumnoIdPorNombre} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
 /**
@@ -137,6 +137,25 @@ export async function loginAlumno (nombre, password) {
 
     return id;
 }
+
+/**
+ * @name obtenerIdAlumnoPorNombre
+ *
+ * @description Obtiene el ID del alumno de la base de datos a partir de su nombre
+ *
+ * @param {string} nombre Nombre del alumno a buscar
+ *
+ * @returns ID del alumno
+ */
+export async function obtenerIdAlumnoPorNombre(nombre) {
+    try {
+      const idAlumno = await getAlumnoIdPorNombre(nombre);
+      return idAlumno;
+    } catch (error) {
+      console.error('Error al obtener ID del alumno por nombre:', error);
+      throw error;
+    }
+  }
 
 /**
  * @name buscaAlumnoId
