@@ -11,7 +11,7 @@ const BotonModificarProfesor = ({ texto, profesor, navigation }) => {
             </View>
     )
 }
-export default BotonModificarProfesor
+export default BotonModificarProfesor;
 
 
 const styles = StyleSheet.create({

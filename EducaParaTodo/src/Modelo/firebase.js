@@ -386,13 +386,14 @@ export async function getProfesoresNombre(nombre) {
         const querySnapshot = await getDocs(queryFilter);
 
         for (const doc of querySnapshot.docs) {
-            const { nombre, apellidos, foto, aula} = doc.data();
+            const { nombre, apellidos, foto, aula, password} = doc.data();
             docs.push({
               id:doc.id,
               nombre,
               apellidos,
               foto,
-              aula
+              aula,
+              password
             });
         }
 

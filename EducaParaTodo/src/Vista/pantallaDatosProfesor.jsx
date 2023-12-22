@@ -1,9 +1,10 @@
 import React from 'react';
-import { Alert, View, Text, Image, StyleSheet, TouchableOpacity,Platform} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import { borraProfesor } from '../Controlador/profesores';
 import { useEffect, useState } from 'react';
 import { descargaFotoPersona } from '../Controlador/multimedia';
 import Swal from 'sweetalert2';
+import BotonModificarProfesor from './botonModificarProfesor';
 
 
 const PantallaDatosProfesor = ({route, navigation}) => {
@@ -16,13 +17,14 @@ const PantallaDatosProfesor = ({route, navigation}) => {
 useEffect(() => {
     const imagen = async () => {
       try {
+        console.log ("HOLA " + profesor.foto);
         const imagen = await descargaFotoPersona(profesor.foto);
         setImagen(imagen);
-        await console.log(imagen);
+        console.log(imagen);
       } catch (error) {
         console.log(error);
       }
-    };
+    }; 
     imagen();
   }, []);
 

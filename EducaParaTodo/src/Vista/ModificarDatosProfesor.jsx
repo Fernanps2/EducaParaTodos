@@ -1,197 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
-//import profesores from '../Modelo/profesor';
-import { updateProfesor } from '../Modelo/firebase';
-import { buscaProfesorNombre } from '../Controlador/profesores';
+import {React, useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import { actualizaProfesorAdmin, buscaProfesorId } from '../Controlador/profesores';
+import { buscaProfesorNombre, actualizaProfesor } from '../Controlador/profesores';
 
-// Se usa para cambiar los datos del propio profesor
-// HomeEducador > modificar mis datos
+const ModificarDatosProfesor = ({route, navigation}) => {
+    const { nombreProf } = route.params;
+    
+    const [prof, setProfesor] = useState([]);
+    //const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
+    const [nombre, setNombre] = useState('');
+    const [apellidos, setApellidos] = useState('');
+    const [contrasenia, setContrasenia] = useState('');
+    const [aula, setAula] = useState('');
+    //const [info, setInfo] = useState('');
 
-export default function ModificarDatosProfesor ({ route, navigation }) {
-      const { nombreProf } = route.params;
-
-      const [profesorData, setProfesorData] = useState(null); // Estado para almacenar los datos del profesor
-      const [profesorId, setProfesorId] = useState('');
-      const [nombre, setNombre] = useState('');
-      const [apellidos, setApellidos] = useState('');
-      const [contrasenia, setContrasenia] = useState('');
-      const [email, setEmail] = useState('');
-      const [aula, setAula] = useState('');
-
-
-      useEffect(() => {
-        // Obtener datos del profesor al cargar el componente
-        const obtenerDatosProfesor = async () => {
-          const datosProfesor = await buscaProfesorNombre(nombreProf);
-          setProfesorData(datosProfesor);
-          setProfesorId(datosProfesor[0].id);
-          // }
-        };
-        obtenerDatosProfesor();
-      }, []);
-
-
-      // Función para actualizar los datos del profesor
-      const guardarCambios = async () => {
-        // Lógica para guardar los cambios en la base de datos usando updateProfesor
-        await updateProfesor(profesorId,nombre, apellidos, contrasenia, email, aula);
-        // Puedes agregar lógica adicional después de actualizar los datos, como mostrar una confirmación
-      };
-
-    const showAlertStore = () => {
-        Alert.alert(
-          "¿Quiere guardar?", // Título
-          "Pulsa una opción", // Mensaje
-          [
-            { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-            { text: "Confirmar", onPress: () => navigation.navigate('HomeAdmin')}
-          ],
-          { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
-        );
-      };
-
-
-
-      return (
-          <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>EducaParaTodos</Text>
-          </View>
-
-          <Text style={styles.title}> Modificar mis datos </Text>
-
-        <ScrollView>
-          <View style={styles.profileContainer}>
-            <Image
-              source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
-              style={styles.profileImage}
-            />
-            <Text style={styles.roleText}>{nombreProf}</Text>
-          </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nombre"
-                  value={nombre}
-                  onChangeText={(text) => setNombre(text)}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Apellidos"
-                  value={apellidos}
-                  onChangeText={(text) => setApellidos(text)}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Contraseña"
-                  value={contrasenia}
-                  onChangeText={(text) => setContrasenia(text)}
-                  secureTextEntry // Esto oculta los caracteres ingresados para la contraseña
-                />
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Correo electrónico"
-                  value={email}
-                  onChangeText={(text) => setEmail(text)}
-                />
-
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Aula "
-                  value={aula}
-                  onChangeText={(text) => setAula(text)}
-                />
-
-
-                
-
-                {/* <TextInput
-                  style={styles.input}
-                  placeholder="Información adicional"
-                  value={info}
-                  onChangeText={(text) => setInfo(text)}
-                /> */}
-
-          <Text style={styles.roleText}>Foto</Text>
-          <Image
-             source={{ uri: 'path_to_your_image' }}
-             style={styles.profileImage}
-          />
-
-          {/* <Text style={styles.roleText}>Correo electrónico</Text>
-          <TextInput style={styles.input} placeholder= {profe?.email} />
-          <Text style={styles.roleText}>Información adicional</Text>
-          <TextInput style={styles.input} placeholder= {profe?.info} /> */}
-
-
-          <TouchableOpacity style={styles.addButton} onPress={guardarCambios}>
-            <Text style={styles.addButtonText}>Modificar</Text>
-          </TouchableOpacity>
-        </ScrollView>
-
-        </View>
-      );
-    }
-
-
-
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: 'white' // Cambiar si es necesario
-      },
-      title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginVertical: 20,
-      },
-      profileContainer: {
-        alignItems: 'center',
-        marginBottom: 30,
-      },
-      profileImage: {
-        width: 100, // Ajustar según tus necesidades
-        height: 100, // Ajustar según tus necesidades
-        borderRadius: 50, // Esto hará que la imagen sea redonda
-        marginBottom: 10,
-        backgroundColor: 'grey' // Color temporal para simular la imagen
-      },
-      profileContainer: {
-        alignItems: 'center',
-        marginBottom: 30,
-      },
-      roleText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 20,
-      },
-      button: {
-        backgroundColor: 'blue', // Color de los botones
-        padding: 15,
-        width: '100%', // Ajustar si es necesario
-        borderRadius: 5,
-        alignItems: 'center',
-        marginBottom: 10,
-      },
-      buttonText: {
-        color: 'white',
-        fontSize: 18,
-      },
-      input: {
-          borderWidth: 1,
-          borderColor: 'grey',
-          borderRadius: 5,
-          padding: 10,
-          marginBottom: 10,
-        },
-      addButton: {
-          backgroundColor: '#007BFF',
-          padding: 10,
-          alignItems: 'center',
-          borderRadius: 5,
-          marginTop: 20,
+    useEffect(() => {
+      const profesor = async () => {
+        try {
+          const profe = await buscaProfesorNombre(nombreProf);
+          const profes = profe[0];
+          console.log("PROFESOR " + JSON.stringify(profes));
+          setProfesor(profes);
+          setNombre(profes.nombre);
+          setApellidos(profes.apellidos);
+          setContrasenia(profes.password);
+          setAula(profes.aula);
+        } catch (error) {
+          console.log(error);
         }
-    });
+      }; 
+      profesor();
+    }, []);
+
+    // Utiliza el estado local para manejar la información del formulario
+
+    const handleUpdateProfesor = async () => {
+        // Llama a la función de la base de datos para actualizar el profesosr
+        await actualizaProfesor(prof.id, nombre, apellidos, contrasenia, prof.foto, aula);
+        // Puedes agregar lógica adicional después de la actualización si es necesario
+
+        const profe = await buscaProfesorId(prof.id);
+
+        navigation.navigate('pantallaDatosProfesor', {profesor: profe});
+    };
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Datos del profesor</Text>
+            </View>
+            <Text>Nombre:</Text>
+                <TextInput
+                style={styles.input}
+                value={nombre}
+                onChangeText={(text) => setNombre(text)}
+            />
+            
+            <Text>Apellidos:</Text>
+                <TextInput
+                style={styles.input}
+                value={apellidos}
+                onChangeText={(text) => setApellidos(text)}
+            />
+
+            <Text>Contraseña:</Text>
+                <TextInput
+                style={styles.input}
+                value={contrasenia}
+                secureTextEntry
+                onChangeText={(text) => setContrasenia(text)}                
+            />
+
+            <Text>Aula:</Text>
+                <TextInput
+                style={styles.input}
+                value={aula}
+                onChangeText={(text) => setAula(text)}
+            />
+            
+            <TouchableOpacity style={styles.button} onPress={handleUpdateProfesor}>
+                <Text style={styles.buttonText}>Actualizar Profesor</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+export default ModificarDatosProfesor;
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+    },
+    header: {
+      marginBottom: 20,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: 'grey',
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    },
+    buttonContainer: {
+      flexDirection: 'row', // Alinea los elementos horizontalmente
+      justifyContent: 'space-between', // Espacia los elementos uniformemente
+      alignItems: 'center', // Alinea los elementos verticalmente
+    },
+    button: {
+      backgroundColor: 'blue', // Color de los botones
+      padding: 10,
+      //width: '50%', // Ajustar si es necesario
+      borderRadius: 5,
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 18,
+    },
+});
