@@ -1,4 +1,4 @@
-import {getAlumnosLogin, getAlumnoIdPorNombre, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getVisualizacionesPreferentesAlumno, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId} from '../Modelo/firebase'
+import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
 /**
@@ -24,7 +24,19 @@ export async function aniadeAlumno(nombre, apellidos, password, foto, visualizac
         return false;
 }
 
-
+/**
+ * @name buscaAlumno
+ * 
+ * @description Descarga de la base de datos los datos de los alumnos
+ * 
+ * @returns Un array de arrays etiquetados de la forma:
+ *                  - id : String
+ *                  - nombre : String
+ *                  - apellidos : String
+ *                  - visualizacionPreferente : String[]
+ *                  - foto : String
+ *                  - tipoLogin : String
+ */
 export async function buscaAlumno() {
     let alumnos = null;
 
@@ -35,23 +47,19 @@ export async function buscaAlumno() {
 }
 
 /**
- * @name buscaVisualizacionesPreferentesAlumno
- *
- * @description Consulta los tipos de visualización del alumno
- *
- * @param {string} alumniId ID del alumno a consultar sus tipos de visualización
- *
- * @returns array de los tipos de visualización del alumno
+ * @name buscaAlumnoNombre
+ * 
+ * @description Descarga los alumnos de la base de datos que tenga el nombre dado
+ * 
+ * @param {String} nombre Nombre del alumno
+ * @returns Un array de arrays etiquetados de la forma:
+ *                  - id : String
+ *                  - nombre : String
+ *                  - apellidos : String
+ *                  - visualizacionPreferente : String[]
+ *                  - foto : String
+ *                  - tipoLogin : String
  */
-export async function buscaVisualizacionesPreferentesAlumno(alumnoId) {
-  let visualizacionesPreferentes = null;
-
-  visualizacionesPreferentes = await getVisualizacionesPreferentesAlumno(alumnoId);
-
-  return visualizacionesPreferentes;
-}
-
-
 export async function buscaAlumnoNombre(nombre) {
     let alumnos = null;
 
@@ -61,6 +69,21 @@ export async function buscaAlumnoNombre(nombre) {
     return alumnos;
 }
 
+/**
+ * @name buscaAlumnoApellidos
+ * 
+ * @description Descarga los alumnos de la base de datos que tengan los apellidos dados
+ * 
+ * @param {String} apellidos Apellidos del alumno
+ * 
+ * @returns Un array de arrays etiquetados de la forma:
+ *                  - id : String
+ *                  - nombre : String
+ *                  - apellidos : String
+ *                  - visualizacionPreferente : String[]
+ *                  - foto : String
+ *                  - tipoLogin : String
+ */
 export async function buscaAlumnoApellidos(apellidos) {
     let alumnos = null;
 
@@ -70,6 +93,21 @@ export async function buscaAlumnoApellidos(apellidos) {
     return alumnos;
 }
 
+/**
+ * @name buscaAlumnoVisualizacionPredefinida
+ * 
+ * @description Busca a los alumnos que contengan las visualizaciones dadas
+ * 
+ * @param {String[]} visualizacion La visualización del alumno
+ * 
+ * @returns Un array de arrays etiquetados de la forma:
+ *                  - id : String
+ *                  - nombre : String
+ *                  - apellidos : String
+ *                  - visualizacionPreferente : String[]
+ *                  - foto : String
+ *                  - tipoLogin : String
+ */
 export async function buscaAlumnoVisualizacionPredefinida(visualizacion) {
     let alumnos = null;
 
@@ -79,6 +117,16 @@ export async function buscaAlumnoVisualizacionPredefinida(visualizacion) {
     return alumnos;
 }
 
+/**
+ * @name loginAlumno
+ * 
+ * @description Busca al alumno identificado por su nombre y contraseña
+ * 
+ * @param {String} nombre Nombre del alumno
+ * @param {String} password Contraseña del alumno
+ * 
+ * @returns identificador del alumno
+ */
 export async function loginAlumno (nombre, password) {
     let id = null;
 
@@ -91,24 +139,20 @@ export async function loginAlumno (nombre, password) {
 }
 
 /**
- * @name obtenerIdAlumnoPorNombre
- *
- * @description Obtiene el ID del alumno de la base de datos a partir de su nombre
- *
- * @param {string} nombre Nombre del alumno a buscar
- *
- * @returns ID del alumno
+ * @name buscaAlumnoId
+ * 
+ * @description Busca al alumno con el identificador dado
+ * 
+ * @param {String} id Identificador del alumno
+ * 
+ * @returns Un array etiquetado de la forma:
+ *                  - id : String
+ *                  - nombre : String
+ *                  - apellidos : String
+ *                  - visualizacionPreferente : String[]
+ *                  - foto : String
+ *                  - tipoLogin : String
  */
-export async function obtenerIdAlumnoPorNombre(nombre) {
-  try {
-    const idAlumno = await getAlumnoIdPorNombre(nombre);
-    return idAlumno;
-  } catch (error) {
-    console.error('Error al obtener ID del alumno por nombre:', error);
-    throw error;
-  }
-}
-
 export async function buscaAlumnoId (id) {
     let instancia = null;
 
@@ -118,11 +162,30 @@ export async function buscaAlumnoId (id) {
     return instancia;
 }
 
+/**
+ * @name actualizaAlumno
+ * 
+ * @description Actualiza los datos del alumno identificado con id
+ * 
+ * @param {String} id Identificador del alumno
+ * @param {String} nombre Nombre a cambiar del alumno
+ * @param {String} apellidos Apellidos a cambiar del alumno
+ * @param {String} foto Nombre de la foto a cambiar del alumno
+ * @param {String[]} visualizacion Vector de visualizaciones a cambiar del alumno
+ * @param {String} tipoLogin Tipo del login a cambiar del alumno
+ */
 export async function actualizaAlumno(id, nombre, apellidos, foto, visualizacion, tipoLogin) {
     if (nombre != '' && apellidos != '' && visualizacion != null) 
         await updateAlumno(id, nombre, apellidos, foto, visualizacion, tipoLogin);
 }
 
+/**
+ * @name borraAlumno
+ * 
+ * @description Borra al alumno identificado de la base de datos
+ * 
+ * @param {String} id Identificador del alumno
+ */
 export async function borraAlumno(id) {
     await deleteAlumno(id);
 }

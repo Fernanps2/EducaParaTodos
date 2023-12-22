@@ -5,7 +5,6 @@ import { useCallback, useContext } from 'react'
 
 export default function useUser() {
     let {jwt, setJWT} = useContext(Context);
-    //const [jwt2, setJWT2] = useState(null);
     let jwt2 = null;
 
     async function handleLogin(username, password, tipo) {
@@ -15,29 +14,31 @@ export default function useUser() {
         return jwt2!=null;
     }
 
-    /*const login = useCallback((username, password, tipo) => {
-        return handleLogin(username, password, tipo);
-        //console.log(jwt);
-    }, [jwt2])*/
-
+    /**
+     * @name login
+     * 
+     * @description Comprueba si el usuario está identificado en el sistema y guarda el identificador
+     * 
+     * @param {String} username Nombre de usuario
+     * @param {String} password Contraseña del usuario
+     * @param {String} tipo Tipo de usuario: 'alumno', 'profesor' o 'administrador'
+     * @returns @true si es correcto, @false si no
+     */
     const login = async (username, password, tipo) => {
         const logueado = await handleLogin(username, password, tipo);
         console.log("logueado:", logueado);
         return logueado;
     } 
 
+    /**
+     * @name logout
+     * 
+     * @description Sirve para borrar el identificador del usuario, cerrar sesión
+     */
     const logout = useCallback(() => {
         setJWT(null);
         jwt2 = null;
     }, [jwt, jwt2])
-
-    /*const actualizaJWT = async(username, password, tipo)=>{
-        try {
-            jwt = await compruebaLogin({username, password, tipo});
-        } catch (error) {
-            console.log(error);
-        }
-    }*/
 
     return {
         isLogged: Boolean(jwt),
