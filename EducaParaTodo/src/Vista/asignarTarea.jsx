@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
-import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import { Alert, View, Text, Button, StyleSheet, FlatList, CheckBox,Picker } from 'react-native';
 import { buscarTareas, asignarUnaTarea } from '../Controlador/tareas.js';
 import { buscaAlumno, buscaVisualizacionesPreferentesAlumno } from '../Controlador/alumnos.js';
 
