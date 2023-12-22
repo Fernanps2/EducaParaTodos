@@ -1,5 +1,5 @@
 import {React, useState} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput,Button} from 'react-native';
 import { actualizaAlumno } from '../Controlador/alumnos';
 
 const ModificarAlumno = ({route, navigation}) => {
@@ -10,11 +10,12 @@ const ModificarAlumno = ({route, navigation}) => {
   const [nombre, setNombre] = useState(alumno.nombre);
   const [apellidos, setApellidos] = useState(alumno.apellidos);
   const [foto, setFoto] = useState(alumno.foto);
+  const [tipologin, settipologin] = useState(alumno.tipoLogin);
   const [visualizacionPreferente, setVisualizacionPreferente] = useState(alumno.visualizacionPreferente.join(', '));
 
   const handleUpdateAlumno = () => {
     // Llama a la función de la base de datos para actualizar el alumno
-    actualizaAlumno(alumno.id, nombre, apellidos, foto, visualizacionPreferente);
+    actualizaAlumno(alumno.id, nombre, apellidos, foto, visualizacionPreferente,tipologin);
     // Puedes agregar lógica adicional después de la actualización si es necesario
   };
 
@@ -50,6 +51,18 @@ const ModificarAlumno = ({route, navigation}) => {
           value={visualizacionPreferente}
           onChangeText={(text) => setVisualizacionPreferente(text)}
         />
+
+<Text>Tipo login actual: {tipologin}</Text>
+      <View style={styles.botonesContrasenia}>
+        <Button
+          title="Contraseña Texto"
+          onPress={() => settipologin('texto')}
+        />
+        <Button
+          title="Contraseña Imagen"
+          onPress={() => settipologin('imagen')}
+        />
+      </View>
       
       <TouchableOpacity style={styles.button} onPress={handleUpdateAlumno}>
         <Text style={styles.buttonText}>Actualizar Alumno</Text>
@@ -96,5 +109,10 @@ const styles = StyleSheet.create({
     buttonText: {
       color: 'white',
       fontSize: 18,
+    },botonesContrasenia: {
+      flexDirection: 'row', // Alinea los elementos horizontalmente
+      justifyContent: 'space-between', // Distribuye el espacio uniformemente
+      alignItems: 'center', // Alinea los elementos verticalmente
+      marginVertical: 5, // Añade un espacio vertical entre cada par de botón y texto
     },
 });
