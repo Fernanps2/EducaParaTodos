@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity,Platform} from 'react-native';
 import { borraProfesor } from '../Controlador/profesores';
 import { useEffect, useState } from 'react';
 import { descargaFotoPersona } from '../Controlador/multimedia';
@@ -29,7 +29,7 @@ useEffect(() => {
     const showAlertStore = () => {
       if (Platform.OS ===   "web"){
         Swal.fire({
-          title: "¿Quieres guardar?",
+          title: "¿Quieres eliminar profesor?",
           showCancelButton: true,
           confirmButtonText: "Aceptar",
           cancelButtonText: "Cancelar",

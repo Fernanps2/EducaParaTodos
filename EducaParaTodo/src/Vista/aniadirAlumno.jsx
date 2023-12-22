@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, ScrollView } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Button, Image, ScrollView,Platform } from 'react-native';
 import {almacenaFotoPersona, almacenaImagenLogin, openGallery} from '../Controlador/multimedia'
 import Swal from 'sweetalert2';
 

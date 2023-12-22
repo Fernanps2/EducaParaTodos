@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button,Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
@@ -72,7 +72,7 @@ export default function AvisoMaterial ({ navigation }) {
   const showAlertStore = () => {
     if (Platform.OS ===   "web"){
       Swal.fire({
-        title: "¿Quieres guardar?",
+        title: "¿Quieres mandar aviso?",
         showCancelButton: true,
         confirmButtonText: "Aceptar",
         cancelButtonText: "Cancelar",

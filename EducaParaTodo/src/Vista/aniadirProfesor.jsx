@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Image } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Image,Platform } from 'react-native';
 import { useEffect, useState } from 'react';
 import { aniadeProfesor } from '../Controlador/profesores';
 import { almacenaFotoPersona, openGallery } from '../Controlador/multimedia';

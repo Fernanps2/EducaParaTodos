@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { Alert, View, Text, Image, StyleSheet, TouchableOpacity,Platform} from 'react-native';
 import { useEffect, useState } from 'react';
 import { descargaFotoPersona } from '../Controlador/multimedia';
 import { borraAlumno } from '../Controlador/alumnos';
@@ -28,7 +28,7 @@ const PantallaDatosAlumno = ({route, navigation}) => {
   const showAlertStore = () => {
     if (Platform.OS ===   "web"){
       Swal.fire({
-        title: "¿Quieres guardar?",
+        title: "¿Quieres eliminar alumno?",
         showCancelButton: true,
         confirmButtonText: "Aceptar",
         cancelButtonText: "Cancelar",
