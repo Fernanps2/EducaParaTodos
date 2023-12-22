@@ -150,7 +150,7 @@ export async function buscaAdministradorId (id) {
  */
 export async function actualizaAdministrador(id, nombre, apellidos, password/*, foto*/) {
     if (nombre != '' && apellidos != '' && password != '')
-        await updateAdministrador(id, datos);
+        await updateAdministrador(id, nombre, apellidos, password);
 }
 
 /**

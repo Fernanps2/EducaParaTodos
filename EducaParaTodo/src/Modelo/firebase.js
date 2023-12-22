@@ -2939,7 +2939,7 @@ export const getTareas = async () => {
         const docs = [];
 
         for (const tareaDoc of querySnapshot.docs) {
-            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno } = tareaDoc.data();
+            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno,fotoURL } = tareaDoc.data();
 
     docs.push({
       id: tareaDoc.id,
@@ -2952,7 +2952,7 @@ export const getTareas = async () => {
       fotoURL,
     });
   }
-
+console.log('esto:', docs)
         return docs;
     } catch (error) {
         console.log(error);

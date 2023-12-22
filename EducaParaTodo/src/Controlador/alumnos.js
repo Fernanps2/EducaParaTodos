@@ -1,4 +1,4 @@
-import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId, getAlumnoIdPorNombre} from '../Modelo/firebase'
+import {getAlumnosLogin, getAlumnos, getAlumnosApellidos, getAlumnosNombre, getAlumnosVisualizacionPredefinida, updateAlumno, addAlumno, deleteAlumno, getAlumnoId, getAlumnoIdPorNombre,getVisualizacionesPreferentesAlumno} from '../Modelo/firebase'
 import { almacenaImagen } from './multimedia';
 
 /**
@@ -116,6 +116,23 @@ export async function buscaAlumnoVisualizacionPredefinida(visualizacion) {
 
     return alumnos;
 }
+
+/**
+ * @name buscaVisualizacionesPreferentesAlumno
+ *
+ * @description Consulta los tipos de visualización del alumno
+ *
+ * @param {string} alumniId ID del alumno a consultar sus tipos de visualización
+ *
+ * @returns array de los tipos de visualización del alumno
+ */
+export async function buscaVisualizacionesPreferentesAlumno(alumnoId) {
+    let visualizacionesPreferentes = null;
+  
+    visualizacionesPreferentes = await getVisualizacionesPreferentesAlumno(alumnoId);
+  
+    return visualizacionesPreferentes;
+  }
 
 /**
  * @name loginAlumno

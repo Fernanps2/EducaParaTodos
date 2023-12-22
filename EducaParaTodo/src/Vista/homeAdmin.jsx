@@ -2,10 +2,27 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { CerrarSesion } from './cerrarSesion';
 import useUser from '../Controlador/useUser';
+import { useState, useEffect } from 'react';
+import { buscaAdministradorId } from '../Controlador/administradores';
+import { descargaFotoPersona } from '../Controlador/multimedia';
 
 export default function HomeAdmin ({ route, navigation }) {
     const {jwt} = useUser();
     const { nombreAdm } = route.params;
+    const [imagen, setImagen] = useState([]);
+
+    useEffect(() => {
+      const loadData = async() => {
+        try {
+          const adminEntidad = await buscaAdministradorId(jwt);
+          const imagenUri = await descargaFotoPersona(adminEntidad.foto);
+          setImagen(imagenUri);
+        } catch(error) {
+          console.log(error);
+        }
+      }
+      loadData();
+    }, []);
 
     return (
       <ScrollView>
@@ -15,7 +32,7 @@ export default function HomeAdmin ({ route, navigation }) {
         <CerrarSesion/>
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: 'path_to_your_image' }} // Deberías reemplazar esto con la imagen real
+            source={{ uri: imagen.uri }} // Deberías reemplazar esto con la imagen real
             style={styles.profileImage}
           />
           <Text style={styles.roleText}>{ nombreAdm }</Text>
