@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { CheckBox,View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity ,ActivityIndicator, Alert} from 'react-native';
-import appFirebase, { deleteTareaId, getTareaId, getTareaIdCompletada } from '../Modelo/firebase';
+import React, { useEffect, useState, useRef } from 'react';
+import  {View, Text, ScrollView, StyleSheet, TextInput,Image, Button, TouchableOpacity ,ActivityIndicator, Alert} from 'react-native';
+import appFirebase, { deleteTareaId, getTareaIdTodas, getTareaIdCompletada } from '../Modelo/firebase';
 import { buscarTareas, buscarPasos } from '../Controlador/tareas';
 import tareas from '../Modelo/tareas';
+import { RFValue } from 'react-native-responsive-fontsize';
 //import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const SeguimientoAlumno = ({route}) => {
@@ -16,7 +17,7 @@ const SeguimientoAlumno = ({route}) => {
   useEffect(() => {
     const fetchTareasNombres = async () => {
       try{
-        const tareas = await getTareaId(idAlumno);
+        const tareas = await getTareaIdTodas(idAlumno);
         setTareasNombres(tareas);
         console.log(tareas);
       } catch(error){
@@ -53,9 +54,17 @@ const SeguimientoAlumno = ({route}) => {
       ) : (
         Tareas.map((tarea) => (
           <View key={tarea.id} style={styles.cardWithImage}>
-            <Text>{tarea.titulo}</Text>
+            <Text style={styles.texto}>{tarea.titulo}</Text>
             <View style={styles.separador} />
-            <CheckBox value={JSON.parse(tarea.completado)} />
+            <View style={{margin: 20}}>
+                <View style={styles.checkBox}>
+                {JSON.parse(tarea.completado) ? (
+                  <Text style={styles.check}>✔️</Text>
+                ) : (
+                <Text style={styles.emptyCheck}></Text> // Aquí podrías usar cualquier otro indicador visual
+                )}
+                </View>
+            </View>
           </View>
         ))
       )}
@@ -89,9 +98,24 @@ const styles = StyleSheet.create({
       alignItems: 'flex-start', 
     },
     separador: {
-        height: 10,
-        width: 10,
+        height: 5,
+        width: 5,
       },
+      check: {
+        alignSelf: 'center',
+        fontSize: RFValue(15)
+    },
+    checkBox: {
+      width: RFValue(20),
+      height: RFValue(20),
+      borderWidth: RFValue(2),
+      borderColor: 'green'
+  },
+  texto: {
+    padding: 20,
+    alignItems: 'flex-start',
+    fontSize:20, 
+  },
   });
 
 

@@ -2781,6 +2781,40 @@ export const getTareaId = async (idAlumno) => {
     }
 };
 
+// PROBADA Y FUNCIONA. 
+// Obtenemos todas las tareas asociadas a un alumno
+export const getTareaIdTodas = async (idAlumno) => {
+
+    console.log("fire base id: " + idAlumno);
+    try {
+        const q = query(collection(db, "Tarea"), where("idAlumno", "==", idAlumno));
+        const querySnapshot = await getDocs(q);
+        // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
+
+        const docs = [];
+
+        for (const tareaDoc of querySnapshot.docs) {
+            const { titulo, completado, fechaInicio, fechaFin, tipo, idAlumno, fotoURL } = tareaDoc.data();
+
+            docs.push({
+                id: tareaDoc.id,
+                titulo,
+                completado,
+                fechaInicio,
+                fechaFin,
+                tipo,
+                idAlumno,
+                fotoURL: fotoURL,
+            });
+        }
+        console.log("las tareas getTareaId en firebase son: " + JSON.stringify(docs));
+        return docs;
+    } catch (error) {
+        console.log(error);
+        Alert.alert(error);
+    }
+};
+
 export const getTareaIdCompletada = async (idAlumno) => {
     
     try {
