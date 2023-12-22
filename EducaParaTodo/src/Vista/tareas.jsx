@@ -16,6 +16,8 @@ import { descargaTipoTarea } from "../Controlador/multimedia";
 export default function Tareas({ route, navigation }) {
   const { usuario } = route.params; // Obtiene el usuario que accedió a la pantalla
 
+  console.log("el usuario es: " + JSON.stringify(usuario));
+
   const [tareas, setTareas] = useState([]); // Las tareas de ese usuario
   const [indiceActual, setIndiceActual] = useState(0); // El indice actual que recorre las tareas
   const [cargando, setCargando] = useState(true); // Renderiza la pantalla cuando se haya descargado la información de al base de datos.
@@ -28,9 +30,10 @@ export default function Tareas({ route, navigation }) {
       setCargando(true); // Establece el estado 'cargando' a true al inicio de la carga de datos.
 
       try {
+        console.log("el usuario es: " + usuario.id);
         // Obtener tareas asociadas al ID del usuario actual.
         const tareas = await buscarTareaid(usuario.id);
-console.log('tareas: ', tareas)
+        console.log('tareas: ' + tareas);
         // Procesa cada tarea para descargar la imagen si existe una URL de foto.
         const datos = await Promise.all(
           tareas.map(async ({ id, tipo, fotoURL, titulo }) => {
@@ -76,7 +79,7 @@ console.log('tareas: ', tareas)
   const manejoPresionarBoton = (tarea, navigation, usuario) => {
     const id = tarea.id;
     if (tarea.tipo == "comanda") {
-      navigation.navigate("seleccionAula", { id, usuario });
+      navigation.navigate("seleccionAula", { id, navigation });
     } else if (tarea.tipo === "actividad") {
       navigation.navigate("verTarea", { id, usuario });
     } else if (tarea.tipo === "material") {

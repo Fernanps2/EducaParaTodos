@@ -2773,7 +2773,7 @@ export const getTareaId = async (idAlumno) => {
                 fotoURL: fotoURL,
             });
         }
-        console.log(docs);
+        console.log("las tareas getTareaId en firebase son: " + JSON.stringify(docs));
         return docs;
     } catch (error) {
         console.log(error);
@@ -2782,8 +2782,6 @@ export const getTareaId = async (idAlumno) => {
 };
 
 export const getTareaIdCompletada = async (idAlumno) => {
-
-    console.log(idAlumno);
     
     try {
       if(idAlumno === ''){
@@ -2830,10 +2828,10 @@ export const getTareaIdCompletada = async (idAlumno) => {
 
 export const getTarea = async (idAlumno) => {
 
-  console.log(idAlumno);
+    console.log("el id alumno en firebase es: " + idAlumno);
   
   try {
-    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "true"));
+    const q = query(collection(db,"Tarea"),where("idAlumno", "==", idAlumno), where("completado","==" , "false"));
     const querySnapshot = await getDocs(q);
     // const querySnapshot = await getDocs(collection(db, 'Tarea'), where('IdAlumno', '==', idAlumno));
   
@@ -2854,6 +2852,7 @@ export const getTarea = async (idAlumno) => {
       });
     }
 
+    console.log("las tareas en firebase son: " + JSON.stringify(docs));
     return docs;
 } catch (error) {
     console.error(error);

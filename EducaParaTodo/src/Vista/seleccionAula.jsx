@@ -3,7 +3,7 @@ import { Alert, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Pla
 import { borraProfesor, buscaProfesor } from '../Controlador/profesores';
 import { responsiveFontSize } from 'react-native-responsive-screen';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { buscarPedidoProfesor, buscarMenus, buscarPedidosTarea, buscarTarea, buscarMenusComanda } from '../Controlador/tareas';
+import { buscarPedidoProfesor, buscarMenus, buscarPedidosTarea, buscarTarea, buscarMenusComanda, buscarTareaId } from '../Controlador/tareas';
 import { useFocusEffect } from '@react-navigation/native';
 import { completarTarea } from '../Controlador/tareas';
 import Swal from 'sweetalert2';
@@ -123,7 +123,7 @@ const SeleccionAula = ({ route, navigation }) => {
     const getProfesores = async () => {
       try {
         const profesores = await buscaProfesor();
-        const datosTarea = await buscarTarea(id);
+        const datosTarea = await buscarTareaId(id);
         console.log("los datos de la tarea son: " + JSON.stringify(datosTarea));
         const idAlumno = datosTarea.idAlumno;
         console.log("el id del alumno es: " + idAlumno);
