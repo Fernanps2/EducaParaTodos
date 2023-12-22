@@ -1194,7 +1194,7 @@ export default function VerTareaMaterial({ route, navigation }) {
             </Text>
             <View style={[{ height: RFValue(2) }]} />
             <Image source={{ uri: aula.foto.uri }} style={styles.image} />
-            <Text style={[styles.text]}>
+            <Text style={[styles.text, {flex: 1}]}>
               {lugarDestinoNow === "Almacen"
                 ? `Estoy en el ${lugarDestinoNow} `
                 : `Estoy en el aula ${lugarDestinoNow} `}
