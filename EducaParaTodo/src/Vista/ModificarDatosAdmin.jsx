@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image, Alert, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { buscaAdministradorNombre, actualizaAdministrador } from '../Controlador/administradores';
 import { descargaFotoPersona } from '../Controlador/multimedia';
+import Swal from "sweetalert2";
 
 // Se usa para cambiar los datos del propio administrador
 // HomeAdmin > modificar mis datos
@@ -49,17 +50,30 @@ export default function ModificarDatosAdmin ({ route, navigation }) {
       };
 
     const showAlertStore = () => {
+      if (Platform.OS === "web") {
+        Swal.fire({
+          title: "Subida completada",
+          text: "Los datos han sido modificados con exito",
+          icon: "success",
+          confirmButtonText: "De acuerdo",
+        }).then((result) => {
+          if(result.isConfirmed){
+            guardarCambios();
+          }
+        })
+      }else {
         Alert.alert(
           "¿Quiere guardar?", // Título
           "Pulsa una opción", // Mensaje
           [
             { text: "Cancelar", onPress: () => console.log("Cancelar presionado"), style: "cancel" },
-            { text: "Confirmar", onPress: () => navigation.navigate('HomeAdmin')}
+            { text: "Confirmar", onPress: () => guardarCambios()}
           ],
           { cancelable: true } // Si se puede cancelar tocando fuera de la alerta
         );
       };
 
+    }
 
 
       return (
@@ -124,7 +138,7 @@ export default function ModificarDatosAdmin ({ route, navigation }) {
           <TextInput style={styles.input} placeholder= {profe?.info} /> */}
 
 
-          <TouchableOpacity style={styles.addButton} onPress={guardarCambios}>
+          <TouchableOpacity style={styles.addButton} onPress={showAlertStore}>
             <Text style={styles.addButtonText}>Modificar</Text>
           </TouchableOpacity>
         </ScrollView>
