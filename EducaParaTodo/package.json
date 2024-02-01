@@ -19,7 +19,7 @@
     "base-64": "^1.0.0",
     "date-fns": "^2.30.0",
     "expo": "^49.0.17",
-    "expo-av": "~13.4.1",
+    "expo-av": "~13.10.2",
     "expo-image-picker": "~14.3.2",
     "expo-permissions": "~14.2.1",
     "expo-splash-screen": "~0.20.5",
